@@ -14,7 +14,7 @@ module PACKMAN
     end
 
     def self.depends_on(*packages)
-      print self.class_eval("@@depends ||= []; packages.each { |p| @@depends.push p }")
+      self.class_eval("@@depends ||= []; packages.each { |p| @@depends.push p }")
       self.class_eval("def depends; @@depends; end")
     end
 

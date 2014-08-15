@@ -36,7 +36,11 @@ module PACKMAN
     config_manager.get_keys('packman').each do |key|
       if key =~ /^package_.*/
         package_name = key.to_s.gsub(/^package_/, '').capitalize
-        next if not PACKMAN.class_defined?(package_name)
+        next if package_name == 'Root'
+        if not PACKMAN.class_defined?(package_name)
+          PACKMAN.report_warning "Unknown package #{Tty.red}#{package_name}#{Tty.reset}!"
+          next
+        end
 
         report_notice "Install package #{package_name}."
         # Parse installation specifications.

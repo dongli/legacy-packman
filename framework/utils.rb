@@ -44,6 +44,10 @@ module PACKMAN
     print "[#{Tty.green}Notice#{Tty.reset}]: #{message}\n"
   end
 
+  def self.report_warning(message)
+    print "[#{Tty.yellow}Warning#{Tty.reset}]: #{message}\n"
+  end
+
   def self.report_error(message)
     print "[#{Tty.red}Error#{Tty.reset}]: #{message}\n"
     exit
