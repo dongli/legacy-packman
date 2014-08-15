@@ -1,0 +1,5 @@
+.idea
+*.tar.bz2
+*.tar.gz
+config
+test

@@ -1,0 +1,25 @@
+#!/usr/bin/env ruby
+
+# ENV['PACKMAN_ROOT'] = '/Users/dongli/Shares/works/packman'
+
+$LOAD_PATH << "#{ENV['PACKMAN_ROOT']}/framework"
+$LOAD_PATH << "#{ENV['PACKMAN_ROOT']}/packages"
+require 'packman_framework'
+require 'packman_packages'
+
+config_manager = PACKMAN::ConfigManager.new
+
+case ARGV[0]
+    when 'collect'
+      config_manager.parse(ARGV[1])
+      PACKMAN.collect_packages(config_manager)
+    when 'install'
+      config_manager.parse(ARGV[1])
+      PACKMAN.install_packages(config_manager)
+    when 'update'
+        
+    when 'help'
+        
+    else
+      PACKMAN.report_error "Unknown command #{ARGV[0]}!"
+end
