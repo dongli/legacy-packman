@@ -14,7 +14,12 @@ module PACKMAN
     end
 
     def self.depends_on(*packages)
+      print self.class_eval("@@depends ||= []; packages.each { |p| @@depends.push p }")
+      self.class_eval("def depends; @@depends; end")
+    end
 
+    def depends
+      []
     end
 
     def download_to(root)
@@ -41,6 +46,9 @@ module PACKMAN
     end
 
     def self.prefix(package_self)
+      if package_self.class == Class
+        package_self = eval "#{package_self}.new"
+      end
       "#{PACKMAN.install_root}/#{package_self.class}/#{package_self.version}/#{PACKMAN.all_compiler_sets.index(@@compiler_set)}"
     end
 
@@ -87,6 +95,10 @@ module PACKMAN
     end
 
     def self.install(compiler_sets, package)
+      # Check dependencies.
+      package.depends.each do |depend|
+        install(compiler_sets, eval("#{depend.capitalize}.new"))
+      end
       saved_dir = Dir.pwd
       # Build package for each compiler set.
       compiler_sets.each do |compiler_set|
