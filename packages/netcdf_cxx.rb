@@ -19,9 +19,9 @@ class Netcdf_cxx < PACKMAN::Package
       CPPFLAGS='-I#{netcdf_c_prefix}/include'
       LDFLAGS='-L#{netcdf_c_prefix}/lib'
     ]
-    PACKMAN::Package.run './configure', *args, *envs
-    PACKMAN::Package.run 'make'
-    PACKMAN::Package.run 'make check'
-    PACKMAN::Package.run 'make install'
+    PACKMAN.run './configure', *args, *envs
+    PACKMAN.run 'make'
+    PACKMAN.run 'make check'
+    PACKMAN.run 'make install'
   end
 end

@@ -10,8 +10,8 @@ class Cmake < PACKMAN::Package
       --no-system-libarchive
     ]
 
-    PACKMAN::Package.run "./bootstrap", *args
-    PACKMAN::Package.run "make"
-    PACKMAN::Package.run "make install"
+    PACKMAN.run "./bootstrap", *args
+    PACKMAN.run "make"
+    PACKMAN.run "make install"
   end
 end

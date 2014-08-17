@@ -22,9 +22,9 @@ class Netcdf_c < PACKMAN::Package
       LDFLAGS='-L#{szip_prefix}/lib -L#{hdf5_prefix}'
       LIBS='-lsz -lhdf5 -lhdf5_hl'
     ]
-    PACKMAN::Package.run './configure', *args, *envs
-    PACKMAN::Package.run 'make'
-    PACKMAN::Package.run 'make check'
-    PACKMAN::Package.run 'make install'
+    PACKMAN.run './configure', *args, *envs
+    PACKMAN.run 'make'
+    PACKMAN.run 'make check'
+    PACKMAN.run 'make install'
   end
 end

@@ -52,25 +52,8 @@ module PACKMAN
       "#{PACKMAN.install_root}/#{package_self.class}/#{package_self.version}/#{PACKMAN.all_compiler_sets.index(@@compiler_set)}"
     end
 
-    # TODO: Use ENV to set compiler environment variables.
-    def self.run(cmd, *args)
-      cmd_str = ''
-      @@compiler_set.each do |language, compiler|
-        case language
-        when :c
-          cmd_str << "CC=#{compiler} "
-        when :'c++'
-          cmd_str << "CXX=#{compiler} "
-        when :fortran
-          cmd_str << "FC=#{compiler} "
-          cmd_str << "F77=#{compiler} "
-        end
-      end
-      cmd_str << "#{cmd}"
-      args.each do |arg|
-        cmd_str << " #{arg}"
-      end
-      system cmd_str
+    def self.compiler_set
+      @@compiler_set
     end
 
     def self.bashrc(package)
