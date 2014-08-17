@@ -108,4 +108,8 @@ module PACKMAN
     end
     system cmd_str
   end
+
+  def self.append(filepath, lines)
+    File.open(filepath, "a") { |file|  file.puts lines }
+  end
 end
