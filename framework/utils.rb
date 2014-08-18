@@ -57,11 +57,15 @@ module PACKMAN
     print "[#{Tty.red}CHECK#{Tty.reset}]: #{message}\n"
   end
 
-  def self.download(root, url)
+  def self.download(root, url, rename = nil)
     curl = Pathname.new '/usr/bin/curl'
     raise "#{curl} is not executable" unless curl.exist? and curl.executable?
     filename = File.basename(URI.parse(url).path)
-    args = "-f#L -C - -o #{root}/#{filename}"
+    if rename
+      args = "-f#L -C - -o #{root}/#{rename}"
+    else
+      args = "-f#L -C - -o #{root}/#{filename}"
+    end
     system "#{curl} #{args} #{url}"
   end
 
@@ -111,5 +115,13 @@ module PACKMAN
 
   def self.append(filepath, lines)
     File.open(filepath, "a") { |file|  file.puts lines }
+  end
+
+  def self.mkdir(dir)
+    Dir.mkdir(dir)
+    if block_given?
+      Dir.chdir(dir)
+      yield
+    end
   end
 end

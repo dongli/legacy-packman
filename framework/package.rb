@@ -18,9 +18,14 @@ module PACKMAN
       self.class_eval("def depends; @@depends; end")
     end
 
-    def depends
-      []
+    def self.patch(url, sha1)
+      self.class_eval("@@patches ||= []; @@patches << [ url, sha1 ]")
+      self.class_eval("def patches; @@patches; end")
     end
+
+    def depends; []; end
+
+    def patches; []; end
 
     def download_to(root)
       PACKMAN.download(root, url)
@@ -105,6 +110,11 @@ module PACKMAN
         end
         build_dir = tmp.first
         Dir.chdir(build_dir)
+        # Apply patches.
+        for i in 0..package.patches.size-1
+          patch_file = "#{PACKMAN.package_root}/#{package.class}.patch.#{i}"
+          PACKMAN.run "patch -N -Z -p1 < #{patch_file}"
+        end
         package.install
         Dir.chdir(saved_dir)
         FileUtils.rm_rf("#{build_dir}")

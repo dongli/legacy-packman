@@ -1,6 +1,6 @@
 class Boost < PACKMAN::Package
   url 'https://downloads.sourceforge.net/project/boost/boost/1.56.0/boost_1_56_0.tar.bz2'
-  sha1 'cef9a0cc7084b1d639e06cd3bc34e4251524c840'
+  sha1 'f94bb008900ed5ba1994a1072140590784b9b5df'
   version '1.56.0'
 
   def install
