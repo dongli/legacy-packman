@@ -10,7 +10,6 @@ class Isl < PACKMAN::Package
       --prefix=#{PACKMAN::Package.prefix(self)}
       --disable-dependency-tracking
       --disable-silent-rules
-      --with-gmp=system
       --with-gmp-prefix=#{PACKMAN::Package.prefix(Gmp)}
     ]
     PACKMAN.run './configure', *args

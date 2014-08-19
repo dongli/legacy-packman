@@ -9,6 +9,8 @@ class Gcc < PACKMAN::Package
   depends_on 'isl'
   depends_on 'cloog'
 
+  label 'compiler'
+
   def install
     languages = %W[c c++ fortran]
     args = %W[

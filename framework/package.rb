@@ -18,12 +18,19 @@ module PACKMAN
       self.class_eval("def depends; @@depends; end")
     end
 
+    def self.label(*labels)
+      self.class_eval("@@labels ||= []; labels.each { |l| @@labels.push l }")
+      self.class_eval("def labels; @@labels; end")
+    end
+
     def self.patch(url, sha1)
       self.class_eval("@@patches ||= []; @@patches << [ url, sha1 ]")
       self.class_eval("def patches; @@patches; end")
     end
 
     def depends; []; end
+
+    def labels; []; end
 
     def patches; []; end
 
@@ -54,7 +61,11 @@ module PACKMAN
       if package_self.class == Class
         package_self = eval "#{package_self}.new"
       end
-      "#{PACKMAN.install_root}/#{package_self.class}/#{package_self.version}/#{PACKMAN.all_compiler_sets.index(@@compiler_set)}"
+      prefix = "#{PACKMAN.install_root}/#{package_self.class.to_s.downcase}/#{package_self.version}"
+      if not package_self.labels.include? 'compiler'
+        compiler_set_index = PACKMAN.all_compiler_sets.index(PACKMAN::Package.compiler_set)
+        prefix << "/#{compiler_set_index}"
+      end
     end
 
     def self.compiler_set
