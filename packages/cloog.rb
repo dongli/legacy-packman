@@ -11,9 +11,7 @@ class Cloog < PACKMAN::Package
       --prefix=#{PACKMAN::Package.prefix(self)}
       --disable-dependency-tracking
       --disable-silent-rules
-      --with-gmp=system
       --with-gmp-prefix=#{PACKMAN::Package.prefix(Gmp)}
-      --with-isl=system
       --with-isl-prefix=#{PACKMAN::Package.prefix(Isl)}
     ]
     PACKMAN.run './configure', *args

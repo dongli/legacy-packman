@@ -92,9 +92,22 @@ module PACKMAN
     end
   end
 
+  def self.append_ld_library_path(path)
+    @@ld_library_path ||= []
+    @@ld_library_path << path
+  end
+
+  def self.clean_ld_library_path
+    @@ld_library_path.clear
+  end
+
     # TODO: Use ENV to set compiler environment variables.
   def self.run(cmd, *args)
-    cmd_str = ''
+    cmd_str = 'LD_LIBRARY_PATH=$LD_LIBRARY_PATH:'
+    if defined? @@ld_library_path
+      cmd_str << @@ld_library_path.join(':')
+    end
+    cmd_str << ' '
     Package.compiler_set.each do |language, compiler|
       case language
       when :c
@@ -111,13 +124,17 @@ module PACKMAN
       cmd_str << " #{arg}"
     end
     system cmd_str
+    if not $?.success?
+      report_error "Failed to run command successfully!\n#{cmd_str}"
+    end
   end
 
   def self.append(filepath, lines)
     File.open(filepath, "a") { |file|  file.puts lines }
   end
 
-  def self.mkdir(dir)
+  def self.mkdir(dir, is_force = false)
+    FileUtils.rm_rf(dir) if Dir.exist?(dir) and is_force
     Dir.mkdir(dir)
     if block_given?
       Dir.chdir(dir)

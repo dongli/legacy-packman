@@ -17,13 +17,19 @@ class Gcc < PACKMAN::Package
       --with-gmp=#{PACKMAN::Package.prefix(Gmp)}
       --with-mpfr=#{PACKMAN::Package.prefix(Mpfr)}
       --with-mpc=#{PACKMAN::Package.prefix(Mpc)}
-      --with-isl=#{PACKMAN::Package.prefix(Isl)}
       --with-cloog=#{PACKMAN::Package.prefix(Cloog)}
-    ]
-    PACKMAN.mkdir 'build' do
+      --with-isl=#{PACKMAN::Package.prefix(Isl)}
+    ] 
+    PACKMAN.append_ld_library_path "#{PACKMAN::Package.prefix(Gmp)}/lib"
+    PACKMAN.append_ld_library_path "#{PACKMAN::Package.prefix(Mpfr)}/lib"
+    PACKMAN.append_ld_library_path "#{PACKMAN::Package.prefix(Mpc)}/lib"
+    PACKMAN.append_ld_library_path "#{PACKMAN::Package.prefix(Cloog)}/lib"
+    PACKMAN.append_ld_library_path "#{PACKMAN::Package.prefix(Isl)}/lib"
+    PACKMAN.mkdir 'build', true do
       PACKMAN.run '../configure', *args
       PACKMAN.run 'make -j2 bootstrap'
       PACKMAN.run 'make -j2 install'
     end
+    PACKMAN.clean_ld_library_path
   end
 end

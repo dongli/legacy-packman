@@ -8,7 +8,7 @@ class Mpc < PACKMAN::Package
       --prefix=#{PACKMAN::Package.prefix(self)}
       --disable-dependency-tracking
       --with-gmp=#{PACKMAN::Package.prefix(Gmp)}
-      --with-mpfr=#{PACKMAN::Package.prefix(Mpfr)}}
+      --with-mpfr=#{PACKMAN::Package.prefix(Mpfr)}
     ]
     PACKMAN.run './configure', *args
     PACKMAN.run 'make'
