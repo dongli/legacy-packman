@@ -10,7 +10,7 @@ class Szip < PACKMAN::Package
       --disable-dependency-tracking
     ]
 
-    PACKMAN::Package.run('./configure', *args)
-    PACKMAN::Package.run('make install')
+    PACKMAN.run('./configure', *args)
+    PACKMAN.run('make install')
   end
 end

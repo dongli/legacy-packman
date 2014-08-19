@@ -8,6 +8,7 @@ require 'packman_framework'
 require 'packman_packages'
 
 config_manager = PACKMAN::ConfigManager.new
+PACKMAN::OS.scan
 
 case ARGV[0]
     when 'collect'

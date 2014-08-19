@@ -1,4 +1,5 @@
 require "utils"
+require "os"
 require "compiler_specs"
 require "config_manager"
 require "package"

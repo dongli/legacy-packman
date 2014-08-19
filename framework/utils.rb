@@ -103,8 +103,18 @@ module PACKMAN
 
     # TODO: Use ENV to set compiler environment variables.
   def self.run(cmd, *args)
-    cmd_str = 'LD_LIBRARY_PATH=$LD_LIBRARY_PATH:'
+    cmd_str = ''
+    if Package.compiler_set.has_key?(:installed_by_packman)
+      compiler_prefix = Package.prefix(Package.compiler_set[:installed_by_packman])
+      cmd_str = "source #{compiler_prefix}/bashrc &&"
+    end
     if defined? @@ld_library_path
+      case OS.type
+        when :Darwin
+          cmd_str << 'DYLD_LIBRARY_PATH=$DYLD_LIBRARY_PATH:'
+        when :Linux
+          cmd_str << 'LD_LIBRARY_PATH=$LD_LIBRARY_PATH:'
+      end
       cmd_str << @@ld_library_path.join(':')
     end
     cmd_str << ' '
