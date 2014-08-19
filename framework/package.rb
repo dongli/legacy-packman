@@ -66,6 +66,7 @@ module PACKMAN
         compiler_set_index = PACKMAN.all_compiler_sets.index(PACKMAN::Package.compiler_set)
         prefix << "/#{compiler_set_index}"
       end
+      return prefix
     end
 
     def self.compiler_set
