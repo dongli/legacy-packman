@@ -21,13 +21,27 @@ module PACKMAN
       if key =~ /^compiler_set_.*/
         tmp = config_manager.get_value('packman', key)
         @@all_compiler_sets.push Hash.new
-        tmp.split(/\s*\|\s*/).each do |c|
-          language = c.split(/\s*:\s*/)[0]
-          compiler = c.split(/\s*:\s*/)[1]
-          if not language or not compiler
-            PACKMAN.report_error "Bad compiler set format \"#{tmp}\"!"
+        if tmp =~ /^package_.*/
+          # Use the compiler installed by PACKMAN.
+          case tmp
+          when 'package_gcc'
+            @@all_compiler_sets.last[:c] = :"#{Package.prefix(Gcc)}/bin/gcc"
+            @@all_compiler_sets.last[:'c++'] = :"#{Package.prefix(Gcc)}/bin/g++"
+            @@all_compiler_sets.last[:fortran] = :"#{Package.prefix(Gcc)}/bin/gfortran"
+            # Label this compiler set.
+            @@all_compiler_sets.last[:installed_by_packman] = 'Gcc'
+          else
+            PACKMAN.report_error "Unknown compiler \"#{tmp}\"!"
           end
-          @@all_compiler_sets.last[language.to_sym] = compiler.to_sym
+        else
+          tmp.split(/\s*\|\s*/).each do |c|
+            language = c.split(/\s*:\s*/)[0]
+            compiler = c.split(/\s*:\s*/)[1]
+            if not language or not compiler
+              PACKMAN.report_error "Bad compiler set format \"#{tmp}\"!"
+            end
+            @@all_compiler_sets.last[language.to_sym] = compiler.to_sym
+          end
         end
       end
     end
