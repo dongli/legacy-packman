@@ -1,5 +1,7 @@
 .idea
+ruby
+.DS_Store
 *.tar.bz2
 *.tar.gz
-config
+config.txt
 test

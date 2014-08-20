@@ -40,6 +40,9 @@ module PACKMAN
 
     def decompress(root)
       PACKMAN.report_notice "Decompress #{filename}."
+      if not File.exist?("#{root}/#{filename}")
+        PACKMAN.report_error "File #{Tty.red}#{filename}#{Tty.reset} has not been downloaded!"
+      end
       saved_dir = Dir.pwd
       decom_dir = "#{root}/#{self.class}"
       Dir.mkdir(decom_dir) if not Dir.exist?(decom_dir)
@@ -58,12 +61,12 @@ module PACKMAN
     end
 
     def self.prefix(package_self)
-      if package_self.class == Class
+      if package_self.class == Class or package_self.class == String
         package_self = eval "#{package_self}.new"
       end
-      prefix = "#{PACKMAN.install_root}/#{package_self.class.to_s.downcase}/#{package_self.version}"
+      prefix = "#{ConfigManager.install_root}/#{package_self.class.to_s.downcase}/#{package_self.version}"
       if not package_self.labels.include? 'compiler'
-        compiler_set_index = PACKMAN.all_compiler_sets.index(PACKMAN::Package.compiler_set)
+        compiler_set_index = ConfigManager.compiler_sets.index(Package.compiler_set)
         prefix << "/#{compiler_set_index}"
       end
       return prefix
@@ -74,24 +77,24 @@ module PACKMAN
     end
 
     def self.bashrc(package)
-      content = ''
       prefix = prefix(package)
       root = "#{package.class.name.upcase}_ROOT"
-      content << "# #{package.sha1}\n"
-      content << "export #{root}=#{prefix}\n"
-      # Check if 'bin' is provided.
-      if Dir.exist?("#{prefix}/bin")
-        content << "export PATH=$#{root}/bin:$PATH\n"
+      open("#{prefix}/bashrc", "w") do |file|
+        file.puts "# #{package.sha1}\n"
+        file.puts "export #{root}=#{prefix}\n"
+        if Dir.exist?("#{prefix}/bin")
+          file.puts "export PATH=$#{root}/bin:$PATH\n"
+        end
+        if Dir.exist?("#{prefix}/share/man")
+          file.puts "export MANPATH=$#{root}/share/man:$MANPATH\n"
+        end
+        if Dir.exist?("#{prefix}/include")
+          file.puts "export #{package.class.name.upcase}_INCLUDE_PATH=$#{root}/include\n"
+        end
+        if Dir.exist?("#{prefix}/lib")
+          file.puts "export #{package.class.name.upcase}_LIBRARY_PATH=$#{root}/lib\n"
+        end
       end
-      if Dir.exist?("#{prefix}/include")
-        content << "export #{package.class.name.upcase}_INCLUDE_PATH=$#{root}/include\n"
-      end
-      if Dir.exist?("#{prefix}/lib")
-        content << "export #{package.class.name.upcase}_LIBRARY_PATH=$#{root}/lib\n"
-      end
-      f = File.new("#{prefix}/bashrc", 'w')
-      f.write(content)
-      f.close
     end
 
     def self.install(compiler_sets, package)
@@ -115,16 +118,16 @@ module PACKMAN
           f.close
         end
         # Install ...
-        package.decompress(PACKMAN.package_root)
-        tmp = Dir.glob("#{PACKMAN.package_root}/#{package.class}/*")
+        package.decompress(ConfigManager.package_root)
+        tmp = Dir.glob("#{ConfigManager.package_root}/#{package.class}/*")
         if tmp.size != 1 or not File.directory?(tmp.first)
-          PACKMAN.report_error "There should be only one directory in \"#{PACKMAN.package_root}/#{package.class}\"!"
+          PACKMAN.report_error "There should be only one directory in \"#{ConfigManager.package_root}/#{package.class}\"!"
         end
         build_dir = tmp.first
         Dir.chdir(build_dir)
         # Apply patches.
         for i in 0..package.patches.size-1
-          patch_file = "#{PACKMAN.package_root}/#{package.class}.patch.#{i}"
+          patch_file = "#{ConfigManager.package_root}/#{package.class}.patch.#{i}"
           PACKMAN.run "patch -N -Z -p1 < #{patch_file}"
         end
         package.install
@@ -133,8 +136,8 @@ module PACKMAN
         # Write bashrc file for the package.
         bashrc(package)
       end
-      if Dir.exist?("#{PACKMAN.package_root}/#{package.class}")
-        FileUtils.rm_rf("#{PACKMAN.package_root}/#{package.class}")
+      if Dir.exist?("#{ConfigManager.package_root}/#{package.class}")
+        FileUtils.rm_rf("#{ConfigManager.package_root}/#{package.class}")
       end
     end
   end

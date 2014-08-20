@@ -9,6 +9,7 @@ class Mpfr < PACKMAN::Package
     args = %W[
       --prefix=#{PACKMAN::Package.prefix(self)}
       --disable-dependency-tracking
+      --with-gmp=#{PACKMAN::Package.prefix(Gmp)}
     ]
     PACKMAN.run './configure', *args
     PACKMAN.run 'make'

@@ -21,6 +21,7 @@ class Gcc < PACKMAN::Package
       --with-mpc=#{PACKMAN::Package.prefix(Mpc)}
       --with-cloog=#{PACKMAN::Package.prefix(Cloog)}
       --with-isl=#{PACKMAN::Package.prefix(Isl)}
+      --disable-multilib
     ] 
     PACKMAN.append_ld_library_path "#{PACKMAN::Package.prefix(Gmp)}/lib"
     PACKMAN.append_ld_library_path "#{PACKMAN::Package.prefix(Mpfr)}/lib"

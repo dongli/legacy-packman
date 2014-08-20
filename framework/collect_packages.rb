@@ -1,22 +1,14 @@
 module PACKMAN
-  def self.collect_packages(config_manager)
-    package_root = config_manager.get_value('packman', 'package_root')
-    # Collect package names.
-    package_names = []
-    config_manager.get_keys('packman').each do |key|
-      if key =~ /^package_.*/
-        package_name = key.to_s.gsub(/^package_/, '').capitalize
-        next if not PACKMAN.class_defined?(package_name)
-        package_names << package_name
-      end
-    end
+  def self.collect_packages
+    package_root = ConfigManager.package_root
+    PACKMAN.mkdir package_root
     # Download packages to package_root.
-    package_names.each do |package_name|
+    ConfigManager.packages.keys.each do |package_name|
       package = eval "#{package_name}.new"
       # Recursively download dependency packages.
       package.depends.each do |depend|
         depend_package_name = depend.capitalize
-        if not package_names.include? depend_package_name
+        if not ConfigManager.packages.keys.include? depend_package_name
           depend_package = eval "#{depend_package_name}.new"
           download_package(package_root, depend_package, true)
         end

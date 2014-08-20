@@ -106,7 +106,8 @@ module PACKMAN
     cmd_str = ''
     if Package.compiler_set.has_key?(:installed_by_packman)
       compiler_prefix = Package.prefix(Package.compiler_set[:installed_by_packman])
-      cmd_str = "source #{compiler_prefix}/bashrc &&"
+      # Note: Use '.' instead of 'source', since Ruby system seems invoke a dash not fully bash!
+      cmd_str = ". #{compiler_prefix}/bashrc &&"
     end
     if defined? @@ld_library_path
       case OS.type
@@ -135,7 +136,10 @@ module PACKMAN
     end
     system cmd_str
     if not $?.success?
-      report_error "Failed to run command successfully!\n#{cmd_str}"
+      report_error "Failed to run the following command:\n"+
+        "PATH: #{FileUtils.pwd}\n"+
+        "Command: #{cmd_str}\n"+
+        "Return: #{$?}"
     end
   end
 
@@ -145,9 +149,9 @@ module PACKMAN
 
   def self.mkdir(dir, is_force = false)
     FileUtils.rm_rf(dir) if Dir.exist?(dir) and is_force
-    Dir.mkdir(dir)
+    FileUtils.mkdir_p(dir)
     if block_given?
-      Dir.chdir(dir)
+      FileUtils.chdir(dir)
       yield
     end
   end

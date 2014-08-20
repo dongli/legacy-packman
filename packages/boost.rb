@@ -4,12 +4,21 @@ class Boost < PACKMAN::Package
   version '1.56.0'
 
   def install
+    if PACKMAN::OS.type == :Darwin
+      open('user-config.jam', 'w') do |file|
+        file.puts "using darwin : : #{PACKMAN.get_cxx_compiler} : ;"
+      end
+    end
     args = %W[
       --prefix=#{PACKMAN::Package.prefix(self)}
-      toolset=#{PACKMAN.get_cxx_vendor}-#{PACKMAN.get_cxx_version}
     ]
-    PACKMAN.run './bootstrap.sh'
-    PACKMAN.append 'project-config.jam', "using #{PACKMAN.get_cxx_vendor} : #{PACKMAN.get_cxx_version} : #{PACKMAN.get_cxx_compiler} : ;"
-    PACKMAN.run './b2', *args
+    PACKMAN.run './bootstrap.sh', *args
+    args = %W[
+      --prefix=#{PACKMAN::Package.prefix(self)}
+      -q
+      -d2
+      -j2
+    ]
+    PACKMAN.run './b2 install', *args
   end
 end
