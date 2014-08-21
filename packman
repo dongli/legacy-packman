@@ -18,7 +18,7 @@ case ARGV[0]
     when 'update'
       saved_dir = FileUtils.pwd
       FileUtils.chdir ENV['PACKMAN_ROOT']
-      system `git pull`
+      system 'git pull'
       FileUtils.chdir saved_dir
     when 'help'
       
