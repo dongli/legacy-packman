@@ -13,6 +13,10 @@ module PACKMAN
       self.class_eval("def version; '#{val}'; end")
     end
 
+    def self.filename(val)
+      self.class_eval("def filename; '#{val}'; end")
+    end
+
     def self.depends_on(*packages)
       self.class_eval("@@depends ||= []; packages.each { |p| @@depends.push p }")
       self.class_eval("def depends; @@depends; end")
@@ -80,27 +84,43 @@ module PACKMAN
       prefix = prefix(package)
       root = "#{package.class.name.upcase}_ROOT"
       open("#{prefix}/bashrc", "w") do |file|
-        file.puts "# #{package.sha1}\n"
-        file.puts "export #{root}=#{prefix}\n"
+        file << "# #{package.sha1}\n"
+        file << "export #{root}=#{prefix}\n"
         if Dir.exist?("#{prefix}/bin")
-          file.puts "export PATH=$#{root}/bin:$PATH\n"
+          file << "export PATH=$#{root}/bin:$PATH\n"
         end
         if Dir.exist?("#{prefix}/share/man")
-          file.puts "export MANPATH=$#{root}/share/man:$MANPATH\n"
+          file << "export MANPATH=$#{root}/share/man:$MANPATH\n"
         end
         if Dir.exist?("#{prefix}/include")
-          file.puts "export #{package.class.name.upcase}_INCLUDE_PATH=$#{root}/include\n"
+          file << "export #{package.class.name.upcase}_INCLUDE_PATH=$#{root}/include\n"
         end
         if Dir.exist?("#{prefix}/lib")
-          file.puts "export #{package.class.name.upcase}_LIBRARY_PATH=$#{root}/lib\n"
+          file << "export #{package.class.name.upcase}_LIBRARY_PATH=$#{root}/lib\n"
+          case OS.type
+          when :Darwin
+            file << "export DYLD_LIBRARY_PATH=$#{root}/lib:$DYLD_LIBRARY_PATH"
+          when :Linux
+            file << "export LD_LIBRARY_PATH=$#{root}/lib:$LD_LIBRARY_PATH"
+          end
+        end
+        if Dir.exist?("#{prefix}/lib64")
+          case OS.type
+          when :Darwin
+            file << "export DYLD_LIBRARY_PATH=$#{root}/lib64:$DYLD_LIBRARY_PATH"
+          when :Linux
+            file << "export LD_LIBRARY_PATH=$#{root}/lib64:$LD_LIBRARY_PATH"
+          end
         end
       end
     end
 
-    def self.install(compiler_sets, package)
+    def self.install(compiler_sets, package, is_recursive = false)
       # Check dependencies.
       package.depends.each do |depend|
-        install(compiler_sets, eval("#{depend.capitalize}.new"))
+        depend_package = eval "#{depend.capitalize}.new"
+        install(compiler_sets, depend_package, true)
+        RunManager.append_bashrc_path("#{prefix(depend_package)}/bashrc")
       end
       saved_dir = Dir.pwd
       # Build package for each compiler set.
@@ -112,7 +132,9 @@ module PACKMAN
           f = File.new(bashrc, 'r')
           first_line = f.readline
           if first_line =~ /#{package.sha1}/
-            PACKMAN.report_notice "Package #{PACKMAN::Tty.green}#{package.class}#{PACKMAN::Tty.reset} has been installed."
+            if not is_recursive
+              PACKMAN.report_notice "Package #{PACKMAN::Tty.green}#{package.class}#{PACKMAN::Tty.reset} has been installed."
+            end
             next
           end
           f.close
@@ -130,6 +152,7 @@ module PACKMAN
           patch_file = "#{ConfigManager.package_root}/#{package.class}.patch.#{i}"
           PACKMAN.run "patch -N -Z -p1 < #{patch_file}"
         end
+        PACKMAN.report_notice "Install package #{Tty.green}#{package.class}#{Tty.reset}."
         package.install
         Dir.chdir(saved_dir)
         FileUtils.rm_rf("#{build_dir}")
@@ -138,6 +161,10 @@ module PACKMAN
       end
       if Dir.exist?("#{ConfigManager.package_root}/#{package.class}")
         FileUtils.rm_rf("#{ConfigManager.package_root}/#{package.class}")
+      end
+      # Clean the bashrc pathes.
+      if not is_recursive
+        RunManager.clean_bashrc_path
       end
     end
   end

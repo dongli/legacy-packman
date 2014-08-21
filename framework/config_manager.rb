@@ -3,6 +3,7 @@ module PACKMAN
     @@valid_keys = %W[
       package_root
       install_root
+      active_compiler_set
       compiler_set_0
       compiler_set_1
       compiler_set_2

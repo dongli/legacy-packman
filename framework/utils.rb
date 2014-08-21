@@ -92,59 +92,8 @@ module PACKMAN
     end
   end
 
-  def self.append_ld_library_path(path)
-    @@ld_library_path ||= []
-    @@ld_library_path << path
-  end
-
-  def self.clean_ld_library_path
-    @@ld_library_path.clear
-  end
-
-    # TODO: Use ENV to set compiler environment variables.
-  def self.run(cmd, *args)
-    cmd_str = ''
-    if Package.compiler_set.has_key?(:installed_by_packman)
-      compiler_prefix = Package.prefix(Package.compiler_set[:installed_by_packman])
-      # Note: Use '.' instead of 'source', since Ruby system seems invoke a dash not fully bash!
-      cmd_str = ". #{compiler_prefix}/bashrc &&"
-    end
-    if defined? @@ld_library_path
-      case OS.type
-        when :Darwin
-          cmd_str << 'DYLD_LIBRARY_PATH=$DYLD_LIBRARY_PATH:'
-        when :Linux
-          cmd_str << 'LD_LIBRARY_PATH=$LD_LIBRARY_PATH:'
-      end
-      cmd_str << @@ld_library_path.join(':')
-    end
-    cmd_str << ' '
-    Package.compiler_set.each do |language, compiler|
-      case language
-      when :c
-        cmd_str << "CC=#{compiler} "
-      when :'c++'
-        cmd_str << "CXX=#{compiler} "
-      when :fortran
-        cmd_str << "FC=#{compiler} "
-        cmd_str << "F77=#{compiler} "
-      end
-    end
-    cmd_str << "#{cmd}"
-    args.each do |arg|
-      cmd_str << " #{arg}"
-    end
-    system cmd_str
-    if not $?.success?
-      report_error "Failed to run the following command:\n"+
-        "PATH: #{FileUtils.pwd}\n"+
-        "Command: #{cmd_str}\n"+
-        "Return: #{$?}"
-    end
-  end
-
   def self.append(filepath, lines)
-    File.open(filepath, "a") { |file|  file.puts lines }
+    File.open(filepath, "a") { |file|  file << lines }
   end
 
   def self.mkdir(dir, is_force = false)

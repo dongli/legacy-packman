@@ -18,8 +18,8 @@ class Netcdf_c < PACKMAN::Package
     szip_prefix = PACKMAN::Package.prefix(Szip)
     hdf5_prefix = PACKMAN::Package.prefix(Hdf5)
     envs = %W[
-      CFLAGS='-I#{szip_prefix}/include -I#{hdf5_prefix}'
-      LDFLAGS='-L#{szip_prefix}/lib -L#{hdf5_prefix}'
+      CFLAGS='-I#{szip_prefix}/include -I#{hdf5_prefix}/include'
+      LDFLAGS='-L#{szip_prefix}/lib -L#{hdf5_prefix}/lib'
       LIBS='-lsz -lhdf5 -lhdf5_hl'
     ]
     PACKMAN.run './configure', *args, *envs

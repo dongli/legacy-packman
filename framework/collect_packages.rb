@@ -5,7 +5,12 @@ module PACKMAN
     # Download packages to package_root.
     ConfigManager.packages.keys.each do |package_name|
       package = eval "#{package_name}.new"
-      # Recursively download dependency packages.
+      download_package(package_root, package)
+    end
+  end
+
+  def self.download_package(package_root, package, is_recursive = false)
+    # Recursively download dependency packages.
       package.depends.each do |depend|
         depend_package_name = depend.capitalize
         if not ConfigManager.packages.keys.include? depend_package_name
@@ -13,12 +18,6 @@ module PACKMAN
           download_package(package_root, depend_package, true)
         end
       end
-      # Download current package.
-      download_package(package_root, package, false)
-    end
-  end
-
-  def self.download_package(package_root, package, is_depend)
     # Check if there is any patch to download.
     patch_counter = 0
     package.patches.each do |patch|
@@ -38,9 +37,7 @@ module PACKMAN
     package_file = "#{package_root}/#{package.filename}"
     if File.exist?(package_file)
       if PACKMAN.sha1_same?(package_file, package.sha1)
-        if is_depend
-          report_notice "Dependency package #{Tty.green}#{package.class}#{Tty.reset} is already downloaded."
-        else
+        if not is_recursive
           report_notice "Package #{Tty.green}#{package.class}#{Tty.reset} is already downloaded."
         end
         return

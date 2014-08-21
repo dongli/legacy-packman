@@ -6,7 +6,7 @@ class Boost < PACKMAN::Package
   def install
     if PACKMAN::OS.type == :Darwin
       open('user-config.jam', 'w') do |file|
-        file.puts "using darwin : : #{PACKMAN.get_cxx_compiler} : ;"
+        file << "using darwin : : #{PACKMAN.get_cxx_compiler} : ;"
       end
     end
     args = %W[

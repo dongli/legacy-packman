@@ -29,4 +29,35 @@ module PACKMAN
     end
     return cxx_version
   end
+
+  def self.reorganize_compiler_sets
+    tmp_compiler_sets = ConfigManager.compiler_sets
+    for i in 0..ConfigManager.compiler_sets.size-1
+      set = ConfigManager.compiler_sets[i]
+      tmp_compiler_sets[i] = {}
+      if set =~ /^package_.*/
+        # Use the compiler installed by PACKMAN.
+        case set
+        when 'package_gcc'
+          tmp_compiler_sets[i][:c] = :"#{Package.prefix(Gcc)}/bin/gcc"
+          tmp_compiler_sets[i][:'c++'] = :"#{Package.prefix(Gcc)}/bin/g++"
+          tmp_compiler_sets[i][:fortran] = :"#{Package.prefix(Gcc)}/bin/gfortran"
+          # Label this compiler set.
+          tmp_compiler_sets[i][:installed_by_packman] = 'Gcc'
+        else
+          report_error "Unknown compiler \"#{set}\"!"
+        end
+      else
+        set.split(/\s*\|\s*/).each do |c|
+          language = c.split(/\s*:\s*/)[0]
+          compiler = c.split(/\s*:\s*/)[1]
+          if not language or not compiler
+            report_error "Bad compiler set format \"#{set}\"!"
+          end
+          tmp_compiler_sets[i][language.to_sym] = compiler.to_sym
+        end
+      end
+    end
+    ConfigManager.compiler_sets = tmp_compiler_sets
+  end
 end

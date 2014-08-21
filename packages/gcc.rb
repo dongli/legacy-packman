@@ -22,17 +22,11 @@ class Gcc < PACKMAN::Package
       --with-cloog=#{PACKMAN::Package.prefix(Cloog)}
       --with-isl=#{PACKMAN::Package.prefix(Isl)}
       --disable-multilib
-    ] 
-    PACKMAN.append_ld_library_path "#{PACKMAN::Package.prefix(Gmp)}/lib"
-    PACKMAN.append_ld_library_path "#{PACKMAN::Package.prefix(Mpfr)}/lib"
-    PACKMAN.append_ld_library_path "#{PACKMAN::Package.prefix(Mpc)}/lib"
-    PACKMAN.append_ld_library_path "#{PACKMAN::Package.prefix(Cloog)}/lib"
-    PACKMAN.append_ld_library_path "#{PACKMAN::Package.prefix(Isl)}/lib"
+    ]
     PACKMAN.mkdir 'build', true do
       PACKMAN.run '../configure', *args
       PACKMAN.run 'make -j2 bootstrap'
       PACKMAN.run 'make -j2 install'
     end
-    PACKMAN.clean_ld_library_path
   end
 end
