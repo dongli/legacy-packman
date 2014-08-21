@@ -15,5 +15,14 @@ module PACKMAN
         report_error "Unknown OS type \"#{res}\"!"
       end
     end
+
+    def self.shared_library_suffix
+      case type
+      when :Darwin
+        'dylib'
+      when :Linux
+        'so'
+      end
+    end
   end
 end

@@ -112,6 +112,9 @@ module PACKMAN
             file << "export LD_LIBRARY_PATH=$#{root}/lib64:$LD_LIBRARY_PATH"
           end
         end
+        if Dir.exist?("#{prefix}/lib/pkgconfig")
+          file << "export PKG_CONFIG_PATH=$#{root}/lib/pkgconfig:$PKG_CONFIG_PATH"
+        end
       end
     end
 

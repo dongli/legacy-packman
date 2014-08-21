@@ -104,4 +104,14 @@ module PACKMAN
       yield
     end
   end
+
+  def self.replace(filepath, pattern, replacement)
+    content = File.open(filepath, 'r').read
+    if content.gsub!(pattern, replacement) == nil
+      raise "Pattern \"#{pattern}\" is not found in \"#{filepath}\"!"
+    end
+    file = File.open(filepath, 'w')
+    file << content
+    file.close
+  end
 end
