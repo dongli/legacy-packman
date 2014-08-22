@@ -3,9 +3,12 @@ class Curl < PACKMAN::Package
   sha1 '2123b6f0ce7729d07f72a6746c487bdfe35c3cc1'
   version '7.37.1'
 
+  depends_on 'openssl'
+
   def install
     args = %W[
       --prefix=#{PACKMAN::Package.prefix(self)}
+      --with-ssl=#{PACKMAN::Package.prefix(Openssl)}
     ]
     PACKMAN.run './configure', *args
     PACKMAN.run 'make -j2'

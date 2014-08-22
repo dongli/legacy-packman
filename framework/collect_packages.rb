@@ -1,7 +1,7 @@
 module PACKMAN
   def self.collect_packages
     package_root = ConfigManager.package_root
-    PACKMAN.mkdir package_root
+    PACKMAN.mkdir(package_root)
     # Download packages to package_root.
     ConfigManager.packages.keys.each do |package_name|
       package = eval "#{package_name}.new"

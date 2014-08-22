@@ -57,16 +57,22 @@ module PACKMAN
     print "[#{Tty.red}CHECK#{Tty.reset}]: #{message}\n"
   end
 
+  def self.check_command(cmd)
+    `which curl`
+    if not $?.success?
+      report_error "Command \"#{cmd}\" does not exist!"
+    end
+  end
+
   def self.download(root, url, rename = nil)
-    curl = Pathname.new '/usr/bin/curl'
-    raise "#{curl} is not executable" unless curl.exist? and curl.executable?
+    check_command('curl')
     filename = File.basename(URI.parse(url).path)
     if rename
       args = "-f#L -C - -o #{root}/#{rename}"
     else
       args = "-f#L -C - -o #{root}/#{filename}"
     end
-    system "#{curl} #{args} #{url}"
+    system "curl #{args} #{url}"
   end
 
   def self.class_defined?(class_name)
@@ -96,8 +102,8 @@ module PACKMAN
     File.open(filepath, "a") { |file|  file << lines }
   end
 
-  def self.mkdir(dir, is_force = false)
-    FileUtils.rm_rf(dir) if Dir.exist?(dir) and is_force
+  def self.mkdir(dir, option = :none)
+    FileUtils.rm_rf(dir) if Dir.exist?(dir) and option == :force
     FileUtils.mkdir_p(dir)
     if block_given?
       FileUtils.chdir(dir)

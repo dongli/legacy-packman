@@ -57,13 +57,19 @@ module PACKMAN
       end
       cmd_str << " #{cmd} "
       cmd_str << args.join(' ')
+      cmd_str << " 1> #{ConfigManager.package_root}/stdout 2> #{ConfigManager.package_root}/stderr"
+      print "#{PACKMAN::Tty.blue}==>#{PACKMAN::Tty.reset} #{PACKMAN::Tty.truncate("#{cmd} #{args.join(' ')}")}\n"
       system cmd_str
       if not $?.success?
         PACKMAN.report_error "Failed to run the following command:\n"+
           "PATH: #{FileUtils.pwd}\n"+
           "Command: #{cmd_str}\n"+
-          "Return: #{$?}"
+          "Return: #{$?}\n"+
+          "Standard output: #{ConfigManager.package_root}/stdout\n"+
+          "Standard error: #{ConfigManager.package_root}/stderr\n"
       end
+      FileUtils.rm("#{ConfigManager.package_root}/stdout")
+      FileUtils.rm("#{ConfigManager.package_root}/stderr")
     end
   end
 

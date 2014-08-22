@@ -19,6 +19,9 @@ server which has no internet connection, and then run
 
 to install the packages you need.
 
+I would like to thank the Homebrew community, since I have referred the design
+of it quite a lot.
+
 Features
 ========
 

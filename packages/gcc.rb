@@ -23,7 +23,7 @@ class Gcc < PACKMAN::Package
       --with-isl=#{PACKMAN::Package.prefix(Isl)}
       --disable-multilib
     ]
-    PACKMAN.mkdir 'build', true do
+    PACKMAN.mkdir 'build', :force do
       PACKMAN.run '../configure', *args
       PACKMAN.run 'make -j2 bootstrap'
       PACKMAN.run 'make -j2 install'

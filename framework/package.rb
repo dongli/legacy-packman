@@ -17,13 +17,13 @@ module PACKMAN
       self.class_eval("def filename; '#{val}'; end")
     end
 
-    def self.depends_on(*packages)
-      self.class_eval("@@depends ||= []; packages.each { |p| @@depends.push p }")
+    def self.depends_on(package)
+      self.class_eval("@@depends ||= []; @@depends.push package")
       self.class_eval("def depends; @@depends; end")
     end
 
-    def self.label(*labels)
-      self.class_eval("@@labels ||= []; labels.each { |l| @@labels.push l }")
+    def self.label(label)
+      self.class_eval("@@labels ||= []; @@labels.push label")
       self.class_eval("def labels; @@labels; end")
     end
 
@@ -39,7 +39,7 @@ module PACKMAN
     def patches; []; end
 
     def download_to(root)
-      PACKMAN.download(root, url)
+      PACKMAN.download(root, url, filename)
     end
 
     def decompress(root)
@@ -49,7 +49,7 @@ module PACKMAN
       end
       saved_dir = Dir.pwd
       decom_dir = "#{root}/#{self.class}"
-      Dir.mkdir(decom_dir) if not Dir.exist?(decom_dir)
+      PACKMAN.mkdir(decom_dir, :force)
       Dir.chdir(decom_dir)
       case PACKMAN.compression_type("#{root}/#{filename}")
       when :tar
@@ -59,7 +59,7 @@ module PACKMAN
       when :bzip2
         system "bzip2 -d #{root}/#{filename}"
       when :zip
-        system "unzip #{root}/#{filename}"
+        system "unzip -o #{root}/#{filename} 1> /dev/null"
       end
       Dir.chdir(saved_dir)
     end
