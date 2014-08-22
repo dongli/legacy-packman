@@ -74,8 +74,6 @@ module PACKMAN
 
     def embeded_patches; []; end
 
-    def inline_patches; []; end
-
     def postfix; end
 
     def download_to(root)
