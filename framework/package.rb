@@ -27,9 +27,25 @@ module PACKMAN
       self.class_eval("def labels; @@labels; end")
     end
 
-    def self.patch(url, sha1)
-      self.class_eval("@@patches ||= []; @@patches << [ url, sha1 ]")
-      self.class_eval("def patches; @@patches; end")
+    def self.patch(source, sha1 = nil)
+      if source == :INLINE
+        patch = ''
+        start = false
+        File.open("#{ENV['PACKMAN_ROOT']}/packages/#{self.to_s.downcase}.rb", 'r').each do |line|
+          if line =~ /__END__/
+            start = true
+            next
+          end
+          if start
+            patch << line
+          end
+        end
+        self.class_eval("@@inline_patches ||= []; @@inline_patches << patch")
+        self.class_eval("def inline_patches; @@inline_patches; end")
+      else
+        self.class_eval("@@patches ||= []; @@patches << [ source, sha1 ]")
+        self.class_eval("def patches; @@patches; end")
+      end
     end
 
     def depends; []; end
@@ -37,6 +53,8 @@ module PACKMAN
     def labels; []; end
 
     def patches; []; end
+
+    def inline_patches; []; end
 
     def download_to(root)
       PACKMAN.download(root, url, filename)
@@ -118,6 +136,21 @@ module PACKMAN
       end
     end
 
+    def self.apply_patch(package)
+        for i in 0..package.patches.size-1
+          PACKMAN.report_notice "Apply patch #{ConfigManager.package_root}/#{package.class}.patch.#{i}"
+          patch_file = "#{ConfigManager.package_root}/#{package.class}.patch.#{i}"
+          PACKMAN.run "patch -N -Z -p1 < #{patch_file}"
+        end
+        package.inline_patches.each do |patch|
+          PACKMAN.report_notice "Apply inline patch."
+          IO.popen("/usr/bin/patch --ignore-whitespace -N -Z -p1", "w") { |p| p.write(patch) }
+          if not $?.success?
+            PACKMAN.report_error "Failed to apply inline patch for #{PACKMAN::Tty.red}#{package.class}#{PACKMAN::Tty.reset}!"
+          end
+        end
+    end
+
     def self.install(compiler_sets, package, is_recursive = false)
       # Check dependencies.
       package.depends.each do |depend|
@@ -151,10 +184,7 @@ module PACKMAN
         build_dir = tmp.first
         Dir.chdir(build_dir)
         # Apply patches.
-        for i in 0..package.patches.size-1
-          patch_file = "#{ConfigManager.package_root}/#{package.class}.patch.#{i}"
-          PACKMAN.run "patch -N -Z -p1 < #{patch_file}"
-        end
+        apply_patch(package)
         PACKMAN.report_notice "Install package #{Tty.green}#{package.class}#{Tty.reset}."
         package.install
         Dir.chdir(saved_dir)
