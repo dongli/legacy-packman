@@ -12,5 +12,7 @@ class Szip < PACKMAN::Package
 
     PACKMAN.run('./configure', *args)
     PACKMAN.run('make install')
+
+    create_cmake_config 'SZIP', 'include', %W[libsz.a  libsz.la  libsz.so  libsz.so.2  libsz.so.2.0.0]
   end
 end

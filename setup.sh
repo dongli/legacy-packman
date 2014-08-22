@@ -34,7 +34,7 @@ function install_ruby
     if [[ ! -f $RUBY_PACKAGE ]]; then
         wget $RUBY_URL
     fi
-    tar xf $RUBY_PACKAGE
+    tar -xvzf $RUBY_PACKAGE
     cd $RUBY_PACKAGE_DIR
     ./configure --prefix=$PACKMAN_ROOT/ruby
     make install

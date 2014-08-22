@@ -156,6 +156,45 @@ module PACKMAN
       end
     end
 
+    def self.default_cmake_args(package)
+      %W[
+        -DCMAKE_INSTALL_PREFIX=#{prefix(package)}
+        -DCMAKE_BUILD_TYPE=None
+        -DCMAKE_FIND_FRAMEWORK=LAST
+        -DCMAKE_VERBOSE_MAKEFILE=ON
+        -Wno-dev
+      ]
+    end
+
+    def create_cmake_config(name, include_dirs, libraries)
+      prefix = Package.prefix(self)
+      if not Dir.exist? "#{prefix}/include" or not Dir.exist? "#{prefix}/lib"
+        PACKMAN.report_error "Nonstandard package #{PACKMAN::Tty.red}#{self.class}#{PACKMAN::Tty.reset} without \"include\" or \"lib\" directories!"
+      end
+      if Dir.exist? "#{prefix}/lib/cmake"
+        PACKMAN.report_error "Cmake configure file has alreadly been installed for #{PACKMAN::Tty.red}#{self.class}#{PACKMAN::Tty.reset}!"
+      end
+      PACKMAN.mkdir "#{prefix}/lib/cmake"
+      File.open("#{prefix}/lib/cmake/#{self.class.to_s.downcase}-config.cmake", 'w') do |file|
+        file << "set (#{name}_INCLUDE_DIRS"
+        case include_dirs.class
+        when Array
+          include_dirs.each { |dir| file << " #{dir}" }
+        when String
+          file << include_dirs
+        end
+        file << ")\n"
+        file << "set (#{name}_LIBRARIES"
+        case libraries.class
+        when Array
+          libraries.each { |lib| file << " #{lib}" }
+        when String
+          file << libraries
+        end
+        file << ")\n"
+      end
+    end
+
     def self.install(compiler_sets, package, is_recursive = false)
       # Check dependencies.
       package.depends.each do |depend|

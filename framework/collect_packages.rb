@@ -11,13 +11,15 @@ module PACKMAN
 
   def self.download_package(package_root, package, is_recursive = false)
     # Recursively download dependency packages.
-      package.depends.each do |depend|
-        depend_package_name = depend.capitalize
-        if not ConfigManager.packages.keys.include? depend_package_name
-          depend_package = eval "#{depend_package_name}.new"
-          download_package(package_root, depend_package, true)
-        end
+    package.depends.each do |depend|
+      depend_package_name = depend.capitalize
+      if not ConfigManager.packages.keys.include? depend_package_name
+        depend_package = eval "#{depend_package_name}.new"
+        download_package(package_root, depend_package, true)
       end
+    end
+    # Skip package that is provided by system.
+    return if package.labels.include?('should_provided_by_system')
     # Check if there is any patch to download.
     patch_counter = 0
     package.patches.each do |patch|
