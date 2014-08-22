@@ -77,4 +77,10 @@ module PACKMAN
   def self.run(cmd, *args)
     RunManager.run(cmd, *args)
   end
+
+  def self.slim_run(cmd, *args)
+    res = `#{cmd} #{args.join(' ')}`
+    raise "Command failed!" if not $?.success?
+    return res
+  end
 end

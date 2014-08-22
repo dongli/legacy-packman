@@ -27,9 +27,43 @@ module PACKMAN
       self.class_eval("def labels; @@labels; end")
     end
 
-    def self.patch(url, sha1)
-      self.class_eval("@@patches ||= []; @@patches << [ url, sha1 ]")
-      self.class_eval("def patches; @@patches; end")
+    def self.patch(source, sha1 = nil)
+      if source == :embeded
+        patch = ''
+        start = false
+        File.open("#{ENV['PACKMAN_ROOT']}/packages/#{self.to_s.downcase}.rb", 'r').each do |line|
+          if line =~ /__END__/
+            start = true
+            next
+          end
+          if start
+            patch << line
+          end
+        end
+        self.class_eval("@@embeded_patches ||= []; @@embeded_patches << patch")
+        self.class_eval("def embeded_patches; @@embeded_patches; end")
+      else
+        self.class_eval("@@patches ||= []; @@patches << [ source, sha1 ]")
+        self.class_eval("def patches; @@patches; end")
+      end
+    end
+
+    def self.apply_patch(package)
+        for i in 0..package.patches.size-1
+          PACKMAN.report_notice "Apply patch #{ConfigManager.package_root}/#{package.class}.patch.#{i}"
+          patch_file = "#{ConfigManager.package_root}/#{package.class}.patch.#{i}"
+          PACKMAN.run "patch -N -Z -p1 < #{patch_file}"
+          if not $?.success?
+            PACKMAN.report_error "Failed to apply patch for #{PACKMAN::Tty.red}#{package.class}#{PACKMAN::Tty.reset}!"
+          end
+        end
+        package.embeded_patches.each do |patch|
+          PACKMAN.report_notice "Apply embeded patch."
+          IO.popen("/usr/bin/patch --ignore-whitespace -N -Z -p1", "w") { |p| p.write(patch) }
+          if not $?.success?
+            PACKMAN.report_error "Failed to apply embeded patch for #{PACKMAN::Tty.red}#{package.class}#{PACKMAN::Tty.reset}!"
+          end
+        end
     end
 
     def depends; []; end
@@ -37,6 +71,12 @@ module PACKMAN
     def labels; []; end
 
     def patches; []; end
+
+    def embeded_patches; []; end
+
+    def inline_patches; []; end
+
+    def postfix; end
 
     def download_to(root)
       PACKMAN.download(root, url, filename)
@@ -123,7 +163,17 @@ module PACKMAN
       package.depends.each do |depend|
         depend_package = eval "#{depend.capitalize}.new"
         install(compiler_sets, depend_package, true)
-        RunManager.append_bashrc_path("#{prefix(depend_package)}/bashrc")
+        if not depend_package.labels.include?('should_provided_by_system')
+          RunManager.append_bashrc_path("#{prefix(depend_package)}/bashrc")
+        end
+      end
+      # Check if the package is provided by system.
+      if package.labels.include?('should_provided_by_system')
+        if not package.installed?
+          PACKMAN.report_error "Package #{PACKMAN::Tty.red}#{package.class}#{PACKMAN::Tty.reset} should be provided by system! "+
+            "The possible installation method is:\n#{package.install_method}"
+        end
+        return
       end
       saved_dir = Dir.pwd
       # Build package for each compiler set.
@@ -151,16 +201,14 @@ module PACKMAN
         build_dir = tmp.first
         Dir.chdir(build_dir)
         # Apply patches.
-        for i in 0..package.patches.size-1
-          patch_file = "#{ConfigManager.package_root}/#{package.class}.patch.#{i}"
-          PACKMAN.run "patch -N -Z -p1 < #{patch_file}"
-        end
+        apply_patch(package)
         PACKMAN.report_notice "Install package #{Tty.green}#{package.class}#{Tty.reset}."
         package.install
         Dir.chdir(saved_dir)
         FileUtils.rm_rf("#{build_dir}")
         # Write bashrc file for the package.
         bashrc(package)
+        package.postfix
       end
       if Dir.exist?("#{ConfigManager.package_root}/#{package.class}")
         FileUtils.rm_rf("#{ConfigManager.package_root}/#{package.class}")
