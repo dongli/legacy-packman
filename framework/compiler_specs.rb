@@ -30,34 +30,23 @@ module PACKMAN
     return cxx_version
   end
 
-  def self.reorganize_compiler_sets
-    tmp_compiler_sets = ConfigManager.compiler_sets
+  def self.expand_packman_compiler_sets
     for i in 0..ConfigManager.compiler_sets.size-1
-      set = ConfigManager.compiler_sets[i]
-      tmp_compiler_sets[i] = {}
-      if set =~ /^package_.*/
-        # Use the compiler installed by PACKMAN.
-        case set
-        when 'package_gcc'
-          tmp_compiler_sets[i][:c] = :"#{Package.prefix(Gcc)}/bin/gcc"
-          tmp_compiler_sets[i][:'c++'] = :"#{Package.prefix(Gcc)}/bin/g++"
-          tmp_compiler_sets[i][:fortran] = :"#{Package.prefix(Gcc)}/bin/gfortran"
-          # Label this compiler set.
-          tmp_compiler_sets[i][:installed_by_packman] = 'Gcc'
-        else
-          report_error "Unknown compiler \"#{set}\"!"
+      if ConfigManager.compiler_sets[i].keys.include? 'installed_by_packman'
+        compiler_name = ConfigManager.compiler_sets[i]['installed_by_packman'].capitalize
+        if not PACKMAN.class_defined? compiler_name
+          PACKMAN.report_error "Unknown PACKMAN installed compiler \"#{compiler_name}\"!"
         end
-      else
-        set.split(/\s*\|\s*/).each do |c|
-          language = c.split(/\s*:\s*/)[0]
-          compiler = c.split(/\s*:\s*/)[1]
-          if not language or not compiler
-            report_error "Bad compiler set format \"#{set}\"!"
+        compiler_package = eval "#{compiler_name}.new"
+        compiler_package.stuffs.each do |language, compiler|
+          if ['c', 'c++', 'fortran'].include? language
+            # User can overwrite the compiler.
+            if not ConfigManager.compiler_sets[i].has_key? language
+              ConfigManager.compiler_sets[i][language] = compiler
+            end
           end
-          tmp_compiler_sets[i][language.to_sym] = compiler.to_sym
         end
       end
     end
-    ConfigManager.compiler_sets = tmp_compiler_sets
   end
 end

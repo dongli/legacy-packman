@@ -27,6 +27,11 @@ module PACKMAN
       self.class_eval("def labels; @@labels; end")
     end
 
+    def self.provide(stuff)
+      self.class_eval("@@stuffs ||= {}; @@stuffs.merge! stuff")
+      self.class_eval("def stuffs; @@stuffs; end")
+    end
+
     def self.patch(source, sha1 = nil)
       if source == :embeded
         patch = ''
@@ -69,6 +74,8 @@ module PACKMAN
     def depends; []; end
 
     def labels; []; end
+
+    def stuffs; {}; end
 
     def patches; []; end
 

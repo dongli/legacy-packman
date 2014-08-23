@@ -30,7 +30,7 @@ module PACKMAN
     end
 
     def self.package(name, spec)
-      @@packages[name.capitalize.to_sym] = spec
+      @@packages[name.gsub(/^package_/, '').capitalize.to_sym] = spec
     end
 
     def self.packages
@@ -49,6 +49,25 @@ module PACKMAN
       ( self.methods.select { |m| m.to_s =~ /compiler_set_\d$/ } ).each do |m|
         compiler_set = self.method(m).call
         @@compiler_sets << compiler_set if compiler_set != nil
+      end
+    end
+
+    def self.template(file_path)
+      if File.exist? file_path
+        PACKMAN.report_error "A configure file (\"#{file_path}\") exists in current directory!"
+      end
+      File.open(file_path, 'w') do |file|
+        file << "package_root = \"...\"\n"
+        file << "install_root = \"...\"\n"
+        file << "active_compiler_set = ...\n"
+        file << "compiler_set_0 = {\n"
+        file << "  \"c\" => \"...\",\n"
+        file << "  \"c++\" => \"...\",\n"
+        file << "  \"fortran\" => \"...\"\n"
+        file << "}\n"
+        file << "package_... = {\n"
+        file << "  \"compiler_set\" => [...]\n"
+        file << "}\n"
       end
     end
   end

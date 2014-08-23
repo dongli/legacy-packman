@@ -1,6 +1,6 @@
 module PACKMAN
   def self.switch_packages
-    reorganize_compiler_sets
+    expand_packman_compiler_sets
     compiler_set = ConfigManager.compiler_sets[ConfigManager.active_compiler_set]
     open("#{ConfigManager.install_root}/bashrc", 'w') do |file|
       # Check if the active compiler is installed by PACKMAN.

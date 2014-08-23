@@ -23,13 +23,14 @@ module PACKMAN
         str.to_s[0, width - 4]
       end
 
+      def bold(str)
+        escape(1)+str+escape(0) 
+      end
+
       private
 
       def color n
         escape "0;#{n}"
-      end
-      def bold n
-        escape "1;#{n}"
       end
       def underline n
         escape "4;#{n}"

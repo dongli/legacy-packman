@@ -46,11 +46,11 @@ module PACKMAN
       end
       Package.compiler_set.each do |language, compiler|
         case language
-        when :c
+        when 'c'
           cmd_str << "CC=#{compiler} "
-        when :'c++'
+        when 'c++'
           cmd_str << "CXX=#{compiler} "
-        when :fortran
+        when 'fortran'
           cmd_str << "FC=#{compiler} "
           cmd_str << "F77=#{compiler} "
         end

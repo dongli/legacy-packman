@@ -1,6 +1,6 @@
 class Freetype < PACKMAN::Package
-  url 'https://downloads.sf.net/project/freetype/freetype2/2.5.3/freetype-2.5.3.tar.bz2'
-  sha1 'd3c26cc17ec7fe6c36f4efc02ef92ab6aa3f4b46'
+  url 'http://download.savannah.gnu.org/releases/freetype/freetype-2.5.3.tar.gz'
+  sha1 'd4a17b42505b23dab022f877e1849940aa3b64f3'
   version '2.5.3'
 
   def install

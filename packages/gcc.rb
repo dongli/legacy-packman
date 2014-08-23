@@ -10,6 +10,9 @@ class Gcc < PACKMAN::Package
   depends_on 'cloog'
 
   label 'compiler'
+  provide 'c' => 'gcc'
+  provide 'c++' => 'g++'
+  provide 'fortran' => 'gfortran'
 
   def install
     languages = %W[c c++ fortran]

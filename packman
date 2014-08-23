@@ -5,23 +5,49 @@ $LOAD_PATH << "#{ENV['PACKMAN_ROOT']}/packages"
 require 'packman_framework'
 require 'packman_packages'
 
+if ['collect', 'install', 'switch'].include? ARGV[0] and ARGV.size < 2
+  PACKMAN::ConfigManager.template('./config.txt')
+  PACKMAN.report_warning "Lack configure file, PACKMAN generate one for you! Edit it and come back."
+  exit
+end
+
 case ARGV[0]
-    when 'collect'
-      PACKMAN::ConfigManager.parse(ARGV[1])
-      PACKMAN.collect_packages
-    when 'install'
-      PACKMAN::ConfigManager.parse(ARGV[1])
-      PACKMAN.install_packages
-    when 'switch'
-      PACKMAN::ConfigManager.parse(ARGV[1])
-      PACKMAN.switch_packages
-    when 'update'
-      saved_dir = FileUtils.pwd
-      FileUtils.chdir ENV['PACKMAN_ROOT']
-      system 'git pull'
-      FileUtils.chdir saved_dir
-    when 'help'
-      
-    else
-      PACKMAN.report_error "Unknown command #{ARGV[0]}!"
+when 'collect'
+  PACKMAN::ConfigManager.parse(ARGV[1])
+  PACKMAN.collect_packages
+when 'install'
+  PACKMAN::ConfigManager.parse(ARGV[1])
+  PACKMAN.install_packages
+when 'switch'
+  PACKMAN::ConfigManager.parse(ARGV[1])
+  PACKMAN.switch_packages
+when 'update'
+  saved_dir = FileUtils.pwd
+  FileUtils.chdir ENV['PACKMAN_ROOT']
+  if not Dir.exist? '.git'
+    PACKMAN.report_error "PACKMAN is not gained through GIT! You can download PACKMAN by:\n"+
+      "#{PACKMAN::Tty.blue}==> #{PACKMAN::Tty.reset}git clone https://github.com/dongli/packman"
+  end
+  system 'git pull'
+  FileUtils.chdir saved_dir
+when 'help'
+  print "Usage: packman <subcommand> [<configure file>]\n"
+  print "\n"
+  print "  - packman #{PACKMAN::Tty.bold('collect')} <configure file>\n"
+  print "\n"
+  print "    Collect packages from internet.\n"
+  print "\n"
+  print "  - packman #{PACKMAN::Tty.bold('install')} <configure file>\n"
+  print "\n"
+  print "    Install packages and their dependencies.\n"
+  print "\n"
+  print "  - packman #{PACKMAN::Tty.bold('switch')} <configure file>\n"
+  print "\n"
+  print "    Switch between different compiler sets.\n"
+  print "\n"
+  print "  - packman #{PACKMAN::Tty.bold('update')} <configure file>\n"
+  print "\n"
+  print "    Update PACKMAN (only available through GIT).\n"
+else
+  PACKMAN.report_error "Unknown command #{ARGV[0]}!"
 end
