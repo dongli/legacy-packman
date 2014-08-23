@@ -14,8 +14,10 @@ class Armadillo < PACKMAN::Package
     if PACKMAN::OS.type == :Linux
       # The CMake find modules provided by Armadillo is so weak that
       # they can not find the Lapack and Openblas just installed
-      PACKMAN.replace('build_aux/cmake/Modules/ARMA_FindLAPACK.cmake', /^  PATHS /, "  PATHS #{PACKMAN::Package.prefix(Lapack)}/lib ")
-      PACKMAN.replace('build_aux/cmake/Modules/ARMA_FindOpenBLAS.cmake', /^  PATHS /, "  PATHS #{PACKMAN::Package.prefix(Openblas)}/lib ")
+      PACKMAN.replace 'build_aux/cmake/Modules/ARMA_FindLAPACK.cmake',
+        /^  PATHS / => "  PATHS #{PACKMAN::Package.prefix(Lapack)}/lib "
+      PACKMAN.replace 'build_aux/cmake/Modules/ARMA_FindOpenBLAS.cmake',
+        /^  PATHS / => "  PATHS #{PACKMAN::Package.prefix(Openblas)}/lib "
     end
     args = %W[
       -DCMAKE_INSTALL_PREFIX=#{PACKMAN::Package.prefix(self)}

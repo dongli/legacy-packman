@@ -32,6 +32,11 @@ module PACKMAN
       self.class_eval("def stuffs; @@stuffs; end")
     end
 
+    def self.skip_on(distro)
+      self.class_eval("@@skip_distros ||= []; @@skip_distros.push distro.to_sym")
+      self.class_eval("def skip_distros; @@skip_distros; end")
+    end
+
     def self.patch(source, sha1 = nil)
       if source == :embeded
         patch = ''
@@ -55,7 +60,6 @@ module PACKMAN
 
     def self.apply_patch(package)
         for i in 0..package.patches.size-1
-          PACKMAN.report_notice "Apply patch #{ConfigManager.package_root}/#{package.class}.patch.#{i}"
           patch_file = "#{ConfigManager.package_root}/#{package.class}.patch.#{i}"
           PACKMAN.run "patch -N -Z -p1 < #{patch_file}"
           if not $?.success?
@@ -77,6 +81,8 @@ module PACKMAN
 
     def stuffs; {}; end
 
+    def skip_distros; []; end
+
     def patches; []; end
 
     def embeded_patches; []; end
@@ -85,6 +91,10 @@ module PACKMAN
 
     def download_to(root)
       PACKMAN.download(root, url, filename)
+    end
+
+    def skip?
+      skip_distros.include? PACKMAN::OS.distro or labels.include? 'should_provided_by_system'
     end
 
     def decompress(root)
@@ -144,21 +154,21 @@ module PACKMAN
           file << "export #{package.class.name.upcase}_LIBRARY_PATH=$#{root}/lib\n"
           case OS.type
           when :Darwin
-            file << "export DYLD_LIBRARY_PATH=$#{root}/lib:$DYLD_LIBRARY_PATH"
+            file << "export DYLD_LIBRARY_PATH=$#{root}/lib:$DYLD_LIBRARY_PATH\n"
           when :Linux
-            file << "export LD_LIBRARY_PATH=$#{root}/lib:$LD_LIBRARY_PATH"
+            file << "export LD_LIBRARY_PATH=$#{root}/lib:$LD_LIBRARY_PATH\n"
           end
         end
         if Dir.exist?("#{prefix}/lib64")
           case OS.type
           when :Darwin
-            file << "export DYLD_LIBRARY_PATH=$#{root}/lib64:$DYLD_LIBRARY_PATH"
+            file << "export DYLD_LIBRARY_PATH=$#{root}/lib64:$DYLD_LIBRARY_PATH\n"
           when :Linux
-            file << "export LD_LIBRARY_PATH=$#{root}/lib64:$LD_LIBRARY_PATH"
+            file << "export LD_LIBRARY_PATH=$#{root}/lib64:$LD_LIBRARY_PATH\n"
           end
         end
         if Dir.exist?("#{prefix}/lib/pkgconfig")
-          file << "export PKG_CONFIG_PATH=$#{root}/lib/pkgconfig:$PKG_CONFIG_PATH"
+          file << "export PKG_CONFIG_PATH=$#{root}/lib/pkgconfig:$PKG_CONFIG_PATH\n"
         end
       end
     end
@@ -202,17 +212,21 @@ module PACKMAN
       end
     end
 
+    def install_method
+      "Not available!"
+    end
+
     def self.install(compiler_sets, package, is_recursive = false)
       # Check dependencies.
       package.depends.each do |depend|
         depend_package = eval "#{depend.capitalize}.new"
         install(compiler_sets, depend_package, true)
-        if not depend_package.labels.include?('should_provided_by_system')
+        if not depend_package.skip?
           RunManager.append_bashrc_path("#{prefix(depend_package)}/bashrc")
         end
       end
-      # Check if the package is provided by system.
-      if package.labels.include?('should_provided_by_system')
+      # Check if the package should be skipped.
+      if package.skip?
         if not package.installed?
           PACKMAN.report_error "Package #{PACKMAN::Tty.red}#{package.class}#{PACKMAN::Tty.reset} should be provided by system! "+
             "The possible installation method is:\n#{package.install_method}"

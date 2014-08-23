@@ -4,7 +4,8 @@ class Freetype < PACKMAN::Package
   version '2.5.3'
 
   def install
-    PACKMAN.replace('include/config/ftoption.h', /\/\* (#define FT_CONFIG_OPTION_SUBPIXEL_RENDERING) \*\//, '\1')
+    PACKMAN.replace 'include/config/ftoption.h',
+      /\/\* (#define FT_CONFIG_OPTION_SUBPIXEL_RENDERING) \*\// => '\1'
     args = %W[
       --prefix=#{PACKMAN::Package.prefix(self)}
       --without-harfbuzz

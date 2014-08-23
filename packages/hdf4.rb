@@ -7,44 +7,16 @@ class Hdf4 < PACKMAN::Package
   depends_on 'szip'
   depends_on 'jpeg'
 
-  patch :embeded
-
   def install
     args = %W[
-      -DBUILD_SHARED_LIBS=ON
-      -DBUILD_TESTING=OFF
-      -DHDF4_BUILD_TOOLS=ON
-      -DHDF4_BUILD_UTILS=ON
-      -DHDF4_BUILD_WITH_INSTALL_NAME=ON
-      -DHDF4_ENABLE_JPEG_LIB_SUPPORT=ON
-      -DHDF4_ENABLE_NETCDF=OFF
-      -DHDF4_ENABLE_SZIP_SUPPORT=ON
-      -DHDF4_ENABLE_Z_LIB_SUPPORT=ON
-      -DHDF4_BUILD_FORTRAN=ON
-      -DCMAKE_Fortran_MODULE_DIRECTORY=#{PACKMAN::Package.prefix(self)}/include
-      -DJPEG_DIR=#{PACKMAN::Package.prefix(Jpeg)}/lib/cmake
-      -DZLIB_DIR=#{PACKMAN::Package.prefix(Zlib)}/lib/cmake
-      -DSZIP_DIR=#{PACKMAN::Package.prefix(Szip)}/lib/cmake
+      --prefix=#{PACKMAN::Package.prefix(self)}
+      --with-zlib=#{PACKMAN::Package.prefix(Zlib)}
+      --with-jpeg=#{PACKMAN::Package.prefix(Jpeg)}
+      --with-szlib=#{PACKMAN::Package.prefix(Szip)}
+      --disable-netcdf
+      --enable-fortran
     ]
-    args += PACKMAN::Package.default_cmake_args(self)
-    PACKMAN.mkdir 'build', :force do
-      PACKMAN.run 'cmake ..', *args
-      PACKMAN.run 'make install'
-    end
+    PACKMAN.run './configure', *args
+    PACKMAN.run 'make install'
   end
 end
-
-__END__
-diff --git a/CMakeLists.txt b/CMakeLists.txt
-index ba2cf13..27a3df4 100644
---- a/CMakeLists.txt
-+++ b/CMakeLists.txt
-@@ -95,7 +95,7 @@ MARK_AS_ADVANCED (HDF4_NO_PACKAGES)
- # Set the core names of all the libraries
- #-----------------------------------------------------------------------------
- SET (HDF4_LIB_CORENAME              "hdf4")
--SET (HDF4_SRC_LIB_CORENAME          "hdf")
-+SET (HDF4_SRC_LIB_CORENAME          "df")
- SET (HDF4_SRC_FCSTUB_LIB_CORENAME   "hdf_fcstub")
- SET (HDF4_SRC_FORTRAN_LIB_CORENAME  "hdf_fortran")
- SET (HDF4_MF_LIB_CORENAME           "mfhdf")

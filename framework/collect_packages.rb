@@ -34,6 +34,7 @@ module PACKMAN
       end
       report_notice "Download patch #{url}."
       PACKMAN.download(package_root, url, File.basename(patch_file))
+      patch_counter += 1
     end
     # Download current package.
     package_file = "#{package_root}/#{package.filename}"

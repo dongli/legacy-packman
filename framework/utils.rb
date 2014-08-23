@@ -112,10 +112,12 @@ module PACKMAN
     end
   end
 
-  def self.replace(filepath, pattern, replacement)
+  def self.replace(filepath, replaces)
     content = File.open(filepath, 'r').read
-    if content.gsub!(pattern, replacement) == nil
-      raise "Pattern \"#{pattern}\" is not found in \"#{filepath}\"!"
+    replaces.each do |pattern, replacement|
+      if content.gsub!(pattern, replacement) == nil
+        raise "Pattern \"#{pattern}\" is not found in \"#{filepath}\"!"
+      end
     end
     file = File.open(filepath, 'w')
     file << content
