@@ -21,32 +21,22 @@ module PACKMAN
     # Skip package that is provided by system.
     return if package.labels.include?('should_provided_by_system')
     # Check if there is any patch to download.
-    patch_counter = 0
+    patch_counter = -1
     package.patches.each do |patch|
+      patch_counter += 1
       url = patch.first
       sha1 = patch.last
       patch_file = "#{package_root}/#{package.class}.patch.#{patch_counter}"
       if File.exist?(patch_file)
         if PACKMAN.sha1_same?(patch_file, sha1)
-          report_notice "Patch #{url} is already downloaded."
           next
         end
       end
       report_notice "Download patch #{url}."
+      p patch_file
       PACKMAN.download(package_root, url, File.basename(patch_file))
-      patch_counter += 1
     end
     # Download current package.
-    package_file = "#{package_root}/#{package.filename}"
-    if File.exist?(package_file)
-      if PACKMAN.sha1_same?(package_file, package.sha1)
-        if not is_recursive
-          report_notice "Package #{Tty.green}#{package.class}#{Tty.reset} is already downloaded."
-        end
-        return
-      end
-    end
-    report_notice "Download package #{Tty.red}#{package.class}#{Tty.reset}."
     package.download_to(package_root)
   end
 end

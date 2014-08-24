@@ -22,6 +22,8 @@ module PACKMAN
       else
         report_error "Unknown OS type \"#{res}\"!"
       end
+      # Check architecture
+      @@arch = `uname -m`
       # Check distribution and version.
       case @@type
       when :Darwin
@@ -40,6 +42,10 @@ module PACKMAN
           report_error "Unknown distro \"#{res}\"!"
         end
       end
+    end
+
+    def self.x86_64?
+      @@arch == 'x86_64'
     end
 
     def self.shared_library_suffix

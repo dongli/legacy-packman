@@ -76,13 +76,38 @@ module PACKMAN
     system "curl #{args} #{url}"
   end
 
+  def self.git_clone(root, url, tag, rename)
+    if Dir.exist? "#{root}/#{rename}"
+      FileUtils.rm_rf "#{root}/#{rename}"
+    end
+    check_command('git')
+    args = "-b #{tag} #{url} #{root}/#{rename}"
+    system "git clone #{args}"
+  end
+
   def self.class_defined?(class_name)
-    Kernel.const_defined?(class_name)
+    Kernel.const_defined? class_name.to_s
   end
 
   def self.sha1_same?(filepath, expect)
-    target = Digest::SHA1.hexdigest(File.read(filepath))
-    return target.eql? expect
+    if File.file? filepath
+      expect.eql? Digest::SHA1.hexdigest(File.read(filepath))
+    elsif File.directory? filepath
+      tmp = []
+      Dir.glob("#{filepath}/**/*").each do |file|
+        next if File.directory? file
+        tmp << Digest::SHA1.hexdigest(File.read(file))
+      end
+      current = Digest::SHA1.hexdigest(tmp.sort.join)
+      if expect.eql? current
+        return true
+      else
+        report_warning "Directory #{filepath} SHA1 is #{current}."
+        return false
+      end
+    else
+      report_error "Unknown file type \"#{filepath}\"!"
+    end
   end
 
   def self.compression_type(filepath)
@@ -112,6 +137,19 @@ module PACKMAN
     end
   end
 
+  def self.cd(dir)
+    @@prev_dir = FileUtils.pwd
+    FileUtils.chdir dir
+  end
+
+  def self.cd_back
+    FileUtils.chdir @@prev_dir
+  end
+
+  def self.cp(src, dest)
+    FileUtils.cp_r src, dest
+  end
+
   def self.replace(filepath, replaces)
     content = File.open(filepath, 'r').read
     replaces.each do |pattern, replacement|
@@ -122,5 +160,28 @@ module PACKMAN
     file = File.open(filepath, 'w')
     file << content
     file.close
+  end
+
+  def self.new_class(class_name)
+    if class_name == ''
+      report_error "Empty class!"
+    end
+    if not PACKMAN.class_defined? class_name
+      report_error "Unknown class #{Tty.red}#{class_name}#{Tty.reset}!"
+    end
+    eval "#{class_name}.new"
+  end
+
+  def self.decompress(filepath)
+    case PACKMAN.compression_type filepath
+    when :tar
+      system "tar xf #{filepath}"
+    when :gzip
+      system "gzip -d #{filepath}"
+    when :bzip2
+      system "bzip2 -d #{filepath}"
+    when :zip
+      system "unzip -o #{filepath} 1> /dev/null"
+    end
   end
 end

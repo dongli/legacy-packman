@@ -1,6 +1,10 @@
 module PACKMAN
+  def self.get_c_compiler
+    Package.compiler_set['c']
+  end
+
   def self.get_cxx_vendor
-    cxx_compiler = Package.compiler_set[:'c++']
+    cxx_compiler = Package.compiler_set['c++']
     case cxx_compiler
     when /.*g++.*/
       return :gcc
@@ -14,11 +18,11 @@ module PACKMAN
   end
 
   def self.get_cxx_compiler
-    cxx_compiler = Package.compiler_set[:'c++']
+    Package.compiler_set['c++']
   end
 
   def self.get_cxx_version
-    cxx_compiler = Package.compiler_set[:'c++']
+    cxx_compiler = Package.compiler_set['c++']
     case get_cxx_vendor
     when :gcc
       res = `#{cxx_compiler} -v 2>&1`
@@ -34,6 +38,7 @@ module PACKMAN
     for i in 0..ConfigManager.compiler_sets.size-1
       if ConfigManager.compiler_sets[i].keys.include? 'installed_by_packman'
         compiler_name = ConfigManager.compiler_sets[i]['installed_by_packman'].capitalize
+        ConfigManager.compiler_sets[i]['installed_by_packman'] = compiler_name
         if not PACKMAN.class_defined? compiler_name
           PACKMAN.report_error "Unknown PACKMAN installed compiler \"#{compiler_name}\"!"
         end

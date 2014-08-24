@@ -30,7 +30,11 @@ module PACKMAN
     end
 
     def self.package(name, spec)
-      @@packages[name.gsub(/^package_/, '').capitalize.to_sym] = spec
+      name = name.capitalize.to_sym
+      @@packages[name] = spec
+      if not PACKMAN.class_defined? name
+        PACKMAN.report_error "Unknown package #{PACKMAN::Tty.red}#{name}#{PACKMAN::Tty.reset}!"
+      end
     end
 
     def self.packages

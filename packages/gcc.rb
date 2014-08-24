@@ -31,5 +31,6 @@ class Gcc < PACKMAN::Package
       PACKMAN.run 'make -j2 bootstrap'
       PACKMAN.run 'make -j2 install'
     end
+    # TODO: Should we link the headers in lib/gcc/.../include into include?
   end
 end

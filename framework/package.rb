@@ -9,12 +9,25 @@ module PACKMAN
       self.class_eval("def sha1; '#{val}'; end")
     end
 
+    def self.git(val)
+      self.class_eval("def git; '#{val}'; end")
+      self.class_eval("def dirname; '#{File.basename(URI.parse(val).path).gsub(/\.git$/, '')}'; end")
+    end
+
+    def self.tag(val)
+      self.class_eval("def tag; '#{val}'; end")
+    end
+
     def self.version(val)
       self.class_eval("def version; '#{val}'; end")
     end
 
     def self.filename(val)
       self.class_eval("def filename; '#{val}'; end")
+    end
+
+    def self.dirname(val)
+      self.class_eval("def dirname; '#{val}'; end")
     end
 
     def self.depends_on(package)
@@ -90,38 +103,53 @@ module PACKMAN
     def postfix; end
 
     def download_to(root)
-      PACKMAN.download(root, url, filename)
+      if self.respond_to? :url
+        package_file = "#{root}/#{filename}"
+        if File.exist? package_file
+          return if PACKMAN.sha1_same? package_file, sha1
+        end
+        PACKMAN.report_notice "Download package #{Tty.red}#{self.class}#{Tty.reset}."
+        PACKMAN.download(root, url, filename)
+      elsif self.respond_to? :git
+        package_dir = "#{root}/#{dirname}"
+        if Dir.exist? package_dir
+          return if PACKMAN.sha1_same? package_dir, sha1
+        end
+        PACKMAN.report_notice "Download package #{Tty.red}#{self.class}#{Tty.reset}."
+        PACKMAN.git_clone(root, git, tag, dirname)
+      end
     end
 
     def skip?
-      skip_distros.include? PACKMAN::OS.distro or labels.include? 'should_provided_by_system'
+      skip_distros.include? PACKMAN::OS.distro or skip_distros.include? :all or labels.include? 'should_provided_by_system'
     end
 
-    def decompress(root)
+    def decompress_to(root)
       PACKMAN.report_notice "Decompress #{filename}."
-      if not File.exist?("#{root}/#{filename}")
-        PACKMAN.report_error "File #{Tty.red}#{filename}#{Tty.reset} has not been downloaded!"
+      if not File.exist? "#{root}/#{filename}"
+        PACKMAN.report_error "Package #{Tty.red}#{self.class}#{Tty.reset} has not been downloaded!"
       end
       saved_dir = Dir.pwd
       decom_dir = "#{root}/#{self.class}"
       PACKMAN.mkdir(decom_dir, :force)
       Dir.chdir(decom_dir)
-      case PACKMAN.compression_type("#{root}/#{filename}")
-      when :tar
-        system "tar xf #{root}/#{filename}"
-      when :gzip
-        system "gzip -d #{root}/#{filename}"
-      when :bzip2
-        system "bzip2 -d #{root}/#{filename}"
-      when :zip
-        system "unzip -o #{root}/#{filename} 1> /dev/null"
-      end
+      PACKMAN.decompress "#{root}/#{filename}"
       Dir.chdir(saved_dir)
+    end
+
+    def copy_to(root)
+      PACKMAN.report_notice "Copy #{dirname}."
+      if not Dir.exist? "#{root}/#{dirname}"
+        PACKMAN.report_error "Package #{Tty.red}#{self.class}#{Tty.reset} has not been downloaded!"
+      end
+      copy_dir = "#{root}/#{self.class}"
+      PACKMAN.mkdir(copy_dir, :force)
+      PACKMAN.cp "#{root}/#{dirname}", copy_dir
     end
 
     def self.prefix(package_self)
       if package_self.class == Class or package_self.class == String
-        package_self = eval "#{package_self}.new"
+        package_self = PACKMAN.new_class package_self
       end
       prefix = "#{ConfigManager.install_root}/#{package_self.class.to_s.downcase}/#{package_self.version}"
       if not package_self.labels.include? 'compiler'
@@ -219,7 +247,7 @@ module PACKMAN
     def self.install(compiler_sets, package, is_recursive = false)
       # Check dependencies.
       package.depends.each do |depend|
-        depend_package = eval "#{depend.capitalize}.new"
+        depend_package = PACKMAN.new_class depend.capitalize
         install(compiler_sets, depend_package, true)
         if not depend_package.skip?
           RunManager.append_bashrc_path("#{prefix(depend_package)}/bashrc")
@@ -227,7 +255,7 @@ module PACKMAN
       end
       # Check if the package should be skipped.
       if package.skip?
-        if not package.installed?
+        if not package.skip_distros.include? :all and not package.installed?
           PACKMAN.report_error "Package #{PACKMAN::Tty.red}#{package.class}#{PACKMAN::Tty.reset} should be provided by system! "+
             "The possible installation method is:\n#{package.install_method}"
         end
@@ -251,10 +279,14 @@ module PACKMAN
           f.close
         end
         # Install ...
-        package.decompress(ConfigManager.package_root)
+        if package.respond_to? :filename
+          package.decompress_to ConfigManager.package_root
+        elsif package.respond_to? :dirname
+          package.copy_to ConfigManager.package_root
+        end          
         tmp = Dir.glob("#{ConfigManager.package_root}/#{package.class}/*")
         if tmp.size != 1 or not File.directory?(tmp.first)
-          PACKMAN.report_error "There should be only one directory in \"#{ConfigManager.package_root}/#{package.class}\"!"
+          tmp = ["#{ConfigManager.package_root}/#{package.class}"]
         end
         build_dir = tmp.first
         Dir.chdir(build_dir)

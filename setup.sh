@@ -52,7 +52,7 @@ if ! which ruby 1> /dev/null; then
     install_ruby
 fi
 RUBY_VERSION=$(ruby -v | cut -d ' ' -f 2)
-if [[ $RUBY_VERSION =~ $(echo '^1\.') ]]; then
+if [[ $RUBY_VERSION =~ $(echo '^1\.8') ]]; then
     echo "[Warning]: Ruby version is too old, PACKMAN will install a newer one for you!"
     install_ruby
 fi

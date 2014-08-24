@@ -2,6 +2,7 @@ module PACKMAN
   class RunManager
     @@ld_library_pathes = []
     @@bashrc_pathes = []
+    @@envs = []
 
     def self.append_ld_library_path(path)
       @@ld_library_pathes << path if not @@ld_library_pathes.include? path
@@ -9,6 +10,10 @@ module PACKMAN
 
     def self.clean_ld_library_path
       @@ld_library_pathes.clear
+    end
+
+    def self.append_env(env)
+      @@envs << env if not @@envs.include? env
     end
 
     def self.append_bashrc_path(path)
@@ -19,11 +24,21 @@ module PACKMAN
       @@bashrc_pathes.clear
     end
 
+    def self.clean_env
+      @@envs.clear
+    end
+
     def self.run(cmd, *args)
       cmd_str = ''
+      # Handle customized environment variables.
+      if not @@envs.empty?
+        @@envs.each do |env|
+          cmd_str << "#{env} "
+        end
+      end
       # Handle PACKMAN installed compiler.
-      if Package.compiler_set.has_key?(:installed_by_packman)
-        compiler_prefix = Package.prefix(Package.compiler_set[:installed_by_packman])
+      if Package.compiler_set.has_key? 'installed_by_packman'
+        compiler_prefix = Package.prefix(Package.compiler_set['installed_by_packman'])
         append_bashrc_path("#{compiler_prefix}/bashrc")
       end
       # Handle customized bashrc.
