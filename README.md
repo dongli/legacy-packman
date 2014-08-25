@@ -58,6 +58,13 @@ Features
 - The packages can be installed anywhere you like.
 - All processes are automatically (basicly).
 
+Todo list
+=========
+
+- Check if the packages, which are not sensitive to compiler, are already
+  installed by system. If yes, use the system one.
+- Combine the install prefix of 'netcdf_c', 'netcdf_cxx' and 'netcdf_fortran'.
+
 Author
 ======
 

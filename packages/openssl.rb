@@ -13,6 +13,10 @@ class Openssl < PACKMAN::Package
       enable-cms
     ]
     PACKMAN.run './config', *args
+    PACKMAN.replace 'Makefile', {
+      /^ZLIB_INCLUDE=\s*$/ => "ZLIB_INCLUDE=-I#{PACKMAN::Package.prefix(Zlib)}/include",
+      /^LIBZLIB=\s*$/ => "LIBZLIB=-L#{PACKMAN::Package.prefix(Zlib)}/lib"
+    }
     PACKMAN.run 'make'
     PACKMAN.run 'make test'
     PACKMAN.run 'make install'
