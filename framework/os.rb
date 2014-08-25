@@ -37,9 +37,12 @@ module PACKMAN
           @@version = res.match(/\d+\.\d+/)[0]
         when /Ubuntu/
           @@distro = :Ubuntu
-          @@version = res.match(/DISTRIB_RELEASE=\d+\.\d+/)[1]
+          @@version = res.match(/DISTRIB_RELEASE=(\d+\.\d+)/)[1]
+        when /Fedora/
+          @@distro = :Fedora
+          @@version = res.match(/VERSION_ID=(\d+)/)[1]
         else
-          report_error "Unknown distro \"#{res}\"!"
+          PACKMAN.report_error "Unknown distro \"#{res}\"!"
         end
       end
     end
