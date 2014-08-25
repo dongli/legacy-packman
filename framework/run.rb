@@ -30,12 +30,6 @@ module PACKMAN
 
     def self.run(cmd, *args)
       cmd_str = ''
-      # Handle customized environment variables.
-      if not @@envs.empty?
-        @@envs.each do |env|
-          cmd_str << "#{env} "
-        end
-      end
       # Handle PACKMAN installed compiler.
       if Package.compiler_set.has_key? 'installed_by_packman'
         compiler_prefix = Package.prefix(Package.compiler_set['installed_by_packman'])
@@ -59,6 +53,7 @@ module PACKMAN
         cmd_str << @@ld_library_pathes.join(':')
         cmd_str << ' '
       end
+      # Handle compilers.
       Package.compiler_set.each do |language, compiler|
         case language
         when 'c'
@@ -68,6 +63,12 @@ module PACKMAN
         when 'fortran'
           cmd_str << "FC=#{compiler} "
           cmd_str << "F77=#{compiler} "
+        end
+      end
+      # Handle customized environment variables.
+      if not @@envs.empty?
+        @@envs.each do |env|
+          cmd_str << "#{env} "
         end
       end
       cmd_str << " #{cmd} "

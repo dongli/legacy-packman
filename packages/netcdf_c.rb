@@ -3,9 +3,17 @@ class Netcdf_c < PACKMAN::Package
   sha1 '6e1bacab02e5220954fe0328d710ebb71c071d19'
   version '4.3.2'
 
+  depends_on 'zlib'
+  depends_on 'szip'
   depends_on 'hdf5'
 
   def install
+    zlib_prefix = PACKMAN::Package.prefix(Zlib)
+    szip_prefix = PACKMAN::Package.prefix(Szip)
+    hdf5_prefix = PACKMAN::Package.prefix(Hdf5)
+    PACKMAN.append_env "CFLAGS='-I#{zlib_prefix}/include -I#{szip_prefix}/include -I#{hdf5_prefix}/include'"
+    PACKMAN.append_env "LDFLAGS='-L#{zlib_prefix}/lib -L#{szip_prefix}/lib -L#{hdf5_prefix}/lib'"
+    PACKMAN.append_env "FFLAGS=-ffree-line-length-none"
     args = %W[
       --prefix=#{PACKMAN::Package.prefix(self)}
       --disable-dependency-tracking
@@ -15,16 +23,10 @@ class Netcdf_c < PACKMAN::Package
       --enable-netcdf4
       --disable-doxygen
     ]
-    szip_prefix = PACKMAN::Package.prefix(Szip)
-    hdf5_prefix = PACKMAN::Package.prefix(Hdf5)
-    envs = %W[
-      CFLAGS='-I#{szip_prefix}/include -I#{hdf5_prefix}/include'
-      LDFLAGS='-L#{szip_prefix}/lib -L#{hdf5_prefix}/lib'
-      LIBS='-lsz -lhdf5 -lhdf5_hl'
-    ]
-    PACKMAN.run './configure', *args, *envs
+    PACKMAN.run './configure', *args
     PACKMAN.run 'make'
     PACKMAN.run 'make check'
     PACKMAN.run 'make install'
+    PACKMAN.clean_env
   end
 end
