@@ -4,7 +4,7 @@ class Nco < PACKMAN::Package
   version '4.4.2'
 
   # depends_on 'gsl'
-  depends_on 'antrl2'
+  depends_on 'antlr2'
   depends_on 'netcdf_c'
   # depends_on 'texinfo'
   depends_on 'udunits'
@@ -14,10 +14,10 @@ class Nco < PACKMAN::Package
       --prefix=#{PACKMAN::Package.prefix(self)}
       --enable-netcdf4
       NETCDF_INC=#{PACKMAN::Package.prefix(Netcdf_c)}/include
-      NETCDF_LIB=#{PACKMAN::Package.prefix(Netcdf_c)}/NETCDF_LIB
+      NETCDF_LIB=#{PACKMAN::Package.prefix(Netcdf_c)}/lib
       NETCDF4_ROOT=#{PACKMAN::Package.prefix(Netcdf_c)}
       UDUNITS2_PATH=#{PACKMAN::Package.prefix(Udunits)}
-      ANTLR_ROOT=#{PACKMAN::Package.prefix(Antlr)}
+      ANTLR_ROOT=#{PACKMAN::Package.prefix(Antlr2)}
     ]
     PACKMAN.run './configure', *args
     PACKMAN.run 'make -j2'

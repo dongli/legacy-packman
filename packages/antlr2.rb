@@ -4,6 +4,10 @@ class Antlr2 < PACKMAN::Package
   version '2.7.7'
 
   def install
+    # Fix bugs.
+    PACKMAN.replace 'lib/cpp/antlr/CharScanner.hpp', {
+      /^(#include <map>)$/ => "\\1\n#include <strings.h>\n#include <cstdio>\n"
+    }
     args = %W[
       --prefix=#{PACKMAN::Package.prefix(self)}
       --disable-debug

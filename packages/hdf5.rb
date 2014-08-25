@@ -3,6 +3,7 @@ class Hdf5 < PACKMAN::Package
   sha1 '712955025f03db808f000d8f4976b8df0c0d37b5'
   version '1.8.13'
 
+  depends_on 'zlib'
   depends_on 'szip'
 
   def install
@@ -11,7 +12,7 @@ class Hdf5 < PACKMAN::Package
       --enable-production
       --enable-debug=no
       --disable-dependency-tracking
-      --with-zlib=/usr
+      --with-zlib=#{PACKMAN::Package.prefix(Zlib)}
       --with-szlib=#{PACKMAN::Package.prefix(Szip)}
       --enable-filters=all
       --enable-static=yes
@@ -20,8 +21,9 @@ class Hdf5 < PACKMAN::Package
       --enable-fortran
       --enable-fortran2003
     ]
-    PACKMAN.run "./configure", *args
-    PACKMAN.run "make"
-    PACKMAN.run "make install"
+    PACKMAN.run './configure', *args
+    PACKMAN.run 'make'
+    PACKMAN.run 'make test'
+    PACKMAN.run 'make install'
   end
 end

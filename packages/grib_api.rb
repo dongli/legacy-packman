@@ -3,8 +3,18 @@ class Grib_api < PACKMAN::Package
   sha1 '2764b262c8f081fefb81112f7f7463a3a34b6e66'
   version '1.12.3'
 
+  depends_on 'netcdf_c'
+  depends_on 'jasper'
+  # Openjpeg can only be download from Google Code which is blocked by our great nation!
+  # depends_on 'openjpeg'
+
   def install
-    PACKMAN.run './configure', "--prefix=#{PACKMAN::Package.prefix(self)}"
+    args = %W[
+      --prefix=#{PACKMAN::Package.prefix(self)}
+      --with-netcdf=#{PACKMAN::Package.prefix(Netcdf_c)}
+      --with-jasper=#{PACKMAN::Package.prefix(Jasper)}
+    ]
+    PACKMAN.run './configure', *args
     PACKMAN.run 'make install'
   end
 end
