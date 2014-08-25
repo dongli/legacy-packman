@@ -20,8 +20,9 @@ class Hdf5 < PACKMAN::Package
       --enable-fortran
       --enable-fortran2003
     ]
-    PACKMAN.run "./configure", *args
-    PACKMAN.run "make"
-    PACKMAN.run "make install"
+    PACKMAN.run './configure', *args
+    PACKMAN.run 'make'
+    PACKMAN.run 'make test'
+    PACKMAN.run 'make install'
   end
 end
