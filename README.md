@@ -45,10 +45,13 @@ So you can specify multiple compiler sets (see `compiler_set_0` and
 `compiler_set_1`), and build the packages with different compiler sets (see
 `[0,1]`). Then you can switch among the sets by setting `active_compiler_set`
 and run:
-``` $ packman switch <config file> ```
+```
+$ packman switch <config file>
+```
 
 I would like to thank the Homebrew community, since I have referred the design
-of it quite a lot.
+of it quite a lot. If you find `packman` is helpful, join me to form a great
+community to further improve it.
 
 Features
 ========
@@ -63,7 +66,9 @@ Todo list
 
 - Check if the packages, which are not sensitive to compiler, are already
   installed by system. If yes, use the system one.
-- Combine the install prefix of 'netcdf_c', 'netcdf_cxx' and 'netcdf_fortran'.
+- Consider to distribute precompiled packages like other package managers to
+  save the installation time and power comsuption, but need to support more
+  different system configurations.
 
 Author
 ======
