@@ -3,17 +3,18 @@ class Openmpi < PACKMAN::Package
   sha1 'e6e85da3e54784ee3d7b0bb0ff4d365ef2899c49'
   version '1.8.1'
 
-  depends_on 'libevent'
+  # Libevent can be downloaded in some network condition!
+  # depends_on 'libevent'
 
   # conflicts_with 'mpich'
 
   def install
+    # --with-libevent=#{PACKMAN::Package.prefix(Libevent)}
     args = %W[
       --prefix=#{PACKMAN::Package.prefix(self)}
       --disable-dependency-tracking
       --disable-silent-rules
       --enable-ipv6
-      --with-libevent=#{PACKMAN::Package.prefix(Libevent)}
       --enable-mpi-thread-multiple
       --enable-mpi-f77
       --enable-mpi-f90
