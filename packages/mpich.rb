@@ -3,7 +3,7 @@ class Mpich < PACKMAN::Package
   sha1 'c5199be7e9f1843b288dba0faf2c071c7a8e999d'
   version '3.1.2'
 
-  # conflicts_with 'openmpi'
+  conflicts_with 'openmpi'
 
   def install
     args = %W[

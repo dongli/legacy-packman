@@ -50,6 +50,11 @@ module PACKMAN
       self.class_eval("def skip_distros; @@skip_distros; end")
     end
 
+    def self.conflicts_with(package)
+      self.class_eval("@@conflict_packages ||= []; @@conflict_packages.push package.capitalize")
+      self.class_eval("def conflict_packages; @@conflict_packages; end")
+    end
+
     def self.patch(source, sha1 = nil)
       if source == :embeded
         patch = ''
@@ -95,6 +100,8 @@ module PACKMAN
     def stuffs; {}; end
 
     def skip_distros; []; end
+
+    def conflict_packages; []; end
 
     def patches; []; end
 
