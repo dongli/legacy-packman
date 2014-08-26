@@ -1,7 +1,7 @@
 class Cmake < PACKMAN::Package
-  url 'http://www.cmake.org/files/v3.0/cmake-3.0.0.tar.gz'
-  sha1 '4dfd9ee9b829c77175d655f22322f14747f11ad2'
-  version '3.0.0'
+  url 'http://www.cmake.org/files/v3.0/cmake-3.0.1.tar.gz'
+  sha1 'b7e4acaa7fc7adf54c1b465c712e5ea473b8b74f'
+  version '3.0.1'
 
   def install
     args = %W[
