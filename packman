@@ -6,7 +6,7 @@ require 'packman_framework'
 require 'packman_packages'
 
 if ['collect', 'install', 'switch'].include? ARGV[0] and ARGV.size < 2
-  PACKMAN::ConfigManager.template('./config.txt')
+  PACKMAN::ConfigManager.template('./packman.config')
   PACKMAN.report_warning "Lack configure file, PACKMAN generate one for you! Edit it and come back."
   exit
 end

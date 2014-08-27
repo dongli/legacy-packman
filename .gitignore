@@ -3,5 +3,5 @@ ruby
 .DS_Store
 *.tar.bz2
 *.tar.gz
-config.txt
+packman.config
 test
