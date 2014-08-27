@@ -41,6 +41,9 @@ module PACKMAN
         when /Fedora/
           @@distro = :Fedora
           @@version = res.match(/VERSION_ID=(\d+)/)[1]
+        when /CentOS/
+          @@distro = :CentOS
+          @@version = res.match(/release (\d+.\d+)/)[1]
         else
           PACKMAN.report_error "Unknown distro \"#{res}\"!"
         end
