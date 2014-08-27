@@ -50,8 +50,27 @@ $ packman switch <config file>
 ```
 
 I would like to thank the Homebrew community, since I have referred the design
-of it quite a lot. If you find `packman` is helpful, join me to form a great
-community to further improve it.
+of it quite a lot (I do not just copycat `homebrew`). If you find `packman` is
+helpful, join me to form a great community to further improve it.
+
+Installation
+============
+
+It is better to gain `packman` through `git`:
+```
+$ git clone https://github.com/dongli/packman
+```
+Then add the following line to your `.bashrc`:
+```
+source <path_to_packman>/setup.sh
+```
+By doing this you can update `packman`:
+```
+$ packman update
+```
+If your server is not connected with internet, you could clone `packman` in
+you local PC or download it [here](https://github.com/dongli/packman/archive/master.zip),
+and upload it onto your server.
 
 Features
 ========
