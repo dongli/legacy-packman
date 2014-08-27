@@ -28,7 +28,7 @@ module PACKMAN
       @@envs.clear
     end
 
-    def self.run(cmd, *args)
+    def self.default_command_prefix(cmd, *args)
       cmd_str = ''
       # Handle PACKMAN installed compiler.
       if Package.compiler_set.has_key? 'installed_by_packman'
@@ -73,6 +73,17 @@ module PACKMAN
       end
       cmd_str << " #{cmd} "
       cmd_str << args.join(' ')
+      return cmd_str
+    end
+
+    def self.run(build_helper, cmd, *args)
+      cmd_str = default_command_prefix cmd, *args
+      if build_helper
+        # Handle compiler default flags.
+        Package.compiler_set.each do |language, compiler|
+          cmd_str << build_helper.wrap_flags(language, CompilerHelper.default_flags(language, compiler))
+        end
+      end
       cmd_str << " 1> #{ConfigManager.package_root}/stdout 2> #{ConfigManager.package_root}/stderr"
       print "#{PACKMAN::Tty.blue}==>#{PACKMAN::Tty.reset} #{PACKMAN::Tty.truncate("#{cmd} #{args.join(' ')}")}\n"
       system cmd_str
@@ -89,9 +100,16 @@ module PACKMAN
     end
   end
 
-  # Shortcuts.
+  def self.autotool(cmd, *args)
+    RunManager.run PACKMAN::AutotoolHelper, cmd, *args
+  end
+
+  def self.cmake(cmd, *args)
+    RunManager.run PACKMAN::CmakeHelper, cmd, *args
+  end
+
   def self.run(cmd, *args)
-    RunManager.run(cmd, *args)
+    RunManager.run nil, cmd, *args
   end
 
   def self.slim_run(cmd, *args)

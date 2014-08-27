@@ -59,9 +59,9 @@ module PACKMAN
   end
 
   def self.check_command(cmd)
-    `which curl`
+    `which #{cmd}`
     if not $?.success?
-      report_error "Command \"#{cmd}\" does not exist!"
+      raise "Command \"#{cmd}\" does not exist!"
     end
   end
 

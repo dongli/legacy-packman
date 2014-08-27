@@ -1,6 +1,13 @@
 module PACKMAN
   def self.install_packages
     expand_packman_compiler_sets
+    # Report compilers and their flags.
+    ConfigManager.compiler_sets.each do |compiler_set|
+      report_notice "Compiler set #{compiler_set}"
+      compiler_set.each do |language, compiler|
+        report_notice "Default flags for #{Tty.blue}#{compiler}#{Tty.reset}: #{default_flags language, compiler}."
+      end
+    end
     # Install packages.
     ConfigManager.packages.each do |package_name, package_spec|
       if not PACKMAN.class_defined? package_name

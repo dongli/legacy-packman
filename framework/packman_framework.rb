@@ -3,5 +3,6 @@ Dir.glob("#{ENV['PACKMAN_ROOT']}/framework/*.rb").each do |file|
   require file
 end
 
-PACKMAN::OS.scan
+PACKMAN::OS.init
 PACKMAN::ConfigManager.init
+PACKMAN::CompilerHelper.init

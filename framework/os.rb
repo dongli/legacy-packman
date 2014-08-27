@@ -12,7 +12,7 @@ module PACKMAN
       @@version
     end
 
-    def self.scan
+    def self.init
       res = `uname`
       case res
       when /^Darwin */
@@ -61,6 +61,31 @@ module PACKMAN
       when :Linux
         'so'
       end
+    end
+
+    def self.check_system_package(package)
+      # NOTE: Since the same package may have different names in different
+      # distros, so the argument 'package' is an array with all possible
+      # names.
+      package = [package] if package.class != Array
+      package.each do |p|
+        begin
+          case distro
+          when :Ubuntu
+            slim_run "dpkg-query -l #{p}"
+          when :Fedora
+            slim_run "rpm -q #{p}"
+          when :CentOS
+            slim_run "rpm -q #{p}"
+          when :Mac_OS_X
+            # TODO: How to handle this branch?
+          end
+          return true
+        rescue
+          next
+        end
+      end
+      return false
     end
   end
 end

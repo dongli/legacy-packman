@@ -42,6 +42,9 @@ module PACKMAN
     end
 
     def self.parse(file_path)
+      if not File.exist? file_path
+        PACKMAN.report_error "Configuation file #{PACKMAN::Tty.red}#{file_path}#{PACKMAN::Tty.reset} does not exist!"
+      end
       config = File.open(file_path, 'r').read
       # Modify the config to fulfill the needs of Ruby.
       @@valid_keys.each do |key|
