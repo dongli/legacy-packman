@@ -5,6 +5,7 @@ module PACKMAN
     ConfigManager.compiler_sets.each do |compiler_set|
       report_notice "Compiler set #{compiler_set}"
       compiler_set.each do |language, compiler|
+        next if language == 'installed_by_packman'
         report_notice "Default flags for #{Tty.blue}#{compiler}#{Tty.reset}: #{default_flags language, compiler}."
       end
     end
