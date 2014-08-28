@@ -37,10 +37,10 @@ class Gcc < PACKMAN::Package
     # Source the dependent packages in the Gcc bashrc so that Gcc can find
     # those package when doing dynamic loading.
     PACKMAN.append "#{PACKMAN::Package.prefix(self)}/bashrc",
-      "source #{PACKMAN::Package.prefix(Gmp)}/bashrc\n"+
-      "source #{PACKMAN::Package.prefix(Mpfr)}/bashrc\n"+
-      "source #{PACKMAN::Package.prefix(Mpc)}/bashrc\n"+
-      "source #{PACKMAN::Package.prefix(Isl)}/bashrc\n"+
-      "source #{PACKMAN::Package.prefix(Cloog)}/bashrc\n"
+      ". #{PACKMAN::Package.prefix(Gmp)}/bashrc\n"+
+      ". #{PACKMAN::Package.prefix(Mpfr)}/bashrc\n"+
+      ". #{PACKMAN::Package.prefix(Mpc)}/bashrc\n"+
+      ". #{PACKMAN::Package.prefix(Isl)}/bashrc\n"+
+      ". #{PACKMAN::Package.prefix(Cloog)}/bashrc\n"
   end
 end
