@@ -6,7 +6,9 @@ class Lesstif < PACKMAN::Package
   depends_on 'x11'
   depends_on 'freetype'
 
+  skip_on :Ubuntu
+
   def install
-    
+    PACKMAN.report_error "Under construction!"    
   end
 end

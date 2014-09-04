@@ -9,6 +9,10 @@ class Cairo < PACKMAN::Package
   depends_on 'glib'
   depends_on 'x11'
 
+  if PACKMAN::OS.distro != :Mac_OS_X
+    label 'should_provided_by_system'
+  end
+
   def install
     # https://www.libreoffice.org/bugzilla/show_bug.cgi?id=77060
     # http://gcc.gnu.org/onlinedocs/gccint/LTO.html
@@ -23,5 +27,23 @@ class Cairo < PACKMAN::Package
     PACKMAN.run './configure', *args
     PACKMAN.run 'make -j2'
     PACKMAN.run 'make install'
+  end
+
+  def installed?
+    case PACKMAN::OS.distro
+    when :Ubuntu
+      return PACKMAN::OS.installed? ['libcairo2', 'libcairo-dev']
+    when :Red_Hat_Enterprise
+      return PACKMAN::OS.installed? ['cairo', 'cairo-devel']
+    end
+  end
+
+  def install_method
+    case PACKMAN::OS.distro
+    when :Ubuntu
+      return PACKMAN::OS.how_to_install ['libcairo2', 'libcairo-dev']
+    when :Red_Hat_Enterprise
+      return PACKMAN::OS.how_to_install ['cairo', 'cairo-devel']
+    end
   end
 end

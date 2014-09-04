@@ -63,29 +63,50 @@ module PACKMAN
       end
     end
 
-    def self.check_system_package(package)
+    def self.installed?(package)
       # NOTE: Since the same package may have different names in different
       # distros, so the argument 'package' is an array with all possible
       # names.
       package = [package] if package.class != Array
+      flag = true
       package.each do |p|
         begin
           case distro
           when :Ubuntu
-            slim_run "dpkg-query -l #{p}"
+            PACKMAN.slim_run "dpkg-query -l #{p}"
           when :Fedora
-            slim_run "rpm -q #{p}"
+            PACKMAN.slim_run "rpm -q #{p}"
           when :CentOS
-            slim_run "rpm -q #{p}"
+            PACKMAN.slim_run "rpm -q #{p}"
           when :Mac_OS_X
             # TODO: How to handle this branch?
+            PACKMAN.report_error "Under construction!"
           end
-          return true
         rescue
-          next
+          flag = false
+          break
         end
       end
-      return false
+      return flag
+    end
+
+    def self.how_to_install(package)
+      res = ''
+      package = [package] if package.class != Array
+      package.each do |p|
+        case distro
+        when :Ubuntu
+          res << "sudo apt-get install #{p}\n"
+        when :Fedora
+          res << "sudo yum install #{p}\n"
+        when :CentOS
+          res << "sudo yum install #{p}\n"
+        when :Mac_OS_X
+          # TODO: How to handle this branch?
+          PACKMAN.report_error "Under construction!"
+        end
+      end
+      return res
     end
   end
 end

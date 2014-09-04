@@ -1,18 +1,35 @@
 class Mesa3d < PACKMAN::Package
-  url 'ftp://ftp.freedesktop.org/pub/mesa/10.2.6/MesaLib-10.2.6.tar.gz'
-  sha1 '6936a1d6dda6b89b36d61a12cd04e0d5364b75e4'
-  version '10.2.6'
-
-  depends_on 'glproto'
-  depends_on 'libdrm'
+  label 'should_provided_by_system'
 
   skip_on :Mac_OS_X
 
-  def install
-    args = %W[
-      --prefix=#{PACKMAN::Package.prefix(self)}
-    ]
-    PACKMAN.run './configure', *args
-    PACKMAN.run 'make install'
+  def installed?
+    case PACKMAN::OS.distro
+    when :Ubuntu
+      return PACKMAN::OS.installed? [
+        'libglu1-mesa', 'libglu1-mesa-dev']
+    when :Red_Hat_Enterprise
+      return PACKMAN::OS.installed? [
+        'mesa-libGL',  'mesa-libGL-devel',
+        'mesa-libGLU', 'mesa-libGLU-devel',
+        'mesa-libGLw', 'mesa-libGLw-devel',
+        'mesa-libOSMesa', 'mesa-libOSMesa-devel'
+      ]
+    end
+  end
+
+  def install_method
+    case PACKMAN::OS.distro
+    when :Ubuntu
+      return PACKMAN::OS.how_to_install [
+        'libglu1-mesa', 'libglu1-mesa-dev']
+    when :Red_Hat_Enterprise
+      return PACKMAN::OS.how_to_install [
+        'mesa-libGL',  'mesa-libGL-devel',
+        'mesa-libGLU', 'mesa-libGLU-devel',
+        'mesa-libGLw', 'mesa-libGLw-devel',
+        'mesa-libOSMesa', 'mesa-libOSMesa-devel'
+      ]
+    end
   end
 end

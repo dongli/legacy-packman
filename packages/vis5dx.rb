@@ -4,9 +4,7 @@ class Vis5dx < PACKMAN::Package
   version '1.3.0'
 
   depends_on 'netcdf_c'
-  if not PACKMAN::OS.distro == :Mac_OS_X
-    depends_on 'mesa3d'
-  end
+  depends_on 'mesa3d'
 
   def install
     # http://cypresslin.web.fc2.com/Memo/M-ENG-Vis5DInst.html
@@ -34,7 +32,7 @@ class Vis5dx < PACKMAN::Package
     }
     args = %W[
       --prefix=#{PACKMAN::Package.prefix(self)}
-      --with-netcdf=#{PACKMAN::Package.prefix(Netcdf_c)}/lib/libnetcdf.a
+      --with-netcdf=#{PACKMAN::Package.prefix(Netcdf_c)}
     ]
     if PACKMAN::OS.distro == :Mac_OS_X
       args << 'CPPFLAGS="-I/usr/X11R6/include"'

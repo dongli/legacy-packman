@@ -8,7 +8,7 @@ class Ncl < PACKMAN::Package
   version '6.2.0'
 
   depends_on 'freetype'
-  depends_on 'lesstif'
+  # depends_on 'lesstif'
   depends_on 'cairo'
   depends_on 'jpeg'
   depends_on 'hdf4'
@@ -41,6 +41,8 @@ class Ncl < PACKMAN::Package
     end
     PACKMAN.cd_back
     # Configure NCL.
+    # COMPLAIN: NCL should use more canonical method (e.g. Autoconf or CMake) to
+    #           do configuration work!
     PTY.spawn('./Configure -v') do |reader, writer, pid|
       reader.expect(/Enter Return to continue, or q\(quit\) > /)
       writer.print("\n")
@@ -99,7 +101,9 @@ class Ncl < PACKMAN::Package
       writer.print("y\n")
       # Enter local library search path(s).
       reader.expect(/Enter Return \(default\), new directories, or q\(quit\) > /)
-      writer.print "/usr/X11R6/lib "
+      if PACKMAN::OS.distro == :Mac_OS_X
+        writer.print "/usr/X11R6/lib "
+      end
       [ Freetype, Cairo, Jpeg, Hdf4, Hdf5, Netcdf_c, Netcdf_fortran,
         Hdf_eos2, Hdf_eos5, Grib2_c, Gdal, Proj, Udunits, Vis5dx ].each do |lib|
         if not Dir.exist? "#{PACKMAN::Package.prefix(lib)}/lib"
@@ -110,7 +114,9 @@ class Ncl < PACKMAN::Package
       writer.print "\n"
       # Enter local include search path(s).
       reader.expect(/Enter Return \(default\), new directories, or q\(quit\) > /)
-      writer.print "/usr/X11R6/include "
+      if PACKMAN::OS.distro == :Mac_OS_X
+        writer.print "/usr/X11R6/include "
+      end
       [ Freetype, Cairo, Jpeg, Hdf4, Hdf5, Netcdf_c, Netcdf_fortran, Hdf_eos5,
         Grib2_c, Gdal, Proj, Udunits, Vis5dx ].each do |lib|
         if not Dir.exist? "#{PACKMAN::Package.prefix(lib)}/include"
@@ -130,6 +136,8 @@ class Ncl < PACKMAN::Package
     end
     # Make NCL.
     PACKMAN.run 'make Everything'
+    # Make sure command 'ncl' is built.
+    # PACKMAN.run "ls #{PACKMAN::Package.prefix(self)}/bin/ncl"
     PACKMAN::RunManager.clean_env
   end
 end

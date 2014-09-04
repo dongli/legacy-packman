@@ -11,6 +11,10 @@ class Glib < PACKMAN::Package
   patch 'https://gist.githubusercontent.com/jacknagel/9835034/raw/b0388e86f74286f4271f9b0dca8219fdecafd5e3/gio.patch',
         '32158fffbfb305296f7665ede6185a47d6f6b389'
 
+  if PACKMAN::OS.distro != :Mac_OS_X
+    label 'should_provided_by_system'
+  end
+
   def install
     # Disable dtrace; see https://trac.macports.org/ticket/30413
     args = %W[
@@ -33,5 +37,23 @@ class Glib < PACKMAN::Package
         /(Libs: -L\${libdir} -lglib-2.0) (-lintl)/ => "\\1 -L#{PACKMAN::Package.prefix(Gettext)}/lib \\2",
         /(Cflags: -I\${includedir}\/glib-2.0 -I\${libdir}\/glib-2.0\/include)/ => "\\1 -I#{PACKMAN::Package.prefix(Gettext)}/include"
       }
+  end
+
+  def installed?
+    case PACKMAN::OS.distro
+    when :Ubuntu
+      return PACKMAN::OS.installed? ['libglib2.0-0', 'libglib2.0-dev']
+    when :Red_Hat_Enterprise
+      return PACKMAN::OS.installed? ['glib2', 'glib2-devel']
+    end
+  end
+
+  def install_method
+    case PACKMAN::OS.distro
+    when :Ubuntu
+      return PACKMAN::OS.how_to_install ['libglib2.0-0', 'libglib2.0-dev']
+    when :Red_Hat_Enterprise
+      return PACKMAN::OS.how_to_install ['glib2', 'glib2-devel']
+    end
   end
 end

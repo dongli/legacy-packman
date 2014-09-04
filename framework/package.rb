@@ -263,7 +263,8 @@ module PACKMAN
       # Check if the package should be skipped.
       if package.skip?
         if not package.skip_distros.include? :all and not package.installed?
-          PACKMAN.report_error "Package #{PACKMAN::Tty.red}#{package.class}#{PACKMAN::Tty.reset} should be provided by system! "+
+          PACKMAN.report_error "Package #{PACKMAN::Tty.red}#{package.class}#{PACKMAN::Tty.reset} "+
+            "should be provided by system!\n#{PACKMAN::Tty.blue}==>#{PACKMAN::Tty.reset} "+
             "The possible installation method is:\n#{package.install_method}"
         end
         return

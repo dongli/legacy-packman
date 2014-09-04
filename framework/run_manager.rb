@@ -113,7 +113,7 @@ module PACKMAN
   end
 
   def self.slim_run(cmd, *args)
-    res = `#{cmd} #{args.join(' ')}`
+    res = `#{cmd} #{args.join(' ')} 1> /dev/null 2>&1`
     raise "Command failed!" if not $?.success?
     return res
   end
