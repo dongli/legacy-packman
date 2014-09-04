@@ -21,23 +21,23 @@ the server which has no internet connection, and then run
 
 to install the packages you need.
 
-The configure file may looks like:
+The configure file may looks like (`packman` will generate one when none is provided):
 ```
-package_root = "/opt/packman/packages"
-install_root = "/opt/packman"
-active_compiler_set = 1
-compiler_set_0 = {
-  "c" => "gcc",
+package_root = "/opt/packman/packages" # Where should PACKMAN download packages to?
+install_root = "/opt/packman"          # Where should PACKMAN install packages to?
+active_compiler_set = 1                # Choose a compiler set you want to use.
+compiler_set_0 = {                     # Specify a compiler set by listing the compilers
+  "c" => "gcc",                        #   for different languages.
   "c++" => "g++",
   "fortran" => "gfortran"
 }
-compiler_set_1 = {
+compiler_set_1 = {                     # Specify a compiler set that is installed by PACKMAN.
   "installed_by_packman" => "gcc"
 }
-package_gcc = {
+package_gcc = {                        # Specify a package.
   "compiler_set" => 0
 }
-package_netcdf_cxx = {
+package_netcdf_cxx = {                 # Specify another package.
   "compiler_set" => [0,1]
 }
 ```
@@ -50,7 +50,7 @@ $ packman switch <config file>
 ```
 
 I would like to thank the Homebrew community, since I have referred the design
-of it quite a lot (I do not just copycat `homebrew`). If you find `packman` is
+of it quite a lot, but I do not just copycat `homebrew`. If you find `packman` is
 helpful, join me to form a great community to further improve it.
 
 Installation
