@@ -188,4 +188,8 @@ module PACKMAN
       system "unzip -o #{filepath} 1> /dev/null"
     end
   end
+
+  def self.rm(filepath)
+    FileUtils.rm_rf filepath
+  end
 end

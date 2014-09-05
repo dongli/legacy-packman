@@ -9,6 +9,7 @@ class Ferret < PACKMAN::Package
   depends_on 'netcdf_fortran'
   depends_on 'zlib'
   depends_on 'szip'
+  depends_on 'curl'
 
   attach 'ftp://ftp.pmel.noaa.gov/ferret/pub/data/fer_dsets.tar.gz',
          '4a1e3dfdad94f93a70f0359f3a88f65c342d8d39'
@@ -24,6 +25,7 @@ class Ferret < PACKMAN::Package
     netcdf_fortran = PACKMAN::Package.prefix(Netcdf_fortran)
     zlib = PACKMAN::Package.prefix(Zlib)
     szip = PACKMAN::Package.prefix(Szip)
+    curl = PACKMAN::Package.prefix(Curl)
     # Check build type (Shame on you, Ferret! You can't just automatically
     # judge it!).
     build_type = ''
@@ -52,8 +54,8 @@ class Ferret < PACKMAN::Package
       /^LIBZ_DIR\s*=.*$/ => "LIBZ_DIR = #{zlib}"
     }
     PACKMAN.replace "platform_specific.mk.#{build_type}", {
-      /^(\s*INCLUDES\s*=.*)$/ => "\\1\n-I#{netcdf_fortran}/include \\",
-      /^(\s*LDFLAGS\s*=.*)$/ => "\\1 -L#{netcdf_fortran}/lib",
+      /^(\s*INCLUDES\s*=.*)$/ => "\\1\n-I#{netcdf_fortran}/include -I#{curl}/include \\",
+      /^(\s*LDFLAGS\s*=.*)$/ => "\\1 -L#{netcdf_fortran}/lib -L#{curl}/lib ",
       /^(\s*TERMCAPLIB\s*=).*$/ => "\\1 -L#{ncurses}/lib -lncurses"
     }
     # Check if Xmu library is installed by system or not.
@@ -76,7 +78,7 @@ class Ferret < PACKMAN::Package
         /^(\s*CPP_FLAGS\s*=.*)$/ => "\\1\n-DNO_WIN_UTIL_H \\"
       }
     end
-    # Bad Ferret developers!
+    # Bad Ferret developers! Shame on you!
     PACKMAN.replace 'external_functions/ef_utility/ferret_cmn/EF_mem_subsc_f90.inc', {
       /^\s*EXTERNAL\s*FERRET_EF_MEM_SUBSC\s*$/ => ''
     }
@@ -87,12 +89,19 @@ class Ferret < PACKMAN::Package
       /^\s*EXTERNAL\s*FERRET_EF_MEM_SUBSC\s*$/ => ''
     }
     PACKMAN.replace "platform_specific.mk.#{build_type}", {
-      /lib64/ => 'lib'
+      /lib64/ => 'lib',
+      /-Wl,-Bstatic -lgfortran/ => '-Wl,-Bdynamic -lgfortran'
     }
     PACKMAN.replace "platform_specific.mk.#{build_type}", {
       /\$\(NETCDF4_DIR\)\/lib\/libnetcdff\.a/ => "#{netcdf_fortran}/lib/libnetcdff.a",
       /^(\s*\$\(LIBZ_DIR\)\/lib\/libz.a)$/ => "\\1 \\\n#{szip}/lib/libsz.a"
     }
+    # BUILDTYPE is not propagated into external_functions directory
+    ['contributed', 'examples', 'fft', 'statistics'].each do |dir|
+      PACKMAN.replace "external_functions/#{dir}/Makefile", {
+        /\$\(BUILDTYPE\)/ => build_type
+        }
+    end
     # Make.
     PACKMAN.run 'make'
     PACKMAN.run 'make install'
@@ -104,5 +113,32 @@ class Ferret < PACKMAN::Package
     datasets = "#{PACKMAN::ConfigManager.package_root}/fer_dsets.tar.gz"
     PACKMAN.decompress datasets
     PACKMAN.cd ferret
+    # Do the final installation step.
+    PACKMAN.rm 'ferret_paths.csh'
+    PACKMAN.rm 'ferret_paths.sh'
+    PTY.spawn('unset FER_DIR FER_DSETS; ./bin/Finstall') do |reader, writer, pid|
+      reader.expect(/\(1, 2, 3, q, x\) --> /)
+      writer.print("2\n")
+      reader.expect(/FER_DIR --> /)
+      writer.print("#{ferret}\n")
+      reader.expect(/FER_DSETS --> /)
+      writer.print("#{File.dirname(ferret)}/datasets\n")
+      reader.expect(/desired ferret_paths location --> /)
+      writer.print("#{ferret}\n")
+      reader.expect(/ferret_paths link to create\? \(c\/s\/n\) \[n\] --> /)
+      writer.print("n\n")
+      reader.expect(/\(1, 2, 3, q, x\) --> /)
+      writer.print("q\n")
+    end
+  end
+
+  def postfix
+    # Ferret has put its shell configuration into 'ferret_paths.sh', so we
+    # respect it.
+    bashrc = "#{PACKMAN::Package.prefix(self)}/bashrc"
+    PACKMAN.rm bashrc
+    File.open(bashrc, 'w') do |file|
+      file << "source #{PACKMAN::Package.prefix(self)}/ferret_paths.sh\n"
+    end
   end
 end
