@@ -9,13 +9,15 @@ class Netcdf_c < PACKMAN::Package
   depends_on 'hdf5'
 
   def install
-    curl_prefix = PACKMAN::Package.prefix(Curl)
-    zlib_prefix = PACKMAN::Package.prefix(Zlib)
-    szip_prefix = PACKMAN::Package.prefix(Szip)
-    hdf5_prefix = PACKMAN::Package.prefix(Hdf5)
-    PACKMAN.append_env "CFLAGS='-I#{curl_prefix}/include -I#{zlib_prefix}/include -I#{szip_prefix}/include -I#{hdf5_prefix}/include'"
-    PACKMAN.append_env "LDFLAGS='-L#{curl_prefix}/lib -L#{zlib_prefix}/lib -L#{szip_prefix}/lib -L#{hdf5_prefix}/lib'"
+    curl = PACKMAN::Package.prefix(Curl)
+    zlib = PACKMAN::Package.prefix(Zlib)
+    szip = PACKMAN::Package.prefix(Szip)
+    hdf5 = PACKMAN::Package.prefix(Hdf5)
+    PACKMAN.append_env "CFLAGS='-I#{curl}/include -I#{zlib}/include -I#{szip}/include -I#{hdf5}/include'"
+    PACKMAN.append_env "LDFLAGS='-L#{curl}/lib -L#{zlib}/lib -L#{szip}/lib -L#{hdf5}/lib'"
     PACKMAN.append_env "FFLAGS=-ffree-line-length-none"
+    # NOTE: OpenDAP support should be supported in default, but I still add
+    #       '--enable-dap' explicitly for reminding.
     args = %W[
       --prefix=#{PACKMAN::Package.prefix(self)}
       --disable-dependency-tracking
@@ -23,6 +25,7 @@ class Netcdf_c < PACKMAN::Package
       --enable-static
       --enable-shared
       --enable-netcdf4
+      --enable-dap
       --disable-doxygen
     ]
     PACKMAN.run './configure', *args

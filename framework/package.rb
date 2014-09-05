@@ -76,6 +76,11 @@ module PACKMAN
       end
     end
 
+    def self.attach(source, sha1)
+      self.class_eval("@@attaches ||= []; @@attaches << [ source, sha1 ]")
+      self.class_eval("def attaches; @@attaches; end")
+    end
+
     def self.apply_patch(package)
         for i in 0..package.patches.size-1
           patch_file = "#{ConfigManager.package_root}/#{package.class}.patch.#{i}"
@@ -104,6 +109,8 @@ module PACKMAN
     def conflict_packages; []; end
 
     def patches; []; end
+
+    def attaches; []; end
 
     def embeded_patches; []; end
 
@@ -172,7 +179,8 @@ module PACKMAN
 
     def self.bashrc(package)
       prefix = prefix(package)
-      root = "#{package.class.name.upcase}_ROOT"
+      class_name = package.class.name.upcase
+      root = "#{class_name}_ROOT"
       open("#{prefix}/bashrc", "w") do |file|
         file << "# #{package.sha1}\n"
         file << "export #{root}=#{prefix}\n"
@@ -180,27 +188,22 @@ module PACKMAN
           file << "export PATH=$#{root}/bin:$PATH\n"
         end
         if Dir.exist?("#{prefix}/share/man")
-          file << "export MANPATH=$#{root}/share/man:$MANPATH\n"
+          file << "export MANPATH=\"$#{root}/share/man:$MANPATH\"\n"
         end
         if Dir.exist?("#{prefix}/include")
-          file << "export #{package.class.name.upcase}_INCLUDE_PATH=$#{root}/include\n"
+          file << "export #{class_name}_INCLUDE=\"-I$#{root}/include\"\n"
         end
+        libs = []
         if Dir.exist?("#{prefix}/lib")
-          file << "export #{package.class.name.upcase}_LIBRARY_PATH=$#{root}/lib\n"
-          case OS.type
-          when :Darwin
-            file << "export DYLD_LIBRARY_PATH=$#{root}/lib:$DYLD_LIBRARY_PATH\n"
-          when :Linux
-            file << "export LD_LIBRARY_PATH=$#{root}/lib:$LD_LIBRARY_PATH\n"
-          end
+          libs << "$#{root}/lib"
         end
         if Dir.exist?("#{prefix}/lib64")
-          case OS.type
-          when :Darwin
-            file << "export DYLD_LIBRARY_PATH=$#{root}/lib64:$DYLD_LIBRARY_PATH\n"
-          when :Linux
-            file << "export LD_LIBRARY_PATH=$#{root}/lib64:$LD_LIBRARY_PATH\n"
-          end
+          libs << "$#{root}/lib64"
+        end
+        if not libs.empty?
+          file << "export #{class_name}_LIBRARY=\"-L#{libs.join(' -L')}\"\n"
+          file << "export #{PACKMAN::OS.ld_library_path_name}=#{libs.join(':')}:$#{PACKMAN::OS.ld_library_path_name}\n"
+          file << "export #{class_name}_RPATH=\"-Wl,-rpath,#{libs.join(',-rpath,')}\"\n"
         end
         if Dir.exist?("#{prefix}/lib/pkgconfig")
           file << "export PKG_CONFIG_PATH=$#{root}/lib/pkgconfig:$PKG_CONFIG_PATH\n"
@@ -286,7 +289,7 @@ module PACKMAN
           end
           f.close
         end
-        # Install ...
+        # Decompress package file.
         if package.respond_to? :filename
           package.decompress_to ConfigManager.package_root
         elsif package.respond_to? :dirname
@@ -300,6 +303,7 @@ module PACKMAN
         Dir.chdir(build_dir)
         # Apply patches.
         apply_patch(package)
+        # Install package.
         PACKMAN.report_notice "Install package #{Tty.green}#{package.class}#{Tty.reset}."
         package.install
         Dir.chdir(saved_dir)

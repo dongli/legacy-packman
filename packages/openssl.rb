@@ -5,12 +5,10 @@ class Openssl < PACKMAN::Package
 
   depends_on 'zlib'
 
-  if PACKMAN::OS.distro == :Ubuntu
-    # Ubuntu add version information into Openssl so that other tools will
-    # complain about the missing version information if PACKMAN install
-    # Openssl
-    label 'should_provided_by_system'
-  end
+  # Ubuntu add version information into Openssl so that other tools will
+  # complain about the missing version information if PACKMAN install
+  # Openssl
+  label 'should_provided_by_system'
 
   def install
     args = %W[
@@ -30,20 +28,20 @@ class Openssl < PACKMAN::Package
   end
 
   def installed?
-    begin
-      case PACKMAN::OS.distro
-      when :Ubuntu
-        PACKMAN.slim_run 'dpkg-query -l libssl-dev'
-      end
-    rescue
-      return false
+    case PACKMAN::OS.distro
+    when :Ubuntu
+      return PACKMAN::OS.installed? ['libssl-dev']
+    when :Red_Hat_Enterprise
+      return PACKMAN::OS.installed? ['openssl', 'openssl-devel']
     end
   end
 
   def install_method
     case PACKMAN::OS.distro
     when :Ubuntu
-      return "sudo apt-get install libssl-dev"
+      return PACKMAN::OS.how_to_install ['libssl-dev']
+    when :Red_Hat_Enterprise
+      return PACKMAN::OS.how_to_install ['openssl', 'openssl-devel']
     end
   end
 end

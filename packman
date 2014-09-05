@@ -1,5 +1,10 @@
 #!/usr/bin/env ruby
 
+if not ENV.has_key? 'PACKMAN_ROOT'
+  print "[Error]: #{File.expand_path(File.dirname(__FILE__))}/setup.sh is not sourced!\n"
+  exit
+end
+
 $LOAD_PATH << "#{ENV['PACKMAN_ROOT']}/framework"
 $LOAD_PATH << "#{ENV['PACKMAN_ROOT']}/packages"
 require 'packman_framework'

@@ -58,6 +58,10 @@ module PACKMAN
     print "[#{Tty.red}CHECK#{Tty.reset}]: #{message}\n"
   end
 
+  def self.under_construction!
+    print "Oops: PACKMAN is under construction!"
+  end
+
   def self.check_command(cmd)
     `which #{cmd}`
     if not $?.success?

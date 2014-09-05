@@ -23,7 +23,7 @@ module PACKMAN
         report_error "Unknown OS type \"#{res}\"!"
       end
       # Check architecture
-      @@arch = `uname -m`
+      @@arch = `uname -m`.chomp
       # Check distribution and version.
       case @@type
       when :Darwin
@@ -60,6 +60,19 @@ module PACKMAN
         'dylib'
       when :Linux
         'so'
+      else
+        PACKMAN.under_construction!
+      end
+    end
+
+    def self.ld_library_path_name
+      case type
+      when :Darwin
+        'DYLD_LIBRARY_PATH'
+      when :Linux
+        'LD_LIBRARY_PATH'
+      else
+        PACKMAN.under_construction!
       end
     end
 

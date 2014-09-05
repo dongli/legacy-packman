@@ -36,12 +36,16 @@ module PACKMAN
         append_bashrc_path("#{compiler_prefix}/bashrc")
       end
       # Handle customized bashrc.
+      rpath = []
       if not @@bashrc_pathes.empty?
         @@bashrc_pathes.each do |bashrc_path|
           # Note: Use '.' instead of 'source', since Ruby system seems invoke a dash not fully bash!
           cmd_str << ". #{bashrc_path} && "
+          tmp = File.open(bashrc_path).read.match(/export \w+_RPATH="(.*)"/)
+          rpath << tmp[1] if tmp
         end
       end
+      cmd_str << "LDFLAGS='#{rpath.join(' ')}' "
       # Handle customized LD_LIBRARY_PATH.
       if not @@ld_library_pathes.empty?
         case OS.type

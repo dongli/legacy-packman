@@ -9,9 +9,6 @@ class Curl < PACKMAN::Package
     args = %W[
       --prefix=#{PACKMAN::Package.prefix(self)}
     ]
-    if not PACKMAN::OS.distro == :Ubuntu
-      args << "--with-ssl=#{PACKMAN::Package.prefix(Openssl)}"
-    end
     PACKMAN.run './configure', *args
     PACKMAN.run 'make -j2'
     PACKMAN.run 'make install'

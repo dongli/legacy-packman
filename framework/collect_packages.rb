@@ -35,6 +35,19 @@ module PACKMAN
       report_notice "Download patch #{url}."
       PACKMAN.download(package_root, url, File.basename(patch_file))
     end
+    # Check if there is any attachment to download.
+    package.attaches.each do |attach|
+      url = attach.first
+      sha1 = attach.last
+      attach_file = "#{package_root}/#{File.basename(URI.parse(url).path)}"
+      if File.exist?(attach_file)
+        if PACKMAN.sha1_same?(attach_file, sha1)
+          next
+        end
+      end
+      report_notice "Download attachment #{url}."
+      PACKMAN.download(package_root, url, File.basename(attach_file))
+    end
     # Download current package.
     package.download_to(package_root)
   end
