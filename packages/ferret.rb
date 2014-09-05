@@ -138,6 +138,7 @@ class Ferret < PACKMAN::Package
     bashrc = "#{PACKMAN::Package.prefix(self)}/bashrc"
     PACKMAN.rm bashrc
     File.open(bashrc, 'w') do |file|
+      file << "# #{sha1}\n"
       file << "source #{PACKMAN::Package.prefix(self)}/ferret_paths.sh\n"
     end
   end

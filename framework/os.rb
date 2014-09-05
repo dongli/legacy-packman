@@ -54,6 +54,32 @@ module PACKMAN
       @@arch == 'x86_64'
     end
 
+    def self.red_hat_gang?
+      if distro == :Red_Hat_Enterprise or
+         distro == :Fedora or
+         distro == :CentOS
+        return true
+      else
+        return false
+      end
+    end
+
+    def self.debian_gang?
+      if distro == :Ubuntu
+        return true
+      else
+        return false
+      end
+    end
+
+    def self.mac_gang?
+      if distro == :Mac_OS_X
+        return true
+      else
+        return false
+      end
+    end
+
     def self.shared_library_suffix
       case type
       when :Darwin
@@ -84,16 +110,15 @@ module PACKMAN
       flag = true
       package.each do |p|
         begin
-          case distro
-          when :Ubuntu
+          if debian_gang?
             PACKMAN.slim_run "dpkg-query -l #{p}"
-          when :Fedora
+          elsif red_hat_gang?
             PACKMAN.slim_run "rpm -q #{p}"
-          when :CentOS
-            PACKMAN.slim_run "rpm -q #{p}"
-          when :Mac_OS_X
+          elsif mac_gang?
             # TODO: How to handle this branch?
             PACKMAN.report_error "Under construction!"
+          else
+            PACKMAN.report_error "Unknown OS!"
           end
         rescue
           flag = false
@@ -107,16 +132,15 @@ module PACKMAN
       res = ''
       package = [package] if package.class != Array
       package.each do |p|
-        case distro
-        when :Ubuntu
+        if debian_gang?
           res << "sudo apt-get install #{p}\n"
-        when :Fedora
+        elsif red_hat_gang?
           res << "sudo yum install #{p}\n"
-        when :CentOS
-          res << "sudo yum install #{p}\n"
-        when :Mac_OS_X
+        elsif mac_gang?
           # TODO: How to handle this branch?
           PACKMAN.report_error "Under construction!"
+        else
+          PACKMAN.report_error "Unknown OS!"
         end
       end
       return res
