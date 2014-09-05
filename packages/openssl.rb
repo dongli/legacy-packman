@@ -28,20 +28,22 @@ class Openssl < PACKMAN::Package
   end
 
   def installed?
-    case PACKMAN::OS.distro
-    when :Ubuntu
+    if PACKMAN::OS.debian_gang?
       return PACKMAN::OS.installed? ['libssl-dev']
-    when :Red_Hat_Enterprise
+    elsif PACKMAN::OS.red_hat_gang?
       return PACKMAN::OS.installed? ['openssl', 'openssl-devel']
+    elsif PACKMAN::OS.mac_gang?
+      return true
     end
   end
 
   def install_method
-    case PACKMAN::OS.distro
-    when :Ubuntu
+    if PACKMAN::OS.debian_gang?
       return PACKMAN::OS.how_to_install ['libssl-dev']
-    when :Red_Hat_Enterprise
+    elsif PACKMAN::OS.red_hat_gang?
       return PACKMAN::OS.how_to_install ['openssl', 'openssl-devel']
+    elsif PACKMAN::OS.mac_gang?
+      return true
     end
   end
 end
