@@ -56,3 +56,4 @@ if [[ $RUBY_VERSION =~ $(echo '^1\.8') ]]; then
     echo "[Warning]: Ruby version is too old, PACKMAN will install a newer one for you!"
     install_ruby
 fi
+cd ~
