@@ -10,21 +10,15 @@ $LOAD_PATH << "#{ENV['PACKMAN_ROOT']}/packages"
 require 'packman_framework'
 require 'packman_packages'
 
-if ['collect', 'install', 'switch'].include? ARGV[0] and ARGV.size < 2
-  PACKMAN::ConfigManager.template('./packman.config')
-  PACKMAN.report_warning "Lack configure file, PACKMAN generate one for you! Edit #{PACKMAN::Tty.red}packman.config#{PACKMAN::Tty.reset} and come back."
-  exit
-end
-
-case ARGV[0]
+case PACKMAN::CommandLine.subcommand
 when 'collect'
-  PACKMAN::ConfigManager.parse(ARGV[1])
+  PACKMAN::ConfigManager.parse
   PACKMAN.collect_packages
 when 'install'
-  PACKMAN::ConfigManager.parse(ARGV[1])
+  PACKMAN::ConfigManager.parse
   PACKMAN.install_packages
 when 'switch'
-  PACKMAN::ConfigManager.parse(ARGV[1])
+  PACKMAN::ConfigManager.parse
   PACKMAN.switch_packages
 when 'update'
   saved_dir = FileUtils.pwd
@@ -36,23 +30,7 @@ when 'update'
   system 'git pull'
   FileUtils.chdir saved_dir
 when 'help'
-  print "Usage: packman <subcommand> [<configure file>]\n"
-  print "\n"
-  print "  - packman #{PACKMAN::Tty.bold('collect')} <configure file>\n"
-  print "\n"
-  print "    Collect packages from internet.\n"
-  print "\n"
-  print "  - packman #{PACKMAN::Tty.bold('install')} <configure file>\n"
-  print "\n"
-  print "    Install packages and their dependencies.\n"
-  print "\n"
-  print "  - packman #{PACKMAN::Tty.bold('switch')} <configure file>\n"
-  print "\n"
-  print "    Switch between different compiler sets.\n"
-  print "\n"
-  print "  - packman #{PACKMAN::Tty.bold('update')} <configure file>\n"
-  print "\n"
-  print "    Update PACKMAN (only available through GIT).\n"
+  PACKMAN::CommandLine.print_usage
 else
-  PACKMAN.report_error "Unknown command #{ARGV[0]}!"
+  PACKMAN.report_error "Unknown subcommand #{PACKMAN::CommandLine.subcommand}!"
 end

@@ -41,7 +41,8 @@ module PACKMAN
       @@packages
     end
 
-    def self.parse(file_path)
+    def self.parse
+      file_path = PACKMAN::CommandLine.config_file
       if not File.exist? file_path
         PACKMAN.report_error "Configuation file #{PACKMAN::Tty.red}#{file_path}#{PACKMAN::Tty.reset} does not exist!"
       end
@@ -61,7 +62,8 @@ module PACKMAN
 
     def self.template(file_path)
       if File.exist? file_path
-        PACKMAN.report_error "A configure file (\"#{file_path}\") exists in current directory!"
+        PACKMAN.report_error "A configure file is needed "+
+          "and \"#{file_path}\" exists, consider to use it!"
       end
       File.open(file_path, 'w') do |file|
         file << "package_root = \"...\"\n"

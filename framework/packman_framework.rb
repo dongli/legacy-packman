@@ -1,4 +1,5 @@
 require "utils"
+require "command_line"
 require "config_manager"
 require "os"
 require "package"
@@ -13,5 +14,6 @@ require "install_packages"
 require "switch_packages"
 
 PACKMAN::OS.init
+PACKMAN::CommandLine.init
 PACKMAN::ConfigManager.init
 PACKMAN::CompilerHelper.init
