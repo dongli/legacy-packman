@@ -117,7 +117,7 @@ class Ferret < PACKMAN::Package
       end
     else
       xmu_package = ''
-      if PACKMAN::OS.red_hat_gang?
+      if PACKMAN::OS.redhat_gang?
         xmu_package = 'libXmu-devel'
       elsif PACKMAN::OS.debian_gang?
         xmu_package = 'libxmu-dev'

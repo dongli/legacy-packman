@@ -54,7 +54,7 @@ module PACKMAN
       @@arch == 'x86_64'
     end
 
-    def self.red_hat_gang?
+    def self.redhat_gang?
       if distro == :Red_Hat_Enterprise or
          distro == :Fedora or
          distro == :CentOS
@@ -112,7 +112,7 @@ module PACKMAN
         begin
           if debian_gang?
             PACKMAN.slim_run "dpkg-query -l #{p}"
-          elsif red_hat_gang?
+          elsif redhat_gang?
             PACKMAN.slim_run "rpm -q #{p}"
           elsif mac_gang?
             # TODO: How to handle this branch?
@@ -134,7 +134,7 @@ module PACKMAN
       package.each do |p|
         if debian_gang?
           res << "sudo apt-get install #{p}\n"
-        elsif red_hat_gang?
+        elsif redhat_gang?
           res << "sudo yum install #{p}\n"
         elsif mac_gang?
           # TODO: How to handle this branch?

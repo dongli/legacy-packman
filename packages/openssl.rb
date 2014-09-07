@@ -30,7 +30,7 @@ class Openssl < PACKMAN::Package
   def installed?
     if PACKMAN::OS.debian_gang?
       return PACKMAN::OS.installed? ['libssl-dev']
-    elsif PACKMAN::OS.red_hat_gang?
+    elsif PACKMAN::OS.redhat_gang?
       return PACKMAN::OS.installed? ['openssl', 'openssl-devel']
     elsif PACKMAN::OS.mac_gang?
       return true
@@ -40,7 +40,7 @@ class Openssl < PACKMAN::Package
   def install_method
     if PACKMAN::OS.debian_gang?
       return PACKMAN::OS.how_to_install ['libssl-dev']
-    elsif PACKMAN::OS.red_hat_gang?
+    elsif PACKMAN::OS.redhat_gang?
       return PACKMAN::OS.how_to_install ['openssl', 'openssl-devel']
     elsif PACKMAN::OS.mac_gang?
       return true

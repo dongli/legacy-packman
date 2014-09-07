@@ -3,6 +3,8 @@ class Hdf4 < PACKMAN::Package
   sha1 '5163543895728dabb536a0659b3d965d55bccf74'
   version '4.2.10'
 
+  depends_on 'yacc'
+  depends_on 'flex'
   depends_on 'zlib'
   depends_on 'szip'
   depends_on 'jpeg'

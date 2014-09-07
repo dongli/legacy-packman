@@ -193,4 +193,8 @@ module PACKMAN
   def self.rm(filepath)
     FileUtils.rm_rf filepath
   end
+
+  def self.ln(src, dst)
+    FileUtils.ln_s src, dst
+  end
 end
