@@ -116,7 +116,7 @@ module PACKMAN
             PACKMAN.slim_run "rpm -q #{p}"
           elsif mac_gang?
             # TODO: How to handle this branch?
-            PACKMAN.report_error "Under construction!"
+            PACKMAN.under_construction!
           else
             PACKMAN.report_error "Unknown OS!"
           end
@@ -138,7 +138,7 @@ module PACKMAN
           res << "sudo yum install #{p}\n"
         elsif mac_gang?
           # TODO: How to handle this branch?
-          PACKMAN.report_error "Under construction!"
+          PACKMAN.under_construction!
         else
           PACKMAN.report_error "Unknown OS!"
         end

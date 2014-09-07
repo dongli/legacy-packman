@@ -19,7 +19,8 @@ the server which has no internet connection, and then run
 
 ``` $ packman install <config file> ```
 
-to install the packages you need.
+to install the packages you need. *During the usage of `packman`, you need to
+maintain a `<config file>`.*
 
 The configure file may looks like (`packman` will generate one when none is provided):
 ```

@@ -5,6 +5,8 @@ class Readline < PACKMAN::Package
 
   depends_on 'ncurses'
 
+  skip_on :Mac_OS_X
+
   def install
     args = %W[
       --prefix=#{PACKMAN::Package.prefix(self)}
@@ -20,5 +22,11 @@ class Readline < PACKMAN::Package
     PACKMAN.run 'make -j2'
     PACKMAN.run 'make install'
     PACKMAN.clean_env
+  end
+
+  def installed?
+    if PACKMAN::OS.mac_gang?
+      return File.exist? '/usr/include/readline/readline.h'
+    end
   end
 end
