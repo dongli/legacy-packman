@@ -7,6 +7,7 @@ module PACKMAN
     @@permitted_subcommands = {
       'collect' => 'Collect packages from internet.',
       'install' => 'Install packages and their dependencies.',
+      'switch'  => 'Switch different compiler set (new bashrc will be generated).',
       'update'  => 'Update PACKMAN.',
       'help'    => 'Print help message.'
     }
@@ -15,6 +16,7 @@ module PACKMAN
       'install' => {
         '-v' => 'Show verbose information.'
       },
+      'switch'  => {},
       'update'  => {},
       'help'    => {}
     }

@@ -13,6 +13,7 @@ class Ferret < PACKMAN::Package
   depends_on 'szip'
   depends_on 'curl'
   depends_on 'opendap'
+  depends_on 'tcsh'
 
   attach 'ftp://ftp.pmel.noaa.gov/ferret/pub/data/fer_dsets.tar.gz',
          '4a1e3dfdad94f93a70f0359f3a88f65c342d8d39'
