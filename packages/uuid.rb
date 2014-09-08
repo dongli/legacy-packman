@@ -1,28 +1,21 @@
 class Uuid < PACKMAN::Package
-  url 'ftp://ftp.ossp.org/pkg/lib/uuid/uuid-1.6.2.tar.gz'
-  sha1 '3e22126f0842073f4ea6a50b1f59dcb9d094719f'
-  version '1.6.2'
+  # OSSP-UUID has problems to be used, so I use the one in e2fsprogs.
+  url 'http://jaist.dl.sourceforge.net/project/e2fsprogs/e2fsprogs/v1.42.11/e2fsprogs-1.42.11.tar.gz'
+  sha1 '3d30eb40f3ca69dcef373a505a061b582e1026c2'
+  version '1.42.11'
 
-  label 'should_provided_by_system'
+  label 'use_system_first'
 
   def install
     uuid = PACKMAN::Package.prefix(self)
     args = %W[
       --prefix=#{uuid}
-      --disable-debug
-      --without-perl
-      --without-php
-      --without-pgsql
+      CFLAGS=-fPIC
     ]
     PACKMAN.run './configure', *args
     PACKMAN.run 'make -j2'
     PACKMAN.run 'make install'
-    # Some packages include Uuid as:
-    # #include <uuid/uuid.h>
-    #           ^^^^^
-    # So we need to add a link.
-    PACKMAN.mkdir "#{uuid}/include/uuid"
-    PACKMAN.ln "#{uuid}/include/uuid.h", "#{uuid}/include/uuid/uuid.h"
+    PACKMAN.run 'make install-libs'
   end
 
   def installed?

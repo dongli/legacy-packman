@@ -135,7 +135,10 @@ module PACKMAN
     end
 
     def skip?
-      skip_distros.include? PACKMAN::OS.distro or skip_distros.include? :all or labels.include? 'should_provided_by_system'
+      skip_distros.include? PACKMAN::OS.distro or
+      skip_distros.include? :all or
+      labels.include? 'should_provided_by_system' or
+      ( labels.include? 'use_system_first' and installed? )
     end
 
     def decompress_to(root)

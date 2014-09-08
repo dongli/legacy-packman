@@ -7,20 +7,14 @@ class Opendap < PACKMAN::Package
   depends_on 'curl'
 
   def install
-    if PACKMAN::OS.distro == :Fedora
-      PACKMAN.replace 'DODSFilter.cc', {
-        '#include <uuid/uuid.h>' => '#include <uuid.h>'
-      }
-      PACKMAN.replace 'tests/ResponseBuilder.cc', {
-        '#include <uuid/uuid.h>' => '#include <uuid.h>'
-      }
-    end
     args = %W[
       --prefix=#{PACKMAN::Package.prefix(self)}
       --disable-debug
       --disable-dependency-tracking
       --with-curl=#{PACKMAN::Package.prefix(Curl)}
       --with-included-regex
+      CPPFLAGS='-I#{PACKMAN::Package.prefix(Uuid)}/include'
+      LDFLAGS='-L#{PACKMAN::Package.prefix(Uuid)}/lib'
     ]
     PACKMAN.run './configure', *args
     PACKMAN.run 'make -j2'

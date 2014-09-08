@@ -5,6 +5,8 @@ class Fontconfig < PACKMAN::Package
 
   depends_on 'freetype'
 
+  label 'use_system_first'
+
   patch :embeded
 
   def install
@@ -12,12 +14,33 @@ class Fontconfig < PACKMAN::Package
       --prefix=#{PACKMAN::Package.prefix(self)}
       --disable-dependency-tracking
       --disable-silent-rules
+      --enable-libxml2
     ]
     if PACKMAN::OS.type == :Darwin
       args << '--with-add-fonts=/System/Library/Fonts,/Library/Fonts,~/Library/Fonts'
     end
     PACKMAN.run './configure', *args
     PACKMAN.run 'make install RUN_FC_CACHE_TEST=false'
+  end
+
+  def installed?
+    if PACKMAN::OS.debian_gang?
+      PACKMAN::OS.installed? ['libfontconfig', 'libfontconfig-dev']
+    elsif PACKMAN::OS.redhat_gang?
+      PACKMAN::OS.installed? ['fontconfig', 'fontconfig-devel']
+    elsif PACKMAN::OS.mac_gang?
+      return false
+    end
+  end
+
+  def install_method
+    if PACKMAN::OS.debian_gang?
+      PACKMAN::OS.how_to_install ['libfontconfig', 'libfontconfig-dev']
+    elsif PACKMAN::OS.redhat_gang?
+      PACKMAN::OS.how_to_install ['fontconfig', 'fontconfig-devel']
+    elsif PACKMAN::OS.mac_gang?
+      'PACKMAN will install it.'
+    end
   end
 end
 
