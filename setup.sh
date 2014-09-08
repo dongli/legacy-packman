@@ -47,6 +47,7 @@ if [[ -d "$PACKMAN_ROOT/ruby/bin" ]]; then
 fi
 
 # Check if Ruby is available or not, and it must be >= 2.0.
+old_dir=$(pwd)
 if ! which ruby 1> /dev/null; then
     echo '[Warning]: System does not provide a Ruby! PACKMAN will install one for you!'
     install_ruby
@@ -56,4 +57,4 @@ if [[ $RUBY_VERSION =~ $(echo '^1\.8') ]]; then
     echo "[Warning]: Ruby version is too old, PACKMAN will install a newer one for you!"
     install_ruby
 fi
-cd ~
+cd $old_dir
