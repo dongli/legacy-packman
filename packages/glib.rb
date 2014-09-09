@@ -34,25 +34,23 @@ class Glib < PACKMAN::Package
 
     PACKMAN.replace "#{PACKMAN::Package.prefix(self)}/lib/pkgconfig/glib-2.0.pc",
       {
-        /(Libs: -L\${libdir} -lglib-2.0) (-lintl)/ => "\\1 -L#{PACKMAN::Package.prefix(Gettext)}/lib \\2",
-        /(Cflags: -I\${includedir}\/glib-2.0 -I\${libdir}\/glib-2.0\/include)/ => "\\1 -I#{PACKMAN::Package.prefix(Gettext)}/include"
+        /(Libs: -L\$\{libdir\} -lglib-2.0) (-lintl)/ => "\\1 -L#{PACKMAN::Package.prefix(Gettext)}/lib \\2",
+        /(Cflags: -I\$\{includedir\}\/glib-2.0 -I\$\{libdir\}\/glib-2.0\/include)/ => "\\1 -I#{PACKMAN::Package.prefix(Gettext)}/include"
       }
   end
 
   def installed?
-    case PACKMAN::OS.distro
-    when :Ubuntu
+    if PACKMAN::OS.debian_gang?
       return PACKMAN::OS.installed? ['libglib2.0-0', 'libglib2.0-dev']
-    when :Red_Hat_Enterprise
+    elsif PACKMAN::OS.redhat_gang?
       return PACKMAN::OS.installed? ['glib2', 'glib2-devel']
     end
   end
 
   def install_method
-    case PACKMAN::OS.distro
-    when :Ubuntu
+    if PACKMAN::OS.debian_gang?
       return PACKMAN::OS.how_to_install ['libglib2.0-0', 'libglib2.0-dev']
-    when :Red_Hat_Enterprise
+    elsif PACKMAN::OS.redhat_gang?
       return PACKMAN::OS.how_to_install ['glib2', 'glib2-devel']
     end
   end

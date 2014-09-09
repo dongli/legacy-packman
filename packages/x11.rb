@@ -2,23 +2,21 @@ class X11 < PACKMAN::Package
   label 'should_provided_by_system'
 
   def installed?
-    case PACKMAN::OS.distro
-    when :Mac_OS_X
+    if PACKMAN::OS.mac_gang?
       return Dir.exist? '/usr/X11'
-    when :Ubuntu
+    elsif PACKMAN::OS.debian_gang?
       return PACKMAN::OS.installed? ['libx11-dev', 'xorg-dev']
-    when :Red_Hat_Enterprise
+    elsif PACKMAN::OS.redhat_gang?
       return PACKMAN::OS.installed? ['libX11-devel']
     end
   end
 
   def install_method
-    case PACKMAN::OS.distro
-    when :Mac_OS_X
+    if PACKMAN::OS.mac_gang?
       return "Download Xquartz from http://xquartz.macosforge.org/landing/"
-    when :Ubuntu
+    elsif PACKMAN::OS.debian_gang?
       return PACKMAN::OS.how_to_install ['libX11-dev', 'xorg-dev']
-    when :Red_Hat_Enterprise
+    elsif PACKMAN::OS.redhat_gang?
       return PACKMAN::OS.how_to_install ['libX11-devel']
     end
   end

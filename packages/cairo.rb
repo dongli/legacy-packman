@@ -30,19 +30,17 @@ class Cairo < PACKMAN::Package
   end
 
   def installed?
-    case PACKMAN::OS.distro
-    when :Ubuntu
+    if PACKMAN::OS.debian_gang?
       return PACKMAN::OS.installed? ['libcairo2', 'libcairo-dev']
-    when :Red_Hat_Enterprise
+    elsif PACKMAN::OS.redhat_gang?
       return PACKMAN::OS.installed? ['cairo', 'cairo-devel']
     end
   end
 
   def install_method
-    case PACKMAN::OS.distro
-    when :Ubuntu
+    if PACKMAN::OS.debian_gang?
       return PACKMAN::OS.how_to_install ['libcairo2', 'libcairo-dev']
-    when :Red_Hat_Enterprise
+    elsif PACKMAN::OS.redhat_gang?
       return PACKMAN::OS.how_to_install ['cairo', 'cairo-devel']
     end
   end

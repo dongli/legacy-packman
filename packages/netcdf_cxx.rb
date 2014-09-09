@@ -6,6 +6,10 @@ class Netcdf_cxx < PACKMAN::Package
   depends_on 'netcdf_c'
 
   def install
+    netcdf_c_prefix = PACKMAN::Package.prefix(Netcdf_c)
+    PACKMAN.append_env "PATH=#{netcdf_c_prefix}/bin:$PATH"
+    PACKMAN.append_env "CPPFLAGS='-I#{netcdf_c_prefix}/include'"
+    PACKMAN.append_env "LDFLAGS='-L#{netcdf_c_prefix}/lib'"
     args = %W[
       --prefix=#{PACKMAN::Package.prefix(self)}
       --disable-dependency-tracking
@@ -13,15 +17,10 @@ class Netcdf_cxx < PACKMAN::Package
       --enable-static
       --enable-shared
     ]
-    netcdf_c_prefix = PACKMAN::Package.prefix(Netcdf_c)
-    envs = %W[
-      PATH=#{netcdf_c_prefix}/bin:$PATH
-      CPPFLAGS='-I#{netcdf_c_prefix}/include'
-      LDFLAGS='-L#{netcdf_c_prefix}/lib'
-    ]
-    PACKMAN.run './configure', *args, *envs
+    PACKMAN.run './configure', *args
     PACKMAN.run 'make'
     PACKMAN.run 'make check'
     PACKMAN.run 'make install'
+    PACKMAN.clean_env
   end
 end
