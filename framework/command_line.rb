@@ -53,6 +53,8 @@ module PACKMAN
         need_config_file = true if not has_option? '-all'
       when :install
         need_config_file = true
+      when :switch
+        need_config_file = true
       end
       if need_config_file and not @@config_file
         PACKMAN::ConfigManager.template('./packman.config')

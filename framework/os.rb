@@ -33,7 +33,7 @@ module PACKMAN
         res = `cat /etc/*-release`
         case res
         when /Red Hat Enterprise Linux Server/
-          @@distro = :Red_Hat_Enterprise
+          @@distro = :RedHat_Enterprise
           @@version = res.match(/\d+\.\d+/)[0]
         when /Ubuntu/
           @@distro = :Ubuntu
@@ -55,7 +55,7 @@ module PACKMAN
     end
 
     def self.redhat_gang?
-      if distro == :Red_Hat_Enterprise or
+      if distro == :RedHat_Enterprise or
          distro == :Fedora or
          distro == :CentOS
         return true

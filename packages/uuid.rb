@@ -23,6 +23,10 @@ class Uuid < PACKMAN::Package
       return PACKMAN::OS.installed? 'uuid-dev'
     elsif PACKMAN::OS.distro == :CentOS or PACKMAN::OS.distro == :Fedora
       return PACKMAN::OS.installed? 'uuid-devel'
+    elsif PACKMAN::OS.distro == :RedHat_Enterprise
+      # It seems that RedHat Enterprise does not provide uuid package but ship
+      # it builtin.
+      return File.exist? '/usr/include/uuid/uuid.h'
     elsif PACKMAN::OS.mac_gang?
       return File.exist? '/usr/include/uuid/uuid.h'
     end
@@ -33,6 +37,8 @@ class Uuid < PACKMAN::Package
       return PACKMAN::OS.how_to_install 'uuid-dev'
     elsif PACKMAN::OS.distro == :CentOS or PACKMAN::OS.distro == :Fedora
       return PACKMAN::OS.how_to_install 'uuid-devel'
+    elsif PACKMAN::OS.distro == :RedHat_Enterprise
+      return 'RedHat Enterprise should provide UUID already!'
     elsif PACKMAN::OS.mac_gang?
       return 'You should install Xcode and command line tools.'
     end

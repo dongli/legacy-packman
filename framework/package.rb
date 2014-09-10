@@ -172,6 +172,9 @@ module PACKMAN
         if Dir.exist?("#{prefix}/bin")
           file << "export PATH=$#{root}/bin:$PATH\n"
         end
+        if Dir.exist?("#{prefix}/sbin")
+          file << "export PATH=$#{root}/sbin:$PATH\n"
+        end
         if Dir.exist?("#{prefix}/share/man")
           file << "export MANPATH=\"$#{root}/share/man:$MANPATH\"\n"
         end
