@@ -2,8 +2,17 @@ module PACKMAN
   def self.collect_packages
     package_root = ConfigManager.package_root
     PACKMAN.mkdir(package_root)
+    if not ConfigManager.use_ftp_mirror == 'no'
+      report_notice "Use FTP mirror #{Tty.blue}#{ConfigManager.use_ftp_mirror}#{Tty.reset}."
+    end
     # Download packages to package_root.
-    ConfigManager.packages.keys.each do |package_name|
+    if CommandLine.has_option? '-all'
+      package_names = Dir.glob("#{ENV['PACKMAN_ROOT']}/packages/*.rb").map { |f| File.basename(f).gsub('.rb', '').capitalize }
+      package_names.delete('Packman_packages')
+    else
+      package_names = ConfigManager.packages.keys
+    end
+    package_names.each do |package_name|
       package = eval "#{package_name}.new"
       download_package(package_root, package)
     end
@@ -26,29 +35,60 @@ module PACKMAN
       patch_counter += 1
       url = patch.first
       sha1 = patch.last
-      patch_file = "#{package_root}/#{package.class}.patch.#{patch_counter}"
-      if File.exist?(patch_file)
-        if PACKMAN.sha1_same?(patch_file, sha1)
+      patch_file_name = "#{package.class}.patch.#{patch_counter}"
+      patch_file_path = "#{package_root}/#{patch_file_name}"
+      if File.exist? patch_file_path
+        if PACKMAN.sha1_same? patch_file_path, sha1
           next
         end
       end
       report_notice "Download patch #{url}."
-      PACKMAN.download(package_root, url, File.basename(patch_file))
+      if not ConfigManager.use_ftp_mirror == 'no'
+        url = "#{ConfigManager.use_ftp_mirror}/#{patch_file_name}"
+      end
+      PACKMAN.download(package_root, url, patch_file_name)
     end
     # Check if there is any attachment to download.
     package.attaches.each do |attach|
       url = attach.first
       sha1 = attach.last
-      attach_file = "#{package_root}/#{File.basename(URI.parse(url).path)}"
-      if File.exist?(attach_file)
-        if PACKMAN.sha1_same?(attach_file, sha1)
+      attach_file_name = "#{File.basename(URI.parse(url).path)}"
+      attach_file_path = "#{package_root}/#{attach_file_name}"
+      if File.exist? attach_file_path
+        if PACKMAN.sha1_same? attach_file_path, sha1
           next
         end
       end
       report_notice "Download attachment #{url}."
-      PACKMAN.download(package_root, url, File.basename(attach_file))
+      if not ConfigManager.use_ftp_mirror == 'no'
+        url = "#{ConfigManager.use_ftp_mirror}/#{attach_file_name}"
+      end
+      PACKMAN.download(package_root, url, attach_file_name)
     end
     # Download current package.
-    package.download_to(package_root)
+    if package.respond_to? :url
+      package_file_path = "#{package_root}/#{package.filename}"
+      if File.exist? package_file_path
+        return if PACKMAN.sha1_same? package_file_path, package.sha1
+      end
+      PACKMAN.report_notice "Download package #{Tty.red}#{package.class}#{Tty.reset}."
+      url = package.url
+      if not ConfigManager.use_ftp_mirror == 'no'
+        url = "#{ConfigManager.use_ftp_mirror}/#{package.filename}"
+      end
+      PACKMAN.download(package_root, url, package.filename)
+    elsif package.respond_to? :git
+      package_dir_path = "#{package_root}/#{package.dirname}"
+      if Dir.exist? package_dir_path
+        return if PACKMAN.sha1_same? package_dir_path, package.sha1
+      end
+      PACKMAN.report_notice "Download package #{Tty.red}#{package.class}#{Tty.reset}."
+      if not ConfigManager.use_ftp_mirror == 'no'
+        url = "#{ConfigManager.use_ftp_mirror}/#{package.dirname}"
+        PACKMAN.download(package_root, url, package.dirname)
+      else
+        PACKMAN.git_clone(package_root, package.git, package.tag, package.dirname)
+      end
+    end
   end
 end

@@ -4,6 +4,7 @@ module PACKMAN
       package_root
       install_root
       active_compiler_set
+      use_ftp_mirror
       compiler_set_0
       compiler_set_1
       compiler_set_2
@@ -19,6 +20,8 @@ module PACKMAN
         class_eval "def self.#{key}=(value); @@#{key} = value; end"
         class_eval "def self.#{key}; @@#{key}; end"
       end
+      # Set default values.
+      @@use_ftp_mirror = 'no'
     end
 
     def self.compiler_sets
@@ -69,6 +72,7 @@ module PACKMAN
         file << "package_root = \"...\"\n"
         file << "install_root = \"...\"\n"
         file << "active_compiler_set = ...\n"
+        file << "use_ftp_mirror = \"no\"\n"
         file << "compiler_set_0 = {\n"
         file << "  \"c\" => \"...\",\n"
         file << "  \"c++\" => \"...\",\n"

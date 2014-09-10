@@ -11,16 +11,16 @@ require 'packman_framework'
 require 'packman_packages'
 
 case PACKMAN::CommandLine.subcommand
-when 'collect'
+when :collect
   PACKMAN::ConfigManager.parse
   PACKMAN.collect_packages
-when 'install'
+when :install
   PACKMAN::ConfigManager.parse
   PACKMAN.install_packages
-when 'switch'
+when :switch
   PACKMAN::ConfigManager.parse
   PACKMAN.switch_packages
-when 'update'
+when :update
   saved_dir = FileUtils.pwd
   FileUtils.chdir ENV['PACKMAN_ROOT']
   if not Dir.exist? '.git'
@@ -29,7 +29,7 @@ when 'update'
   end
   system 'git pull'
   FileUtils.chdir saved_dir
-when 'help'
+when :help
   PACKMAN::CommandLine.print_usage
 else
   PACKMAN.report_error "Unknown subcommand #{PACKMAN::CommandLine.subcommand}!"

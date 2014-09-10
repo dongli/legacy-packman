@@ -116,24 +116,6 @@ module PACKMAN
 
     def postfix; end
 
-    def download_to(root)
-      if self.respond_to? :url
-        package_file = "#{root}/#{filename}"
-        if File.exist? package_file
-          return if PACKMAN.sha1_same? package_file, sha1
-        end
-        PACKMAN.report_notice "Download package #{Tty.red}#{self.class}#{Tty.reset}."
-        PACKMAN.download(root, url, filename)
-      elsif self.respond_to? :git
-        package_dir = "#{root}/#{dirname}"
-        if Dir.exist? package_dir
-          return if PACKMAN.sha1_same? package_dir, sha1
-        end
-        PACKMAN.report_notice "Download package #{Tty.red}#{self.class}#{Tty.reset}."
-        PACKMAN.git_clone(root, git, tag, dirname)
-      end
-    end
-
     def skip?
       skip_distros.include? PACKMAN::OS.distro or
       skip_distros.include? :all or

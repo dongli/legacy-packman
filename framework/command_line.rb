@@ -5,20 +5,22 @@ module PACKMAN
     @@options = []
 
     @@permitted_subcommands = {
-      'collect' => 'Collect packages from internet.',
-      'install' => 'Install packages and their dependencies.',
-      'switch'  => 'Switch different compiler set (new bashrc will be generated).',
-      'update'  => 'Update PACKMAN.',
-      'help'    => 'Print help message.'
+      :collect => 'Collect packages from internet.',
+      :install => 'Install packages and their dependencies.',
+      :switch  => 'Switch different compiler set (new bashrc will be generated).',
+      :update  => 'Update PACKMAN.',
+      :help    => 'Print help message.'
     }
     @@permitted_options = {
-      'collect' => {},
-      'install' => {
-        '-v' => 'Show verbose information.'
+      :collect => {
+        '-all' => 'Collect all packages.'
       },
-      'switch'  => {},
-      'update'  => {},
-      'help'    => {}
+      :install => {
+        '-verbose' => 'Show verbose information.'
+      },
+      :switch  => {},
+      :update  => {},
+      :help    => {}
     }
     
     def self.init
@@ -26,8 +28,8 @@ module PACKMAN
         PACKMAN.report_error "PACKMAN expects a subcommand!"
       end
       ARGV.each do |arg|
-        if @@permitted_subcommands.keys.include? arg
-          @@subcommand = arg
+        if @@permitted_subcommands.keys.include? arg.to_sym
+          @@subcommand = arg.to_sym
           next
         end
         if not @@subcommand
@@ -45,7 +47,14 @@ module PACKMAN
             "The available options are:\n#{print_options(@@subcommand, 2).chomp}"
         end
       end
-      if ['collect', 'install'].include? @@subcommand and not @@config_file
+      need_config_file = false
+      case @@subcommand
+      when :collect
+        need_config_file = true if not has_option? '-all'
+      when :install
+        need_config_file = true
+      end
+      if need_config_file and not @@config_file
         PACKMAN::ConfigManager.template('./packman.config')
         PACKMAN.report_warning "Lack configure file, PACKMAN generate one for you! "+
         "Edit #{PACKMAN::Tty.red}packman.config#{PACKMAN::Tty.reset} and come back."
