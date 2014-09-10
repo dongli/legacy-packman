@@ -14,7 +14,7 @@ class Hdf_eos2 < PACKMAN::Package
       --with-zlib=#{PACKMAN::Package.prefix(Zlib)}
       --with-szlib=#{PACKMAN::Package.prefix(Szip)}
       --with-jpeg=#{PACKMAN::Package.prefix(Jpeg)}
-      CC=#{PACKMAN::Package.prefix(Hdf4)}/bin/h4cc
+      CC='#{PACKMAN::Package.prefix(Hdf4)}/bin/h4cc -Df2cFortran'
     ]
     PACKMAN.run './configure', *args
     PACKMAN.run 'make -j2'
