@@ -116,7 +116,9 @@ module PACKMAN
   end
 
   def self.compression_type(filepath)
-    if filepath =~ /\.(tar(\..*)?|tgz|tbz2)$/
+    if filepath =~ /\.tar.Z$/
+      return :tar_Z
+    elsif filepath =~ /\.(tar(\..*)?|tgz|tbz2)$/
       return :tar
     elsif filepath =~ /\.(gz)$/
       return :gzip
@@ -179,6 +181,8 @@ module PACKMAN
 
   def self.decompress(filepath)
     case PACKMAN.compression_type filepath
+    when :tar_Z
+      system "tar xzf #{filepath}"
     when :tar
       system "tar xf #{filepath}"
     when :gzip
