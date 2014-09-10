@@ -12,6 +12,7 @@ require "run_manager"
 require "collect_packages"
 require "install_packages"
 require "switch_packages"
+require "mirror_packages"
 
 PACKMAN::OS.init
 PACKMAN::CommandLine.init

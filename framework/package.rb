@@ -162,6 +162,10 @@ module PACKMAN
       @@compiler_set
     end
 
+    def self.compiler_set=(val)
+      @@compiler_set = val
+    end
+
     def self.bashrc(package)
       prefix = prefix(package)
       class_name = package.class.name.upcase

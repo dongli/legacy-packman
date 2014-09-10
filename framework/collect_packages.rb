@@ -1,12 +1,12 @@
 module PACKMAN
-  def self.collect_packages
+  def self.collect_packages(option = {})
     package_root = ConfigManager.package_root
     PACKMAN.mkdir(package_root)
     if not ConfigManager.use_ftp_mirror == 'no'
       report_notice "Use FTP mirror #{Tty.blue}#{ConfigManager.use_ftp_mirror}#{Tty.reset}."
     end
     # Download packages to package_root.
-    if CommandLine.has_option? '-all'
+    if CommandLine.has_option? '-all' or option[:all] 
       package_names = Dir.glob("#{ENV['PACKMAN_ROOT']}/packages/*.rb").map { |f| File.basename(f).gsub('.rb', '').capitalize }
       package_names.delete('Packman_packages')
     else

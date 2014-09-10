@@ -8,6 +8,7 @@ module PACKMAN
       :collect => 'Collect packages from internet.',
       :install => 'Install packages and their dependencies.',
       :switch  => 'Switch different compiler set (new bashrc will be generated).',
+      :mirror  => 'Control FTP mirror service.',
       :update  => 'Update PACKMAN.',
       :help    => 'Print help message.'
     }
@@ -19,6 +20,11 @@ module PACKMAN
         '-verbose' => 'Show verbose information.'
       },
       :switch  => {},
+      :mirror  => {
+        '-init'  => 'Initialize FTP mirror service.',
+        '-start' => 'Start FTP mirror service.',
+        '-stop'  => 'Stop FTP mirror service.'
+      },
       :update  => {},
       :help    => {}
     }
@@ -54,6 +60,8 @@ module PACKMAN
       when :install
         need_config_file = true
       when :switch
+        need_config_file = true
+      when :mirror
         need_config_file = true
       end
       if need_config_file and not @@config_file
@@ -93,7 +101,7 @@ module PACKMAN
         for i in 0..indent-1
           res << ' '
         end
-        res << "#{PACKMAN::Tty.bold(subcommand)}\t#{meaning}\n\n"
+        res << "#{PACKMAN::Tty.bold(subcommand.to_s)}\t#{meaning}\n\n"
         res << print_options(subcommand, indent+2)
         res.chomp!
         res << "\n\n"

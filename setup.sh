@@ -11,7 +11,16 @@ function _packman_()
     completed_words=""
     case "${prev_argv##*/}" in
     "packman")
-        completed_words="collect install switch update help"
+        completed_words="collect install switch mirror update help"
+        ;;
+    "collect")
+        completed_words="-all"
+        ;;
+    "install")
+        completed_words="-verbose"
+        ;;
+    "mirror")
+        completed_words="-init -start -stop"
         ;;
     esac
     COMPREPLY=($(compgen -W "$completed_words" -- $curr_argv))

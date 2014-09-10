@@ -20,6 +20,9 @@ when :install
 when :switch
   PACKMAN::ConfigManager.parse
   PACKMAN.switch_packages
+when :mirror
+  PACKMAN::ConfigManager.parse
+  PACKMAN.mirror_packages
 when :update
   saved_dir = FileUtils.pwd
   FileUtils.chdir ENV['PACKMAN_ROOT']
