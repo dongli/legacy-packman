@@ -4,31 +4,27 @@ class Mesa3d < PACKMAN::Package
   skip_on :Mac_OS_X
 
   def installed?
-    case PACKMAN::OS.distro
-    when :Ubuntu
+    if PACKMAN::OS.debian_gang?
       return PACKMAN::OS.installed? [
         'libglu1-mesa', 'libglu1-mesa-dev']
-    when :Red_Hat_Enterprise
+    elsif PACKMAN::OS.redhat_gang?
       return PACKMAN::OS.installed? [
         'mesa-libGL',  'mesa-libGL-devel',
         'mesa-libGLU', 'mesa-libGLU-devel',
-        'mesa-libGLw', 'mesa-libGLw-devel',
-        'mesa-libOSMesa', 'mesa-libOSMesa-devel'
+        'mesa-libGLw', 'mesa-libGLw-devel'
       ]
     end
   end
 
   def install_method
-    case PACKMAN::OS.distro
-    when :Ubuntu
+    if PACKMAN::OS.debian_gang?
       return PACKMAN::OS.how_to_install [
         'libglu1-mesa', 'libglu1-mesa-dev']
-    when :Red_Hat_Enterprise
+    elsif PACKMAN::OS.redhat_gang?
       return PACKMAN::OS.how_to_install [
         'mesa-libGL',  'mesa-libGL-devel',
         'mesa-libGLU', 'mesa-libGLU-devel',
-        'mesa-libGLw', 'mesa-libGLw-devel',
-        'mesa-libOSMesa', 'mesa-libOSMesa-devel'
+        'mesa-libGLw', 'mesa-libGLw-devel'
       ]
     end
   end
