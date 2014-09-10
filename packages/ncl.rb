@@ -8,7 +8,6 @@ class Ncl < PACKMAN::Package
   version '6.2.0'
 
   depends_on 'freetype'
-  # depends_on 'lesstif'
   depends_on 'cairo'
   depends_on 'jpeg'
   depends_on 'hdf4'
