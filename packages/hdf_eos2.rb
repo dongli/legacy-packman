@@ -17,6 +17,11 @@ class Hdf_eos2 < PACKMAN::Package
       CC=#{PACKMAN::Package.prefix(Hdf4)}/bin/h4cc
     ]
     PACKMAN.run './configure', *args
+    PACKMAN.run 'make -j2'
     PACKMAN.run 'make install'
+    # Bad HDF-EOS2 developer does not install 'include'!
+    PACKMAN.cd 'include'
+    PACKMAN.run 'make install'
+    PACKMAN.cd_back
   end
 end
