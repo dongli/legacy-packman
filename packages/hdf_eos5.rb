@@ -11,7 +11,7 @@ class Hdf_eos5 < PACKMAN::Package
       --with-hdf5=#{PACKMAN::Package.prefix(Hdf5)}
       --with-zlib=#{PACKMAN::Package.prefix(Zlib)}
       --with-szlib=#{PACKMAN::Package.prefix(Szip)}
-      CC='#{PACKMAN::Package.prefix(Hdf4)}/bin/h5cc -Df2cFortran'
+      CC='#{PACKMAN::Package.prefix(Hdf5)}/bin/h5cc -Df2cFortran'
     ]
     PACKMAN.run './configure', *args
     PACKMAN.run 'make all'
