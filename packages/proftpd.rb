@@ -1,7 +1,8 @@
 class Proftpd < PACKMAN::Package
-  url 'ftp://ftp.proftpd.org/distrib/source/proftpd-1.3.5.tar.gz'
-  sha1 '9859b1e6b5e2731d7b1147f875fbdb0d4738c688'
-  version '1.3.5'
+  # NOTE: Proftpd 1.3.5 has bugs in Mac, so I choose to use 1.3.4d.
+  url 'ftp://ftp.proftpd.org/distrib/source/proftpd-1.3.4d.tar.gz'
+  sha1 'a5b6c80a8ddeeeccc1c6448d797ccd62a3f63b65'
+  version '1.3.4d'
 
   def install
     PACKMAN.replace 'sample-configurations/basic.conf', {
@@ -19,5 +20,11 @@ class Proftpd < PACKMAN::Package
     else
       PACKMAN.run "make INSTALL_USER=`whoami` INSTALL_GROUP=`whoami` install"
     end
+  end
+
+  def postfix
+    PACKMAN.replace "#{PACKMAN::Package.prefix(self)}/../config/proftpd.conf", {
+      /^(ServerType\s*.*)$/ => "\\1\nServerLog #{PACKMAN::Package.prefix(self)}/var/proftpd.log"
+    }
   end
 end

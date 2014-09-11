@@ -136,8 +136,8 @@ module PACKMAN
   end
 
   def self.mkdir(dir, option = :none)
-    FileUtils.rm_rf(dir) if Dir.exist?(dir) and option == :force
-    FileUtils.mkdir_p(dir)
+    FileUtils.rm_rf(dir) if Dir.exist? dir and option == :force
+    FileUtils.mkdir_p(dir) if not Dir.exist? dir
     if block_given?
       FileUtils.chdir(dir)
       yield

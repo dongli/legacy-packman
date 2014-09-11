@@ -25,10 +25,11 @@ module PACKMAN
   def self.start_mirror_service
     Package.compiler_set = ConfigManager.compiler_sets[0]
     report_notice "Start FTP mirror service."
+    cmd = "#{Package.prefix(Proftpd)}/sbin/proftpd -d 10"
     if ENV['USER'] != 'root'
-      system "sudo #{Package.prefix(Proftpd)}/sbin/proftpd"
+      system "sudo #{cmd}"
     else
-      system "#{Package.prefix(Proftpd)}/sbin/proftpd"
+      system cmd
     end
   end
 
@@ -40,10 +41,11 @@ module PACKMAN
       exit
     end
     report_notice "Stop FTP mirror service."
+    cmd = "kill -TERM `cat #{pid}`"
     if ENV['USER'] != 'root'
-      system "sudo kill -TERM `cat #{pid}`"
+      system "sudo #{cmd}"
     else
-      system "kill -TERM `cat #{pid}`"
+      system cmd
     end
   end
 end
