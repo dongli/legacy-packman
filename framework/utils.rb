@@ -78,7 +78,14 @@ module PACKMAN
     else
       args = "-f#L -C - -o #{root}/#{filename}"
     end
-    system "curl #{args} #{url}"
+    begin
+      PACKMAN.slim_run "curl #{args} #{url}"
+    rescue
+      if not PACKMAN::OS.connect_internet?
+        report_error "Sorry, this machine can not connect internet! "+
+          "You may use a FTP mirror in your location."
+      end
+    end
   end
 
   def self.git_clone(root, url, tag, rename)

@@ -50,6 +50,20 @@ module PACKMAN
       end
     end
 
+    def self.connect_internet?
+      if not defined? @@connect_internet
+        require "resolv"
+        dns_resolver = Resolv::DNS.new()
+        begin
+          dns_resolver.getaddress("symbolics.com")
+          @@connect_internet = true
+        rescue Resolv::ResolvError => e
+          @@connect_internet = false
+        end
+      end
+      return @@connect_internet
+    end
+
     def self.x86_64?
       @@arch == 'x86_64'
     end
