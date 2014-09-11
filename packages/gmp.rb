@@ -3,6 +3,8 @@ class Gmp < PACKMAN::Package
   sha1 '360802e3541a3da08ab4b55268c80f799939fddc'
   version '6.0.0a'
 
+  depends_on 'm4'
+
   def install
     args = %W[
       --prefix=#{PACKMAN::Package.prefix(self)}

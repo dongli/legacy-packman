@@ -1,11 +1,11 @@
-class Flex < PACKMAN::Package
+class Byacc < PACKMAN::Package
   label 'should_provided_by_system'
 
   def installed?
     if PACKMAN::OS.mac_gang?
-      return File.exist? '/usr/bin/flex'
+      return File.exist? '/usr/bin/yacc'
     else
-      return PACKMAN::OS.installed? 'flex'
+      return PACKMAN::OS.installed? 'byacc'
     end
   end
 
@@ -13,7 +13,7 @@ class Flex < PACKMAN::Package
     if PACKMAN::OS.mac_gang?
       return 'You should install Xcode and command line tools.'
     else
-      return PACKMAN::OS.how_to_install 'flex'
+      return PACKMAN::OS.how_to_install 'byacc'
     end
   end
 end
