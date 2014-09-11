@@ -14,6 +14,10 @@ class Proftpd < PACKMAN::Package
       --localstatedir=#{proftpd}/var
     ]
     PACKMAN.run './configure', *args
-    PACKMAN.run "make INSTALL_USER=`whoami` INSTALL_GROUP=`whoami` install"
+    if PACKMAN::OS.mac_gang?
+      PACKMAN.run "make INSTALL_USER=`whoami` INSTALL_GROUP=admin install"
+    else
+      PACKMAN.run "make INSTALL_USER=`whoami` INSTALL_GROUP=`whoami` install"
+    end
   end
 end
