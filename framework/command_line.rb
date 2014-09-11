@@ -21,9 +21,11 @@ module PACKMAN
       },
       :switch  => {},
       :mirror  => {
-        '-init'  => 'Initialize FTP mirror service.',
-        '-start' => 'Start FTP mirror service.',
-        '-stop'  => 'Stop FTP mirror service.'
+        '-init'   => 'Initialize FTP mirror service.',
+        '-start'  => 'Start FTP mirror service.',
+        '-stop'   => 'Stop FTP mirror service.',
+        '-status' => 'Check if FTP mirror service is on or off.',
+        '-sync'   => 'Synchronize the packages.'
       },
       :update  => {},
       :help    => {}

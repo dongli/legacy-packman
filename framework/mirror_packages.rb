@@ -6,13 +6,15 @@ module PACKMAN
       start_mirror_service
     elsif CommandLine.has_option? '-stop'
       stop_mirror_service
+    elsif CommandLine.has_option? '-status'
+      status_mirror_service
+    elsif CommandLine.has_option? '-sync'
+      sync_mirror_service
     end
   end
 
   def self.init_mirror_service
-    # Download all packages.
-    report_notice 'Download all defined packages.'
-    collect_packages :all => true
+    sync_mirror_service
     # Install proftpd.
     Package.install [ConfigManager.compiler_sets[0]], Proftpd.new
     # Edit proftpd config file.
@@ -25,7 +27,7 @@ module PACKMAN
   def self.start_mirror_service
     Package.compiler_set = ConfigManager.compiler_sets[0]
     report_notice "Start FTP mirror service."
-    cmd = "#{Package.prefix(Proftpd)}/sbin/proftpd -d 10"
+    cmd = "#{Package.prefix(Proftpd)}/sbin/proftpd"
     if ENV['USER'] != 'root'
       system "sudo #{cmd}"
     else
@@ -47,5 +49,21 @@ module PACKMAN
     else
       system cmd
     end
+  end
+
+  def self.status_mirror_service
+    Package.compiler_set = ConfigManager.compiler_sets[0]
+    pid = "#{Package.prefix(Proftpd)}/var/proftpd.pid"
+    if File.exist? pid
+      report_notice "FTP mirror service is #{Tty.green}on#{Tty.reset}."
+    else
+      report_notice "FTP mirror service is #{Tty.red}off#{Tty.reset}."
+    end
+  end
+
+  def self.sync_mirror_service
+    # Download all packages.
+    report_notice 'Download all defined packages.'
+    collect_packages :all => true
   end
 end

@@ -20,7 +20,7 @@ function _packman_()
         completed_words="-verbose"
         ;;
     "mirror")
-        completed_words="-init -start -stop"
+        completed_words="-init -start -stop -status -sync"
         ;;
     esac
     COMPREPLY=($(compgen -W "$completed_words" -- $curr_argv))
