@@ -7,6 +7,8 @@ class Ncl < PACKMAN::Package
   filename 'ncl_ncarg-6.2.0.tar.gz'
   version '6.2.0'
 
+  label 'under_construction'
+
   depends_on 'freetype'
   depends_on 'cairo'
   depends_on 'jpeg'

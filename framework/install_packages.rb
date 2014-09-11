@@ -35,6 +35,11 @@ module PACKMAN
         end
       end
       package = eval "#{package_name}.new"
+      # Check if the package building is finished.
+      if package.labels.include? 'under_construction'
+        PACKMAN.report_warning "Sorry, #{PACKMAN::Tty.red}#{package.class}#{PACKMAN::Tty.reset} is still under construction!"
+        next
+      end
       # Check which compiler sets are to use.
       compiler_sets = []
       for i in 0..ConfigManager.compiler_sets.size-1
