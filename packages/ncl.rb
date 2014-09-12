@@ -7,9 +7,12 @@ class Ncl < PACKMAN::Package
   filename 'ncl_ncarg-6.2.0.tar.gz'
   version '6.2.0'
 
-  label 'under_construction'
-
+  depends_on 'expat'
   depends_on 'freetype'
+  depends_on 'fontconfig'
+  depends_on 'szip'
+  depends_on 'jasper'
+  depends_on 'libpng'
   depends_on 'cairo'
   depends_on 'jpeg'
   depends_on 'hdf4'
@@ -25,6 +28,20 @@ class Ncl < PACKMAN::Package
   depends_on 'vis5dx'
 
   def install
+    # Check some system packages.
+    if PACKMAN::OS.redhat_gang?
+      xaw_package = 'libXaw-devel'
+    elsif PACKMAN::OS.debian_gang?
+      xaw_package = ['libxt-dev', 'libxaw-headers']
+    end
+    if not PACKMAN::OS.installed? xaw_package
+      PACKMAN.report_warning "NCL needs Xaw (its headers) to build "+
+        "#{PACKMAN::Tty.red}idt#{PACKMAN::Tty.reset} tool, but it "+
+        "is not installed by system! You can cancel to install it "+
+        "with the following command if you really need "+
+        "#{PACKMAN::Tty.red}idt#{PACKMAN::Tty.reset}.\n\n"+
+        "--> #{PACKMAN::Tty.bold(PACKMAN::OS.how_to_install xaw_package)}"
+    end
     PACKMAN::RunManager.append_env "NCARG=#{PACKMAN::Package.prefix(self)}"
     # Copy Triangle codes into necessary place.
     PACKMAN.mkdir 'triangle'
@@ -105,12 +122,14 @@ class Ncl < PACKMAN::Package
       if PACKMAN::OS.distro == :Mac_OS_X
         writer.print "/usr/X11R6/lib "
       end
-      [ Freetype, Cairo, Jpeg, Hdf4, Hdf5, Netcdf_c, Netcdf_fortran,
-        Hdf_eos2, Hdf_eos5, Grib2_c, Gdal, Proj, Udunits, Vis5dx ].each do |lib|
+      [ Expat, Freetype, Fontconfig, Szip, Jasper, Cairo, Jpeg, Libpng, Hdf4, Hdf5,
+        Netcdf_c, Netcdf_fortran, Pixman, Hdf_eos2, Hdf_eos5, Grib2_c, Gdal, Proj,
+        Udunits, Vis5dx ].each do |lib|
         if not Dir.exist? "#{PACKMAN::Package.prefix(lib)}/lib"
           p "check #{lib} no lib"
+        else
+          writer.print "#{PACKMAN::Package.prefix(lib)}/lib "
         end
-        writer.print "#{PACKMAN::Package.prefix(lib)}/lib "
       end
       writer.print "\n"
       # Enter local include search path(s).
@@ -118,12 +137,17 @@ class Ncl < PACKMAN::Package
       if PACKMAN::OS.distro == :Mac_OS_X
         writer.print "/usr/X11R6/include "
       end
-      [ Freetype, Cairo, Jpeg, Hdf4, Hdf5, Netcdf_c, Netcdf_fortran, Hdf_eos5,
-        Grib2_c, Gdal, Proj, Udunits, Vis5dx ].each do |lib|
+      [ Expat, Freetype, Fontconfig, Szip, Jasper, Cairo, Jpeg, Libpng, Hdf4, Hdf5,
+        Netcdf_c, Netcdf_fortran, Pixman, Hdf_eos2, Hdf_eos5, Grib2_c, Gdal, Proj,
+        Udunits, Vis5dx ].each do |lib|
         if not Dir.exist? "#{PACKMAN::Package.prefix(lib)}/include"
           p "check #{lib} no include"
+        else
+          writer.print "#{PACKMAN::Package.prefix(lib)}/include "
         end
-        writer.print "#{PACKMAN::Package.prefix(lib)}/include "
+      end
+      if PACKMAN::OS.redhat_gang?
+        writer.print "/usr/include/freetype2 "
       end
       writer.print "#{PACKMAN::Package.prefix(Gcc)}/include "
       writer.print "\n"
@@ -138,7 +162,9 @@ class Ncl < PACKMAN::Package
     # Make NCL.
     PACKMAN.run 'make Everything'
     # Make sure command 'ncl' is built.
-    # PACKMAN.run "ls #{PACKMAN::Package.prefix(self)}/bin/ncl"
+    PACKMAN.run "ls #{PACKMAN::Package.prefix(self)}/bin/ncl"
+    # Create 'tmp' directory.
+    PACKMAN.mkdir "#{PACKMAN::Package.prefix(self)}/tmp"
     PACKMAN::RunManager.clean_env
   end
 end

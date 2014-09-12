@@ -4,6 +4,10 @@ class Proj < PACKMAN::Package
   version '4.8.0'
 
   def install
+    # To avoid the 'sign' function conflict with Hdf_eos2.
+    PACKMAN.replace 'src/PJ_healpix.c', {
+      /sign\s*\(/ => 'sign_in_proj('
+    }
     args = %W[
       --prefix=#{PACKMAN::Package.prefix(self)}
       --enable-static=yes

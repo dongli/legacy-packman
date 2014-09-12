@@ -9,10 +9,6 @@ class Cairo < PACKMAN::Package
   depends_on 'glib'
   depends_on 'x11'
 
-  if PACKMAN::OS.distro != :Mac_OS_X
-    label 'should_provided_by_system'
-  end
-
   def install
     # https://www.libreoffice.org/bugzilla/show_bug.cgi?id=77060
     # http://gcc.gnu.org/onlinedocs/gccint/LTO.html
