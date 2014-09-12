@@ -14,7 +14,7 @@ problems:
 
 All these problems make porting programs a headache, and we hesitate about using
 new language features (e.g. `c++11`) and good libraries, so here is `packman`.
-For more usage information, please refer [[here|Basic-Usages]].
+For more usage information, please refer [here](https://github.com/dongli/packman/wiki/Basic-Usages).
 
 I would like to thank the Homebrew community, since I have referred the design
 of it quite a lot, but I do not just copycat `homebrew`. If you find `packman` is
