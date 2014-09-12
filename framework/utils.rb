@@ -78,13 +78,10 @@ module PACKMAN
     else
       args = "-f#L -C - -o #{root}/#{filename}"
     end
-    begin
-      PACKMAN.slim_run "curl #{args} #{url}"
-    rescue
-      if not PACKMAN::OS.connect_internet?
-        report_error "Sorry, this machine can not connect internet! "+
-          "You may use a FTP mirror in your location."
-      end
+    system "curl #{args} #{url}"
+    if not $?.success? and not PACKMAN::OS.connect_internet?
+      report_error "Sorry, this machine can not connect internet! "+
+        "You may use a FTP mirror in your location."
     end
   end
 
