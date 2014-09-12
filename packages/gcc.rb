@@ -15,7 +15,11 @@ class Gcc < PACKMAN::Package
   provide 'fortran' => 'gfortran'
 
   def install
-    languages = %W[c c++ fortran]
+    if PACKMAN::OS.mac_gang?
+      languages = %W[c c++ objc fortran]
+    else
+      languages = %W[c c++ fortran]
+    end
     args = %W[
       --prefix=#{PACKMAN::Package.prefix(self)}
       --enable-languages=#{languages.join(',')}

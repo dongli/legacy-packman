@@ -1,8 +1,6 @@
 class Mesa3d < PACKMAN::Package
   label 'should_provided_by_system'
 
-  skip_on :Mac_OS_X
-
   def installed?
     if PACKMAN::OS.debian_gang?
       return PACKMAN::OS.installed? [
@@ -13,6 +11,8 @@ class Mesa3d < PACKMAN::Package
         'mesa-libGLU', 'mesa-libGLU-devel',
         'mesa-libGLw', 'mesa-libGLw-devel'
       ]
+    elsif PACKMAN::OS.mac_gang?
+      return true
     end
   end
 
@@ -26,6 +26,8 @@ class Mesa3d < PACKMAN::Package
         'mesa-libGLU', 'mesa-libGLU-devel',
         'mesa-libGLw', 'mesa-libGLw-devel'
       ]
+    elsif PACKMAN::OS.mac_gang?
+      return "Download Xquartz from http://xquartz.macosforge.org/landing/"
     end
   end
 end

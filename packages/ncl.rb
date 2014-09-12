@@ -29,18 +29,20 @@ class Ncl < PACKMAN::Package
 
   def install
     # Check some system packages.
-    if PACKMAN::OS.redhat_gang?
-      xaw_package = 'libXaw-devel'
-    elsif PACKMAN::OS.debian_gang?
-      xaw_package = ['libxt-dev', 'libxaw-headers']
-    end
-    if not PACKMAN::OS.installed? xaw_package
-      PACKMAN.report_warning "NCL needs Xaw (its headers) to build "+
-        "#{PACKMAN::Tty.red}idt#{PACKMAN::Tty.reset} tool, but it "+
-        "is not installed by system! You can cancel to install it "+
-        "with the following command if you really need "+
-        "#{PACKMAN::Tty.red}idt#{PACKMAN::Tty.reset}.\n\n"+
-        "--> #{PACKMAN::Tty.bold(PACKMAN::OS.how_to_install xaw_package)}"
+    if not PACKMAN::OS.mac_gang?
+      if PACKMAN::OS.redhat_gang?
+        xaw_package = 'libXaw-devel'
+      elsif PACKMAN::OS.debian_gang?
+        xaw_package = ['libxt-dev', 'libxaw-headers']
+      end
+      if not PACKMAN::OS.installed? xaw_package
+        PACKMAN.report_warning "NCL needs Xaw (its headers) to build "+
+          "#{PACKMAN::Tty.red}idt#{PACKMAN::Tty.reset} tool, but it "+
+          "is not installed by system! You can cancel to install it "+
+          "with the following command if you really need "+
+          "#{PACKMAN::Tty.red}idt#{PACKMAN::Tty.reset}.\n\n"+
+          "--> #{PACKMAN::Tty.bold(PACKMAN::OS.how_to_install xaw_package)}"
+      end
     end
     PACKMAN::RunManager.append_env "NCARG=#{PACKMAN::Package.prefix(self)}"
     # Copy Triangle codes into necessary place.
