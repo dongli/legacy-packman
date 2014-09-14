@@ -24,14 +24,13 @@ when :mirror
   PACKMAN::ConfigManager.parse
   PACKMAN.mirror_packages
 when :update
-  saved_dir = FileUtils.pwd
-  FileUtils.chdir ENV['PACKMAN_ROOT']
+  PACKMAN.cd ENV['PACKMAN_ROOT']
   if not Dir.exist? '.git'
     PACKMAN.report_error "PACKMAN is not gained through GIT! You can download PACKMAN by:\n"+
       "#{PACKMAN::Tty.blue}==> #{PACKMAN::Tty.reset}git clone https://github.com/dongli/packman"
   end
   system 'git pull'
-  FileUtils.chdir saved_dir
+  PACKMAN.cd_back
 when :help
   PACKMAN::CommandLine.print_usage
 else

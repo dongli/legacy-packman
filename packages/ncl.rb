@@ -128,8 +128,6 @@ class Ncl < PACKMAN::Package
         Netcdf_c, Netcdf_fortran, Pixman, Hdf_eos2, Hdf_eos5, Grib2_c, Gdal, Proj,
         Udunits, Vis5dx ].each do |lib|
         if not Dir.exist? "#{PACKMAN::Package.prefix(lib)}/lib"
-          p "check #{lib} no lib"
-        else
           writer.print "#{PACKMAN::Package.prefix(lib)}/lib "
         end
       end
@@ -143,8 +141,6 @@ class Ncl < PACKMAN::Package
         Netcdf_c, Netcdf_fortran, Pixman, Hdf_eos2, Hdf_eos5, Grib2_c, Gdal, Proj,
         Udunits, Vis5dx ].each do |lib|
         if not Dir.exist? "#{PACKMAN::Package.prefix(lib)}/include"
-          p "check #{lib} no include"
-        else
           writer.print "#{PACKMAN::Package.prefix(lib)}/include "
         end
       end

@@ -4,6 +4,7 @@ class Fontconfig < PACKMAN::Package
   version '2.11.1'
 
   depends_on 'freetype'
+  depends_on 'expat'
 
   label 'use_system_first'
 
@@ -14,7 +15,7 @@ class Fontconfig < PACKMAN::Package
       --prefix=#{PACKMAN::Package.prefix(self)}
       --disable-dependency-tracking
       --disable-silent-rules
-      --enable-libxml2
+      --with-expat=#{PACKMAN::Package.prefix(Expat)}
     ]
     if PACKMAN::OS.type == :Darwin
       args << '--with-add-fonts=/System/Library/Fonts,/Library/Fonts,~/Library/Fonts'

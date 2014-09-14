@@ -28,8 +28,8 @@ function _packman_()
 
 complete -o default -F _packman_ packman
 
-OS=$(uname)
 
+# Check if Ruby is available or not, and it must be >= 1.9.
 RUBY_URL=http://ftp.ruby-lang.org/pub/ruby/2.1/ruby-2.1.2.tar.gz
 RUBY_PACKAGE=ruby-2.1.2.tar.gz
 RUBY_PACKAGE_DIR=$(basename $RUBY_PACKAGE .tar.gz)
@@ -43,6 +43,7 @@ function install_ruby
     if [[ ! -f $RUBY_PACKAGE ]]; then
         wget $RUBY_URL
     fi
+    rm -rf $RUBY_PACKAGE_DIR
     tar -xvzf $RUBY_PACKAGE
     cd $RUBY_PACKAGE_DIR
     ./configure --prefix=$PACKMAN_ROOT/ruby
@@ -55,7 +56,6 @@ if [[ -d "$PACKMAN_ROOT/ruby/bin" ]]; then
     export PATH=$PACKMAN_ROOT/ruby/bin:$PATH
 fi
 
-# Check if Ruby is available or not, and it must be >= 2.0.
 old_dir=$(pwd)
 if ! which ruby 1> /dev/null; then
     echo '[Warning]: System does not provide a Ruby! PACKMAN will install one for you!'

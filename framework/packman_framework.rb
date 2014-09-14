@@ -18,3 +18,8 @@ PACKMAN::OS.init
 PACKMAN::CommandLine.init
 PACKMAN::ConfigManager.init
 PACKMAN::CompilerHelper.init
+
+Kernel.trap('INT') do
+  print "GOOD BYE!\n"
+  exit
+end

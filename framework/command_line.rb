@@ -67,10 +67,14 @@ module PACKMAN
         need_config_file = true
       end
       if need_config_file and not @@config_file
-        PACKMAN::ConfigManager.template('./packman.config')
-        PACKMAN.report_warning "Lack configure file, PACKMAN generate one for you! "+
-        "Edit #{PACKMAN::Tty.red}packman.config#{PACKMAN::Tty.reset} and come back."
-        exit
+        # Check if there is a configuration file in PACKMAN_ROOT.
+        @@config_file = "#{ENV['PACKMAN_ROOT']}/packman.config"
+        if not File.exist? @@config_file
+          PACKMAN::ConfigManager.template("#{ENV['PACKMAN_ROOT']}/packman.config")
+          PACKMAN.report_warning "Lack configure file, PACKMAN generate one for you! Edit "+
+            "#{PACKMAN::Tty.red}#{@@config_file}#{PACKMAN::Tty.reset} and come back."
+          exit
+        end
       end
     end
 
