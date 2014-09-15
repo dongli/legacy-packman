@@ -24,7 +24,7 @@ module PACKMAN
       end
 
       def bold(str)
-        escape(1)+str+escape(0) 
+        escape(1)+str+escape(0)
       end
 
       private
@@ -51,6 +51,7 @@ module PACKMAN
 
   def self.report_error(message)
     print "[#{Tty.red}Error#{Tty.reset}]: #{message}\n"
+    print_call_stack
     exit
   end
 
@@ -139,8 +140,9 @@ module PACKMAN
     File.open(filepath, "a") { |file|  file << lines }
   end
 
-  def self.mkdir(dir, option = :none)
-    FileUtils.rm_rf(dir) if Dir.exist? dir and option == :force
+  def self.mkdir(dir, options = [])
+    options = [options] if not options.class == Array
+    FileUtils.rm_rf(dir) if Dir.exist? dir and options.include? :force
     FileUtils.mkdir_p(dir) if not Dir.exist? dir
     if block_given?
       FileUtils.chdir(dir)
@@ -204,5 +206,11 @@ module PACKMAN
 
   def self.ln(src, dst)
     FileUtils.ln_s src, dst
+  end
+
+  def self.print_call_stack
+    Kernel.caller.each do |stack_line|
+      print "#{Tty.red}==>#{Tty.reset} #{stack_line}\n"
+    end
   end
 end

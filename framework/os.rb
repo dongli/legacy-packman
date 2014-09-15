@@ -28,7 +28,7 @@ module PACKMAN
       case @@type
       when :Darwin
         @@distro = :Mac_OS_X
-        @@version = `sw_vers | grep ProductVersion | cut -d ' ' -f 2`
+        @@version = `sw_vers | grep ProductVersion | cut -d ':' -f 2`.strip
       when :Linux
         res = `cat /etc/*-release`
         case res

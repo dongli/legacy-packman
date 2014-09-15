@@ -33,9 +33,12 @@ module PACKMAN
     end
 
     def self.package(name, spec)
+      # Default install specifications.
+      spec['use_binary'] = false if not spec.has_key? 'use_binary'
+      spec['compiler_set'] = [spec['compiler_set']] if spec['compiler_set'].class == Fixnum
       name = name.capitalize.to_sym
       @@packages[name] = spec
-      if not PACKMAN.class_defined? name
+      if not PACKMAN::Package.defined? name
         PACKMAN.report_error "Unknown package #{PACKMAN::Tty.red}#{name}#{PACKMAN::Tty.reset}!"
       end
     end
@@ -46,6 +49,7 @@ module PACKMAN
 
     def self.parse
       file_path = PACKMAN::CommandLine.config_file
+      return if not file_path
       if not File.exist? file_path
         PACKMAN.report_error "Configuation file #{PACKMAN::Tty.red}#{file_path}#{PACKMAN::Tty.reset} does not exist!"
       end

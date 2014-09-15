@@ -58,7 +58,7 @@ module PACKMAN
       need_config_file = false
       case @@subcommand
       when :collect
-        need_config_file = true if not has_option? '-all'
+        need_config_file = true
       when :install
         need_config_file = true
       when :switch

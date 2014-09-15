@@ -64,6 +64,6 @@ module PACKMAN
   def self.sync_mirror_service
     # Download all packages.
     report_notice 'Download all defined packages.'
-    collect_packages :all => true
+    collect_packages :all
   end
 end

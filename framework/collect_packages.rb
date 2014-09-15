@@ -1,29 +1,38 @@
 module PACKMAN
-  def self.collect_packages(option = {})
+  def self.collect_packages(options = [])
+    options = [options] if not options.class == Array
     package_root = ConfigManager.package_root
     PACKMAN.mkdir(package_root)
     if not ConfigManager.use_ftp_mirror == 'no'
       report_notice "Use FTP mirror #{Tty.blue}#{ConfigManager.use_ftp_mirror}#{Tty.reset}."
     end
     # Download packages to package_root.
-    if CommandLine.has_option? '-all' or option[:all] 
+    collect_all = ( CommandLine.has_option? '-all' or options.include? :all )
+    if collect_all
       package_names = Dir.glob("#{ENV['PACKMAN_ROOT']}/packages/*.rb").map { |f| File.basename(f).gsub('.rb', '').capitalize }
       package_names.delete('Packman_packages')
     else
       package_names = ConfigManager.packages.keys
     end
     package_names.each do |package_name|
-      package = eval "#{package_name}.new"
-      download_package(package_root, package)
+      if not collect_all
+        install_spec = ConfigManager.packages[package_name]
+        package = PACKMAN::Package.instance package_name, install_spec
+        download_package(package_root, package)
+      else
+        PACKMAN::Package.all_instances(package_name).each do |package|
+          download_package(package_root, package)
+        end
+      end
     end
   end
 
   def self.download_package(package_root, package, is_recursive = false)
     # Recursively download dependency packages.
-    package.depends.each do |depend|
+    package.dependencies.each do |depend|
       depend_package_name = depend.capitalize
       if not ConfigManager.packages.keys.include? depend_package_name
-        depend_package = eval "#{depend_package_name}.new"
+        depend_package = PACKMAN::Package.instance depend_package_name
         download_package(package_root, depend_package, true)
       end
     end
@@ -33,12 +42,11 @@ module PACKMAN
     patch_counter = -1
     package.patches.each do |patch|
       patch_counter += 1
-      url = patch.first
-      sha1 = patch.last
+      url = patch.url
       patch_file_name = "#{package.class}.patch.#{patch_counter}"
       patch_file_path = "#{package_root}/#{patch_file_name}"
       if File.exist? patch_file_path
-        if PACKMAN.sha1_same? patch_file_path, sha1
+        if PACKMAN.sha1_same? patch_file_path, patch.sha1
           next
         end
       end
@@ -49,13 +57,12 @@ module PACKMAN
       PACKMAN.download(package_root, url, patch_file_name)
     end
     # Check if there is any attachment to download.
-    package.attaches.each do |attach|
-      url = attach.first
-      sha1 = attach.last
+    package.attachments.each do |attach|
+      url = attach.url
       attach_file_name = "#{File.basename(URI.parse(url).path)}"
       attach_file_path = "#{package_root}/#{attach_file_name}"
       if File.exist? attach_file_path
-        if PACKMAN.sha1_same? attach_file_path, sha1
+        if PACKMAN.sha1_same? attach_file_path, attach.sha1
           next
         end
       end

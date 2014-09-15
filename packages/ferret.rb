@@ -15,8 +15,10 @@ class Ferret < PACKMAN::Package
   depends_on 'opendap'
   depends_on 'tcsh'
 
-  attach 'ftp://ftp.pmel.noaa.gov/ferret/pub/data/fer_dsets.tar.gz',
-         '4a1e3dfdad94f93a70f0359f3a88f65c342d8d39'
+  attach do
+    url 'ftp://ftp.pmel.noaa.gov/ferret/pub/data/fer_dsets.tar.gz'
+    sha1 '4a1e3dfdad94f93a70f0359f3a88f65c342d8d39'
+  end
 
   def install
     # Ferret's tar file contains two extra plain files which messes up PACKMAN.
@@ -71,9 +73,9 @@ class Ferret < PACKMAN::Package
         /^READLINELIB\s*=.*$/ => 'READLINELIB = -lreadline -ltermcap',
         /^HDFLIB\s*=.*$/ => "HDFLIB = -L#{hdf4}/lib -ldf -L#{jpeg}/lib -ljpeg -L#{zlib}/lib -lz",
         /^CDFLIB\s*=.*$/ => "CDFLIB = -L#{netcdf_c}/lib -lnetcdf -L#{netcdf_fortran}/lib -lnetcdff "+
-          "-L#{hdf5}/lib -lhdf5_hl -lhdf5 "+
-          "-L#{zlib}/lib -lz -lm -L#{szip}/lib -lsz -L#{opendap}/lib -ldap -ldapclient "+
-          "-L#{curl}/lib -lcurl -lxml2 -lpthread -licucore -lstdc++",
+        "-L#{hdf5}/lib -lhdf5_hl -lhdf5 "+
+        "-L#{zlib}/lib -lz -lm -L#{szip}/lib -lsz -L#{opendap}/lib -ldap -ldapclient "+
+        "-L#{curl}/lib -lcurl -lxml2 -lpthread -licucore -lstdc++",
         # Why Ferret developers put fixed intel library into the configuration file??
         /\/opt\/intel\/Compiler\/11\.1\/058\/lib\/lib\{ifcore,ifport,irc,imf,svml\}\.a/ => '',
         # Why Ferret developers write a wrong library path??
@@ -83,8 +85,8 @@ class Ferret < PACKMAN::Package
       }
       PACKMAN.replace "external_functions/ef_utility/platform_specific.mk.#{build_type}", {
         /^(\s*FFLAGS\s*=.*)$/ => 'FFLAGS = -fPIC -m64 -Ddouble_p -fno-second-underscore '+
-          '-fno-backslash -fdollar-ok -ffixed-line-length-132 '+
-          '-fdefault-real-8 -fdefault-double-8 $(FINCLUDES)'
+        '-fno-backslash -fdollar-ok -ffixed-line-length-132 '+
+        '-fdefault-real-8 -fdefault-double-8 $(FINCLUDES)'
       }
       PACKMAN.replace 'gksm2ps/Makefile', {
         /^i386-apple-darwin:$/ => "#{build_type}:",
@@ -94,12 +96,12 @@ class Ferret < PACKMAN::Package
         # Fix the wrong compiler flags.
         PACKMAN.replace "platform_specific.mk.#{build_type}", {
           /^(CPP_FLAGS\s*=.*)$/ => "\\1\n-DMANDATORY_FORMAT_WIDTHS -DNO_OPEN_SHARED -DNO_OPEN_READONLY "+
-            "-DNO_OPEN_RECORDTYPE -DNO_OPEN_CARRIAGECONTROL -Dreclen_in_bytes -DG77_SIGNAL -DG77 -DNEED_IAND "+
-            "-DINTERNAL_READ_FORMAT_BUG -DNO_PREPEND_STRING -Ddouble_p \\",
+          "-DNO_OPEN_RECORDTYPE -DNO_OPEN_CARRIAGECONTROL -Dreclen_in_bytes -DG77_SIGNAL -DG77 -DNEED_IAND "+
+          "-DINTERNAL_READ_FORMAT_BUG -DNO_PREPEND_STRING -Ddouble_p \\",
           /^\s*PPLUS_FFLAGS\s*=.*$/ => 'PPLUS_FFLAGS = -fno-automatic -fno-second-underscore '+
-            '-fdollar-ok -ffixed-line-length-132 $(FINCLUDES)',
+          '-fdollar-ok -ffixed-line-length-132 $(FINCLUDES)',
           /^\s*FFLAGS\s*=.*$/ => 'FFLAGS = -fno-automatic -fno-second-underscore -fdollar-ok '+
-            '-ffixed-line-length-132 -ffpe-trap=overflow -fimplicit-none -fdefault-real-8 -fdefault-double-8 $(FINCLUDES)',
+          '-ffixed-line-length-132 -ffpe-trap=overflow -fimplicit-none -fdefault-real-8 -fdefault-double-8 $(FINCLUDES)',
           /^(LD\s*=)/ => "PPLUS_FFLAGS += $(CPP_FLAGS)\nFFLAGS += $(CPP_FLAGS)\n\\1"
         }
       end

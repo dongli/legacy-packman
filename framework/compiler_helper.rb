@@ -47,7 +47,7 @@ module PACKMAN
           res = `#{cmd} -v 2>&1`
           return res.match(version_pattern)[0]
         rescue
-	  nil
+          nil
         end
       end
     end
@@ -87,11 +87,11 @@ module PACKMAN
       if ConfigManager.compiler_sets[i].keys.include? 'installed_by_packman'
         compiler_name = ConfigManager.compiler_sets[i]['installed_by_packman'].capitalize
         ConfigManager.compiler_sets[i]['installed_by_packman'] = compiler_name
-        if not PACKMAN.class_defined? compiler_name
+        if not PACKMAN::Package.defined? compiler_name
           PACKMAN.report_error "Unknown PACKMAN installed compiler \"#{compiler_name}\"!"
         end
-        compiler_package = eval "#{compiler_name}.new"
-        compiler_package.stuffs.each do |language, compiler|
+        compiler_package = PACKMAN::Package.instance compiler_name
+        compiler_package.provided_stuffs.each do |language, compiler|
           if ['c', 'c++', 'fortran'].include? language
             # User can overwrite the compiler.
             if not ConfigManager.compiler_sets[i].has_key? language

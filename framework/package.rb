@@ -1,118 +1,173 @@
 module PACKMAN
   class Package
-    def self.url(val)
-      self.class_eval("def url; '#{val}'; end")
-      self.class_eval("def filename; '#{File.basename(URI.parse(val).path)}'; end")
+    attr_reader :stable, :devel, :binary, :active_spec
+
+    def initialize requested_spec = nil
+      hand_over_spec :stable
+      hand_over_spec :devel
+      hand_over_spec :binary
+
+      set_active_spec requested_spec
     end
 
-    def self.sha1(val)
-      self.class_eval("def sha1; '#{val}'; end")
+    def hand_over_spec name
+      return if not self.class.class_variable_defined? :"@@#{self.class}_#{name}"
+      spec = self.class.class_variable_get :"@@#{self.class}_#{name}"
+      instance_variable_set "@#{name}", spec
     end
 
-    def self.git(val)
-      self.class_eval("def git; '#{val}'; end")
-      self.class_eval("def dirname; '#{File.basename(URI.parse(val).path).gsub(/\.git$/, '')}'; end")
-    end
-
-    def self.tag(val)
-      self.class_eval("def tag; '#{val}'; end")
-    end
-
-    def self.version(val)
-      self.class_eval("def version; '#{val}'; end")
-    end
-
-    def self.filename(val)
-      self.class_eval("def filename; '#{val}'; end")
-    end
-
-    def self.dirname(val)
-      self.class_eval("def dirname; '#{val}'; end")
-    end
-
-    def self.depends_on(package)
-      self.class_eval("@@depends ||= []; @@depends.push package")
-      self.class_eval("def depends; @@depends; end")
-    end
-
-    def self.label(label)
-      self.class_eval("@@labels ||= []; @@labels.push label")
-      self.class_eval("def labels; @@labels; end")
-    end
-
-    def self.provide(stuff)
-      self.class_eval("@@stuffs ||= {}; @@stuffs.merge! stuff")
-      self.class_eval("def stuffs; @@stuffs; end")
-    end
-
-    def self.skip_on(distro)
-      self.class_eval("@@skip_distros ||= []; @@skip_distros.push distro.to_sym")
-      self.class_eval("def skip_distros; @@skip_distros; end")
-    end
-
-    def self.conflicts_with(package)
-      self.class_eval("@@conflict_packages ||= []; @@conflict_packages.push package.capitalize")
-      self.class_eval("def conflict_packages; @@conflict_packages; end")
-    end
-
-    def self.patch(source, sha1 = nil)
-      if source == :embeded
-        patch = ''
-        start = false
-        File.open("#{ENV['PACKMAN_ROOT']}/packages/#{self.to_s.downcase}.rb", 'r').each do |line|
-          if line =~ /__END__/
-            start = true
-            next
-          end
-          if start
-            patch << line
+    def set_active_spec requested_spec
+      if requested_spec
+        if self.respond_to? requested_spec
+          @active_spec = self.send requested_spec
+        elsif @binary
+          @binary.each do |key, value|
+            tmp = key.to_s.split(':')
+            # Check OS distribution.
+            next if not tmp.first.to_sym == PACKMAN::OS.distro
+            # Check OS version.
+            # TODO: Handle larger than version case.
+            v1 = tmp.last.split('.')
+            v2 = PACKMAN::OS.version.split('.')
+            for i in 0..v1.size-1
+              next if v1[i] != v2[i]
+            end
+            @active_spec = value
           end
         end
-        self.class_eval("@@embeded_patches ||= []; @@embeded_patches << patch")
-        self.class_eval("def embeded_patches; @@embeded_patches; end")
       else
-        self.class_eval("@@patches ||= []; @@patches << [ source, sha1 ]")
-        self.class_eval("def patches; @@patches; end")
+        @active_spec = stable || devel
       end
     end
 
-    def self.attach(source, sha1)
-      self.class_eval("@@attaches ||= []; @@attaches << [ source, sha1 ]")
-      self.class_eval("def attaches; @@attaches; end")
+    def url; @active_spec.url; end
+    def sha1; @active_spec.sha1; end
+    def version; @active_spec.version; end
+    def filename; @active_spec.filename; end
+    def labels; @active_spec.labels; end
+    def has_label? val; @active_spec.has_label? val; end
+    def conflict_packages; @active_spec.conflict_packages; end
+    def conflict_with? val; @active_spec.conflict_with? val; end
+    def dependencies; @active_spec.dependencies; end
+    def patches; @active_spec.patches; end
+    def embeded_patches; @active_spec.embeded_patches; end
+    def attachments; @active_spec.attachments; end
+    def provided_stuffs; @active_spec.provided_stuffs; end
+    def binary distro, version; @binary[:"#{distro}:#{version}"]; end
+    def skip_distros; @active_spec.skip_distros; end
+
+    def all_specs
+      specs = []
+      specs << stable if stable
+      specs << devel if devel
+      specs += @binary.values if @binary
+      return specs
+    end
+
+    # Package DSL.
+    class << self
+      def url val; stable.url val; end
+      def sha1 val; stable.sha1 val; end
+      def version val; stable.version val; end
+      def filename val; stable.filename val; end
+      def label val; stable.label val; end
+      def conflicts_with val; stable.conflicts_with val; end
+      def depends_on val; stable.depends_on val; end
+      def provide val; stable.provide val; end
+      def skip_on val; stable.skip_on val; end
+
+      def patch option = nil, &block
+        if option == :embed
+          data = ''
+          start = false
+          File.open("#{ENV['PACKMAN_ROOT']}/packages/#{self.to_s.downcase}.rb", 'r').each do |line|
+            if line =~ /__END__/
+              start = true
+              next
+            end
+            if start
+              data << line
+            end
+          end
+          stable.patch_embed data
+        elsif block_given?
+          stable.patch &block
+        end
+      end
+
+      def attach option = nil, &block
+        stable.attach &block
+        if option == :for_all
+          devel.attach &block if devel
+          if binary
+            binary.each_value do |b|
+              b.attach &block
+            end
+          end
+        end
+      end
+
+      def stable; eval "@@#{self}_stable ||= PackageSpec.new"; end
+
+      def devel &block
+        eval "@@#{self}_devel ||= PackageSpec.new"
+        if block_given?
+          eval "@@#{self}_devel.instance_eval &block"
+        else
+          return eval "@@#{self}_devel"
+        end
+      end
+
+      def binary distro = nil, version = nil, &block
+        eval "@@#{self}_binary ||= {}"
+        return eval "@@#{self}_binary" if not distro and not version
+        key = :"#{distro}:#{version}"
+        if block_given?
+          eval "@@#{self}_binary[key] = PackageSpec.new"
+          eval "@@#{self}_binary[key].instance_eval &block"
+          eval "@@#{self}_binary[key].label 'binary'"
+        else
+          eval "@@#{self}_binary[key]"
+        end
+      end
+    end
+
+    def self.defined? package_name
+      File.exist? "#{ENV['PACKMAN_ROOT']}/packages/#{package_name.downcase}.rb"
+    end
+
+    def self.instance package_name, install_spec = {}
+      if install_spec['use_binary']
+        eval "#{package_name}.new :'#{PACKMAN::OS.distro}:#{PACKMAN::OS.version}'"
+      else
+        eval "#{package_name}.new"
+      end
+    end
+
+    def self.all_instances package_name
+      instances = []
+      eval("#{package_name}.new").all_specs.each do |spec|
+        instances << eval("#{package_name}.new #{spec}")
+      end
+      return instances
     end
 
     def self.apply_patch(package)
-        for i in 0..package.patches.size-1
-          patch_file = "#{ConfigManager.package_root}/#{package.class}.patch.#{i}"
-          PACKMAN.run "patch -N -Z -p1 < #{patch_file}"
-          if not $?.success?
-            PACKMAN.report_error "Failed to apply patch for #{PACKMAN::Tty.red}#{package.class}#{PACKMAN::Tty.reset}!"
-          end
+      for i in 0..package.patches.size-1
+        patch_file = "#{ConfigManager.package_root}/#{package.class}.patch.#{i}"
+        PACKMAN.run "patch -N -Z -p1 < #{patch_file}"
+        if not $?.success?
+          PACKMAN.report_error "Failed to apply patch for #{PACKMAN::Tty.red}#{package.class}#{PACKMAN::Tty.reset}!"
         end
-        package.embeded_patches.each do |patch|
-          PACKMAN.report_notice "Apply embeded patch."
-          IO.popen("/usr/bin/patch --ignore-whitespace -N -Z -p1", "w") { |p| p.write(patch) }
-          if not $?.success?
-            PACKMAN.report_error "Failed to apply embeded patch for #{PACKMAN::Tty.red}#{package.class}#{PACKMAN::Tty.reset}!"
-          end
+      end
+      package.embeded_patches.each do |patch|
+        PACKMAN.report_notice "Apply embeded patch."
+        IO.popen("/usr/bin/patch --ignore-whitespace -N -Z -p1", "w") { |p| p.write(patch) }
+        if not $?.success?
+          PACKMAN.report_error "Failed to apply embeded patch for #{PACKMAN::Tty.red}#{package.class}#{PACKMAN::Tty.reset}!"
         end
+      end
     end
-
-    def depends; []; end
-
-    def labels; []; end
-
-    def stuffs; {}; end
-
-    def skip_distros; []; end
-
-    def conflict_packages; []; end
-
-    def patches; []; end
-
-    def attaches; []; end
-
-    def embeded_patches; []; end
 
     def postfix; end
 
@@ -128,12 +183,11 @@ module PACKMAN
       if not File.exist? "#{root}/#{filename}"
         PACKMAN.report_error "Package #{Tty.red}#{self.class}#{Tty.reset} has not been downloaded!"
       end
-      saved_dir = Dir.pwd
       decom_dir = "#{root}/#{self.class}"
       PACKMAN.mkdir(decom_dir, :force)
-      Dir.chdir(decom_dir)
+      PACKMAN.cd decom_dir
       PACKMAN.decompress "#{root}/#{filename}"
-      Dir.chdir(saved_dir)
+      PACKMAN.cd_back
     end
 
     def copy_to(root)
@@ -146,12 +200,13 @@ module PACKMAN
       PACKMAN.cp "#{root}/#{dirname}", copy_dir
     end
 
-    def self.prefix(package_self)
+    def self.prefix(package_self, options = [])
+      options = [options] if not options.class == Array
       if package_self.class == Class or package_self.class == String
-        package_self = PACKMAN.new_class package_self
+        package_self = PACKMAN::Package.instance package_self
       end
       prefix = "#{ConfigManager.install_root}/#{package_self.class.to_s.downcase}/#{package_self.version}"
-      if not package_self.labels.include? 'compiler'
+      if not package_self.labels.include? 'compiler' and not options.include? :compiler_insensitive
         compiler_set_index = ConfigManager.compiler_sets.index(Package.compiler_set)
         prefix << "/#{compiler_set_index}"
       end
@@ -166,8 +221,9 @@ module PACKMAN
       @@compiler_set = val
     end
 
-    def self.bashrc(package)
-      prefix = prefix(package)
+    def self.bashrc(package, options = [])
+      options = [options] if not options.class == Array
+      prefix = prefix package, options
       class_name = package.class.name.upcase
       root = "#{class_name}_ROOT"
       open("#{prefix}/bashrc", "w") do |file|
@@ -248,8 +304,8 @@ module PACKMAN
 
     def self.install(compiler_sets, package, is_recursive = false)
       # Check dependencies.
-      package.depends.each do |depend|
-        depend_package = PACKMAN.new_class depend.capitalize
+      package.dependencies.each do |depend|
+        depend_package = PACKMAN::Package.instance depend.capitalize
         install(compiler_sets, depend_package, true)
         if not depend_package.skip?
           RunManager.append_bashrc_path("#{prefix(depend_package)}/bashrc")
@@ -264,12 +320,11 @@ module PACKMAN
         end
         return
       end
-      saved_dir = Dir.pwd
-      # Build package for each compiler set.
-      compiler_sets.each do |compiler_set|
-        @@compiler_set = compiler_set
+      # Install package.
+      if compiler_sets.empty?
+        prefix = prefix package, :compiler_insensitive
         # Check if the package has alreadly installed.
-        bashrc = "#{prefix(package)}/bashrc"
+        bashrc = "#{prefix}/bashrc"
         if File.exist?(bashrc)
           f = File.new(bashrc, 'r')
           first_line = f.readline
@@ -277,35 +332,62 @@ module PACKMAN
             if not is_recursive
               PACKMAN.report_notice "Package #{PACKMAN::Tty.green}#{package.class}#{PACKMAN::Tty.reset} has been installed."
             end
-            next
+            return
           end
           f.close
         end
-        # Decompress package file.
-        if package.respond_to? :filename
-          package.decompress_to ConfigManager.package_root
-        elsif package.respond_to? :dirname
-          package.copy_to ConfigManager.package_root
-        end          
-        tmp = Dir.glob("#{ConfigManager.package_root}/#{package.class}/*")
-        if tmp.size != 1 or not File.directory?(tmp.first)
-          tmp = ["#{ConfigManager.package_root}/#{package.class}"]
-        end
-        build_dir = tmp.first
-        Dir.chdir(build_dir)
-        # Apply patches.
-        apply_patch(package)
-        # Install package.
-        PACKMAN.report_notice "Install package #{Tty.green}#{package.class}#{Tty.reset}."
-        package.install
-        Dir.chdir(saved_dir)
-        FileUtils.rm_rf("#{build_dir}")
+        # Use precompiled binary file.
+        PACKMAN.mkdir prefix, :force
+        PACKMAN.cd prefix
+        PACKMAN.decompress "#{ConfigManager.package_root}/#{package.filename}"
+        PACKMAN.cd_back
         # Write bashrc file for the package.
-        bashrc(package)
+        bashrc package, :compiler_insensitive
         package.postfix
+      else
+        # Build package for each compiler set.
+        compiler_sets.each do |compiler_set|
+          @@compiler_set = compiler_set
+          # Check if the package has alreadly installed.
+          bashrc = "#{prefix(package)}/bashrc"
+          if File.exist?(bashrc)
+            f = File.new(bashrc, 'r')
+            first_line = f.readline
+            if first_line =~ /#{package.sha1}/
+              if not is_recursive
+                PACKMAN.report_notice "Package #{PACKMAN::Tty.green}#{package.class}#{PACKMAN::Tty.reset} has been installed."
+              end
+              next
+            end
+            f.close
+          end
+          # Decompress package file.
+          if package.respond_to? :filename
+            package.decompress_to ConfigManager.package_root
+          elsif package.respond_to? :dirname
+            package.copy_to ConfigManager.package_root
+          end
+          tmp = Dir.glob("#{ConfigManager.package_root}/#{package.class}/*")
+          if tmp.size != 1 or not File.directory?(tmp.first)
+            tmp = ["#{ConfigManager.package_root}/#{package.class}"]
+          end
+          build_dir = tmp.first
+          PACKMAN.cd build_dir
+          # Apply patches.
+          apply_patch(package)
+          # Install package.
+          PACKMAN.report_notice "Install package #{Tty.green}#{package.class}#{Tty.reset}."
+          package.install
+          PACKMAN.cd_back
+          FileUtils.rm_rf("#{build_dir}")
+          # Write bashrc file for the package.
+          bashrc(package)
+          package.postfix
+        end
       end
-      if Dir.exist?("#{ConfigManager.package_root}/#{package.class}")
-        FileUtils.rm_rf("#{ConfigManager.package_root}/#{package.class}")
+      # Clean build files.
+      if Dir.exist? "#{ConfigManager.package_root}/#{package.class}"
+        FileUtils.rm_rf "#{ConfigManager.package_root}/#{package.class}"
       end
       # Clean the bashrc pathes.
       if not is_recursive

@@ -27,6 +27,13 @@ class Ncl < PACKMAN::Package
   depends_on 'udunits'
   depends_on 'vis5dx'
 
+  binary :Mac_OS_X, '10.9' do
+    url 'https://www.earthsystemgrid.org/download/fileDownload.htm?logicalFileId=382dd989-351d-11e4-a4b4-00c0f03d5b7c'
+    sha1 '36d82552f01e80fe82ab1687e361764dde5ccee7'
+    version '6.2.1'
+    filename 'ncl_ncarg-6.2.1.MacOS_10.9_64bit_gcc481.tar.gz'
+  end
+
   def install
     # Check some system packages.
     if not PACKMAN::OS.mac_gang?
@@ -126,7 +133,7 @@ class Ncl < PACKMAN::Package
       end
       [ Expat, Freetype, Fontconfig, Szip, Jasper, Cairo, Jpeg, Libpng, Hdf4, Hdf5,
         Netcdf_c, Netcdf_fortran, Pixman, Hdf_eos2, Hdf_eos5, Grib2_c, Gdal, Proj,
-        Udunits, Vis5dx ].each do |lib|
+      Udunits, Vis5dx ].each do |lib|
         if not Dir.exist? "#{PACKMAN::Package.prefix(lib)}/lib"
           writer.print "#{PACKMAN::Package.prefix(lib)}/lib "
         end
@@ -139,7 +146,7 @@ class Ncl < PACKMAN::Package
       end
       [ Expat, Freetype, Fontconfig, Szip, Jasper, Cairo, Jpeg, Libpng, Hdf4, Hdf5,
         Netcdf_c, Netcdf_fortran, Pixman, Hdf_eos2, Hdf_eos5, Grib2_c, Gdal, Proj,
-        Udunits, Vis5dx ].each do |lib|
+      Udunits, Vis5dx ].each do |lib|
         if not Dir.exist? "#{PACKMAN::Package.prefix(lib)}/include"
           writer.print "#{PACKMAN::Package.prefix(lib)}/include "
         end
@@ -164,5 +171,16 @@ class Ncl < PACKMAN::Package
     # Create 'tmp' directory.
     PACKMAN.mkdir "#{PACKMAN::Package.prefix(self)}/tmp"
     PACKMAN::RunManager.clean_env
+  end
+
+  def postfix
+    if active_spec.has_label? 'binary'
+      ncl = PACKMAN::Package.prefix self, :compiler_insensitive
+    else
+      ncl = PACKMAN::Package.prefix self
+    end
+    PACKMAN.replace "#{ncl}/bashrc", {
+      /NCL_ROOT/ => 'NCARG_ROOT'
+    }
   end
 end
