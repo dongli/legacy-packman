@@ -22,17 +22,22 @@ module PACKMAN
           @active_spec = self.send requested_spec
         elsif @binary
           @binary.each do |key, value|
-            tmp = key.to_s.split(':')
-            # Check OS distribution.
-            next if not tmp.first.to_sym == PACKMAN::OS.distro
-            # Check OS version.
-            # TODO: Handle larger than version case.
-            v1 = tmp.last.split('.')
-            v2 = PACKMAN::OS.version.split('.')
-            for i in 0..v1.size-1
-              next if v1[i] != v2[i]
+            key.to_s.split('|').each do |distro_version|
+              tmp = distro_version.split(':')
+              distro = tmp.first.to_sym
+              version = tmp.last
+              # Check OS distribution.
+              next if not distro == PACKMAN::OS.distro
+              # Check OS version.
+              # TODO: Handle larger than version case.
+              v1 = version.split('.')
+              v2 = PACKMAN::OS.version.split('.')
+              for i in 0..v1.size-1
+                next if v1[i] != v2[i]
+              end
+              @active_spec = value
+              break
             end
-            @active_spec = value
           end
         end
       else
@@ -118,10 +123,16 @@ module PACKMAN
         end
       end
 
-      def binary distro = nil, version = nil, &block
+      def binary distros = nil, versions = nil, &block
         eval "@@#{self}_binary ||= {}"
-        return eval "@@#{self}_binary" if not distro and not version
-        key = :"#{distro}:#{version}"
+        return eval "@@#{self}_binary" if not distros and not versions
+        distros = [distros] if not distros.class == Array
+        versions = [versions] if not versions.class == Array
+        key = []
+        for i in 0..distros.size-1
+          key << "#{distros[i]}:#{versions[i]}"
+        end
+        key = key.join('|').to_sym
         if block_given?
           eval "@@#{self}_binary[key] = PackageSpec.new"
           eval "@@#{self}_binary[key].instance_eval &block"
@@ -337,9 +348,14 @@ module PACKMAN
           f.close
         end
         # Use precompiled binary file.
+        PACKMAN.report_notice "Use precompiled binary files for #{PACKMAN::Tty.green}#{package_name}#{PACKMAN::Tty.reset}."
         PACKMAN.mkdir prefix, :force
         PACKMAN.cd prefix
-        PACKMAN.decompress "#{ConfigManager.package_root}/#{package.filename}"
+        package_file = "#{ConfigManager.package_root}/#{package.filename}"
+        if not File.exist? package_file
+          PACKMAN.report_error "Precompiled file #{PACKMAN::Tty.red}#{package.filename}#{PACKMAN::Tty.reset} has not been downloaded!"
+        end
+        PACKMAN.decompress package_file
         PACKMAN.cd_back
         # Write bashrc file for the package.
         bashrc package, :compiler_insensitive

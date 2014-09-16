@@ -16,9 +16,7 @@ module PACKMAN
         next
       end
       # Parameters need to be set:
-      if install_spec['use_binary']
-        PACKMAN.report_notice "Use precompiled binary files for #{PACKMAN::Tty.green}#{package_name}#{PACKMAN::Tty.reset}."
-      elsif not install_spec.has_key? 'compiler_set'
+      if not install_spec['use_binary'] and not install_spec.has_key? 'compiler_set'
         PACKMAN.report_error "Compiler set indices are not specified for package \"#{package_name}\"!"
       end
       if not install_spec['use_binary']
