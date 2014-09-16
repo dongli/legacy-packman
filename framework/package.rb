@@ -58,9 +58,9 @@ module PACKMAN
 
     def all_specs
       specs = []
-      specs << stable if stable
-      specs << devel if devel
-      specs += @binary.values if @binary
+      specs << :stable if stable
+      specs << :devel if devel
+      specs += @binary.keys if @binary
       return specs
     end
 
@@ -147,7 +147,7 @@ module PACKMAN
     def self.all_instances package_name
       instances = []
       eval("#{package_name}.new").all_specs.each do |spec|
-        instances << eval("#{package_name}.new #{spec}")
+        instances << eval("#{package_name}.new spec")
       end
       return instances
     end
