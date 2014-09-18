@@ -27,28 +27,28 @@ class Ncl < PACKMAN::Package
   depends_on 'udunits'
   depends_on 'vis5dx'
 
-  binary :Mac_OS_X, '10.9' do
+  binary :Mac_OS_X, '=~ 10.9' do
     url 'https://www.earthsystemgrid.org/download/fileDownload.htm?logicalFileId=382dd989-351d-11e4-a4b4-00c0f03d5b7c'
     sha1 '36d82552f01e80fe82ab1687e361764dde5ccee7'
     version '6.2.1'
     filename 'ncl_ncarg-6.2.1.MacOS_10.9_64bit_gcc481.tar.gz'
   end
 
-  binary :Ubuntu, '' do
+  binary :Ubuntu, '>= 12.04' do
     url 'https://www.earthsystemgrid.org/download/fileDownload.htm?logicalFileId=38263864-351d-11e4-a4b4-00c0f03d5b7c'
     sha1 ''
     version '6.2.1'
     filename
   end
 
-  binary :RedHat_Enterprise, '5' do
+  binary :RedHat_Enterprise, '=~ 5' do
     url 'https://www.earthsystemgrid.org/download/fileDownload.htm?logicalFileId=38280d25-351d-11e4-a4b4-00c0f03d5b7c'
     sha1 'd7e4a56c94b884801b7ee29af166c574636a9e94'
     version '6.2.1'
     filename 'ncl_ncarg-6.2.1.Linux_RHEL5.10_x86_64_gcc412.tar.gz'
   end
 
-  binary [:RedHat_Enterprise, :Fedora, :CentOS], ['6', '', '6'] do
+  binary [:RedHat_Enterprise, :Fedora, :CentOS], ['=~ 6', '=~ 14', '=~ 6'] do
     url 'https://www.earthsystemgrid.org/download/fileDownload.htm?logicalFileId=38232b22-351d-11e4-a4b4-00c0f03d5b7c'
     sha1 '7f7980f944bd39192482d9260b9cbb619ce33a44'
     version '6.2.1'

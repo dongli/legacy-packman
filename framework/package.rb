@@ -21,23 +21,28 @@ module PACKMAN
         if self.respond_to? requested_spec
           @active_spec = self.send requested_spec
         elsif @binary
+          found = false
           @binary.each do |key, value|
             key.to_s.split('|').each do |distro_version|
-              tmp = distro_version.split(':')
-              distro = tmp.first.to_sym
-              version = tmp.last
+              tmp1 = distro_version.split(':')
+              distro = tmp1.first.to_sym
+              tmp2 = tmp1.last.match(/(>=|==|=~)?\s*(.*)/)
+              operator = tmp2[1] rescue '=='
+              v1 = PACKMAN::VersionSpec.new tmp2[2]
               # Check OS distribution.
               next if not distro == PACKMAN::OS.distro
               # Check OS version.
-              # TODO: Handle larger than version case.
-              v1 = version.split('.')
-              v2 = PACKMAN::OS.version.split('.')
-              for i in 0..v1.size-1
-                next if v1[i] != v2[i]
+              v2 = PACKMAN::OS.version
+              if eval "v1 #{operator} v2"
+                found = true
+                @active_spec = value
+                break
               end
-              @active_spec = value
-              break
             end
+            break if found
+          end
+          if not found
+            PACKMAN.report_error "Can not find requested package spec #{requested_spec}!"
           end
         end
       else
@@ -130,6 +135,7 @@ module PACKMAN
         versions = [versions] if not versions.class == Array
         key = []
         for i in 0..distros.size-1
+          PACKMAN::VersionSpec.validate versions[i]
           key << "#{distros[i]}:#{versions[i]}"
         end
         key = key.join('|').to_sym
@@ -348,7 +354,7 @@ module PACKMAN
           f.close
         end
         # Use precompiled binary file.
-        PACKMAN.report_notice "Use precompiled binary files for #{PACKMAN::Tty.green}#{package_name}#{PACKMAN::Tty.reset}."
+        PACKMAN.report_notice "Use precompiled binary files for #{PACKMAN::Tty.green}#{package.class}#{PACKMAN::Tty.reset}."
         PACKMAN.mkdir prefix, :force
         PACKMAN.cd prefix
         package_file = "#{ConfigManager.package_root}/#{package.filename}"

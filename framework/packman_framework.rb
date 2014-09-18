@@ -1,4 +1,5 @@
 require "utils"
+require "version_spec"
 require "command_line"
 require "config_manager"
 require "os"

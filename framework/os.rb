@@ -28,22 +28,22 @@ module PACKMAN
       case @@type
       when :Darwin
         @@distro = :Mac_OS_X
-        @@version = `sw_vers | grep ProductVersion | cut -d ':' -f 2`.strip
+        @@version = PACKMAN::VersionSpec.new `sw_vers | grep ProductVersion | cut -d ':' -f 2`.strip
       when :Linux
         res = `cat /etc/*-release`
         case res
         when /Red Hat Enterprise Linux Server/
           @@distro = :RedHat_Enterprise
-          @@version = res.match(/\d+\.\d+/)[0]
+          @@version = PACKMAN::VersionSpec.new res.match(/\d+\.\d+/)[0]
         when /Ubuntu/
           @@distro = :Ubuntu
-          @@version = res.match(/DISTRIB_RELEASE=(\d+\.\d+)/)[1]
+          @@version = PACKMAN::VersionSpec.new res.match(/DISTRIB_RELEASE=(\d+\.\d+)/)[1]
         when /Fedora/
           @@distro = :Fedora
-          @@version = res.match(/VERSION_ID=(\d+)/)[1]
+          @@version = PACKMAN::VersionSpec.new res.match(/VERSION_ID=(\d+)/)[1]
         when /CentOS/
           @@distro = :CentOS
-          @@version = res.match(/release (\d+.\d+)/)[1]
+          @@version = PACKMAN::VersionSpec.new res.match(/release (\d+.\d+)/)[1]
         else
           PACKMAN.report_error "Unknown distro \"#{res}\"!"
         end
