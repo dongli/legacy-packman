@@ -7,10 +7,21 @@ module PACKMAN
       if compiler_set.has_key?('installed_by_packman')
         file << "source #{Package.prefix(compiler_set['installed_by_packman'])}/bashrc\n"
       end
-      # Add other packages.
-      Dir.glob("#{ConfigManager.install_root}/**/bashrc").each do |path|
-        if path =~ /\/#{ConfigManager.active_compiler_set}\/bashrc/
-          file << "source #{path}\n"
+      Dir.foreach(ConfigManager.install_root) do |dir|
+        next if dir =~ /^\.{1,2}$/
+        dir = "#{ConfigManager.install_root}/#{dir}"
+        next if not File.directory? dir
+        Dir.foreach(dir) do |subdir|
+          next if subdir =~ /^\.{1,2}$/
+          subdir = "#{dir}/#{subdir}"
+          next if not File.directory? subdir
+          if File.exist? "#{subdir}/bashrc"
+            # The package is compiler insensitive.
+            file << "source #{subdir}/bashrc\n"
+          elsif File.exist? "#{subdir}/#{ConfigManager.active_compiler_set}/bashrc"
+            # The package is built by the active compiler set.
+            file << "source #{subdir}/#{ConfigManager.active_compiler_set}/bashrc\n"
+          end
         end
       end
     end
