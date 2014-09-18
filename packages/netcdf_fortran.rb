@@ -10,6 +10,12 @@ class Netcdf_fortran < PACKMAN::Package
     PACKMAN.append_env "PATH=#{netcdf_c_prefix}/bin:$PATH"
     PACKMAN.append_env "CPPFLAGS='-I#{netcdf_c_prefix}/include'"
     PACKMAN.append_env "LDFLAGS='-L#{netcdf_c_prefix}/lib'"
+    if PACKMAN::OS.mac_gang? and PACKMAN.compiler_vendor('fortran', PACKMAN.compiler_command('fortran')) == 'intel'
+      PACKMAN.append_env "FCFLAGS='-xHost -ip -no-prec-div -mdynamic-no-pic'"
+      PACKMAN.append_env "FFLAGS='-xHost -ip -no-prec-div -mdynamic-no-pic'"
+      # Follow the fixing in Homebrew. This is documented in http://www.unidata.ucar.edu/software/netcdf/docs/known_problems.html#intel-fortran-macosx.
+      PACKMAN.append_env "lt_cv_ld_force_load=no"
+    end
     args = %W[
       --prefix=#{PACKMAN::Package.prefix(self)}
       --disable-dependency-tracking
