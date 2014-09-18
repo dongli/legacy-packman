@@ -217,13 +217,15 @@ module PACKMAN
       PACKMAN.cp "#{root}/#{dirname}", copy_dir
     end
 
-    def self.prefix(package_self, options = [])
+    def self.prefix package, options = []
       options = [options] if not options.class == Array
-      if package_self.class == Class or package_self.class == String
-        package_self = PACKMAN::Package.instance package_self
+      if package.class == Class or package.class == String
+        package = PACKMAN::Package.instance package
       end
-      prefix = "#{ConfigManager.install_root}/#{package_self.class.to_s.downcase}/#{package_self.version}"
-      if not package_self.labels.include? 'compiler' and not options.include? :compiler_insensitive
+      prefix = "#{ConfigManager.install_root}/#{package.class.to_s.downcase}/#{package.version}"
+      if not package.has_label? 'compiler' and
+         not package.has_label? 'compiler_insensitive' and
+         not options.include? :compiler_insensitive
         compiler_set_index = ConfigManager.compiler_sets.index(Package.compiler_set)
         prefix << "/#{compiler_set_index}"
       end

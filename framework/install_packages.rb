@@ -15,11 +15,18 @@ module PACKMAN
         PACKMAN.report_warning "Unknown package #{Tty.red}#{package_name}#{Tty.reset}!"
         next
       end
+      package = PACKMAN::Package.instance package_name, install_spec
       # Parameters need to be set:
-      if not install_spec['use_binary'] and not install_spec.has_key? 'compiler_set'
+      if not install_spec['use_binary'] and
+         not package.has_label? 'compiler_insensitive' and
+         not install_spec.has_key? 'compiler_set'
         PACKMAN.report_error "Compiler set indices are not specified for package \"#{package_name}\"!"
       end
       if not install_spec['use_binary']
+        # When a package is labeled as 'compiler_insensitive', and no 'compiler_set' is specified, use the first one.
+        if package.has_label? 'compiler_insensitive' and not install_spec.has_key? 'compiler_set'
+          install_spec['compiler_set'] = [0]
+        end
         install_spec.each do |key, value|
           case key
           when 'compiler_set'
@@ -33,7 +40,6 @@ module PACKMAN
           end
         end
       end
-      package = PACKMAN::Package.instance package_name, install_spec
       # Check if the package building is finished.
       if package.has_label? 'under_construction'
         PACKMAN.report_warning "Sorry, #{PACKMAN::Tty.red}#{package.class}#{PACKMAN::Tty.reset} is still under construction!"

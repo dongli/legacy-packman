@@ -9,6 +9,8 @@ class Nco < PACKMAN::Package
   depends_on 'texinfo'
   depends_on 'udunits'
 
+  label 'compiler_insensitive'
+
   def install
     curl = PACKMAN::Package.prefix(Curl)
     PACKMAN.append_env "CFLAGS='-I#{curl}/include'"

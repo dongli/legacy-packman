@@ -9,6 +9,8 @@ class Cdo < PACKMAN::Package
   depends_on 'jasper'
   depends_on 'grib_api'
 
+  label 'compiler_insensitive'
+
   def install
     args = %W[
       --prefix=#{PACKMAN::Package.prefix(self)}
