@@ -108,11 +108,11 @@ describe PACKMAN::VersionSpec do
 
     v1 = PACKMAN::VersionSpec.new '2.0'
     v2 = PACKMAN::VersionSpec.new '2.0rc6'
-    expect(v1 =~ v2).to eq(true)
+    expect(v1 =~ v2).to eq(false)
 
     v1 = PACKMAN::VersionSpec.new '2.0rc6'
     v2 = PACKMAN::VersionSpec.new '2.0'
-    expect(v1 =~ v2).to eq(false)
+    expect(v1 =~ v2).to eq(true)
 
     v1 = PACKMAN::VersionSpec.new '2.0rc5'
     v2 = PACKMAN::VersionSpec.new '2.0rc6'
@@ -124,11 +124,11 @@ describe PACKMAN::VersionSpec do
 
     v1 = PACKMAN::VersionSpec.new '10.9'
     v2 = PACKMAN::VersionSpec.new '10.9.4'
-    expect(v1 =~ v2).to eq(true)
+    expect(v1 =~ v2).to eq(false)
 
     v1 = PACKMAN::VersionSpec.new '10.9.4'
     v2 = PACKMAN::VersionSpec.new '10.9'
-    expect(v1 =~ v2).to eq(false)
+    expect(v1 =~ v2).to eq(true)
   end
 
   it 'should judge bad comparison.' do

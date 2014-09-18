@@ -36,9 +36,9 @@ class Ncl < PACKMAN::Package
 
   binary :Ubuntu, '>= 12.04' do
     url 'https://www.earthsystemgrid.org/download/fileDownload.htm?logicalFileId=38263864-351d-11e4-a4b4-00c0f03d5b7c'
-    sha1 ''
+    sha1 'b7c885391891cb5709c44df3314391787c3ed9c3'
     version '6.2.1'
-    filename
+    filename 'ncl_ncarg-6.2.1.Linux_Debian7.6_x86_64_gcc472.tar.gz'
   end
 
   binary :RedHat_Enterprise, '=~ 5' do

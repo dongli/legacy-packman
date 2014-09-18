@@ -33,7 +33,7 @@ module PACKMAN
               next if not distro == PACKMAN::OS.distro
               # Check OS version.
               v2 = PACKMAN::OS.version
-              if eval "v1 #{operator} v2"
+              if eval "v2 #{operator} v1"
                 found = true
                 @active_spec = value
                 break

@@ -76,17 +76,17 @@ module PACKMAN
 
     def =~ other
       PACKMAN.report_error "Invalid argument #{other}!" if other.class != VersionSpec
-      return false if self.major and not other.major
+      return false if not self.major and other.major
       return false if self.major and other.major and self.major != other.major
-      return false if self.minor and not other.minor
+      return false if not self.minor and other.minor
       return false if self.minor and other.minor and self.minor != other.minor
-      return false if self.revision and not other.revision
+      return false if not self.revision and other.revision
       return false if self.revision and other.revision and self.revision != other.revision
-      return false if self.alpha and not other.alpha
+      return false if not self.alpha and other.alpha
       return false if self.alpha and other.alpha and self.alpha != other.alpha
-      return false if self.beta and not other.beta
+      return false if not self.beta and other.beta
       return false if self.beta and other.beta and self.beta != other.beta
-      return false if self.release_candidate and not other.release_candidate
+      return false if not self.release_candidate and other.release_candidate
       return false if self.release_candidate and other.release_candidate and self.release_candidate != other.release_candidate
       return true
     end
