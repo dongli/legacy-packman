@@ -262,10 +262,10 @@ module PACKMAN
         end
         libs = []
         if Dir.exist?("#{prefix}/lib")
-          libs << "$#{root}/lib"
+          libs << "${#{root}}/lib"
         end
         if Dir.exist?("#{prefix}/lib64")
-          libs << "$#{root}/lib64"
+          libs << "${#{root}}/lib64"
         end
         if not libs.empty?
           file << "export #{class_name}_LIBRARY=\"-L#{libs.join(' -L')}\"\n"
