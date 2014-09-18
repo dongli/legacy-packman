@@ -3,6 +3,8 @@ class Cmake < PACKMAN::Package
   sha1 'b7e4acaa7fc7adf54c1b465c712e5ea473b8b74f'
   version '3.0.1'
 
+  label 'compiler_insensitive'
+
   def install
     args = %W[
       --prefix=#{PACKMAN::Package.prefix(self)}
