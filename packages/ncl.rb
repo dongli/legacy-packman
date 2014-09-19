@@ -27,6 +27,8 @@ class Ncl < PACKMAN::Package
   depends_on 'udunits'
   depends_on 'vis5dx'
 
+  label 'compiler_insensitive'
+
   binary :Mac_OS_X, '=~ 10.9' do
     url 'https://www.earthsystemgrid.org/download/fileDownload.htm?logicalFileId=382dd989-351d-11e4-a4b4-00c0f03d5b7c'
     sha1 '36d82552f01e80fe82ab1687e361764dde5ccee7'
