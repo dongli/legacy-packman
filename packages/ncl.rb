@@ -29,6 +29,12 @@ class Ncl < PACKMAN::Package
 
   label 'compiler_insensitive'
 
+  history_binary_version '6.2.0', :Mac_OS_X, '=~ 10.9' do
+    url 'https://www.earthsystemgrid.org/download/fileDownload.htm?logicalFileId=24ac2346-ba14-11e3-b322-00c0f03d5b7c'
+    sha1 '2b7b1ce44b494d10a57ddce0e9405af53a9062d0'
+    filename 'ncl_ncarg-6.2.0.MacOS_10.9_64bit_gcc481.tar.gz'
+  end
+
   binary :Mac_OS_X, '=~ 10.9' do
     url 'https://www.earthsystemgrid.org/download/fileDownload.htm?logicalFileId=382dd989-351d-11e4-a4b4-00c0f03d5b7c'
     sha1 '36d82552f01e80fe82ab1687e361764dde5ccee7'

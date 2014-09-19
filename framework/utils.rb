@@ -73,16 +73,16 @@ module PACKMAN
 
   def self.download(root, url, rename = nil)
     check_command('curl')
-    filename = File.basename(URI.parse(url).path)
-    if rename
-      args = "-f#L -C - -o #{root}/#{rename}"
-    else
-      args = "-f#L -C - -o #{root}/#{filename}"
-    end
-    system "curl #{args} #{url}"
-    if not $?.success? and not PACKMAN::OS.connect_internet?
-      report_error "Sorry, this machine can not connect internet! "+
-        "You may use a FTP mirror in your location."
+    filename = rename ? rename : File.basename(URI.parse(url).path)
+    a = `curl -f#L -C - -o #{root}/#{filename} #{url} 2>&1`
+    if not $?.success?
+      if not PACKMAN::OS.connect_internet?
+        report_error "Sorry, this machine can not connect internet! "+
+          "You may use a FTP mirror in your location."
+      elsif ConfigManager.use_ftp_mirror != 'no' and $?.exitstatus == 78
+        report_error "Sorry, it seems that the FTP mirror does not have #{Tty.red}#{filename}#{Tty.reset}. "+
+          "You could try not to use the FTP mirror."
+      end
     end
   end
 

@@ -1,11 +1,14 @@
 module PACKMAN
   class Package
-    attr_reader :stable, :devel, :binary, :active_spec
+    attr_reader :stable, :devel, :binary, :history_versions
+    attr_reader :history_binary_versions, :active_spec
 
     def initialize requested_spec = nil
       hand_over_spec :stable
       hand_over_spec :devel
       hand_over_spec :binary
+      hand_over_spec :history_versions
+      hand_over_spec :history_binary_versions
 
       set_active_spec requested_spec
     end
@@ -20,18 +23,26 @@ module PACKMAN
       if requested_spec
         if self.respond_to? requested_spec
           @active_spec = self.send requested_spec
-        elsif @binary
+        else
           found = false
-          @binary.each do |key, value|
-            key.to_s.split('|').each do |distro_version|
-              tmp1 = distro_version.split(':')
-              distro = tmp1.first.to_sym
-              tmp2 = tmp1.last.match(/(>=|==|=~)?\s*(.*)/)
-              operator = tmp2[1] rescue '=='
-              v1 = PACKMAN::VersionSpec.new tmp2[2]
-              # Check OS distribution.
+          if requested_spec.to_s =~ /@/ and @history_binary_versions
+            expected_package_version = requested_spec.to_s.split('@')[0]
+            check_hash = @history_binary_versions
+          elsif @binary
+            expected_package_version = nil
+            check_hash = @binary
+          end
+          check_hash.each do |key, value|
+            key.to_s.split('|').each do |version_distro_version|
+              tmp1 = version_distro_version.split('@')
+              package_version = tmp1.first
+              next if expected_package_version and package_version != expected_package_version
+              tmp2 = tmp1.last.split(':')
+              distro = tmp2.first.to_sym
               next if not distro == PACKMAN::OS.distro
-              # Check OS version.
+              tmp3 = tmp2.last.match(/(>=|==|=~)?\s*(.*)/)
+              operator = tmp3[1] rescue '=='
+              v1 = PACKMAN::VersionSpec.new tmp3[2]
               v2 = PACKMAN::OS.version
               if eval "v2 #{operator} v1"
                 found = true
@@ -147,6 +158,37 @@ module PACKMAN
           eval "@@#{self}_binary[key]"
         end
       end
+
+      def history_version version, &block
+        eval "@@#{self}_history_versions ||= {}"
+        if block_given?
+          eval "@@#{self}_history_versions[version] = PackageSpec.new"
+          eval "@@#{self}_history_versions[version].instance_eval &block"
+          eval "@@#{self}_history_versions[version].version version"
+        else
+          PACKMAN.report_error "No block is given!"
+        end
+      end
+
+      def history_binary_version version, distros = nil, versions = nil, &block
+        eval "@@#{self}_history_binary_versions ||= {}"
+        distros = [distros] if not distros.class == Array
+        versions = [versions] if not versions.class == Array
+        key = []
+        for i in 0..distros.size-1
+          PACKMAN::VersionSpec.validate versions[i]
+          key << "#{version}@#{distros[i]}:#{versions[i]}"
+        end
+        key = key.join('|').to_sym
+        if block_given?
+          eval "@@#{self}_history_binary_versions[key] = PackageSpec.new"
+          eval "@@#{self}_history_binary_versions[key].instance_eval &block"
+          eval "@@#{self}_history_binary_versions[key].version version"
+          eval "@@#{self}_history_binary_versions[key].label 'binary'"
+        else
+          PACKMAN.report_error "No block is given!"
+        end
+      end
     end
 
     def self.defined? package_name
@@ -155,7 +197,11 @@ module PACKMAN
 
     def self.instance package_name, install_spec = {}
       if install_spec['use_binary']
-        eval "#{package_name}.new :'#{PACKMAN::OS.distro}:#{PACKMAN::OS.version}'"
+        if install_spec['version']
+          eval "#{package_name}.new :'#{install_spec['version']}@#{PACKMAN::OS.distro}:#{PACKMAN::OS.version}'"
+        else
+          eval "#{package_name}.new :'#{PACKMAN::OS.distro}:#{PACKMAN::OS.version}'"
+        end
       else
         eval "#{package_name}.new"
       end
@@ -224,8 +270,8 @@ module PACKMAN
       end
       prefix = "#{ConfigManager.install_root}/#{package.class.to_s.downcase}/#{package.version}"
       if not package.has_label? 'compiler' and
-         not package.has_label? 'compiler_insensitive' and
-         not options.include? :compiler_insensitive
+        not package.has_label? 'compiler_insensitive' and
+        not options.include? :compiler_insensitive
         compiler_set_index = ConfigManager.compiler_sets.index(Package.compiler_set)
         prefix << "/#{compiler_set_index}"
       end
