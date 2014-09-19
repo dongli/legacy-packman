@@ -32,6 +32,10 @@ module PACKMAN
             expected_package_version = nil
             check_hash = @binary
           end
+          if check_hash.has_key? requested_spec
+            @active_spec = check_hash[requested_spec]
+            return
+          end
           check_hash.each do |key, value|
             key.to_s.split('|').each do |version_distro_version|
               tmp1 = version_distro_version.split('@')
@@ -82,6 +86,8 @@ module PACKMAN
       specs << :stable if stable
       specs << :devel if devel
       specs += @binary.keys if @binary
+      specs += @history_versions.keys if @history_versions
+      specs += @history_binary_versions.keys if @history_binary_versions
       return specs
     end
 

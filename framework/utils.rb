@@ -74,7 +74,7 @@ module PACKMAN
   def self.download(root, url, rename = nil)
     check_command('curl')
     filename = rename ? rename : File.basename(URI.parse(url).path)
-    a = `curl -f#L -C - -o #{root}/#{filename} #{url} 2>&1`
+    system "curl -f#L -C - -o #{root}/#{filename} #{url}"
     if not $?.success?
       if not PACKMAN::OS.connect_internet?
         report_error "Sorry, this machine can not connect internet! "+
