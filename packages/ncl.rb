@@ -35,6 +35,24 @@ class Ncl < PACKMAN::Package
     filename 'ncl_ncarg-6.2.0.MacOS_10.9_64bit_gcc481.tar.gz'
   end
 
+  history_binary_version '6.2.0', :Ubuntu, '>= 12.04' do
+    url 'https://www.earthsystemgrid.org/download/fileDownload.htm?logicalFileId=5c76fcc2-ba18-11e3-b322-00c0f03d5b7c'
+    sha1 'c0b7252c6fd74cc0c5d415f68f37106ce520c7c2'
+    filename 'ncl_ncarg-6.2.0.Linux_Debian7.4_x86_64_gcc472.tar.gz'
+  end
+
+  history_binary_version '6.2.0', :RedHat_Enterprise, '=~ 5' do
+    url 'https://www.earthsystemgrid.org/download/fileDownload.htm?logicalFileId=5c732c30-ba18-11e3-b322-00c0f03d5b7c'
+    sha1 '2f9644c4ce8744cb75fb908ac9715b621ca6b476'
+    filename 'ncl_ncarg-6.2.0.Linux_RHEL5.10_x86_64_gcc412.tar.gz'
+  end
+
+  history_binary_version '6.2.0', [:RedHat_Enterprise, :Fedora, :CentOS], ['=~ 6', '=~ 14', '=~ 6'] do
+    url 'https://www.earthsystemgrid.org/download/fileDownload.htm?logicalFileId=24b0690a-ba14-11e3-b322-00c0f03d5b7c'
+    sha1 '4737c15e454f912e7f677f15cd261ebd324b10ab'
+    filename 'ncl_ncarg-6.2.0.Linux_RHEL6.2_x86_64_gcc446.tar.gz'
+  end
+
   binary :Mac_OS_X, '=~ 10.9' do
     url 'https://www.earthsystemgrid.org/download/fileDownload.htm?logicalFileId=382dd989-351d-11e4-a4b4-00c0f03d5b7c'
     sha1 '36d82552f01e80fe82ab1687e361764dde5ccee7'
