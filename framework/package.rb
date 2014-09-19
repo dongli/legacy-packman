@@ -249,16 +249,16 @@ module PACKMAN
         file << "# #{package.sha1}\n"
         file << "export #{root}=#{prefix}\n"
         if Dir.exist?("#{prefix}/bin")
-          file << "export PATH=$#{root}/bin:$PATH\n"
+          file << "export PATH=${#{root}}/bin:${PATH}\n"
         end
         if Dir.exist?("#{prefix}/sbin")
-          file << "export PATH=$#{root}/sbin:$PATH\n"
+          file << "export PATH=${#{root}}/sbin:${PATH}\n"
         end
         if Dir.exist?("#{prefix}/share/man")
-          file << "export MANPATH=\"$#{root}/share/man:$MANPATH\"\n"
+          file << "export MANPATH=\"${#{root}}/share/man:${MANPATH}\"\n"
         end
         if Dir.exist?("#{prefix}/include")
-          file << "export #{class_name}_INCLUDE=\"-I$#{root}/include\"\n"
+          file << "export #{class_name}_INCLUDE=\"-I${#{root}}/include\"\n"
         end
         libs = []
         if Dir.exist?("#{prefix}/lib")
@@ -269,11 +269,11 @@ module PACKMAN
         end
         if not libs.empty?
           file << "export #{class_name}_LIBRARY=\"-L#{libs.join(' -L')}\"\n"
-          file << "export #{PACKMAN::OS.ld_library_path_name}=#{libs.join(':')}:$#{PACKMAN::OS.ld_library_path_name}\n"
+          file << "export #{PACKMAN::OS.ld_library_path_name}=#{libs.join(':')}:${#{PACKMAN::OS.ld_library_path_name}}\n"
           file << "export #{class_name}_RPATH=\"-Wl,-rpath,#{libs.join(',-rpath,')}\"\n"
         end
         if Dir.exist?("#{prefix}/lib/pkgconfig")
-          file << "export PKG_CONFIG_PATH=$#{root}/lib/pkgconfig:$PKG_CONFIG_PATH\n"
+          file << "export PKG_CONFIG_PATH=${#{root}}/lib/pkgconfig:${PKG_CONFIG_PATH}\n"
         end
       end
     end
