@@ -18,6 +18,9 @@ class Nco < PACKMAN::Package
     args = %W[
       --prefix=#{PACKMAN::Package.prefix(self)}
       --enable-netcdf4
+      --enable-dap
+      --enable-ncap2
+      --enable-udunits2
       NETCDF_INC=#{PACKMAN::Package.prefix(Netcdf_c)}/include
       NETCDF_LIB=#{PACKMAN::Package.prefix(Netcdf_c)}/lib
       NETCDF4_ROOT=#{PACKMAN::Package.prefix(Netcdf_c)}
