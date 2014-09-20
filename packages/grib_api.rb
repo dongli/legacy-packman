@@ -14,7 +14,12 @@ class Grib_api < PACKMAN::Package
       --with-netcdf=#{PACKMAN::Package.prefix(Netcdf_c)}
       --with-jasper=#{PACKMAN::Package.prefix(Jasper)}
     ]
+    if PACKMAN::OS.mac_gang? and PACKMAN.compiler_vendor('fortran', PACKMAN.compiler_command('fortran')) == 'intel'
+      # Grib_api has already used libtool to set rpath.
+      PACKMAN.append_env "LDFLAGS=''"
+    end
     PACKMAN.run './configure', *args
     PACKMAN.run 'make install'
+    PACKMAN.clean_env
   end
 end
