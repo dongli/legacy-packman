@@ -11,6 +11,8 @@ require 'packman_framework'
 require 'packman_packages'
 
 case PACKMAN::CommandLine.subcommand
+when :config
+  PACKMAN.edit_config_file
 when :collect
   PACKMAN::ConfigManager.parse
   PACKMAN.collect_packages

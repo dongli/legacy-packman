@@ -11,7 +11,7 @@ function _packman_()
     completed_words=""
     case "${prev_argv##*/}" in
     "packman")
-        completed_words="collect install switch mirror update help"
+        completed_words="config collect install switch mirror update help"
         ;;
     "collect")
         completed_words="-all"

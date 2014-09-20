@@ -5,6 +5,7 @@ module PACKMAN
     @@options = []
 
     @@permitted_subcommands = {
+      :config  => 'Edit the config file in the default location.',
       :collect => 'Collect packages from internet.',
       :install => 'Install packages and their dependencies.',
       :switch  => 'Switch different compiler set (new bashrc will be generated).',
@@ -13,6 +14,7 @@ module PACKMAN
       :help    => 'Print help message.'
     }
     @@permitted_options = {
+      :config  => {},
       :collect => {
         '-all' => 'Collect all packages.'
       },
@@ -54,18 +56,9 @@ module PACKMAN
             "The available options are:\n#{print_options(@@subcommand, 2).chomp}"
         end
       end
-      need_config_file = false
-      case @@subcommand
-      when :collect
-        need_config_file = true
-      when :install
-        need_config_file = true
-      when :switch
-        need_config_file = true
-      when :mirror
-        need_config_file = true
-      end
-      if need_config_file and not @@config_file
+      if [:config, :collect, :install,
+          :switch, :mirror].include? @@subcommand and
+         not @@config_file
         # Check if there is a configuration file in PACKMAN_ROOT.
         @@config_file = "#{ENV['PACKMAN_ROOT']}/packman.config"
         if not File.exist? @@config_file
