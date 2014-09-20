@@ -30,8 +30,8 @@ module PACKMAN
           available_versions = bashrc_files.map { |p| File.basename(File.dirname(p)) }
           package_name = File.basename(dir).capitalize.to_sym
           if not ConfigManager.packages.has_key? package_name or
-             not ConfigManager.packages[package_name].has_key? 'version'
-            report_error "Package #{Tty.red}#{package_name}#{Tty.reset} has multiple versions "+
+            not ConfigManager.packages[package_name].has_key? 'version'
+            PACKMAN::CLI.report_error "Package #{CLI.red package_name} has multiple versions "+
               "(#{available_versions.join(', ')}), you should choose one in #{CommandLine.config_file}!"
           end
           bashrc_files.each do |f|
@@ -43,7 +43,7 @@ module PACKMAN
         end
       end
     end
-    report_notice "Add \"source #{ConfigManager.install_root}/bashrc\" to your BASH configuation file if it is not there."
-    report_notice "You need to login again to make the changes effective."
+    PACKMAN::CLI.report_notice "Add \"source #{ConfigManager.install_root}/bashrc\" to your BASH configuation file if it is not there."
+    PACKMAN::CLI.report_notice "You need to login again to make the changes effective."
   end
 end

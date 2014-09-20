@@ -26,7 +26,7 @@ module PACKMAN
 
   def self.start_mirror_service
     Package.compiler_set = ConfigManager.compiler_sets[0]
-    report_notice "Start FTP mirror service."
+    CLI.report_notice "Start FTP mirror service."
     cmd = "#{Package.prefix(Proftpd)}/sbin/proftpd"
     if ENV['USER'] != 'root'
       system "sudo #{cmd}"
@@ -39,10 +39,10 @@ module PACKMAN
     Package.compiler_set = ConfigManager.compiler_sets[0]
     pid = "#{Package.prefix(Proftpd)}/var/proftpd.pid"
     if not File.exist? pid
-      report_warning "FTP mirror service is not running!"
+      CLI.report_warning "FTP mirror service is not running!"
       exit
     end
-    report_notice "Stop FTP mirror service."
+    CLI.report_notice "Stop FTP mirror service."
     cmd = "kill -TERM `cat #{pid}`"
     if ENV['USER'] != 'root'
       system "sudo #{cmd}"
@@ -55,15 +55,15 @@ module PACKMAN
     Package.compiler_set = ConfigManager.compiler_sets[0]
     pid = "#{Package.prefix(Proftpd)}/var/proftpd.pid"
     if File.exist? pid
-      report_notice "FTP mirror service is #{Tty.green}on#{Tty.reset}."
+      CLI.report_notice "FTP mirror service is #{CLI.green 'on'}."
     else
-      report_notice "FTP mirror service is #{Tty.red}off#{Tty.reset}."
+      CLI.report_notice "FTP mirror service is #{CLI.red 'off'}."
     end
   end
 
   def self.sync_mirror_service
     # Download all packages.
-    report_notice 'Download all defined packages.'
+    CLI.report_notice 'Download all defined packages.'
     collect_packages :all
   end
 end

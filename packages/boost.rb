@@ -15,7 +15,7 @@ class Boost < PACKMAN::Package
       # Lower version (e.g. 11.1) has issues to compile Boost.
       helper = PACKMAN.compiler_helper 'intel'
       if ['11.1'].include? helper.version
-        PACKMAN.report_error "Intel compiler is too old to compile Boost! See "+
+        PACKMAN::CLI.report_error "Intel compiler is too old to compile Boost! See "+
           "https://software.intel.com/en-us/articles/boost-1400-compilation-error-while-building-with-intel-compiler/"
       end
       case PACKMAN::OS.type
@@ -23,6 +23,13 @@ class Boost < PACKMAN::Package
         toolset << '-darwin'
       when :Linux
         toolset << '-linux'
+      end
+    elsif toolset == 'llvm'
+      case PACKMAN::OS.type
+      when :Darwin
+        toolset = 'clang-darwin'
+      when :Linux
+        toolset = 'clang-linux'
       end
     end
     open('user-config.jam', 'w') do |file|
@@ -42,13 +49,17 @@ class Boost < PACKMAN::Package
       install
     ]
     # Check if python development files are installed.
-    if not PACKMAN::OS.check_system_package ['python-dev', 'python-devel']
-      PACKMAN.report_warning 'Python development files are not installed, '+
+    if not PACKMAN::OS.installed? ['python-dev', 'python-devel']
+      PACKMAN::CLI.report_warning 'Python development files are not installed, '+
         'so Boost will be installed without python library.'
-      PACKMAN.report_warning "If you really need that library, cancel and "+
-        "install #{PACKMAN::Tty.red}python-dev#{PACKMAN::Tty.reset} or "+
-        "#{PACKMAN::Tty.red}python-devel#{PACKMAN::Tty.reset}."
-      args << '--without-python'      
+      PACKMAN::CLI.report_warning "If you really need that library, cancel and "+
+        "install #{PACKMAN::CLI.red 'python-dev'} or #{PACKMAN::CLI.red 'python-devel'}."
+      args << '--without-python'
+    end
+    if PACKMAN::OS.mac_gang? and toolset =~ /clang/
+      # Boost.Log cannot be built using Apple GCC at the moment. Disabled
+      # on such systems.
+      args << "--without-log"
     end
     PACKMAN.run './b2', *args
   end

@@ -2,25 +2,26 @@ module PACKMAN
   def self.install_packages
     expand_packman_compiler_sets
     # Report compilers and their flags.
-    ConfigManager.compiler_sets.each do |compiler_set|
-      report_notice "Compiler set #{compiler_set}"
-      compiler_set.each do |language, compiler|
+    for i in 0..ConfigManager.compiler_sets.size-1
+      CLI.report_notice "Compiler set #{CLI.green i}:"
+      ConfigManager.compiler_sets[i].each do |language, compiler|
         next if language == 'installed_by_packman'
-        report_notice "Default flags for #{Tty.blue}#{compiler}#{Tty.reset}: #{default_flags language, compiler}."
+        print "#{CLI.blue '==>'} #{language}: #{compiler} #{default_flags language, compiler}\n"
+        # CLI.report_notice "Default flags for #{CLI.blue compiler}: #{default_flags language, compiler}."
       end
     end
     # Install packages.
     ConfigManager.packages.each do |package_name, install_spec|
-      if not PACKMAN::Package.defined? package_name
-        PACKMAN.report_warning "Unknown package #{Tty.red}#{package_name}#{Tty.reset}!"
+      if not Package.defined? package_name
+        CLI.report_warning "Unknown package #{CLI.red package_name}!"
         next
       end
-      package = PACKMAN::Package.instance package_name, install_spec
+      package = Package.instance package_name, install_spec
       # Parameters need to be set:
       if not install_spec['use_binary'] and
-         not package.has_label? 'compiler_insensitive' and
-         not install_spec.has_key? 'compiler_set'
-        PACKMAN.report_error "Compiler set indices are not specified for package \"#{package_name}\"!"
+        not package.has_label? 'compiler_insensitive' and
+        not install_spec.has_key? 'compiler_set'
+        CLI.report_error "Compiler set indices are not specified for package \"#{package_name}\"!"
       end
       if not install_spec['use_binary']
         # When a package is labeled as 'compiler_insensitive', and no 'compiler_set' is specified, use the first one.
@@ -32,9 +33,9 @@ module PACKMAN
           when 'compiler_set'
             install_spec['compiler_set'].each do |index|
               if index.class != Fixnum
-                PACKMAN.report_error "Bad compiler sets format \"#{value}\" in package \"#{package_name}\"!"
+                CLI.report_error "Bad compiler sets format \"#{value}\" in package \"#{package_name}\"!"
               elsif index < 0 or index >= ConfigManager.compiler_sets.size
-                PACKMAN.report_error "Compiler set index is out of range in package \"#{package_name}\"!"
+                CLI.report_error "Compiler set index is out of range in package \"#{package_name}\"!"
               end
             end
           end
@@ -42,7 +43,7 @@ module PACKMAN
       end
       # Check if the package building is finished.
       if package.has_label? 'under_construction'
-        PACKMAN.report_warning "Sorry, #{PACKMAN::Tty.red}#{package.class}#{PACKMAN::Tty.reset} is still under construction!"
+        CLI.report_warning "Sorry, #{CLI.red package.class} is still under construction!"
         next
       end
       # Check which compiler sets are to use.

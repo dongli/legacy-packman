@@ -4,66 +4,6 @@ require "digest"
 require "fileutils"
 
 module PACKMAN
-  class Tty
-    class << self
-      def blue; color 34; end
-      def white; color 39; end
-      def red; color 31; end
-      def yellow; color 33; end
-      def reset; escape 0; end
-      def em; underline 39; end
-      def green; color 32; end
-      def gray; color 30; end
-
-      def width
-        `/usr/bin/tput cols`.strip.to_i
-      end
-
-      def truncate(str)
-        str.to_s[0, width - 4]
-      end
-
-      def bold(str)
-        escape(1)+str+escape(0)
-      end
-
-      private
-
-      def color n
-        escape "0;#{n}"
-      end
-      def underline n
-        escape "4;#{n}"
-      end
-      def escape n
-        "\033[#{n}m" if $stdout.tty?
-      end
-    end
-  end
-
-  def self.report_notice(message)
-    print "[#{Tty.green}Notice#{Tty.reset}]: #{message}\n"
-  end
-
-  def self.report_warning(message)
-    print "[#{Tty.yellow}Warning#{Tty.reset}]: #{message}\n"
-  end
-
-  def self.report_error(message)
-    print "[#{Tty.red}Error#{Tty.reset}]: #{message}\n"
-    print_call_stack
-    exit
-  end
-
-  def self.report_check(message)
-    print "[#{Tty.red}CHECK#{Tty.reset}]: #{message}\n"
-  end
-
-  def self.under_construction!
-    print "Oops: PACKMAN is under construction!\n"
-    exit
-  end
-
   def self.check_command(cmd)
     `which #{cmd}`
     if not $?.success?
@@ -77,10 +17,10 @@ module PACKMAN
     system "curl -f#L -C - -o #{root}/#{filename} #{url}"
     if not $?.success?
       if not PACKMAN::OS.connect_internet?
-        report_error "Sorry, this machine can not connect internet! "+
+        PACKMAN::CLI.report_error "Sorry, this machine can not connect internet! "+
           "You may use a FTP mirror in your location."
       elsif ConfigManager.use_ftp_mirror != 'no' and $?.exitstatus == 78
-        report_error "Sorry, it seems that the FTP mirror does not have #{Tty.red}#{filename}#{Tty.reset}. "+
+        PACKMAN::CLI.report_error "Sorry, it seems that the FTP mirror does not have #{CLI.red filename}. "+
           "You could try not to use the FTP mirror."
       end
     end
@@ -112,11 +52,11 @@ module PACKMAN
       if expect.eql? current
         return true
       else
-        report_warning "Directory #{filepath} SHA1 is #{current}."
+        PACKMAN::CLI.report_warning "Directory #{filepath} SHA1 is #{current}."
         return false
       end
     else
-      report_error "Unknown file type \"#{filepath}\"!"
+      PACKMAN::CLI.report_error "Unknown file type \"#{filepath}\"!"
     end
   end
 
@@ -132,7 +72,7 @@ module PACKMAN
     elsif filepath =~ /\.(zip)$/
       return :zip
     else
-      PACKMAN.report_error "Unknown compression type of \"#{filepath}\"!"
+      PACKMAN::CLI.report_error "Unknown compression type of \"#{filepath}\"!"
     end
   end
 
@@ -177,10 +117,10 @@ module PACKMAN
 
   def self.new_class(class_name)
     if class_name == ''
-      report_error "Empty class!"
+      PACKMAN::CLI.report_error "Empty class!"
     end
     if not PACKMAN.class_defined? class_name
-      report_error "Unknown class #{Tty.red}#{class_name}#{Tty.reset}!"
+      PACKMAN::CLI.report_error "Unknown class #{CLI.red class_name}!"
     end
     eval "#{class_name}.new"
   end
@@ -206,11 +146,5 @@ module PACKMAN
 
   def self.ln(src, dst)
     FileUtils.ln_s src, dst
-  end
-
-  def self.print_call_stack
-    Kernel.caller.each do |stack_line|
-      print "#{Tty.red}==>#{Tty.reset} #{stack_line}\n"
-    end
   end
 end

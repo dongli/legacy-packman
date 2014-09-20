@@ -4,36 +4,42 @@ module PACKMAN
     package_root = ConfigManager.package_root
     PACKMAN.mkdir(package_root)
     if not ConfigManager.use_ftp_mirror == 'no'
-      report_notice "Use FTP mirror #{Tty.blue}#{ConfigManager.use_ftp_mirror}#{Tty.reset}."
+      CLI.report_notice "Use FTP mirror #{CLI.blue ConfigManager.use_ftp_mirror}."
     end
     # Download packages to package_root.
     collect_all = ( CommandLine.has_option? '-all' or options.include? :all )
     if collect_all
       package_names = Dir.glob("#{ENV['PACKMAN_ROOT']}/packages/*.rb").map { |f| File.basename(f).gsub('.rb', '').capitalize }
-      package_names.delete('Packman_packages')
+      package_names.delete 'Packman_packages'
     else
       package_names = ConfigManager.packages.keys
     end
     package_names.each do |package_name|
       if not collect_all
         install_spec = ConfigManager.packages[package_name]
-        package = PACKMAN::Package.instance package_name, install_spec
-        download_package(package_root, package)
+        package = Package.instance package_name, install_spec
+        download_package package_root, package
       else
-        PACKMAN::Package.all_instances(package_name).each do |package|
-          download_package(package_root, package)
+        all_instances = Package.all_instances package_name
+        all_instances.each do |package|
+          if all_instances.size == 1
+            download_package package_root, package
+          elsif all_instances.size > 1
+            download_package package_root, package, :multiple_versions
+          end
         end
       end
     end
   end
 
-  def self.download_package(package_root, package, is_recursive = false)
+  def self.download_package package_root, package, options = []
+    options = [options] if not options.class == Array
     # Recursively download dependency packages.
     package.dependencies.each do |depend|
       depend_package_name = depend.capitalize
       if not ConfigManager.packages.keys.include? depend_package_name
-        depend_package = PACKMAN::Package.instance depend_package_name
-        download_package(package_root, depend_package, true)
+        depend_package = Package.instance depend_package_name
+        download_package package_root, depend_package
       end
     end
     # Skip package that is provided by system.
@@ -46,11 +52,9 @@ module PACKMAN
       patch_file_name = "#{package.class}.patch.#{patch_counter}"
       patch_file_path = "#{package_root}/#{patch_file_name}"
       if File.exist? patch_file_path
-        if PACKMAN.sha1_same? patch_file_path, patch.sha1
-          next
-        end
+        next if PACKMAN.sha1_same? patch_file_path, patch.sha1
       end
-      report_notice "Download patch #{url}."
+      CLI.report_notice "Download patch #{url}."
       if not ConfigManager.use_ftp_mirror == 'no'
         url = "#{ConfigManager.use_ftp_mirror}/#{patch_file_name}"
       end
@@ -62,11 +66,9 @@ module PACKMAN
       attach_file_name = "#{File.basename(URI.parse(url).path)}"
       attach_file_path = "#{package_root}/#{attach_file_name}"
       if File.exist? attach_file_path
-        if PACKMAN.sha1_same? attach_file_path, attach.sha1
-          next
-        end
+        next if PACKMAN.sha1_same? attach_file_path, attach.sha1
       end
-      report_notice "Download attachment #{url}."
+      CLI.report_notice "Download attachment #{url}."
       if not ConfigManager.use_ftp_mirror == 'no'
         url = "#{ConfigManager.use_ftp_mirror}/#{attach_file_name}"
       end
@@ -78,7 +80,11 @@ module PACKMAN
       if File.exist? package_file_path
         return if PACKMAN.sha1_same? package_file_path, package.sha1
       end
-      PACKMAN.report_notice "Download package #{Tty.red}#{package.class}#{Tty.reset}."
+      if options.include? :multiple_versions
+        CLI.report_notice "Download package #{CLI.red package.class} (#{package.filename})."
+      else
+        CLI.report_notice "Download package #{CLI.red package.class}."
+      end
       url = package.url
       if not ConfigManager.use_ftp_mirror == 'no'
         url = "#{ConfigManager.use_ftp_mirror}/#{package.filename}"
@@ -89,7 +95,11 @@ module PACKMAN
       if Dir.exist? package_dir_path
         return if PACKMAN.sha1_same? package_dir_path, package.sha1
       end
-      PACKMAN.report_notice "Download package #{Tty.red}#{package.class}#{Tty.reset}."
+      if options.include? :multiple_versions
+        CLI.report_notice "Download package #{CLI.red package.class} (#{package.dirname})."
+      else
+        CLI.report_notice "Download package #{CLI.red package.class}."
+      end
       if not ConfigManager.use_ftp_mirror == 'no'
         url = "#{ConfigManager.use_ftp_mirror}/#{package.dirname}"
         PACKMAN.download(package_root, url, package.dirname)

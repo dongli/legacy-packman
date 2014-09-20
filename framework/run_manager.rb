@@ -49,10 +49,10 @@ module PACKMAN
       # Handle customized LD_LIBRARY_PATH.
       if not @@ld_library_pathes.empty?
         case OS.type
-          when :Darwin
-            cmd_str << 'DYLD_LIBRARY_PATH=$DYLD_LIBRARY_PATH:'
-          when :Linux
-            cmd_str << 'LD_LIBRARY_PATH=$LD_LIBRARY_PATH:'
+        when :Darwin
+          cmd_str << 'DYLD_LIBRARY_PATH=$DYLD_LIBRARY_PATH:'
+        when :Linux
+          cmd_str << 'LD_LIBRARY_PATH=$LD_LIBRARY_PATH:'
         end
         cmd_str << @@ld_library_pathes.join(':')
         cmd_str << ' '
@@ -91,7 +91,7 @@ module PACKMAN
       if not PACKMAN::CommandLine.has_option? '-verbose'
         cmd_str << " 1> #{ConfigManager.package_root}/stdout 2> #{ConfigManager.package_root}/stderr"
       end
-      print "#{PACKMAN::Tty.blue}==>#{PACKMAN::Tty.reset} #{PACKMAN::Tty.truncate("#{cmd} #{args.join(' ')}")}\n"
+      print "#{PACKMAN::CLI.blue '==>'} #{PACKMAN::CLI.truncate("#{cmd} #{args.join(' ')}")}\n"
       system cmd_str
       if not $?.success?
         info =  "PATH: #{FileUtils.pwd}\n"
@@ -101,7 +101,7 @@ module PACKMAN
           info << "Standard output: #{ConfigManager.package_root}/stdout\n"
           info << "Standard error: #{ConfigManager.package_root}/stderr\n"
         end
-        PACKMAN.report_error "Failed to run the following command:\n"+info
+        PACKMAN::CLI.report_error "Failed to run the following command:\n"+info
       end
       if not PACKMAN::CommandLine.has_option? '-verbose'
         FileUtils.rm("#{ConfigManager.package_root}/stdout")

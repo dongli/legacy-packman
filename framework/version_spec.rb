@@ -10,7 +10,7 @@ module PACKMAN
       begin
         @major = Integer(tmp[0])
       rescue
-        PACKMAN.report_error "Bad version identifer #{PACKMAN::Tty.red}#{version_string}#{PACKMAN::Tty.reset}!"
+        PACKMAN::CLI.report_error "Bad version identifer #{PACKMAN::CLI.red version_string}!"
       end
       # The alpha, beta, release candidate identifers may be appended to the
       # minor version identifer
@@ -18,7 +18,7 @@ module PACKMAN
       res = tmp[1].match(/(\d+)-?(a|b|rc)?(\d+)?/)
       # TODO: Handle bad minor version identifer.
       if not res
-        PACKMAN.report_error "Bad version identifer #{PACKMAN::Tty.red}#{version_string}#{PACKMAN::Tty.reset}!"
+        PACKMAN::CLI.report_error "Bad version identifer #{PACKMAN::CLI.red version_string}!"
       end
       @minor = res[1].to_i
       if res[2] and res[3]
@@ -31,17 +31,17 @@ module PACKMAN
           @release_candidate = res[3].to_i
         end
       elsif res[2] and not res[3]
-        PACKMAN.report_error "Bad version identifer #{PACKMAN::Tty.red}#{version_string}#{PACKMAN::Tty.reset}!"
+        PACKMAN::CLI.report_error "Bad version identifer #{PACKMAN::CLI.red version_string}!"
       end
       return if tmp.size == 2
       @revision = tmp[2].to_i
       if tmp.size > 3
-        PACKMAN.report_error "Bad version identifer #{PACKMAN::Tty.red}#{version_string}#{PACKMAN::Tty.reset}!"
+        PACKMAN::CLI.report_error "Bad version identifer #{PACKMAN::CLI.red version_string}!"
       end
     end
 
     def >= other
-      PACKMAN.report_error "Invalid argument #{other}!" if other.class != VersionSpec
+      PACKMAN::CLI.report_error "Invalid argument #{other}!" if other.class != VersionSpec
       return false if self.major and other.major and self.major < other.major
       return true  if self.major and other.major and self.major > other.major
       return false if self.minor and other.minor and self.minor < other.minor
@@ -58,7 +58,7 @@ module PACKMAN
     end
 
     def == other
-      PACKMAN.report_error "Invalid argument #{other}!" if other.class != VersionSpec
+      PACKMAN::CLI.report_error "Invalid argument #{other}!" if other.class != VersionSpec
       return false if (self.major and not other.major) or (not self.major and other.major)
       return false if self.major and other.major and self.major != other.major
       return false if (self.minor and not other.major) or (not self.minor and other.minor)
@@ -75,7 +75,7 @@ module PACKMAN
     end
 
     def =~ other
-      PACKMAN.report_error "Invalid argument #{other}!" if other.class != VersionSpec
+      PACKMAN::CLI.report_error "Invalid argument #{other}!" if other.class != VersionSpec
       return false if not self.major and other.major
       return false if self.major and other.major and self.major != other.major
       return false if not self.minor and other.minor

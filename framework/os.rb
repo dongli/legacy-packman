@@ -20,7 +20,7 @@ module PACKMAN
       when /^Linux */
         @@type = :Linux
       else
-        report_error "Unknown OS type \"#{res}\"!"
+        PACKMAN::CLI.report_error "Unknown OS type \"#{res}\"!"
       end
       # Check architecture
       @@arch = `uname -m`.chomp
@@ -45,7 +45,7 @@ module PACKMAN
           @@distro = :CentOS
           @@version = PACKMAN::VersionSpec.new res.match(/release (\d+.\d+)/)[1]
         else
-          PACKMAN.report_error "Unknown distro \"#{res}\"!"
+          PACKMAN::CLI.report_error "Unknown distro \"#{res}\"!"
         end
       end
     end
@@ -70,8 +70,8 @@ module PACKMAN
 
     def self.redhat_gang?
       if distro == :RedHat_Enterprise or
-         distro == :Fedora or
-         distro == :CentOS
+        distro == :Fedora or
+        distro == :CentOS
         return true
       else
         return false
@@ -132,7 +132,7 @@ module PACKMAN
             # TODO: How to handle this branch?
             PACKMAN.under_construction!
           else
-            PACKMAN.report_error "Unknown OS!"
+            PACKMAN::CLI.report_error "Unknown OS!"
           end
         rescue
           flag = false
@@ -154,7 +154,7 @@ module PACKMAN
           # TODO: How to handle this branch?
           PACKMAN.under_construction!
         else
-          PACKMAN.report_error "Unknown OS!"
+          PACKMAN::CLI.report_error "Unknown OS!"
         end
       end
       return res

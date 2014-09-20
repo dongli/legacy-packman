@@ -57,7 +57,7 @@ module PACKMAN
             break if found
           end
           if not found
-            PACKMAN.report_error "Can not find requested package spec #{requested_spec}!"
+            PACKMAN::CLI.report_error "Can not find requested package spec #{requested_spec}!"
           end
         end
       else
@@ -172,7 +172,7 @@ module PACKMAN
           eval "@@#{self}_history_versions[version].instance_eval &block"
           eval "@@#{self}_history_versions[version].version version"
         else
-          PACKMAN.report_error "No block is given!"
+          PACKMAN::CLI.report_error "No block is given!"
         end
       end
 
@@ -192,7 +192,7 @@ module PACKMAN
           eval "@@#{self}_history_binary_versions[key].version version"
           eval "@@#{self}_history_binary_versions[key].label 'binary'"
         else
-          PACKMAN.report_error "No block is given!"
+          PACKMAN::CLI.report_error "No block is given!"
         end
       end
     end
@@ -226,14 +226,14 @@ module PACKMAN
         patch_file = "#{ConfigManager.package_root}/#{package.class}.patch.#{i}"
         PACKMAN.run "patch -N -Z -p1 < #{patch_file}"
         if not $?.success?
-          PACKMAN.report_error "Failed to apply patch for #{PACKMAN::Tty.red}#{package.class}#{PACKMAN::Tty.reset}!"
+          PACKMAN::CLI.report_error "Failed to apply patch for #{PACKMAN::CLI.red package.class}!"
         end
       end
       package.embeded_patches.each do |patch|
-        PACKMAN.report_notice "Apply embeded patch."
+        PACKMAN::CLI.report_notice "Apply embeded patch."
         IO.popen("/usr/bin/patch --ignore-whitespace -N -Z -p1", "w") { |p| p.write(patch) }
         if not $?.success?
-          PACKMAN.report_error "Failed to apply embeded patch for #{PACKMAN::Tty.red}#{package.class}#{PACKMAN::Tty.reset}!"
+          PACKMAN::CLI.report_error "Failed to apply embeded patch for #{PACKMAN::CLI.red package.class}!"
         end
       end
     end
@@ -248,9 +248,9 @@ module PACKMAN
     end
 
     def decompress_to(root)
-      PACKMAN.report_notice "Decompress #{filename}."
+      PACKMAN::CLI.report_notice "Decompress #{filename}."
       if not File.exist? "#{root}/#{filename}"
-        PACKMAN.report_error "Package #{Tty.red}#{self.class}#{Tty.reset} has not been downloaded!"
+        PACKMAN::CLI.report_error "Package #{CLI.red self.class} has not been downloaded!"
       end
       decom_dir = "#{root}/#{self.class}"
       PACKMAN.mkdir(decom_dir, :force)
@@ -260,9 +260,9 @@ module PACKMAN
     end
 
     def copy_to(root)
-      PACKMAN.report_notice "Copy #{dirname}."
+      PACKMAN::CLI.report_notice "Copy #{dirname}."
       if not Dir.exist? "#{root}/#{dirname}"
-        PACKMAN.report_error "Package #{Tty.red}#{self.class}#{Tty.reset} has not been downloaded!"
+        PACKMAN::CLI.report_error "Package #{CLI.red self.class} has not been downloaded!"
       end
       copy_dir = "#{root}/#{self.class}"
       PACKMAN.mkdir(copy_dir, :force)
@@ -343,10 +343,10 @@ module PACKMAN
     def create_cmake_config(name, include_dirs, libraries)
       prefix = Package.prefix(self)
       if not Dir.exist? "#{prefix}/include" or not Dir.exist? "#{prefix}/lib"
-        PACKMAN.report_error "Nonstandard package #{PACKMAN::Tty.red}#{self.class}#{PACKMAN::Tty.reset} without \"include\" or \"lib\" directories!"
+        PACKMAN::CLI.report_error "Nonstandard package #{PACKMAN::CLI.red self.class} without \"include\" or \"lib\" directories!"
       end
       if Dir.exist? "#{prefix}/lib/cmake"
-        PACKMAN.report_error "Cmake configure file has alreadly been installed for #{PACKMAN::Tty.red}#{self.class}#{PACKMAN::Tty.reset}!"
+        PACKMAN::CLI.report_error "Cmake configure file has alreadly been installed for #{PACKMAN::CLI.red self.class}!"
       end
       PACKMAN.mkdir "#{prefix}/lib/cmake"
       File.open("#{prefix}/lib/cmake/#{self.class.to_s.downcase}-config.cmake", 'w') do |file|
@@ -385,8 +385,8 @@ module PACKMAN
       # Check if the package should be skipped.
       if package.skip?
         if not package.skip_distros.include? :all and not package.installed?
-          PACKMAN.report_error "Package #{PACKMAN::Tty.red}#{package.class}#{PACKMAN::Tty.reset} "+
-            "should be provided by system!\n#{PACKMAN::Tty.blue}==>#{PACKMAN::Tty.reset} "+
+          PACKMAN::CLI.report_error "Package #{PACKMAN::CLI.red package.class} "+
+            "should be provided by system!\n#{PACKMAN::CLI.blue '==>'} "+
             "The possible installation method is:\n#{package.install_method}"
         end
         return
@@ -401,19 +401,19 @@ module PACKMAN
           first_line = f.readline
           if first_line =~ /#{package.sha1}/
             if not is_recursive
-              PACKMAN.report_notice "Package #{PACKMAN::Tty.green}#{package.class}#{PACKMAN::Tty.reset} has been installed."
+              PACKMAN::CLI.report_notice "Package #{PACKMAN::CLI.green package.class} has been installed."
             end
             return
           end
           f.close
         end
         # Use precompiled binary file.
-        PACKMAN.report_notice "Use precompiled binary files for #{PACKMAN::Tty.green}#{package.class}#{PACKMAN::Tty.reset}."
+        PACKMAN::CLI.report_notice "Use precompiled binary files for #{PACKMAN::CLI.green package.class}."
         PACKMAN.mkdir prefix, :force
         PACKMAN.cd prefix
         package_file = "#{ConfigManager.package_root}/#{package.filename}"
         if not File.exist? package_file
-          PACKMAN.report_error "Precompiled file #{PACKMAN::Tty.red}#{package.filename}#{PACKMAN::Tty.reset} has not been downloaded!"
+          PACKMAN::CLI.report_error "Precompiled file #{PACKMAN::CLI.red package.filename} has not been downloaded!"
         end
         PACKMAN.decompress package_file
         PACKMAN.cd_back
@@ -431,7 +431,7 @@ module PACKMAN
             first_line = f.readline
             if first_line =~ /#{package.sha1}/
               if not is_recursive
-                PACKMAN.report_notice "Package #{PACKMAN::Tty.green}#{package.class}#{PACKMAN::Tty.reset} has been installed."
+                PACKMAN::CLI.report_notice "Package #{PACKMAN::CLI.green package.class} has been installed."
               end
               next
             end
@@ -452,7 +452,7 @@ module PACKMAN
           # Apply patches.
           apply_patch(package)
           # Install package.
-          PACKMAN.report_notice "Install package #{Tty.green}#{package.class}#{Tty.reset}."
+          PACKMAN::CLI.report_notice "Install package #{CLI.green package.class}."
           package.install
           PACKMAN.cd_back
           FileUtils.rm_rf("#{build_dir}")

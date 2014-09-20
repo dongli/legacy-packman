@@ -39,7 +39,7 @@ module PACKMAN
       name = name.capitalize.to_sym
       @@packages[name] = spec
       if not PACKMAN::Package.defined? name
-        PACKMAN.report_error "Unknown package #{PACKMAN::Tty.red}#{name}#{PACKMAN::Tty.reset}!"
+        PACKMAN::CLI.report_error "Unknown package #{PACKMAN::CLI.red name}!"
       end
     end
 
@@ -51,7 +51,7 @@ module PACKMAN
       file_path = PACKMAN::CommandLine.config_file
       return if not file_path
       if not File.exist? file_path
-        PACKMAN.report_error "Configuation file #{PACKMAN::Tty.red}#{file_path}#{PACKMAN::Tty.reset} does not exist!"
+        PACKMAN::CLI.report_error "Configuation file #{PACKMAN::CLI.red file_path} does not exist!"
       end
       config = File.open(file_path, 'r').read
       # Modify the config to fulfill the needs of Ruby.
@@ -69,8 +69,8 @@ module PACKMAN
 
     def self.template(file_path)
       if File.exist? file_path
-        PACKMAN.report_error "A configure file is needed "+
-          "and \"#{file_path}\" exists, consider to use it!"
+        PACKMAN::CLI.report_error "A configure file is needed "+
+          "and #{PACKMAN::CLI.red file_path} exists, consider to use it!"
       end
       File.open(file_path, 'w') do |file|
         file << "package_root = \"...\"\n"

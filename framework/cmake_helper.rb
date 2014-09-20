@@ -9,7 +9,7 @@ module PACKMAN
       when 'fortran'
         "-DCMAKE_FORTRAN_FLAGS='#{default_flags}'"
       else
-        PACKMAN.report_error "Unknown language #{PACKMAN::Tty.red}#{language}#{PACKMAN::Tty.reset}!"
+        PACKMAN::CLI.report_error "Unknown language #{PACKMAN::CLI.red language}!"
       end
     end
   end

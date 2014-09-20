@@ -26,13 +26,13 @@ when :mirror
 when :update
   PACKMAN.cd ENV['PACKMAN_ROOT']
   if not Dir.exist? '.git'
-    PACKMAN.report_error "PACKMAN is not gained through GIT! You can download PACKMAN by:\n"+
-      "#{PACKMAN::Tty.blue}==> #{PACKMAN::Tty.reset}git clone https://github.com/dongli/packman"
+    PACKMAN::CLI.report_error "PACKMAN is not gained through GIT! You can download PACKMAN by:\n"+
+      "#{PACKMAN::CLI.blue}==> #{PACKMAN::CLI.reset}git clone https://github.com/dongli/packman"
   end
   system 'git pull'
   PACKMAN.cd_back
 when :help
   PACKMAN::CommandLine.print_usage
 else
-  PACKMAN.report_error "Unknown subcommand #{PACKMAN::CommandLine.subcommand}!"
+  PACKMAN::CLI.report_error "Unknown subcommand #{PACKMAN::CommandLine.subcommand}!"
 end
