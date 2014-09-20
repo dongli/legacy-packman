@@ -314,18 +314,18 @@ module PACKMAN
         end
         libs = []
         if Dir.exist?("#{prefix}/lib")
-          libs << "${#{root}}/lib"
+          libs << "#{prefix}/lib"
         end
         if Dir.exist?("#{prefix}/lib64")
-          libs << "${#{root}}/lib64"
+          libs << "#{prefix}/lib64"
         end
         if not libs.empty?
           file << "export #{class_name}_LIBRARY=\"-L#{libs.join(' -L')}\"\n"
-          file << "export #{PACKMAN::OS.ld_library_path_name}=#{libs.join(':')}:${#{PACKMAN::OS.ld_library_path_name}}\n"
-          file << "export #{class_name}_RPATH=\"-Wl,-rpath,#{libs.join(',-rpath,')}\"\n"
+          file << "export #{PACKMAN::OS.ld_library_path_name}=\"#{libs.join(':')}:${#{PACKMAN::OS.ld_library_path_name}}\"\n"
+          file << "export #{class_name}_RPATH=\"#{libs.join(':')}\"\n"
         end
         if Dir.exist?("#{prefix}/lib/pkgconfig")
-          file << "export PKG_CONFIG_PATH=${#{root}}/lib/pkgconfig:${PKG_CONFIG_PATH}\n"
+          file << "export PKG_CONFIG_PATH=\"${#{root}}/lib/pkgconfig:${PKG_CONFIG_PATH}\"\n"
         end
       end
     end

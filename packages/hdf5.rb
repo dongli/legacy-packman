@@ -21,10 +21,6 @@ class Hdf5 < PACKMAN::Package
       --enable-fortran
       --enable-fortran2003
     ]
-    if PACKMAN::OS.mac_gang? and PACKMAN.compiler_vendor('fortran', PACKMAN.compiler_command('fortran')) == 'intel'
-      # Hdf5 has already used libtool to set rpath.
-      PACKMAN.append_env "LDFLAGS=''"
-    end
     PACKMAN.run './configure', *args
     PACKMAN.run 'make'
     PACKMAN.run 'make test'
