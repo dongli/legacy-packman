@@ -22,6 +22,7 @@ require "mirror_packages"
 PACKMAN::OS.init
 PACKMAN::CommandLine.init
 PACKMAN::ConfigManager.init
+PACKMAN::ConfigManager.parse
 PACKMAN::CompilerHelper.init
 
 Kernel.trap('INT') do

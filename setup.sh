@@ -14,13 +14,13 @@ function _packman_()
         completed_words="config collect install switch mirror update help"
         ;;
     "collect")
-        completed_words="-all"
+        completed_words="-all -debug"
         ;;
     "install")
-        completed_words="-verbose"
+        completed_words="-verbose -debug"
         ;;
     "mirror")
-        completed_words="-init -start -stop -status -sync"
+        completed_words="-init -start -stop -status -sync -debug"
         ;;
     esac
     COMPREPLY=($(compgen -W "$completed_words" -- $curr_argv))

@@ -65,7 +65,7 @@ module PACKMAN
 
     def self.report_error message
       print "[#{red 'Error'}]: #{message}\n"
-      print_call_stack
+      print_call_stack if PACKMAN::CommandLine.has_option? '-debug'
       exit
     end
 

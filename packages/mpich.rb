@@ -5,6 +5,11 @@ class Mpich < PACKMAN::Package
 
   conflicts_with 'openmpi'
 
+  provide 'c' => 'mpicc'
+  provide 'c++' => 'mpic++'
+  provide 'fortran:77' => 'mpif77'
+  provide 'fortran:90' => 'mpif90'
+
   def install
     args = %W[
       --prefix=#{PACKMAN::Package.prefix(self)}

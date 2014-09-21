@@ -76,7 +76,7 @@ module PACKMAN
 
   def self.default_flags(language, compiler)
     CompilerHelper.helpers.each do |helper|
-      if helper.compiler_command(language) == compiler
+      if compiler.to_s.include? helper.compiler_command(language)
         return helper.default_flags
       end
     end
@@ -100,6 +100,26 @@ module PACKMAN
           end
         end
       end
+    end
+  end
+
+  def self.use_mpi mpi_vendor
+    compiler_set_index = ConfigManager.compiler_sets.index Package.compiler_set
+    # Check if the MPI library is installed by PACKMAN or not.
+    if File.directory? "#{ConfigManager.install_root}/#{mpi_vendor}"
+      mpi = Package.instance mpi_vendor.to_s.capitalize
+      prefix = Package.prefix mpi
+      # Override the CC, CXX, F77, FC if they are set.
+      change_env "CC=#{prefix}/bin/#{mpi.provided_stuffs['c']}"
+      change_env "MPICC=#{prefix}/bin/#{mpi.provided_stuffs['c']}"
+      change_env "CXX=#{prefix}/bin/#{mpi.provided_stuffs['c++']}"
+      change_env "MPICXX=#{prefix}/bin/#{mpi.provided_stuffs['c++']}"
+      change_env "F77=#{prefix}/bin/#{mpi.provided_stuffs['fortran:77']}"
+      change_env "MPIF77=#{prefix}/bin/#{mpi.provided_stuffs['fortran:77']}"
+      change_env "FC=#{prefix}/bin/#{mpi.provided_stuffs['fortran:90']}"
+      change_env "MPIF90=#{prefix}/bin/#{mpi.provided_stuffs['fortran:90']}"
+    else
+      CLI.under_construction!
     end
   end
 end

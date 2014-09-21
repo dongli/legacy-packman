@@ -80,6 +80,7 @@ module PACKMAN
     def provided_stuffs; @active_spec.provided_stuffs; end
     def binary distro, version; @binary[:"#{distro}:#{version}"]; end
     def skip_distros; @active_spec.skip_distros; end
+    def options; @active_spec.options; end
 
     def all_specs
       specs = []
@@ -102,6 +103,8 @@ module PACKMAN
       def depends_on val; stable.depends_on val; end
       def provide val; stable.provide val; end
       def skip_on val; stable.skip_on val; end
+      def option key; stable.option key; end
+      def options; stable.options; end
 
       def patch option = nil, &block
         if option == :embed
@@ -333,7 +336,7 @@ module PACKMAN
     def self.default_cmake_args(package)
       %W[
         -DCMAKE_INSTALL_PREFIX=#{prefix(package)}
-        -DCMAKE_BUILD_TYPE=None
+        -DCMAKE_BUILD_TYPE=Release
         -DCMAKE_FIND_FRAMEWORK=LAST
         -DCMAKE_VERBOSE_MAKEFILE=ON
         -Wno-dev
@@ -373,11 +376,11 @@ module PACKMAN
       "Not available!"
     end
 
-    def self.install(compiler_sets, package, is_recursive = false)
+    def self.install compiler_sets, package, is_recursive = false
       # Check dependencies.
       package.dependencies.each do |depend|
         depend_package = PACKMAN::Package.instance depend.capitalize
-        install(compiler_sets, depend_package, true)
+        install compiler_sets, depend_package, true
         if not depend_package.skip?
           RunManager.append_bashrc_path("#{prefix(depend_package)}/bashrc")
         end

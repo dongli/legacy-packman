@@ -5,6 +5,9 @@ class Hdf5 < PACKMAN::Package
 
   depends_on 'zlib'
   depends_on 'szip'
+  depends_on options['use_mpi'] if options.has_key? 'use_mpi'
+
+  option 'use_mpi'
 
   def install
     args = %W[
@@ -21,6 +24,12 @@ class Hdf5 < PACKMAN::Package
       --enable-fortran
       --enable-fortran2003
     ]
+    if options.has_key? 'use_mpi'
+      args << '--enable-parallel'
+      # --enable-cxx and --enable-parallel flags are incompatible.
+      args.delete '--enable-cxx'
+      PACKMAN.use_mpi options['use_mpi']
+    end
     PACKMAN.run './configure', *args
     PACKMAN.run 'make'
     PACKMAN.run 'make test'

@@ -2,9 +2,9 @@ module PACKMAN
   class RunManager
     @@ld_library_pathes = []
     @@bashrc_pathes = []
-    @@envs = []
+    @@envs = {}
 
-    def self.append_ld_library_path(path)
+    def self.append_ld_library_path path
       @@ld_library_pathes << path if not @@ld_library_pathes.include? path
     end
 
@@ -12,11 +12,25 @@ module PACKMAN
       @@ld_library_pathes.clear
     end
 
-    def self.append_env(env)
-      @@envs << env if not @@envs.include? env
+    def self.append_env env
+      idx = env.index('=')
+      key = env[0, idx]
+      value = env[idx+1..-1]
+      if @@envs.has_key? key
+        PACKMAN::CLI.report_error "Environment #{PACKMAN::CLI.red key} has been set!"
+      else
+        @@envs[key] = value
+      end
     end
 
-    def self.append_bashrc_path(path)
+    def self.change_env env
+      idx = env.index('=')
+      key = env[0, idx]
+      value = env[idx+1..-1]
+      @@envs[key] = value
+    end
+
+    def self.append_bashrc_path path
       @@bashrc_pathes << path if not @@bashrc_pathes.include? path
     end
 
@@ -28,7 +42,7 @@ module PACKMAN
       @@envs.clear
     end
 
-    def self.default_command_prefix(cmd, *args)
+    def self.default_command_prefix cmd, *args
       cmd_str = ''
       # Handle PACKMAN installed compiler.
       if Package.compiler_set.has_key? 'installed_by_packman'
@@ -57,22 +71,22 @@ module PACKMAN
         cmd_str << @@ld_library_pathes.join(':')
         cmd_str << ' '
       end
-      # Handle compilers.
+      # Handle compilers. Check if the @@envs has already defined them.
       Package.compiler_set.each do |language, compiler|
         case language
         when 'c'
-          cmd_str << "CC=#{compiler} "
+          cmd_str << "CC=#{compiler} " if not @@envs.has_key? 'CC'
         when 'c++'
-          cmd_str << "CXX=#{compiler} "
+          cmd_str << "CXX=#{compiler} " if not @@envs.has_key? 'CXX'
         when 'fortran'
-          cmd_str << "FC=#{compiler} "
-          cmd_str << "F77=#{compiler} "
+          cmd_str << "F77=#{compiler} " if not @@envs.has_key? 'F77'
+          cmd_str << "FC=#{compiler} " if not @@envs.has_key? 'FC'
         end
       end
       # Handle customized environment variables.
       if not @@envs.empty?
-        @@envs.each do |env|
-          cmd_str << "#{env} "
+        @@envs.each do |key, value|
+          cmd_str << "#{key}=#{value} "
         end
       end
       cmd_str << " #{cmd} "
@@ -80,7 +94,7 @@ module PACKMAN
       return cmd_str
     end
 
-    def self.run(build_helper, cmd, *args)
+    def self.run build_helper, cmd, *args
       cmd_str = default_command_prefix cmd, *args
       if build_helper
         # Handle compiler default flags.
@@ -110,26 +124,30 @@ module PACKMAN
     end
   end
 
-  def self.autotool(cmd, *args)
+  def self.autotool cmd, *args
     RunManager.run PACKMAN::AutotoolHelper, cmd, *args
   end
 
-  def self.cmake(cmd, *args)
+  def self.cmake cmd, *args
     RunManager.run PACKMAN::CmakeHelper, cmd, *args
   end
 
-  def self.run(cmd, *args)
+  def self.run cmd, *args
     RunManager.run nil, cmd, *args
   end
 
-  def self.slim_run(cmd, *args)
+  def self.slim_run cmd, *args
     res = `#{cmd} #{args.join(' ')} 1> /dev/null 2>&1`
     raise "Command failed!" if not $?.success?
     return res
   end
 
-  def self.append_env(env)
+  def self.append_env env
     RunManager.append_env env
+  end
+
+  def self.change_env env
+    RunManager.change_env env
   end
 
   def self.clean_env

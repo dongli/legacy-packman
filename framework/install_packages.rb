@@ -55,7 +55,7 @@ module PACKMAN
           end
         end
       end
-      Package.install(compiler_sets, package)
+      Package.install compiler_sets, package
     end
   end
 end

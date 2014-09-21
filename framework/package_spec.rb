@@ -3,6 +3,7 @@ module PACKMAN
     attr_reader :labels, :dependencies, :skip_distros
     attr_reader :conflict_packages, :provided_stuffs
     attr_reader :patches, :embeded_patches, :attachments
+    attr_accessor :options
 
     def initialize
       @labels = []
@@ -13,6 +14,7 @@ module PACKMAN
       @patches = []
       @embeded_patches = []
       @attachments = []
+      @options = {}
     end
 
     def url val = nil
@@ -42,7 +44,9 @@ module PACKMAN
 
     def has_label? val; @labels.include? val; end
 
-    def depends_on val; @dependencies << val; end
+    def depends_on val
+      @dependencies << val if not @dependencies.include? val
+    end
 
     def skip_on val; @skip_distros << val; end
 
@@ -58,8 +62,12 @@ module PACKMAN
 
     def patch &block
       if block_given?
-        @patches << PackageSpec.new
-        @patches.last.instance_eval &block
+        new_patch = PackageSpec.new
+        new_patch.instance_eval &block
+        @patches.each do |patch|
+          return if patch.sha1 == new_patch.sha1
+        end
+        @patches << new_patch
       end
     end
 
@@ -70,6 +78,10 @@ module PACKMAN
         @attachments << PackageSpec.new
         @attachments.last.instance_eval &block
       end
+    end
+
+    def option key
+      @options[key] ||= nil
     end
   end
 end

@@ -16,10 +16,12 @@ module PACKMAN
     @@permitted_options = {
       :config  => {},
       :collect => {
-        '-all' => 'Collect all packages.'
+        '-all' => 'Collect all packages.',
+        '-debug' => 'Print debug information.'
       },
       :install => {
-        '-verbose' => 'Show verbose information.'
+        '-verbose' => 'Show verbose information.',
+        '-debug' => 'Print debug information.'
       },
       :switch  => {},
       :mirror  => {
@@ -27,7 +29,8 @@ module PACKMAN
         '-start'  => 'Start FTP mirror service.',
         '-stop'   => 'Stop FTP mirror service.',
         '-status' => 'Check if FTP mirror service is on or off.',
-        '-sync'   => 'Synchronize the packages.'
+        '-sync'   => 'Synchronize the packages.',
+        '-debug' => 'Print debug information.'
       },
       :update  => {},
       :help    => {}
@@ -78,11 +81,11 @@ module PACKMAN
       @@config_file
     end
 
-    def self.has_option?(option)
+    def self.has_option? option
       @@options.include? option
     end
 
-    def self.print_options(subcommand, indent = 0)
+    def self.print_options subcommand, indent = 0
       res = ''
       @@permitted_options[subcommand].each do |option, meaning|
         for i in 0..indent-1
@@ -93,7 +96,7 @@ module PACKMAN
       return res
     end
 
-    def self.print_usage(indent = 2)
+    def self.print_usage indent = 2
       res = "Usage: packman <subcommand> [options] <config file>\n\n"
       @@permitted_subcommands.each do |subcommand, meaning|
         for i in 0..indent-1

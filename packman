@@ -14,16 +14,12 @@ case PACKMAN::CommandLine.subcommand
 when :config
   PACKMAN.edit_config_file
 when :collect
-  PACKMAN::ConfigManager.parse
   PACKMAN.collect_packages
 when :install
-  PACKMAN::ConfigManager.parse
   PACKMAN.install_packages
 when :switch
-  PACKMAN::ConfigManager.parse
   PACKMAN.switch_packages
 when :mirror
-  PACKMAN::ConfigManager.parse
   PACKMAN.mirror_packages
 when :update
   PACKMAN.cd ENV['PACKMAN_ROOT']
