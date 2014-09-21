@@ -45,7 +45,7 @@ module PACKMAN
     def has_label? val; @labels.include? val; end
 
     def depends_on val
-      @dependencies << val if not @dependencies.include? val
+      @dependencies << val if not @dependencies.include? val and val
     end
 
     def skip_on val; @skip_distros << val; end

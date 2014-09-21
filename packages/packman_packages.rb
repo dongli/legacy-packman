@@ -1,12 +1,17 @@
-Dir.glob("#{ENV['PACKMAN_ROOT']}/packages/*.rb").each do |file|
-  next if file =~ /packman_packages.rb$/
-  # Propagate options in configuration file to package.
+package_files = {}
+tmp = Dir.glob("#{ENV['PACKMAN_ROOT']}/packages/*.rb")
+tmp.delete("#{ENV['PACKMAN_ROOT']}/packages/packman_packages.rb")
+tmp.each do |file|
+  name = File.basename(file).split('.').first.capitalize.to_sym
+  package_files[name] = file
+end
+# First round (Propagate options from config file to packages).
+package_files.each do |name, file|
   load file # Preload the file for package definition.
-  package_name = File.basename(file).split('.').first.capitalize.to_sym
-  if PACKMAN::ConfigManager.packages.has_key? package_name
-    install_spec = PACKMAN::ConfigManager.packages[package_name]
+  if PACKMAN::ConfigManager.packages.has_key? name
+    install_spec = PACKMAN::ConfigManager.packages[name]
     if install_spec
-      package = PACKMAN::Package.instance package_name, install_spec
+      package = PACKMAN::Package.instance name, install_spec
       install_spec.each do |key, value|
         if package.options.has_key? key
           package.options[key] = value
@@ -14,6 +19,26 @@ Dir.glob("#{ENV['PACKMAN_ROOT']}/packages/*.rb").each do |file|
       end
     end
   end
-  # Actually load the file.
-  require file
+  # Reload the file.
+  load file
+end
+# Second round (Propagate options to dependencies).
+package_files.each do |name, file|
+  # Propagate options to dependencies.
+  if PACKMAN::ConfigManager.packages.has_key? name
+    install_spec = PACKMAN::ConfigManager.packages[name]
+    if install_spec
+      package = PACKMAN::Package.instance name, install_spec
+      package.dependencies.each do |depend|
+        depend_name = depend.capitalize.to_sym
+        depend_package = PACKMAN::Package.instance depend_name
+        package.options.each do |key, value|
+          if depend_package.options.has_key? key
+            depend_package.options[key] = value
+            load package_files[depend_name]
+          end
+        end
+      end
+    end
+  end
 end
