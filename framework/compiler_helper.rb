@@ -104,6 +104,9 @@ module PACKMAN
   end
 
   def self.use_mpi mpi_vendor
+    if not mpi_vendor
+      CLI.report_error 'MPI library vendor should be provided!'
+    end
     compiler_set_index = ConfigManager.compiler_sets.index Package.compiler_set
     # Check if the MPI library is installed by PACKMAN or not.
     if File.directory? "#{ConfigManager.install_root}/#{mpi_vendor}"

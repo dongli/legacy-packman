@@ -40,13 +40,15 @@ module PACKMAN
     end
 
     @@color_map.each do |color_name, color_code|
-      self.class_eval "def self.#{color_name} str = nil\n"+
-        "if str\n"+
-        "#{color_name}+str.to_s+reset\n"+
-        "else\n"+
-        "color #{color_code}\n"+
-        "end\n"+
-        "end"
+      self.class_eval(<<-EOT)
+        def self.#{color_name} str = nil
+          if str
+            "\#{#{color_name}}\#{str}\#{reset}"
+          else
+            color #{color_code}
+          end
+        end
+      EOT
     end
 
     def self.print_call_stack

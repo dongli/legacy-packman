@@ -7,6 +7,7 @@ class Hdf5 < PACKMAN::Package
   depends_on 'szip'
   depends_on options['use_mpi'] if options.has_key? 'use_mpi'
 
+  option 'no_test'
   option 'use_mpi'
 
   def install
@@ -32,7 +33,7 @@ class Hdf5 < PACKMAN::Package
     end
     PACKMAN.run './configure', *args
     PACKMAN.run 'make'
-    PACKMAN.run 'make test'
+    PACKMAN.run 'make test' if not options.has_key? 'no_test'
     PACKMAN.run 'make install'
     PACKMAN.clean_env
   end

@@ -205,14 +205,19 @@ module PACKMAN
     end
 
     def self.instance package_name, install_spec = {}
-      if install_spec['use_binary']
-        if install_spec['version']
-          eval "#{package_name}.new :'#{install_spec['version']}@#{PACKMAN::OS.distro}:#{PACKMAN::OS.version}'"
+      begin
+        if install_spec['use_binary']
+          if install_spec['version']
+            eval "#{package_name}.new :'#{install_spec['version']}@#{PACKMAN::OS.distro}:#{PACKMAN::OS.version}'"
+          else
+            eval "#{package_name}.new :'#{PACKMAN::OS.distro}:#{PACKMAN::OS.version}'"
+          end
         else
-          eval "#{package_name}.new :'#{PACKMAN::OS.distro}:#{PACKMAN::OS.version}'"
+          eval "#{package_name}.new"
         end
-      else
-        eval "#{package_name}.new"
+      rescue
+        require "#{ENV['PACKMAN_ROOT']}/packages/#{package_name.to_s.downcase}.rb"
+        instance package_name, install_spec
       end
     end
 

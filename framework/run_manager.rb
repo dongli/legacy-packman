@@ -100,7 +100,6 @@ module PACKMAN
           cmd_str << "#{build_helper.wrap_flags(language, PACKMAN.default_flags(language, compiler))} "
         end
       end
-      p cmd_str
       cmd_str << " #{cmd} "
       cmd_str << args.join(' ')
       if not PACKMAN::CommandLine.has_option? '-verbose'
