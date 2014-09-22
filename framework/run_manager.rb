@@ -42,7 +42,7 @@ module PACKMAN
       @@envs.clear
     end
 
-    def self.default_command_prefix cmd, *args
+    def self.default_command_prefix
       cmd_str = ''
       # Handle PACKMAN installed compiler.
       if Package.compiler_set.has_key? 'installed_by_packman'
@@ -89,19 +89,20 @@ module PACKMAN
           cmd_str << "#{key}=#{value} "
         end
       end
-      cmd_str << " #{cmd} "
-      cmd_str << args.join(' ')
       return cmd_str
     end
 
     def self.run build_helper, cmd, *args
-      cmd_str = default_command_prefix cmd, *args
+      cmd_str = default_command_prefix
       if build_helper
         # Handle compiler default flags.
         Package.compiler_set.each do |language, compiler|
-          cmd_str << build_helper.wrap_flags(language, CompilerHelper.default_flags(language, compiler))
+          cmd_str << "#{build_helper.wrap_flags(language, PACKMAN.default_flags(language, compiler))} "
         end
       end
+      p cmd_str
+      cmd_str << " #{cmd} "
+      cmd_str << args.join(' ')
       if not PACKMAN::CommandLine.has_option? '-verbose'
         cmd_str << " 1> #{ConfigManager.package_root}/stdout 2> #{ConfigManager.package_root}/stderr"
       end
@@ -124,16 +125,15 @@ module PACKMAN
     end
   end
 
-  def self.autotool cmd, *args
-    RunManager.run PACKMAN::AutotoolHelper, cmd, *args
-  end
-
-  def self.cmake cmd, *args
-    RunManager.run PACKMAN::CmakeHelper, cmd, *args
-  end
-
   def self.run cmd, *args
-    RunManager.run nil, cmd, *args
+    case cmd
+    when /configure/
+      RunManager.run AutotoolHelper, cmd, *args
+    when /cmake/
+      RunManager.run CmakeHelper, cmd, *args
+    else
+      RunManager.run nil, cmd, *args
+    end
   end
 
   def self.slim_run cmd, *args

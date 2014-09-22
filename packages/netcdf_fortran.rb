@@ -5,6 +5,8 @@ class Netcdf_fortran < PACKMAN::Package
 
   depends_on 'netcdf_c'
 
+  option 'use_mpi'
+
   def install
     netcdf_c_prefix = PACKMAN::Package.prefix(Netcdf_c)
     PACKMAN.append_env "PATH=#{netcdf_c_prefix}/bin:$PATH"
@@ -23,6 +25,9 @@ class Netcdf_fortran < PACKMAN::Package
       --enable-static
       --enable-shared
     ]
+    if options.has_key? 'use_mpi'
+      args << '--enable-parallel-tests'
+    end
     PACKMAN.run './configure', *args
     PACKMAN.run 'make'
     PACKMAN.run 'make check'

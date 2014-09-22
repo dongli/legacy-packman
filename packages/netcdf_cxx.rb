@@ -5,6 +5,8 @@ class Netcdf_cxx < PACKMAN::Package
 
   depends_on 'netcdf_c'
 
+  option 'use_mpi'
+
   def install
     netcdf_c_prefix = PACKMAN::Package.prefix(Netcdf_c)
     PACKMAN.append_env "PATH=#{netcdf_c_prefix}/bin:$PATH"
