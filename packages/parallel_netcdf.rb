@@ -5,7 +5,7 @@ class Parallel_netcdf < PACKMAN::Package
 
   depends_on options['use_mpi'] if options.has_key? 'use_mpi'
 
-  option 'use_mpi'
+  option 'use_mpi' => :package_name
 
   def install
     if not options.has_key? 'use_mpi'

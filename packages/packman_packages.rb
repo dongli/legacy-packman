@@ -15,7 +15,19 @@ module PACKMAN
       if install_spec
         package = PACKMAN::Package.instance package_name, install_spec
         install_spec.each do |key, value|
-          package.options[key] = value if package.options.has_key? key
+          if package.options.has_key? key
+            case package.options[key]
+            when :package_name
+              if (not value.class == String and not value.class == Symbol) or not PACKMAN::Package.defined? value
+                PACKMAN::CLI.report_error "Option #{CLI.red key} for #{CLI.red package_name} should be set to a valid package name!"
+              end
+            when :boolean
+              if not !!value == value
+                PACKMAN::CLI.report_error "Option #{CLI.red key} for #{CLI.red package_name} should be set to a boolean!"
+              end
+            end
+            package.options[key] = value
+          end
         end
       else
         package = PACKMAN::Package.instance package_name

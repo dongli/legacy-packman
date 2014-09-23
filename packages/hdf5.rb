@@ -7,8 +7,8 @@ class Hdf5 < PACKMAN::Package
   depends_on 'szip'
   depends_on options['use_mpi'] if options.has_key? 'use_mpi'
 
-  option 'no_test'
-  option 'use_mpi'
+  option 'no_test' => :boolean
+  option 'use_mpi' => :package_name
 
   def install
     args = %W[

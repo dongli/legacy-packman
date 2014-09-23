@@ -4,24 +4,38 @@ require "digest"
 require "fileutils"
 
 module PACKMAN
-  def self.check_command(cmd)
+  def self.check_command cmd
     `which #{cmd}`
     if not $?.success?
       raise "Command \"#{cmd}\" does not exist!"
     end
   end
 
-  def self.download(root, url, rename = nil)
-    check_command('curl')
+  def self.download root, url, rename = nil
+    FileUtils.mkdir root if not Dir.exist? root
+    check_command 'curl'
     filename = rename ? rename : File.basename(URI.parse(url).path)
     system "curl -f#L -C - -o #{root}/#{filename} #{url}"
     if not $?.success?
-      if not PACKMAN::OS.connect_internet?
-        PACKMAN::CLI.report_error "Sorry, this machine can not connect internet! "+
-          "You may use a FTP mirror in your location."
-      elsif ConfigManager.use_ftp_mirror != 'no' and $?.exitstatus == 78
-        PACKMAN::CLI.report_error "Sorry, it seems that the FTP mirror does not have #{CLI.red filename}. "+
-          "You could try not to use the FTP mirror."
+      case $?.exitstatus
+      when 23
+        CLI.report_error "Failed to create file in #{CLI.red root}!"
+      end
+      if ConfigManager.use_ftp_mirror == 'no'
+        if OS.connect_internet?
+          CLI.report_error 'Tell Li Dong <dongli@lasg.iap.ac.cn> to handle this error!'
+        else
+          CLI.report_error "This machine can not connect internet! You may use a FTP mirror in your location."
+        end
+      else
+        if OS.connect_internet?
+          CLI.report_error "FTP mirror failed to provide #{CLI.red filename}, you may consider to switch off mirror."
+        else
+          case $?.exitstatus
+          when 78
+            CLI.report_error "It seems that the FTP mirror does not have #{CLI.red filename}!"
+          end
+        end
       end
     end
   end

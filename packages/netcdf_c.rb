@@ -9,7 +9,7 @@ class Netcdf_c < PACKMAN::Package
   depends_on 'hdf5'
   depends_on 'parallel_netcdf' if options.has_key? 'use_mpi'
 
-  option 'use_mpi'
+  option 'use_mpi' => :package_name
 
   # HDF5 1.8.13 removes symbols related to MPI POSIX VFD, leading to
   # errors when linking hdf5 and netcdf5 such as "undefined reference to

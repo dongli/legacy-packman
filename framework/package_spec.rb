@@ -80,8 +80,12 @@ module PACKMAN
       end
     end
 
-    def option key
-      @options[key] ||= nil
+    def option val
+      if val.class == Hash
+        @options.merge! val
+      else
+        @options[val] ||= nil
+      end
     end
   end
 end
