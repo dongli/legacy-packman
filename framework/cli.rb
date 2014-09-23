@@ -24,7 +24,7 @@ module PACKMAN
     end
 
     def self.bold str
-      escape(1)+str+escape(0)
+      "#{escape(1)}#{str}#{escape(0)}"
     end
 
     def self.color n
@@ -78,6 +78,37 @@ module PACKMAN
     def self.under_construction!
       print "Oops: PACKMAN is under construction!\n"
       exit
+    end
+
+    def self.ask question, possible_answers
+      question.split("\n").each do |line|
+        print "#{yellow '==>'} #{line}\n"
+      end
+      print "#{yellow '==>'} Possible answers:\n"
+      for i in 0..possible_answers.size-1
+        print "    #{CLI.bold i}: #{possible_answers[i]}\n"
+      end
+    end
+
+    def self.get_answer possible_answers
+      while true
+        print '> '
+        if possible_answers
+          begin
+            inputs = STDIN.gets.strip.split(/\s/)
+            CLI.report_error "You need to input something!" if inputs.empty?
+            for i in 0..inputs.size-1
+              inputs[i] = Integer(inputs[i])
+              if not (0..possible_answers.size-1).cover? inputs[i]
+                CLI.report_error "Input in out of range!"
+              end
+            end
+          rescue
+            CLI.report_error "Input should be integers!"
+          end
+          return inputs
+        end
+      end
     end
   end
 end

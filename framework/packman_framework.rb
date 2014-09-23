@@ -16,6 +16,7 @@ require "run_manager"
 require "edit_config_file"
 require "collect_packages"
 require "install_packages"
+require 'remove_packages'
 require "switch_packages"
 require "mirror_packages"
 

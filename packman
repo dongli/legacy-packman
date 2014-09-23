@@ -17,6 +17,8 @@ when :collect
   PACKMAN.collect_packages
 when :install
   PACKMAN.install_packages
+when :remove
+  PACKMAN.remove_packages
 when :switch
   PACKMAN.switch_packages
 when :mirror

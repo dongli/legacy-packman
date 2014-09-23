@@ -3,11 +3,13 @@ module PACKMAN
     @@subcommand = nil
     @@config_file = nil
     @@options = []
+    @@packages = []
 
     @@permitted_subcommands = {
       :config  => 'Edit the config file in the default location.',
       :collect => 'Collect packages from internet.',
       :install => 'Install packages and their dependencies.',
+      :remove  => 'Remove packages.',
       :switch  => 'Switch different compiler set (new bashrc will be generated).',
       :mirror  => 'Control FTP mirror service.',
       :update  => 'Update PACKMAN.',
@@ -21,6 +23,11 @@ module PACKMAN
       },
       :install => {
         '-verbose' => 'Show verbose information.',
+        '-debug' => 'Print debug information.'
+      },
+      :remove => {
+        '-all'   => 'Remove all versions and compiler sets.',
+        '-purge' => 'Also remove unneeded dependencies.',
         '-debug' => 'Print debug information.'
       },
       :switch  => {},
@@ -52,6 +59,10 @@ module PACKMAN
           @@config_file = arg
           next
         end
+        if PACKMAN::Package.all_package_names.include? arg
+          @@packages << arg.capitalize.to_sym
+          next
+        end
         if @@permitted_options[@@subcommand].has_key? arg
           @@options << arg
         else
@@ -59,7 +70,7 @@ module PACKMAN
             "The available options are:\n#{print_options(@@subcommand, 2).chomp}"
         end
       end
-      if [:config, :collect, :install,
+      if [:config, :collect, :install, :remove,
           :switch, :mirror].include? @@subcommand and
          not @@config_file
         # Check if there is a configuration file in PACKMAN_ROOT.
@@ -79,6 +90,10 @@ module PACKMAN
 
     def self.config_file
       @@config_file
+    end
+
+    def self.packages
+      @@packages
     end
 
     def self.has_option? option

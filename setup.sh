@@ -11,13 +11,16 @@ function _packman_()
     completed_words=""
     case "${prev_argv##*/}" in
     "packman")
-        completed_words="config collect install switch mirror update help"
+        completed_words="config collect install remove switch mirror update help"
         ;;
     "collect")
         completed_words="-all -debug"
         ;;
     "install")
         completed_words="-verbose -debug"
+        ;;
+    "remove")
+        completed_words="-all -purge -debug"
         ;;
     "mirror")
         completed_words="-init -start -stop -status -sync -debug"

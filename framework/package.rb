@@ -229,6 +229,19 @@ module PACKMAN
       return instances
     end
 
+    def self.all_package_names
+      if not defined? @@all_package_names
+        @@all_package_names = []
+        Dir.foreach("#{ENV['PACKMAN_ROOT']}/packages") do |file|
+          next if not file =~ /.*\.rb$/
+          if File.open("#{ENV['PACKMAN_ROOT']}/packages/#{file}").read.match(/\< PACKMAN::Package/)
+            @@all_package_names << file.gsub(/\.rb$/, '')
+          end
+        end
+      end
+      return @@all_package_names
+    end
+
     def self.apply_patch(package)
       for i in 0..package.patches.size-1
         patch_file = "#{ConfigManager.package_root}/#{package.class}.patch.#{i}"
