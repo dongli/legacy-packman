@@ -3,7 +3,7 @@ class Parallel_netcdf < PACKMAN::Package
   sha1 '41ec358878a97132b3bb1d1f67dcef96c492376c'
   version '1.5.0'
 
-  depends_on options['use_mpi'] if options.has_key? 'use_mpi'
+  depends_on options['use_mpi'] if options['use_mpi']
 
   option 'use_mpi' => :package_name
 

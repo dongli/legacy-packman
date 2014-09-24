@@ -3,7 +3,7 @@ module PACKMAN
     attr_reader :labels, :dependencies, :skip_distros
     attr_reader :conflict_packages, :provided_stuffs
     attr_reader :patches, :embeded_patches, :attachments
-    attr_accessor :options
+    attr_accessor :option_valid_types, :options
 
     def initialize
       @labels = []
@@ -14,6 +14,7 @@ module PACKMAN
       @patches = []
       @embeded_patches = []
       @attachments = []
+      @option_valid_types = {}
       @options = {}
     end
 
@@ -82,7 +83,10 @@ module PACKMAN
 
     def option val
       if val.class == Hash
-        @options.merge! val
+        @option_valid_types.merge! val
+        val.each_key do |key|
+          @options[key] ||= nil
+        end
       else
         @options[val] ||= nil
       end

@@ -25,13 +25,21 @@ class Netcdf_fortran < PACKMAN::Package
       --enable-static
       --enable-shared
     ]
-    if options.has_key? 'use_mpi'
+    if options['use_mpi']
       args << '--enable-parallel-tests'
     end
     PACKMAN.run './configure', *args
-    PACKMAN.run 'make'
+    PACKMAN.run 'make -j2'
     PACKMAN.run 'make check'
     PACKMAN.run 'make install'
     PACKMAN.clean_env
+  end
+
+  def check_consistency
+    res = `#{PACKMAN::Package.prefix(Netcdf_c)}/bin/nc-config --has-pnetcdf`
+    if res == 'no' and options['use_mpi']
+      return false
+    end
+    return true
   end
 end

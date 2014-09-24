@@ -80,7 +80,10 @@ module PACKMAN
     def provided_stuffs; @active_spec.provided_stuffs; end
     def binary distro, version; @binary[:"#{distro}:#{version}"]; end
     def skip_distros; @active_spec.skip_distros; end
+    def option_valid_types; @active_spec.option_valid_types; end
     def options; @active_spec.options; end
+
+    def has_binary?; defined? @binary; end
 
     def all_specs
       specs = []

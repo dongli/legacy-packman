@@ -90,7 +90,8 @@ module PACKMAN
       end
     end
 
-    def self.get_answer possible_answers
+    def self.get_answer possible_answers, options = []
+      options = [options] if not options.class == Array
       while true
         print '> '
         if possible_answers
@@ -106,7 +107,15 @@ module PACKMAN
           rescue
             CLI.report_error "Input should be integers!"
           end
+          if options.include? :only_one
+            if inputs.size != 1
+              CLI.report_error 'Only one should be selected!'
+            end
+            inputs = inputs.first
+          end
           return inputs
+        else
+          CLI.under_construction!
         end
       end
     end

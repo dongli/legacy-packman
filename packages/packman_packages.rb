@@ -16,7 +16,7 @@ module PACKMAN
         package = PACKMAN::Package.instance package_name, install_spec
         install_spec.each do |key, value|
           if package.options.has_key? key
-            case package.options[key]
+            case package.option_valid_types[key]
             when :package_name
               if (not value.class == String and not value.class == Symbol) or not PACKMAN::Package.defined? value
                 PACKMAN::CLI.report_error "Option #{CLI.red key} for #{CLI.red package_name} should be set to a valid package name!"

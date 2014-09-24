@@ -25,7 +25,7 @@ module PACKMAN
           sets = Dir.glob("#{versions[j]}/*").sort
           if sets.size > 1 and not CommandLine.has_option? '-all'
             CLI.report_warning "Package #{CLI.red package_name} (#{File.basename versions[j]}) "+
-                               "has been compiled by multiple compiler sets."
+              "has been compiled by multiple compiler sets."
             tmp = sets.map { |s| i = File.basename(s).to_i; "#{ConfigManager.compiler_sets[i]}" }
             tmp << 'all'
             CLI.ask 'Which set do you want to remove?', tmp

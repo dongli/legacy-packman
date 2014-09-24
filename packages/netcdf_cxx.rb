@@ -5,7 +5,7 @@ class Netcdf_cxx < PACKMAN::Package
 
   depends_on 'netcdf_c'
 
-  option 'use_mpi'
+  option 'use_mpi' => :package_name
 
   def install
     netcdf_c_prefix = PACKMAN::Package.prefix(Netcdf_c)

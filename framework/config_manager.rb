@@ -91,5 +91,41 @@ module PACKMAN
         file << "}\n"
       end
     end
+
+    def self.write
+      File.open(CommandLine.config_file, 'w') do |file|
+        file << "package_root = \"#{package_root}\"\n"
+        file << "install_root = \"#{install_root}\"\n"
+        file << "active_compiler_set = #{active_compiler_set}\n"
+        file << "use_ftp_mirror = \"#{use_ftp_mirror}\"\n"
+        for i in 0..compiler_sets.size-1
+          file << "compiler_set_#{i} = {\n"
+          if compiler_sets[i].has_key? 'installed_by_packman'
+            file << "  \"installed_by_packman\" => true\n"
+          else
+            str = []
+            compiler_sets[i].each do |language, compiler|
+              str << "  \"#{language}\" => \"#{compiler}\""
+            end
+            file << "#{str.join(",\n")}\n"
+          end
+          file << "}\n"
+        end
+        packages.each do |package_name, install_spec|
+          file << "package_#{package_name.to_s.downcase} = {\n"
+          str = []
+          install_spec.each do |key, value|
+            next if key == 'use_binary' and not value
+            case key
+            when /(use_binary|compiler_set)/
+              str << "  \"#{key}\" => #{value}"
+            when /use_mpi/
+              str << "  \"#{key}\" => \"#{value}\""
+            end 
+          end
+          file << "#{str.join(",\n")}\n}\n"
+        end
+      end
+    end
   end
 end

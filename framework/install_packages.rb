@@ -11,6 +11,14 @@ module PACKMAN
       end
     end
     # Install packages.
+    if CommandLine.packages.empty?
+      install_packages_defined_in_config_file
+    else
+      install_packages_defined_in_command_line
+    end
+  end
+
+  def self.install_packages_defined_in_config_file
     ConfigManager.packages.each do |package_name, install_spec|
       if not Package.defined? package_name
         CLI.report_warning "Unknown package #{CLI.red package_name}!"
@@ -59,6 +67,62 @@ module PACKMAN
     end
   end
 
+  def self.install_packages_defined_in_command_line
+    CommandLine.packages.each do |package_name|
+      package_config = {}
+      package = Package.instance package_name
+      install_spec = {}
+      compiler_sets = []
+      # Check package labels.
+      package.labels.each do |label|
+        case label
+        when 'compiler_insensitive'
+          if package.has_binary?
+            # Binary is preferred.
+            install_spec['use_binary'] = true
+            package_config['use_binary'] = true
+          else
+            # The first compiler set is preferred.
+            compiler_sets << ConfigManager.compiler_sets.first
+            package_config['compiler_set'] = [0]
+          end
+        end
+      end
+      # Check package options.
+      package.options.each do |key, value|
+        case key
+        when 'use_mpi'
+          tmp = ['no', 'mpich', 'openmpi']
+          CLI.ask "#{CLI.red package.class} can be built with MPI, do you want this?", tmp
+          ans = CLI.get_answer tmp, :only_one
+          package.options[key] = ans == 0 ? nil : tmp[ans]
+          package_config['use_mpi'] = package.options[key]
+        end
+      end
+      # Let user to choose which compiler sets to use.
+      if compiler_sets.empty?
+        if not install_spec['use_binary']
+          package_config['compiler_set'] = []
+          tmp = ConfigManager.compiler_sets.clone
+          tmp << 'all'
+          CLI.ask 'Which compiler sets do you want to use?', tmp
+          ans = CLI.get_answer tmp
+          for i in 0..ConfigManager.compiler_sets.size-1
+            if ans.include? i or ans.include? ConfigManager.compiler_sets.size
+              package_config['compiler_set'] << i
+              compiler_sets << ConfigManager.compiler_sets[i]
+            end
+          end
+        end
+      end
+      install_package compiler_sets, package
+      # Record the installed package into config file.
+      ConfigManager.packages[package_name] = package_config
+    end
+    # Update config file.
+    ConfigManager.write
+  end
+
   def self.install_package compiler_sets, package, options = []
     options = [options] if not options.class == Array
     # Check dependencies.
@@ -84,7 +148,7 @@ module PACKMAN
       PACKMAN.download_package package
     rescue
       if not OS.connect_internet?
-        CLI.report_error "#{CLI.red package_file} has not been downloaded!"
+        CLI.report_error "#{CLI.red package.filename} has not been downloaded!"
       end
     end
     # Install package.
@@ -108,7 +172,7 @@ module PACKMAN
       CLI.report_notice "Use precompiled binary files for #{CLI.green package.class}."
       PACKMAN.mkdir prefix, :force
       PACKMAN.cd prefix
-      PACKMAN.decompress package_file
+      PACKMAN.decompress "#{ConfigManager.package_root}/#{package.filename}"
       PACKMAN.cd_back
       # Write bashrc file for the package.
       Package.bashrc package, :compiler_insensitive
@@ -123,10 +187,13 @@ module PACKMAN
           f = File.new bashrc, 'r'
           first_line = f.readline
           if first_line =~ /#{package.sha1}/
-            if not options.include? :depend
-              PACKMAN::CLI.report_notice "Package #{PACKMAN::CLI.green package.class} has been installed."
+            if (package.respond_to? :check_consistency and package.check_consistency) or
+              not package.respond_to? :check_consistency
+              if not options.include? :depend
+                PACKMAN::CLI.report_notice "Package #{PACKMAN::CLI.green package.class} has been installed."
+              end
+              next
             end
-            next
           end
           f.close
         end

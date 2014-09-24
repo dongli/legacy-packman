@@ -7,7 +7,7 @@ class Netcdf_c < PACKMAN::Package
   depends_on 'zlib'
   depends_on 'szip'
   depends_on 'hdf5'
-  depends_on 'parallel_netcdf' if options.has_key? 'use_mpi'
+  depends_on 'parallel_netcdf' if options['use_mpi']
 
   option 'use_mpi' => :package_name
 
@@ -28,9 +28,14 @@ class Netcdf_c < PACKMAN::Package
     zlib = PACKMAN::Package.prefix(Zlib)
     szip = PACKMAN::Package.prefix(Szip)
     hdf5 = PACKMAN::Package.prefix(Hdf5)
-    pnetcdf = PACKMAN::Package.prefix(Parallel_netcdf)
-    PACKMAN.append_env "CFLAGS='-I#{curl}/include -I#{zlib}/include -I#{szip}/include -I#{hdf5}/include -I#{pnetcdf}/include'"
-    PACKMAN.append_env "LDFLAGS='-L#{curl}/lib -L#{zlib}/lib -L#{szip}/lib -L#{hdf5}/lib -L#{pnetcdf}/lib'"
+    if options['use_mpi']
+      pnetcdf = PACKMAN::Package.prefix(Parallel_netcdf)
+      PACKMAN.append_env "CFLAGS='-I#{curl}/include -I#{zlib}/include -I#{szip}/include -I#{hdf5}/include -I#{pnetcdf}/include'"
+      PACKMAN.append_env "LDFLAGS='-L#{curl}/lib -L#{zlib}/lib -L#{szip}/lib -L#{hdf5}/lib -L#{pnetcdf}/lib'"
+    else
+      PACKMAN.append_env "CFLAGS='-I#{curl}/include -I#{zlib}/include -I#{szip}/include -I#{hdf5}/include'"
+      PACKMAN.append_env "LDFLAGS='-L#{curl}/lib -L#{zlib}/lib -L#{szip}/lib -L#{hdf5}/lib'"
+    end
     PACKMAN.append_env "FFLAGS=-ffree-line-length-none"
     # NOTE: OpenDAP support should be supported in default, but I still add
     #       '--enable-dap' explicitly for reminding.
@@ -45,16 +50,23 @@ class Netcdf_c < PACKMAN::Package
       --enable-dap
       --disable-doxygen
     ]
-    if options.has_key? 'use_mpi'
+    if options['use_mpi']
       args << '--enable-pnetcdf'
-      PACKMAN.use_mpi options['use_mpi']
       # PnetCDF test has bug as discussed in http://www.unidata.ucar.edu/support/help/MailArchives/netcdf/msg12561.html
       PACKMAN.replace 'nc_test/run_pnetcdf_test.sh', { 'mpiexec -n 4' => 'mpiexec -n 2' }
     end
     PACKMAN.run './configure', *args
-    PACKMAN.run 'make'
+    PACKMAN.run 'make -j2'
     PACKMAN.run 'make check'
     PACKMAN.run 'make install'
     PACKMAN.clean_env
+  end
+
+  def check_consistency
+    res = `#{PACKMAN::Package.prefix(self)}/bin/nc-config --has-pnetcdf`.strip
+    if res == 'no' and options['use_mpi']
+      return false
+    end
+    return true
   end
 end

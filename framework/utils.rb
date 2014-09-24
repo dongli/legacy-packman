@@ -129,6 +129,11 @@ module PACKMAN
     file.close
   end
 
+  def self.grep file_path, pattern
+    content = File.open(file_path, 'r').read
+    content.scan(pattern)
+  end
+
   def self.new_class(class_name)
     if class_name == ''
       PACKMAN::CLI.report_error "Empty class!"
