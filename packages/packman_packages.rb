@@ -33,6 +33,7 @@ module PACKMAN
         package = PACKMAN::Package.instance package_name
       end
       package.dependencies.each do |depend|
+        next if depend == :package_name # Skip the placeholder :package_name.
         depend_name = depend.capitalize.to_sym
         load @@package_files[depend_name]
         depend_package = PACKMAN::Package.instance depend_name
@@ -54,4 +55,3 @@ module PACKMAN
 end
 
 PACKMAN::PackageLoader.init
-
