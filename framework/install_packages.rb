@@ -181,6 +181,10 @@ module PACKMAN
       # Build package for each compiler set.
       compiler_sets.each do |compiler_set|
         Package.compiler_set = compiler_set
+        # Set the MPI compiler wrappers.
+        if package.options['use_mpi']
+          use_mpi package.options['use_mpi']
+        end
         # Check if the package has alreadly installed.
         bashrc = "#{Package.prefix(package)}/bashrc"
         if File.exist? bashrc
