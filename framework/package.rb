@@ -72,6 +72,7 @@ module PACKMAN
     def labels; @active_spec.labels; end
     def has_label? val; @active_spec.has_label? val; end
     def conflict_packages; @active_spec.conflict_packages; end
+    def conflict_reasons; @active_spec.conflict_reasons; end
     def conflict_with? val; @active_spec.conflict_with? val; end
     def dependencies; @active_spec.dependencies; end
     def patches; @active_spec.patches; end
@@ -102,7 +103,7 @@ module PACKMAN
       def version val; stable.version val; end
       def filename val; stable.filename val; end
       def label val; stable.label val; end
-      def conflicts_with val; stable.conflicts_with val; end
+      def conflicts_with val, &block; stable.conflicts_with val, &block; end
       def depends_on val; stable.depends_on val; end
       def provide val; stable.provide val; end
       def skip_on val; stable.skip_on val; end

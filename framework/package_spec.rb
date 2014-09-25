@@ -1,7 +1,8 @@
 module PACKMAN
   class PackageSpec
     attr_reader :labels, :dependencies, :skip_distros
-    attr_reader :conflict_packages, :provided_stuffs
+    attr_reader :conflict_packages, :conflict_reasons
+    attr_reader :provided_stuffs
     attr_reader :patches, :embeded_patches, :attachments
     attr_accessor :option_valid_types, :options
 
@@ -10,6 +11,7 @@ module PACKMAN
       @dependencies = []
       @skip_distros = []
       @conflict_packages = []
+      @conflict_reasons = []
       @provided_stuffs = {}
       @patches = []
       @embeded_patches = []
@@ -53,7 +55,16 @@ module PACKMAN
 
     def skip_on? val; @skip_distros.include? val; end
 
-    def conflicts_with val; @conflict_packages << val; end
+    def conflicts_with val, &block
+      @conflict_packages << val
+      if block_given?
+        instance_eval &block
+      end
+    end
+
+    def because_they_both_provide val
+      @conflict_reasons << val
+    end
 
     def conflicts_with? val;  @conflict_packages.include? val; end
 

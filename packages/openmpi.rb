@@ -6,7 +6,9 @@ class Openmpi < PACKMAN::Package
   # Libevent can be downloaded in some network condition!
   # depends_on 'libevent'
 
-  conflicts_with 'mpich'
+  conflicts_with 'mpich' do
+    because_they_both_provide 'mpi'
+  end
 
   def install
     # --with-libevent=#{PACKMAN::Package.prefix(Libevent)}

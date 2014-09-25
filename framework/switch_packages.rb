@@ -20,9 +20,19 @@ module PACKMAN
             # The package is compiler insensitive.
             bashrc_files << "source #{subdir}/bashrc\n"
           elsif File.exist? "#{subdir}/#{ConfigManager.defaults['compiler_set']}/bashrc"
-            package_name = File.basename dir
-            if ['mpich', 'openmpi'].include? package_name
-              next if ConfigManager.defaults['mpi'] != package_name
+            package_name = File.basename(dir)
+            package = Package.instance package_name.capitalize
+            if not package.conflict_packages.empty?
+              # Package conflicts with other packages, so we need to check what the default package is.
+              conflict_reason = package.conflict_reasons.uniq
+              if not conflict_reason.size == 1
+                # Currently, we only support one conflict reason.
+                CLI.report_error "multiple conflict reasons (#{CLI.red conflict_reasons}!"
+              end
+              conflict_reason = conflict_reason.first
+              if ConfigManager.defaults.has_key? conflict_reason
+                next if not ConfigManager.defaults[conflict_reason] == package_name
+              end
             end
             # The package is built by the active compiler set.
             bashrc_files << "source #{subdir}/#{ConfigManager.defaults['compiler_set']}/bashrc\n"
@@ -35,7 +45,7 @@ module PACKMAN
           package_name = File.basename(dir).capitalize.to_sym
           if not ConfigManager.packages.has_key? package_name or
             not ConfigManager.packages[package_name].has_key? 'version'
-            PACKMAN::CLI.report_error "Package #{CLI.red package_name} has multiple versions "+
+            CLI.report_error "Package #{CLI.red package_name} has multiple versions "+
               "(#{available_versions.join(', ')}), you should choose one in #{CommandLine.config_file}!"
           end
           bashrc_files.each do |f|
