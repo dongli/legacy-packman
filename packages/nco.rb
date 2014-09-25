@@ -12,9 +12,10 @@ class Nco < PACKMAN::Package
   label 'compiler_insensitive'
 
   def install
+    hdf5 = PACKMAN::Package.prefix(Hdf5)
     curl = PACKMAN::Package.prefix(Curl)
-    PACKMAN.append_env "CFLAGS='-I#{curl}/include'"
-    PACKMAN.append_env "LDFLAGS='-L#{curl}/lib -Wl,-rpath,#{PACKMAN::Package.prefix(Gcc)}/lib64'"
+    PACKMAN.append_env "CFLAGS='-I#{curl}/include -I#{hdf5}/include'"
+    PACKMAN.append_env "LDFLAGS='-L#{curl}/lib -L#{hdf5}/lib'"
     args = %W[
       --prefix=#{PACKMAN::Package.prefix(self)}
       --enable-netcdf4

@@ -1,7 +1,7 @@
 module PACKMAN
   def self.switch_packages
     expand_packman_compiler_sets
-    compiler_set = ConfigManager.compiler_sets[ConfigManager.active_compiler_set]
+    compiler_set = ConfigManager.compiler_sets[ConfigManager.defaults['compiler_set']]
     open("#{ConfigManager.install_root}/bashrc", 'w') do |file|
       # Check if the active compiler is installed by PACKMAN.
       if compiler_set.has_key?('installed_by_packman')
@@ -19,9 +19,13 @@ module PACKMAN
           if File.exist? "#{subdir}/bashrc"
             # The package is compiler insensitive.
             bashrc_files << "source #{subdir}/bashrc\n"
-          elsif File.exist? "#{subdir}/#{ConfigManager.active_compiler_set}/bashrc"
+          elsif File.exist? "#{subdir}/#{ConfigManager.defaults['compiler_set']}/bashrc"
+            package_name = File.basename dir
+            if ['mpich', 'openmpi'].include? package_name
+              next if ConfigManager.defaults['mpi'] != package_name
+            end
             # The package is built by the active compiler set.
-            bashrc_files << "source #{subdir}/#{ConfigManager.active_compiler_set}/bashrc\n"
+            bashrc_files << "source #{subdir}/#{ConfigManager.defaults['compiler_set']}/bashrc\n"
           end
         end
         if bashrc_files.size == 1

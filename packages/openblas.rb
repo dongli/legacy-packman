@@ -4,7 +4,7 @@ class Openblas < PACKMAN::Package
   version '0.2.11'
 
   def install
-    PACKMAN.run 'make -j2'
+    PACKMAN.run 'make'
     PACKMAN.run "make install PREFIX=#{PACKMAN::Package.prefix(self)}"
   end
 end

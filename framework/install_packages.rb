@@ -7,7 +7,6 @@ module PACKMAN
       ConfigManager.compiler_sets[i].each do |language, compiler|
         next if language == 'installed_by_packman'
         print "#{CLI.blue '==>'} #{language}: #{compiler} #{default_flags language, compiler}\n"
-        # CLI.report_notice "Default flags for #{CLI.blue compiler}: #{default_flags language, compiler}."
       end
     end
     # Install packages.
@@ -69,7 +68,7 @@ module PACKMAN
 
   def self.install_packages_defined_in_command_line
     CommandLine.packages.each do |package_name|
-      package_config = {}
+      package_config = {} # For recording user inputs.
       package = Package.instance package_name
       install_spec = {}
       compiler_sets = []
@@ -92,10 +91,14 @@ module PACKMAN
       package.options.each do |key, value|
         case key
         when 'use_mpi'
-          tmp = ['no', 'mpich', 'openmpi']
-          CLI.ask "#{CLI.red package.class} can be built with MPI, do you want this?", tmp
-          ans = CLI.get_answer tmp, :only_one
-          package.options[key] = ans == 0 ? nil : tmp[ans]
+          if ConfigManager.defaults.has_key? 'mpi' and not CommandLine.has_option? '-ask'
+            package.options[key] = ConfigManager.defaults['mpi']
+          else
+            tmp = ['no', 'mpich', 'openmpi']
+            CLI.ask "#{CLI.red package.class} can be built with MPI, do you want this?", tmp
+            ans = CLI.get_answer tmp, :only_one
+            package.options[key] = ans == 0 ? nil : tmp[ans]
+          end
           package_config['use_mpi'] = package.options[key]
         end
       end
@@ -103,14 +106,19 @@ module PACKMAN
       if compiler_sets.empty?
         if not install_spec['use_binary']
           package_config['compiler_set'] = []
-          tmp = ConfigManager.compiler_sets.clone
-          tmp << 'all'
-          CLI.ask 'Which compiler sets do you want to use?', tmp
-          ans = CLI.get_answer tmp
-          for i in 0..ConfigManager.compiler_sets.size-1
-            if ans.include? i or ans.include? ConfigManager.compiler_sets.size
-              package_config['compiler_set'] << i
-              compiler_sets << ConfigManager.compiler_sets[i]
+          if ConfigManager.defaults.has_key? 'compiler_set' and not CommandLine.has_option? '-ask'
+            package_config['compiler_set'] << 0
+            compiler_sets << ConfigManager.compiler_sets[ConfigManager.defaults['compiler_set']]
+          else
+            tmp = ConfigManager.compiler_sets.clone
+            tmp << 'all'
+            CLI.ask 'Which compiler sets do you want to use?', tmp
+            ans = CLI.get_answer tmp
+            for i in 0..ConfigManager.compiler_sets.size-1
+              if ans.include? i or ans.include? ConfigManager.compiler_sets.size
+                package_config['compiler_set'] << i
+                compiler_sets << ConfigManager.compiler_sets[i]
+              end
             end
           end
         end
@@ -216,7 +224,8 @@ module PACKMAN
         # Apply patches.
         Package.apply_patch package
         # Install package.
-        PACKMAN::CLI.report_notice "Install package #{CLI.green package.class}."
+        PACKMAN::CLI.report_notice "Install package #{CLI.green package.class} "+
+          "with compiler set #{PACKMAN::CLI.green ConfigManager.compiler_sets.index(compiler_set)}."
         package.install
         PACKMAN.cd_back
         FileUtils.rm_rf build_dir

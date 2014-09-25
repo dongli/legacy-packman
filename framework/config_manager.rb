@@ -3,7 +3,7 @@ module PACKMAN
     @@valid_keys = %W[
       package_root
       install_root
-      active_compiler_set
+      defaults
       use_ftp_mirror
       compiler_set_0
       compiler_set_1
@@ -77,18 +77,23 @@ module PACKMAN
           "and #{PACKMAN::CLI.red file_path} exists, consider to use it!"
       end
       File.open(file_path, 'w') do |file|
-        file << "package_root = \"...\"\n"
-        file << "install_root = \"...\"\n"
-        file << "active_compiler_set = ...\n"
-        file << "use_ftp_mirror = \"no\"\n"
-        file << "compiler_set_0 = {\n"
-        file << "  \"c\" => \"...\",\n"
-        file << "  \"c++\" => \"...\",\n"
-        file << "  \"fortran\" => \"...\"\n"
-        file << "}\n"
-        file << "package_... = {\n"
-        file << "  \"compiler_set\" => [...]\n"
-        file << "}\n"
+        file << <<-EOT
+package_root = "..."
+install_root = "..."
+use_ftp_mirror = "no"
+defaults = {
+  "compiler_set" => 0,
+  "mpi" => "mpich"
+}
+compiler_set_0 = {
+  "c" => "...",
+  "c++" => "...",
+  "fortran" => "..."
+}
+package_... = {
+  "compiler_set" => [...]
+}
+        EOT
       end
     end
 
@@ -96,8 +101,18 @@ module PACKMAN
       File.open(CommandLine.config_file, 'w') do |file|
         file << "package_root = \"#{package_root}\"\n"
         file << "install_root = \"#{install_root}\"\n"
-        file << "active_compiler_set = #{active_compiler_set}\n"
         file << "use_ftp_mirror = \"#{use_ftp_mirror}\"\n"
+        file << "defaults = {\n"
+        str = []
+        defaults.each do |key, value|
+          case key
+          when /compiler_set/
+            str << "  \"#{key}\" => #{value}"
+          else
+            str << "  \"#{key}\" => \"#{value}\""
+          end
+        end
+        file << "#{str.join(",\n")}\n}\n"
         for i in 0..compiler_sets.size-1
           file << "compiler_set_#{i} = {\n"
           if compiler_sets[i].has_key? 'installed_by_packman'

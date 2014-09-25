@@ -23,7 +23,8 @@ module PACKMAN
       },
       :install => {
         '-verbose' => 'Show verbose information.',
-        '-debug' => 'Print debug information.'
+        '-ask'     => 'Ask user when there are choices.',
+        '-debug'   => 'Print debug information.'
       },
       :remove => {
         '-all'   => 'Remove all versions and compiler sets.',

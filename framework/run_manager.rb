@@ -94,16 +94,22 @@ module PACKMAN
 
     def self.run build_helper, cmd, *args
       cmd_str = default_command_prefix
-      if build_helper
+      if build_helper and build_helper.should_insert_before_command?
         # Handle compiler default flags.
         Package.compiler_set.each do |language, compiler|
-          cmd_str << "#{build_helper.wrap_flags(language, PACKMAN.default_flags(language, compiler))} "
+          cmd_str << "#{build_helper.wrap_flags language, PACKMAN.default_flags(language, compiler)} "
         end
       end
       cmd_str << " #{cmd} "
-      cmd_str << args.join(' ')
+      cmd_str << "#{args.join(' ')} "
+      if build_helper and build_helper.should_insert_after_command?
+        # Handle compiler default flags.
+        Package.compiler_set.each do |language, compiler|
+          cmd_str << "#{build_helper.wrap_flags language, PACKMAN.default_flags(language, compiler)} "
+        end
+      end
       if not PACKMAN::CommandLine.has_option? '-verbose'
-        cmd_str << " 1> #{ConfigManager.package_root}/stdout 2> #{ConfigManager.package_root}/stderr"
+        cmd_str << "1> #{ConfigManager.package_root}/stdout 2> #{ConfigManager.package_root}/stderr"
       end
       print "#{PACKMAN::CLI.blue '==>'} #{PACKMAN::CLI.truncate("#{cmd} #{args.join(' ')}")}\n"
       system cmd_str

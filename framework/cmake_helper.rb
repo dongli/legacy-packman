@@ -1,6 +1,6 @@
 module PACKMAN
   class CmakeHelper
-    def wrap_flags(language, default_flags)
+    def self.wrap_flags language, default_flags
       case language
       when 'c'
         "-DCMAKE_C_FLAGS='#{default_flags}'"
@@ -12,5 +12,8 @@ module PACKMAN
         PACKMAN::CLI.report_error "Unknown language #{PACKMAN::CLI.red language}!"
       end
     end
+
+    def self.should_insert_before_command?; false; end
+    def self.should_insert_after_command?; true; end
   end
 end
