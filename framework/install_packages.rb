@@ -125,6 +125,8 @@ module PACKMAN
       end
       # Reload package definition file since user input may change its dependencies.
       PackageLoader.load_package package_name, install_spec
+      # Reinstance package to make changes effective.
+      package = Package.instance package_name, install_spec
       install_package compiler_sets, package
       # Record the installed package into config file.
       ConfigManager.packages[package_name] = package_config
