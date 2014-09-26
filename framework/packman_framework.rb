@@ -20,6 +20,9 @@ require 'remove_packages'
 require "switch_packages"
 require "mirror_packages"
 
+require "pty"
+require "expect"
+
 PACKMAN::OS.init
 PACKMAN::CommandLine.init
 PACKMAN::ConfigManager.init

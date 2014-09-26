@@ -1,6 +1,3 @@
-require "pty"
-require "expect"
-
 class Ncl < PACKMAN::Package
   url 'https://www.earthsystemgrid.org/download/fileDownload.htm?logicalFileId=474bb254-ba75-11e3-b322-00c0f03d5b7c'
   sha1 '9f7be65e0406a410b27d338309315deac2e64b6c'
