@@ -130,13 +130,13 @@ package_... = {
           file << "package_#{package_name.to_s.downcase} = {\n"
           str = []
           install_spec.each do |key, value|
-            next if key == 'use_binary' and not value
+            next if key == 'use_binary' or not value
             case key
             when /(use_binary|compiler_set)/
               str << "  \"#{key}\" => #{value}"
             when /use_mpi/
               str << "  \"#{key}\" => \"#{value}\""
-            end 
+            end
           end
           file << "#{str.join(",\n")}\n}\n"
         end
