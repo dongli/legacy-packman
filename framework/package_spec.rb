@@ -48,7 +48,13 @@ module PACKMAN
     def has_label? val; @labels.include? val; end
 
     def depends_on val
-      @dependencies << val if not @dependencies.include? val and val and val != :package_name
+      return if val == :package_name
+      begin
+        val = val.capitalize.to_sym
+        @dependencies << val if not @dependencies.include? val
+      rescue
+        PACKMAN::CLI.report_error "Package definition syntax error!"
+      end
     end
 
     def skip_on val; @skip_distros << val; end

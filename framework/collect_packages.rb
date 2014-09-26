@@ -8,8 +8,8 @@ module PACKMAN
     # Download packages to package_root.
     collect_all = ( CommandLine.has_option? '-all' or options.include? :all )
     if collect_all
-      package_names = Dir.glob("#{ENV['PACKMAN_ROOT']}/packages/*.rb").map { |f| File.basename(f).gsub('.rb', '').capitalize }
-      package_names.delete 'Packman_packages'
+      package_names = Dir.glob("#{ENV['PACKMAN_ROOT']}/packages/*.rb").map { |f| File.basename(f).gsub('.rb', '').capitalize.to_sym }
+      package_names.delete :Packman_packages
     else
       package_names = ConfigManager.packages.keys
     end
@@ -35,10 +35,8 @@ module PACKMAN
     options = [options] if not options.class == Array
     # Recursively download dependency packages.
     package.dependencies.each do |depend|
-      depend_package_name = depend.capitalize
-      if not ConfigManager.packages.keys.include? depend_package_name
-        depend_package = Package.instance depend_package_name
-        download_package depend_package
+      if not ConfigManager.packages.keys.include? depend
+        download_package Package.instance depend
       end
     end
     # Skip package that is provided by system.

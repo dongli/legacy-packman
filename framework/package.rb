@@ -220,17 +220,22 @@ module PACKMAN
           eval "#{package_name}.new"
         end
       rescue
-        require "#{ENV['PACKMAN_ROOT']}/packages/#{package_name.to_s.downcase}.rb"
+        load "#{ENV['PACKMAN_ROOT']}/packages/#{package_name.to_s.downcase}.rb"
         instance package_name, install_spec
       end
     end
 
     def self.all_instances package_name
-      instances = []
-      eval("#{package_name}.new").all_specs.each do |spec|
-        instances << eval("#{package_name}.new spec")
+      begin
+        instances = []
+        eval("#{package_name}.new").all_specs.each do |spec|
+          instances << eval("#{package_name}.new spec")
+        end
+        return instances
+      rescue
+        load "#{ENV['PACKMAN_ROOT']}/packages/#{package_name.to_s.downcase}.rb"
+        all_instances package_name
       end
-      return instances
     end
 
     def self.all_package_names

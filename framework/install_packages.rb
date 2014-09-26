@@ -123,6 +123,8 @@ module PACKMAN
           end
         end
       end
+      # Reload package definition file since user input may change its dependencies.
+      PackageLoader.load_package package_name, install_spec
       install_package compiler_sets, package
       # Record the installed package into config file.
       ConfigManager.packages[package_name] = package_config
@@ -135,7 +137,8 @@ module PACKMAN
     options = [options] if not options.class == Array
     # Check dependencies.
     package.dependencies.each do |depend|
-      depend_package = Package.instance depend.capitalize
+      # TODO: How to handle dependency install_spec?
+      depend_package = Package.instance depend
       install_package compiler_sets, depend_package, :depend
       if not depend_package.skip?
         RunManager.append_bashrc_path("#{Package.prefix(depend_package)}/bashrc")
@@ -224,7 +227,7 @@ module PACKMAN
         # Apply patches.
         Package.apply_patch package
         # Install package.
-        PACKMAN::CLI.report_notice "Install package #{CLI.green package.class} "+
+        CLI.report_notice "Install package #{CLI.green package.class} "+
           "with compiler set #{PACKMAN::CLI.green ConfigManager.compiler_sets.index(compiler_set)}."
         package.install
         PACKMAN.cd_back
