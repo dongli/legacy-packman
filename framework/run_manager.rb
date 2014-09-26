@@ -59,7 +59,7 @@ module PACKMAN
           rpath << tmp[1] if tmp
         end
       end
-      cmd_str << "LD_RUN_PATH='#{rpath.join(':')}' "
+      cmd_str << "LD_RUN_PATH='#{rpath.join(':')}' " if not rpath.empty?
       # Handle customized LD_LIBRARY_PATH.
       if not @@ld_library_pathes.empty?
         case OS.type
