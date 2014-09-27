@@ -8,7 +8,7 @@ class Fontconfig < PACKMAN::Package
 
   label 'use_system_first'
 
-  patch :embeded
+  patch :embed
 
   def install
     args = %W[

@@ -115,15 +115,11 @@ package_... = {
         file << "#{str.join(",\n")}\n}\n"
         for i in 0..compiler_sets.size-1
           file << "compiler_set_#{i} = {\n"
-          if compiler_sets[i].has_key? 'installed_by_packman'
-            file << "  \"installed_by_packman\" => true\n"
-          else
-            str = []
-            compiler_sets[i].each do |language, compiler|
-              str << "  \"#{language}\" => \"#{compiler}\""
-            end
-            file << "#{str.join(",\n")}\n"
+          str = []
+          compiler_sets[i].each do |language, compiler|
+            str << "  \"#{language}\" => \"#{compiler}\""
           end
+          file << "#{str.join(",\n")}\n"
           file << "}\n"
         end
         packages.each do |package_name, install_spec|

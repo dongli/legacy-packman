@@ -23,7 +23,7 @@ module PACKMAN
       end
       if ConfigManager.use_ftp_mirror == 'no'
         if OS.connect_internet?
-          CLI.report_error 'Tell Li Dong <dongli@lasg.iap.ac.cn> to handle this error!'
+          CLI.report_error "Failed to download #{CLI.red url}!"
         else
           CLI.report_error "This machine can not connect internet! You may use a FTP mirror in your location."
         end

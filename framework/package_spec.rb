@@ -89,7 +89,9 @@ module PACKMAN
       end
     end
 
-    def patch_embed val; @embeded_patches << val; end
+    def patch_embed val
+      @embeded_patches << val if not @embeded_patches.include? val
+    end
 
     def attach &block
       if block_given?

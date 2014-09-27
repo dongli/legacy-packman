@@ -82,8 +82,8 @@ module PACKMAN
             package_config['use_binary'] = true
           else
             # The first compiler set is preferred.
-            compiler_sets << ConfigManager.compiler_sets.first
-            package_config['compiler_set'] = [0]
+            compiler_sets << ConfigManager.compiler_sets[ConfigManager.defaults['compiler_set']]
+            package_config['compiler_set'] = [ConfigManager.defaults['compiler_set']]
           end
         end
       end

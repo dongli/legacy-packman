@@ -5,7 +5,7 @@ class Ncurses < PACKMAN::Package
 
   skip_on :Mac_OS_X
 
-  # patch :embeded
+  # patch :embed
 
   def install
     args = %W[

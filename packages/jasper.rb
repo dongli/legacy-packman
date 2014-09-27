@@ -5,7 +5,7 @@ class Jasper < PACKMAN::Package
 
   depends_on 'jpeg'
 
-  patch :embeded
+  patch :embed
 
   def install
     args = %W[
@@ -20,29 +20,27 @@ class Jasper < PACKMAN::Package
 end
 
 __END__
-diff --git a/src/libjasper/jpc/jpc_dec.c b/src/libjasper/jpc/jpc_dec.c
-index fa72a0e..1f4845f 100644
---- a/src/libjasper/jpc/jpc_dec.c
-+++ b/src/libjasper/jpc/jpc_dec.c
-@@ -1069,12 +1069,18 @@ static int jpc_dec_tiledecode(jpc_dec_t *dec, jpc_dec_tile_t *tile)
-    /* Apply an inverse intercomponent transform if necessary. */
-    switch (tile->cp->mctid) {
-    case JPC_MCT_RCT:
--       assert(dec->numcomps == 3);
-+       if (dec->numcomps != 3 && dec->numcomps != 4) {
-+           jas_eprintf("bad number of components (%d)\n", dec->numcomps);
-+           return -1;
-+       }
-        jpc_irct(tile->tcomps[0].data, tile->tcomps[1].data,
-          tile->tcomps[2].data);
-        break;
-    case JPC_MCT_ICT:
--       assert(dec->numcomps == 3);
-+       if (dec->numcomps != 3 && dec->numcomps != 4) {
-+           jas_eprintf("bad number of components (%d)\n", dec->numcomps);
-+           return -1;
-+       }
-        jpc_iict(tile->tcomps[0].data, tile->tcomps[1].data,
-          tile->tcomps[2].data);
-        break;
-        
+diff -uNr a/src/libjasper/jpc/jpc_dec.c b/src/libjasper/jpc/jpc_dec.c
+--- a/src/libjasper/jpc/jpc_dec.c	2007-01-20 05:43:00.000000000 +0800
++++ b/src/libjasper/jpc/jpc_dec.c	2014-09-27 10:45:02.000000000 +0800
+@@ -1069,12 +1069,18 @@
+ 	/* Apply an inverse intercomponent transform if necessary. */
+ 	switch (tile->cp->mctid) {
+ 	case JPC_MCT_RCT:
+-		assert(dec->numcomps == 3);
++        if (dec->numcomps != 3 && dec->numcomps != 4) {
++            jas_eprintf("bad number of components (%d)\n", dec->numcomps);
++            return -1;
++        }
+ 		jpc_irct(tile->tcomps[0].data, tile->tcomps[1].data,
+ 		  tile->tcomps[2].data);
+ 		break;
+ 	case JPC_MCT_ICT:
+-		assert(dec->numcomps == 3);
++        if (dec->numcomps != 3 && dec->numcomps != 4) {
++            jas_eprintf("bad number of components (%d)\n", dec->numcomps);
++            return -1;
++        }
+ 		jpc_iict(tile->tcomps[0].data, tile->tcomps[1].data,
+ 		  tile->tcomps[2].data);
+ 		break;

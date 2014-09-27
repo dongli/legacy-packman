@@ -251,17 +251,17 @@ module PACKMAN
       return @@all_package_names
     end
 
-    def self.apply_patch(package)
+    def self.apply_patch package
       for i in 0..package.patches.size-1
         patch_file = "#{ConfigManager.package_root}/#{package.class}.patch.#{i}"
-        PACKMAN.run "patch -N -Z -p1 < #{patch_file}"
+        PACKMAN.run "patch --ignore-whitespace -N -p1 < #{patch_file}"
         if not $?.success?
           PACKMAN::CLI.report_error "Failed to apply patch for #{PACKMAN::CLI.red package.class}!"
         end
       end
       package.embeded_patches.each do |patch|
         PACKMAN::CLI.report_notice "Apply embeded patch."
-        IO.popen("/usr/bin/patch --ignore-whitespace -N -Z -p1", "w") { |p| p.write(patch) }
+        IO.popen("patch --ignore-whitespace -N -p1", "w") { |p| p.write(patch) }
         if not $?.success?
           PACKMAN::CLI.report_error "Failed to apply embeded patch for #{PACKMAN::CLI.red package.class}!"
         end

@@ -13,7 +13,7 @@ module PACKMAN
       @@helpers
     end
 
-    def self.vendor(val)
+    def self.vendor val
       self.class_eval "def vendor; '#{val}'; end"
     end
 
@@ -28,11 +28,11 @@ module PACKMAN
       self.class_eval "def compiler_commands; #{val}; end"
     end
 
-    def self.version_pattern(val)
+    def self.version_pattern val
       self.class_eval "def version_pattern; '#{val}'; end"
     end
 
-    def compiler_command(language)
+    def compiler_command language
       if not compiler_commands.has_key? language.to_s
         PACKMAN::CLI.report_error "#{vendor} does not provide a compiler for language #{PACKMAN::CLI.red language}!"
       end
@@ -53,7 +53,7 @@ module PACKMAN
     end
   end
 
-  def self.compiler_helper(vendor)
+  def self.compiler_helper vendor
     CompilerHelper.helpers.each do |helper|
       if helper.vendor == vendor
         return helper
@@ -62,7 +62,7 @@ module PACKMAN
     PACKMAN::CLI.report_error "Unknown compiler vendor #{PACKMAN::CLI.red vendor}!"
   end
 
-  def self.compiler_vendor(language, compiler)
+  def self.compiler_vendor language, compiler
     CompilerHelper.helpers.each do |helper|
       if helper.compiler_command(language) == compiler
         return helper.vendor
@@ -70,11 +70,11 @@ module PACKMAN
     end
   end
 
-  def self.compiler_command(language)
+  def self.compiler_command language
     Package.compiler_set[language]
   end
 
-  def self.default_flags(language, compiler)
+  def self.default_flags language, compiler
     CompilerHelper.helpers.each do |helper|
       if compiler.to_s.include? helper.compiler_command(language)
         return helper.default_flags
