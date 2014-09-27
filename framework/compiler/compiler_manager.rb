@@ -83,4 +83,8 @@ module PACKMAN
       end
     end
   end
+
+  def self.use_mpi mpi_vendor = nil
+    CompilerManager.use_openmp mpi_vendor
+  end
 end
