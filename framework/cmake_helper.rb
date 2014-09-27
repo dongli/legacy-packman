@@ -1,13 +1,13 @@
 module PACKMAN
   class CmakeHelper
-    def self.wrap_flags language, default_flags
+    def self.wrap_flags language, flags
       case language
       when 'c'
-        "-DCMAKE_C_FLAGS='#{default_flags}'"
+        "-DCMAKE_C_FLAGS='#{flags}'"
       when 'c++'
-        "-DCMAKE_CXX_FLAGS='#{default_flags}'"
+        "-DCMAKE_CXX_FLAGS='#{flags}'"
       when 'fortran'
-        "-DCMAKE_FORTRAN_FLAGS='#{default_flags}'"
+        "-DCMAKE_FORTRAN_FLAGS='#{flags}'"
       else
         PACKMAN::CLI.report_error "Unknown language #{PACKMAN::CLI.red language}!"
       end

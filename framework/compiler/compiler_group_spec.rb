@@ -1,11 +1,13 @@
 module PACKMAN
   class CompilerGroupSpec
-    attr_accessor :vendor, :compiler_commands, :default_flags
+    attr_accessor :vendor, :compiler_commands
+    attr_accessor :default_flags, :customized_flags
     attr_accessor :flags, :version_pattern, :version
 
     def initialize
       @compiler_commands = {}
       @default_flags = {}
+      @customized_flags = {}
       @flags = {}
     end
 
@@ -18,6 +20,19 @@ module PACKMAN
       tmp = res.match(version_pattern)
       if tmp
         @version = tmp[0]
+      end
+    end
+
+    def append_customized_flags language, flags
+      @customized_flags[language] ||= ''
+      @customized_flags[language] << ' '+flags
+    end
+
+    def clean_customized_flags language = nil
+      if language
+        @customized_flags[language] = nil
+      else
+        @customized_flags.each_key { |f| f = nil }
       end
     end
   end
