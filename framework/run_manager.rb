@@ -98,7 +98,7 @@ module PACKMAN
         # Handle compiler default flags.
         Package.compiler_set.each do |language, compiler|
           next if language == 'installed_by_packman'
-          cmd_str << "#{build_helper.wrap_flags language, PACKMAN.default_flags(language, compiler)} "
+          cmd_str << "#{build_helper.wrap_flags language, PACKMAN::CompilerManager.default_flags(language, compiler)} "
         end
       end
       cmd_str << " #{cmd} "

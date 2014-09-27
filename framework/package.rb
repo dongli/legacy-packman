@@ -25,11 +25,20 @@ module PACKMAN
           @active_spec = self.send requested_spec
         else
           found = false
-          if requested_spec.to_s =~ /@/ and @history_binary_versions
-            expected_package_version = requested_spec.to_s.split('@')[0]
+          expected_package_version = requested_spec.to_s =~ /@/ ? requested_spec.to_s.split('@')[0] : nil
+          use_history_version = true if expected_package_version
+          if expected_package_version
+            @binary.each_value do |b|
+              if b.version == expected_package_version
+                use_history_version = false
+                expected_package_version = nil
+                break
+              end
+            end
+          end
+          if use_history_version
             check_hash = @history_binary_versions
           elsif @binary
-            expected_package_version = nil
             check_hash = @binary
           end
           if check_hash.has_key? requested_spec

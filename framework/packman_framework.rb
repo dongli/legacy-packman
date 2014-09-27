@@ -8,17 +8,19 @@ require "package_spec"
 require "package"
 require "autotool_helper"
 require "cmake_helper"
-require "compiler_helper"
-require "gcc_compiler_helper"
-require "intel_compiler_helper"
-require "llvm_compiler_helper"
 require "run_manager"
-require "edit_config_file"
-require "collect_packages"
-require "install_packages"
-require 'remove_packages'
-require "switch_packages"
-require "mirror_packages"
+require "compiler/compiler_group_spec"
+require "compiler/compiler_group"
+require "compiler/gcc_compiler_group"
+require "compiler/intel_compiler_group"
+require "compiler/llvm_compiler_group"
+require "compiler/compiler_manager"
+require "command/edit_config_file"
+require "command/collect_packages"
+require "command/install_packages"
+require 'command/remove_packages'
+require "command/switch_packages"
+require "command/mirror_packages"
 
 require "pty"
 require "expect"
@@ -27,7 +29,7 @@ PACKMAN::OS.init
 PACKMAN::CommandLine.init
 PACKMAN::ConfigManager.init
 PACKMAN::ConfigManager.parse
-PACKMAN::CompilerHelper.init
+PACKMAN::CompilerManager.init
 
 Kernel.trap('INT') do
   print "GOOD BYE!\n"

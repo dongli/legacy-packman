@@ -117,6 +117,10 @@ package_... = {
           file << "compiler_set_#{i} = {\n"
           str = []
           compiler_sets[i].each do |language, compiler|
+            if language == 'installed_by_packman'
+              str = ["  \"installed_by_packman\" => \"#{compiler.downcase}\""]
+              break
+            end
             str << "  \"#{language}\" => \"#{compiler}\""
           end
           file << "#{str.join(",\n")}\n"
@@ -134,7 +138,8 @@ package_... = {
               str << "  \"#{key}\" => \"#{value}\""
             end
           end
-          file << "#{str.join(",\n")}\n}\n"
+          file << "#{str.join(",\n")}\n" if not str.empty?
+          file << "}\n"
         end
       end
     end

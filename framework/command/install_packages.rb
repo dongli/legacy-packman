@@ -1,12 +1,12 @@
 module PACKMAN
   def self.install_packages
-    expand_packman_compiler_sets
+    CompilerManager.expand_packman_compiler_sets
     # Report compilers and their flags.
     for i in 0..ConfigManager.compiler_sets.size-1
       CLI.report_notice "Compiler set #{CLI.green i}:"
       ConfigManager.compiler_sets[i].each do |language, compiler|
         next if language == 'installed_by_packman'
-        print "#{CLI.blue '==>'} #{language}: #{compiler} #{default_flags language, compiler}\n"
+        print "#{CLI.blue '==>'} #{language}: #{compiler} #{CompilerManager.default_flags language, compiler}\n"
       end
     end
     # Install packages.
