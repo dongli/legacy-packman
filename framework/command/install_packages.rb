@@ -72,6 +72,11 @@ module PACKMAN
       package = Package.instance package_name
       install_spec = {}
       compiler_sets = []
+      # Check possible install_spec from config file.
+      if ConfigManager.packages.keys.include? package_name
+        install_spec.merge! ConfigManager.packages[package_name]
+        package_config.merge! ConfigManager.packages[package_name]
+      end
       # Check package labels.
       package.labels.each do |label|
         case label

@@ -134,7 +134,7 @@ package_... = {
             case key
             when /(use_binary|compiler_set)/
               str << "  \"#{key}\" => #{value}"
-            when /use_mpi/
+            else
               str << "  \"#{key}\" => \"#{value}\""
             end
           end
