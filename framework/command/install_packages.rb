@@ -147,9 +147,7 @@ module PACKMAN
       # TODO: How to handle dependency install_spec?
       depend_package = Package.instance depend
       install_package compiler_sets, depend_package, :depend
-      if not depend_package.skip?
-        RunManager.append_bashrc_path("#{Package.prefix(depend_package)}/bashrc")
-      end
+      RunManager.append_bashrc_path("#{Package.prefix(depend_package)}/bashrc") if not depend_package.skip?
     end
     # Check if the package should be skipped.
     if package.skip?
@@ -176,15 +174,11 @@ module PACKMAN
       # Check if the package has alreadly installed.
       bashrc = "#{prefix}/bashrc"
       if File.exist?(bashrc)
-        f = File.new(bashrc, 'r')
-        first_line = f.readline
+        first_line = File.new(bashrc, 'r').readline
         if first_line =~ /#{package.sha1}/
-          if not options.include? :depend
-            CLI.report_notice "Package #{PACKMAN::CLI.green package.class} has been installed."
-          end
+          CLI.report_notice "Package #{PACKMAN::CLI.green package.class} has been installed." if not options.include? :depend
           return
         end
-        f.close
       end
       # Use precompiled binary file.
       CLI.report_notice "Use precompiled binary files for #{CLI.green package.class}."
@@ -197,27 +191,22 @@ module PACKMAN
       package.postfix
     else
       # Build package for each compiler set.
+      build_upper_dir = "#{ConfigManager.package_root}/#{package.class}"
       compiler_sets.each do |compiler_set|
         Package.compiler_set = compiler_set
         # Set the MPI compiler wrappers.
-        if package.options['use_mpi']
-          use_mpi package.options['use_mpi']
-        end
+        use_mpi package.options['use_mpi'] if package.options['use_mpi']
         # Check if the package has alreadly installed.
         bashrc = "#{Package.prefix(package)}/bashrc"
         if File.exist? bashrc
-          f = File.new bashrc, 'r'
-          first_line = f.readline
+          first_line = File.new(bashrc, 'r').readline
           if first_line =~ /#{package.sha1}/
             if (package.respond_to? :check_consistency and package.check_consistency) or
               not package.respond_to? :check_consistency
-              if not options.include? :depend
-                PACKMAN::CLI.report_notice "Package #{PACKMAN::CLI.green package.class} has been installed."
-              end
+              CLI.report_notice "Package #{PACKMAN::CLI.green package.class} has been installed." if not options.include? :depend
               next
             end
           end
-          f.close
         end
         # Decompress package file.
         if package.respond_to? :filename
@@ -225,32 +214,32 @@ module PACKMAN
         elsif package.respond_to? :dirname
           package.copy_to ConfigManager.package_root
         end
-        tmp = Dir.glob("#{ConfigManager.package_root}/#{package.class}/*")
+        tmp = Dir.glob("#{build_upper_dir}/*")
         if tmp.size != 1 or not File.directory? tmp.first
-          tmp = ["#{ConfigManager.package_root}/#{package.class}"]
+          tmp = ["#{build_upper_dir}"]
         end
         build_dir = tmp.first
         PACKMAN.cd build_dir
         # Apply patches.
         Package.apply_patch package
         # Install package.
-        CLI.report_notice "Install package #{CLI.green package.class} "+
-          "with compiler set #{PACKMAN::CLI.green ConfigManager.compiler_sets.index(compiler_set)}."
+        msg = "Install package #{CLI.green package.class} with compiler set"
+        msg << " #{PACKMAN::CLI.green ConfigManager.compiler_sets.index(compiler_set)}"
+        msg << " and #{PACKMAN::CLI.red package.options['use_mpi'].capitalize} library" if package.options['use_mpi']
+        CLI.report_notice msg+"."
         package.install
         PACKMAN.cd_back
         FileUtils.rm_rf build_dir
         # Write bashrc file for the package.
         Package.bashrc package
         package.postfix
+        # Clean the customized flags if there is any.
+        CompilerManager.clean_customized_flags
       end
     end
     # Clean build files.
-    if Dir.exist? "#{ConfigManager.package_root}/#{package.class}"
-      FileUtils.rm_rf "#{ConfigManager.package_root}/#{package.class}"
-    end
+    FileUtils.rm_rf build_upper_dir if Dir.exist? build_upper_dir
     # Clean the bashrc pathes.
-    if not options.include? :depend
-      RunManager.clean_bashrc_path
-    end
+    RunManager.clean_bashrc_path if not options.include? :depend
   end
 end

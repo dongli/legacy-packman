@@ -98,7 +98,10 @@ module PACKMAN
         # Handle compiler default flags.
         Package.compiler_set.each do |language, compiler|
           next if language == 'installed_by_packman'
-          cmd_str << "#{build_helper.wrap_flags language, PACKMAN::CompilerManager.default_flags(language, compiler)} "
+          flags = PACKMAN::CompilerManager.default_flags(language, compiler)
+          tmp = PACKMAN::CompilerManager.customized_flags(language, compiler)
+          flags << tmp if tmp
+          cmd_str << "#{build_helper.wrap_flags language, flags} "
         end
       end
       cmd_str << " #{cmd} "
@@ -107,7 +110,10 @@ module PACKMAN
         # Handle compiler default flags.
         Package.compiler_set.each do |language, compiler|
           next if language == 'installed_by_packman'
-          cmd_str << "#{build_helper.wrap_flags language, PACKMAN.default_flags(language, compiler)} "
+          flags = PACKMAN::CompilerManager.default_flags(language, compiler)
+          tmp = PACKMAN::CompilerManager.customized_flags(language, compiler)
+          flags << tmp if tmp
+          cmd_str << "#{build_helper.wrap_flags language, flags} "
         end
       end
       if not PACKMAN::CommandLine.has_option? '-verbose'
