@@ -1,6 +1,6 @@
 class Netcdf_fortran < PACKMAN::Package
   url 'ftp://ftp.unidata.ucar.edu/pub/netcdf/netcdf-fortran-4.4.1.tar.gz'
-  sha1 ''
+  sha1 '452a1b7ef12cbcace770dcc728a7b425cf7fb295'
   version '4.4.1'
 
   # This old version may be cleaned in near future.
@@ -14,24 +14,24 @@ class Netcdf_fortran < PACKMAN::Package
   option 'use_mpi' => :package_name
 
   def install
-    netcdf_c_prefix = PACKMAN::Package.prefix(Netcdf_c)
-    PACKMAN.append_env "PATH=#{netcdf_c_prefix}/bin:$PATH"
+    netcdf_c = PACKMAN::Package.prefix(Netcdf_c)
+    PACKMAN.append_env "PATH=#{netcdf_c}/bin:$PATH"
     # TODO: Turn 'version' from String to VersionSpec.
     if version != '4.4.1'
-      PACKMAN.append_env "CPPFLAGS='-I#{netcdf_c_prefix}/include'"
+      PACKMAN.append_env "CPPFLAGS='-I#{netcdf_c}/include'"
     else
       # Refer http://www.unidata.ucar.edu/support/help/MailArchives/netcdf/msg11622.html.
       # Version '4.4.1' does not need the following kludge.
       case PACKMAN.compiler_command 'fortran'
       when /gfortran/
-        PACKMAN.append_env "CPPFLAGS='-DgFortran -I#{netcdf_c_prefix}/include'"
+        PACKMAN.append_env "CPPFLAGS='-DgFortran -I#{netcdf_c}/include'"
       when /ifort/
-        PACKMAN.append_env "CPPFLAGS='-DINTEL_COMPILER -I#{netcdf_c_prefix}/include'"
+        PACKMAN.append_env "CPPFLAGS='-DINTEL_COMPILER -I#{netcdf_c}/include'"
       else
         PACKMAN::CLI.under_construction!
       end
     end
-    PACKMAN.append_env "LDFLAGS='-L#{netcdf_c_prefix}/lib'"
+    PACKMAN.append_env "LDFLAGS='-L#{netcdf_c}/lib'"
     if PACKMAN::OS.mac_gang? and PACKMAN.compiler_vendor('fortran') == 'intel'
       PACKMAN.append_env "FCFLAGS='-xHost -ip -no-prec-div -mdynamic-no-pic'"
       PACKMAN.append_env "FFLAGS='-xHost -ip -no-prec-div -mdynamic-no-pic'"
