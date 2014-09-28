@@ -76,7 +76,7 @@ module PACKMAN
     end
 
     def self.under_construction!
-      print "Oops: PACKMAN is under construction!\n"
+      print ":( PACKMAN is under construction for this function! Thank you for your support!\n"
       exit
     end
 

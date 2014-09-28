@@ -36,7 +36,6 @@ class Netcdf_c < PACKMAN::Package
       PACKMAN.append_env "CFLAGS='-I#{curl}/include -I#{zlib}/include -I#{szip}/include -I#{hdf5}/include'"
       PACKMAN.append_env "LDFLAGS='-L#{curl}/lib -L#{zlib}/lib -L#{szip}/lib -L#{hdf5}/lib'"
     end
-    PACKMAN.append_env "FFLAGS=-ffree-line-length-none"
     # NOTE: OpenDAP support should be supported in default, but I still add
     #       '--enable-dap' explicitly for reminding.
     # Build netcdf in parallel: http://www.unidata.ucar.edu/software/netcdf/docs/getting_and_building_netcdf.html#build_parallel

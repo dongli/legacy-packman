@@ -52,5 +52,3 @@ module PACKMAN
     end
   end
 end
-
-PACKMAN::PackageLoader.init

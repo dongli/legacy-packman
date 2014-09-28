@@ -9,7 +9,6 @@ module PACKMAN
     collect_all = ( CommandLine.has_option? '-all' or options.include? :all )
     if collect_all
       package_names = Dir.glob("#{ENV['PACKMAN_ROOT']}/packages/*.rb").map { |f| File.basename(f).gsub('.rb', '').capitalize.to_sym }
-      package_names.delete :Packman_packages
     else
       package_names = ConfigManager.packages.keys
     end

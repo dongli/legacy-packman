@@ -13,7 +13,8 @@ module PACKMAN
       :switch  => 'Switch different compiler set (new bashrc will be generated).',
       :mirror  => 'Control FTP mirror service.',
       :update  => 'Update PACKMAN.',
-      :help    => 'Print help message.'
+      :help    => 'Print help message.',
+      :report  => 'Report version of PACKMAN an other information.'
     }
     @@permitted_options = {
       :config  => {},
@@ -41,7 +42,8 @@ module PACKMAN
         '-debug' => 'Print debug information.'
       },
       :update  => {},
-      :help    => {}
+      :help    => {},
+      :report  => {}
     }
 
     def self.init

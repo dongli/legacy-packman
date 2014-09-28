@@ -11,16 +11,26 @@ function _packman_()
     completed_words=""
     case "${prev_argv##*/}" in
     "packman")
-        completed_words="config collect install remove switch mirror update help"
+        completed_words="config collect install remove switch mirror update help report"
         ;;
     "collect")
         completed_words="-all -debug"
         ;;
     "install")
         completed_words="-verbose -debug"
+        # Append package names.
+        for file in $(ls $PACKMAN_ROOT/packages); do
+            package_name=$(basename -s .rb $file)
+            completed_words="$completed_words $package_name"
+        done
         ;;
     "remove")
         completed_words="-all -purge -debug"
+        # Append package names.
+        for file in $(ls $PACKMAN_ROOT/packages); do
+            package_name=$(basename -s .rb $file)
+            completed_words="$completed_words $package_name"
+        done
         ;;
     "mirror")
         completed_words="-init -start -stop -status -sync -debug"

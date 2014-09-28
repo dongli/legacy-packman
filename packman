@@ -8,7 +8,6 @@ end
 $LOAD_PATH << "#{ENV['PACKMAN_ROOT']}/framework"
 $LOAD_PATH << "#{ENV['PACKMAN_ROOT']}/packages"
 require 'packman_framework'
-require 'packman_packages'
 
 case PACKMAN::CommandLine.subcommand
 when :config
@@ -33,6 +32,8 @@ when :update
   PACKMAN.cd_back
 when :help
   PACKMAN::CommandLine.print_usage
+when :report
+  PACKMAN.report
 else
   PACKMAN::CLI.report_error "Unknown subcommand #{PACKMAN::CommandLine.subcommand}!"
 end
