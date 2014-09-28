@@ -59,11 +59,7 @@ module PACKMAN
         config.gsub!(/^ *#{key} *=/, "self.#{key}=")
       end
       config.gsub!(/^ *package_(\w+) *=/, 'self.package "\1",')
-      begin
-        class_eval config
-      rescue SyntaxError => e
-        PACKMAN::CLI.report_error "Invalid syntax in #{PACKMAN::CLI.red PACKMAN::CommandLine.config_file}!\n#{e}"
-      end
+      class_eval config
       @@compiler_sets = []
       ( self.methods.select { |m| m.to_s =~ /compiler_set_\d$/ } ).each do |m|
         compiler_set = self.method(m).call

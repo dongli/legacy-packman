@@ -28,8 +28,15 @@ require "expect"
 PACKMAN::OS.init
 PACKMAN::CommandLine.init
 PACKMAN::ConfigManager.init
-PACKMAN::ConfigManager.parse
 PACKMAN::CompilerManager.init
+
+begin
+  PACKMAN::ConfigManager.parse
+rescue => e
+  if not PACKMAN::CommandLine.subcommand == :config
+    PACKMAN::CLI.report_error "Failed to parse #{PACKMAN::CLI.red PACKMAN::CommandLine.config_file}!\n#{e}"
+  end
+end
 
 Kernel.trap('INT') do
   print "GOOD BYE!\n"
