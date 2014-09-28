@@ -41,12 +41,16 @@ module PACKMAN
         if bashrc_files.size == 1
           file << bashrc_files.first
         elsif bashrc_files.size > 1
-          available_versions = bashrc_files.map { |p| File.basename(File.dirname(p)) }
+          available_versions = bashrc_files.map { |p| File.basename(PACKMAN.strip_dir(p, 2)) }
           package_name = File.basename(dir).capitalize.to_sym
           if not ConfigManager.packages.has_key? package_name or
             not ConfigManager.packages[package_name].has_key? 'version'
-            CLI.report_error "Package #{CLI.red package_name} has multiple versions "+
-              "(#{available_versions.join(', ')}), you should choose one in #{CommandLine.config_file}!"
+            msg = "Package #{CLI.red package_name} has multiple versions:\n"
+            available_versions.each do |v|
+              msg << "#{CLI.yellow '==>'} #{v}\n"
+            end
+            msg << "You should choose one in #{CommandLine.config_file}!"
+            CLI.report_error msg
           end
           bashrc_files.each do |f|
             if f =~ /#{ConfigManager.packages[package_name]['version']}/
