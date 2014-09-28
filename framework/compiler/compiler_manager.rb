@@ -37,8 +37,27 @@ module PACKMAN
 
     def self.customized_flags language, compiler
       @@compiler_groups.each do |g|
-        if compiler.to_s.include? g.compiler_commands[language]
+        if compiler.to_s.include? g.compiler_commands[language] or
+           g.compiler_commands[language].include? compiler
           return g.customized_flags[language]
+        end
+      end
+    end
+
+    def self.append_customized_flags language, flags
+      if language == :all
+        Package.compiler_set.each_key do |language|
+          next if language == 'installed_by_packman'
+          append_customized_flags language, flags
+        end
+      else
+        compiler = Package.compiler_set[language]
+        vendor = CompilerManager.compiler_vendor language, compiler
+        group = CompilerManager.compiler_group vendor
+        if flags.class == Symbol
+          group.append_customized_flags language, group.flags[flags]
+        else
+          group.append_customized_flags language, flags
         end
       end
     end
@@ -79,22 +98,11 @@ module PACKMAN
       end
     end
 
-    def self.use_openmp language = nil
-      if language
-        compiler = Package.compiler_set[language]
-        vendor = CompilerManager.compiler_vendor language, compiler
-        group = CompilerManager.compiler_group vendor
-        group.append_customized_flags language, group.flags['openmp']
-      else
-        Package.compiler_set.each_key do |language|
-          next if language == 'installed_by_packman'
-          use_openmp language
-        end
-      end
+    def self.use_openmp language = :all
+      append_customized_flags language, :openmp
     end
 
     def self.use_mpi mpi_vendor
-      PACKMAN::CLI.report_error 'MPI library vendor should be provided!' if not mpi_vendor
       compiler_set_index = PACKMAN::ConfigManager.compiler_sets.index PACKMAN::Package.compiler_set
       # Check if the MPI library is installed by PACKMAN or not.
       if File.directory? "#{PACKMAN::ConfigManager.install_root}/#{mpi_vendor}"
@@ -110,7 +118,7 @@ module PACKMAN
         PACKMAN.change_env "FC=#{prefix}/bin/#{mpi.provided_stuffs['fortran:90']}"
         PACKMAN.change_env "MPIF90=#{prefix}/bin/#{mpi.provided_stuffs['fortran:90']}"
       else
-        PACKMAN::CLI.under_construction!
+        PACKMAN::CLI.report_error "Can not find #{PACKMAN::CLI.red mpi_vendor} MPI library!"
       end
     end
   end
@@ -120,11 +128,19 @@ module PACKMAN
     CompilerManager.compiler_vendor language, compiler
   end
 
-  def self.use_openmp language = nil
+  def self.compiler_command language
+    Package.compiler_set[language]
+  end
+
+  def self.append_customized_flags language, flags
+    CompilerManager.append_customized_flags language, flags
+  end
+
+  def self.use_openmp language = :all
     CompilerManager.use_openmp language
   end
 
-  def self.use_mpi mpi_vendor = nil
+  def self.use_mpi mpi_vendor
     CompilerManager.use_mpi mpi_vendor
   end
 end

@@ -166,4 +166,11 @@ module PACKMAN
   def self.ln(src, dst)
     FileUtils.ln_s src, dst
   end
+
+  def self.strip_dir dir, level
+    for i in 1..level
+      dir = File.dirname dir
+    end
+    return dir
+  end
 end
