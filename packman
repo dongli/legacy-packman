@@ -23,13 +23,7 @@ when :switch
 when :mirror
   PACKMAN.mirror_packages
 when :update
-  PACKMAN.cd ENV['PACKMAN_ROOT']
-  if not Dir.exist? '.git'
-    PACKMAN::CLI.report_error "PACKMAN is not gained through GIT! You can download PACKMAN by:\n"+
-      "#{PACKMAN::CLI.blue}==> #{PACKMAN::CLI.reset}git clone https://github.com/dongli/packman"
-  end
-  system 'git pull'
-  PACKMAN.cd_back
+  PACKMAN.update
 when :help
   PACKMAN::CommandLine.print_usage
 when :report
