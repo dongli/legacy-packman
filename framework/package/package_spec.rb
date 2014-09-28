@@ -45,7 +45,12 @@ module PACKMAN
 
     def label val; @labels << val; end
 
-    def has_label? val; @labels.include? val; end
+    def has_label? val
+      @labels.each do |label|
+        return true if label =~ /#{val}/
+      end
+      return false
+    end
 
     def depends_on val
       return if val == :package_name

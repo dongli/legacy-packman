@@ -13,6 +13,10 @@ class Netcdf_fortran < PACKMAN::Package
 
   option 'use_mpi' => :package_name
 
+  if PACKMAN::OS.type == :Darwin and options['use_mpi']
+    label 'under_construction: Parallel build check fails in Mac!'
+  end
+
   def install
     netcdf_c = PACKMAN::Package.prefix(Netcdf_c)
     PACKMAN.append_env "PATH=#{netcdf_c}/bin:$PATH"

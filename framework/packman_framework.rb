@@ -4,8 +4,6 @@ require "version_spec"
 require "command_line"
 require "config_manager"
 require "os"
-require "package_spec"
-require "package"
 require "autotool_helper"
 require "cmake_helper"
 require "run_manager"
@@ -21,6 +19,10 @@ require "command/install_packages"
 require 'command/remove_packages'
 require "command/switch_packages"
 require "command/mirror_packages"
+require "command/report"
+require "package/package_spec"
+require "package/package"
+require "package/package_loader"
 
 require "pty"
 require "expect"
@@ -29,6 +31,7 @@ PACKMAN::OS.init
 PACKMAN::CommandLine.init
 PACKMAN::ConfigManager.init
 PACKMAN::CompilerManager.init
+PACKMAN::PackageLoader.init
 
 begin
   PACKMAN::ConfigManager.parse

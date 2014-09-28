@@ -50,7 +50,14 @@ module PACKMAN
       end
       # Check if the package is still under construction.
       if package.has_label? 'under_construction'
-        CLI.report_warning "Sorry, #{CLI.red package.class} is still under construction!"
+        msg = "Sorry, #{CLI.red package.class} is still under construction"
+        why = (package.labels.select { |l| l =~ /under_construction/ }).first.gsub(/under_construction(:)?\s*/, '')
+        if why != ''
+          msg << " because:\n#{CLI.yellow '==>'} #{why}"
+        else
+          msg << "!"
+        end
+        CLI.report_warning msg
         next
       end
       # Check which compiler sets are to use.
@@ -132,6 +139,18 @@ module PACKMAN
       PackageLoader.load_package package_name, install_spec
       # Reinstance package to make changes effective.
       package = Package.instance package_name, install_spec
+      # Check if the package is still under construction.
+      if package.has_label? 'under_construction'
+        msg = "Sorry, #{CLI.red package.class} is still under construction"
+        why = (package.labels.select { |l| l =~ /under_construction/ }).first.gsub(/under_construction(:)?\s*/, '')
+        if why != ''
+          msg << " because:\n#{CLI.yellow '==>'} #{why}"
+        else
+          msg << "!"
+        end
+        CLI.report_warning msg
+        next
+      end
       install_package compiler_sets, package
       # Record the installed package into config file.
       ConfigManager.packages[package_name] = package_config
