@@ -117,6 +117,10 @@ module PACKMAN
     FileUtils.cp_r src, dest
   end
 
+  def self.mv src, dest
+    FileUtils.mv src, dest
+  end
+
   def self.replace(filepath, replaces)
     content = File.open(filepath, 'r').read
     replaces.each do |pattern, replacement|

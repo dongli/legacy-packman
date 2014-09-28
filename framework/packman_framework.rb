@@ -19,6 +19,7 @@ require "command/install_packages"
 require 'command/remove_packages'
 require "command/switch_packages"
 require "command/mirror_packages"
+require "command/update"
 require "command/report"
 require "package/package_spec"
 require "package/package"
