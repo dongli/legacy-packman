@@ -19,6 +19,8 @@ module PACKMAN
         @@type = :Darwin
       when /^Linux */
         @@type = :Linux
+      when /^CYGWIN*/
+        @@type = :Cygwin
       else
         PACKMAN::CLI.report_error "Unknown OS type \"#{res}\"!"
       end
@@ -43,10 +45,14 @@ module PACKMAN
           @@version = PACKMAN::VersionSpec.new res.match(/VERSION_ID=(\d+)/)[1]
         when /CentOS/
           @@distro = :CentOS
-          @@version = PACKMAN::VersionSpec.new res.match(/release (\d+.\d+)/)[1]
+          @@version = PACKMAN::VersionSpec.new res.match(/release (\d+\.\d+)/)[1]
         else
           PACKMAN::CLI.report_error "Unknown distro \"#{res}\"!"
         end
+      when :Cygwin
+        res = `uname`
+        @@distro = :Cygwin
+        @@version = PACKMAN::VersionSpec.new res.match(/-(\d+\.\d+)-/)[1]
       end
     end
 
@@ -94,12 +100,18 @@ module PACKMAN
       end
     end
 
+    def self.cygwin_gang?
+      distro == :Cygwin
+    end
+
     def self.shared_library_suffix
       case type
       when :Darwin
         'dylib'
       when :Linux
         'so'
+      when :Cygwin
+        'dll'
       else
         PACKMAN.under_construction!
       end
@@ -110,6 +122,8 @@ module PACKMAN
       when :Darwin
         'DYLD_LIBRARY_PATH'
       when :Linux
+        'LD_LIBRARY_PATH'
+      when :Cygwin
         'LD_LIBRARY_PATH'
       else
         PACKMAN.under_construction!
@@ -131,6 +145,8 @@ module PACKMAN
           elsif mac_gang?
             # TODO: How to handle this branch?
             PACKMAN.under_construction!
+          elsif cygwin_gang?
+            flag = false if not `cygcheck -c #{p}`.match(p)
           else
             PACKMAN::CLI.report_error "Unknown OS!"
           end
@@ -153,6 +169,8 @@ module PACKMAN
         elsif mac_gang?
           # TODO: How to handle this branch?
           PACKMAN.under_construction!
+        elsif cygwin_gang?
+          res << "Use Cygwin Setup tool to install #{PACKMAN::CLI.red p}.\n"
         else
           PACKMAN::CLI.report_error "Unknown OS!"
         end

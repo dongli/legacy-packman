@@ -78,6 +78,13 @@ class Ncl < PACKMAN::Package
     filename 'ncl_ncarg-6.2.1.Linux_RHEL6.4_x86_64_gcc472.tar.gz'
   end
 
+  binary :Cygwin, '6.1' do
+    url 'https://www.earthsystemgrid.org/download/fileDownload.htm?logicalFileId=381d109f-351d-11e4-a4b4-00c0f03d5b7c'
+    sha1 'f9eac2f4289ce04d68ca7f9ff4bfdaa08382e4b6'
+    version '6.2.1'
+    filename 'ncl_ncarg-6.2.1.CYGWIN_NT-6.1-WOW64_i686.tar.gz'
+  end
+
   def install
     # Check some system packages.
     if not PACKMAN::OS.mac_gang?

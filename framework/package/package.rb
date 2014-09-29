@@ -34,7 +34,7 @@ module PACKMAN
               tmp1 = key.to_s.split(':')
               next if PACKMAN::OS.distro != tmp1.first.to_sym
               tmp2 = tmp1.last.match(/(>=|==|=~)?\s*(.*)/)
-              operator = tmp2[1] rescue '=='
+              operator = tmp2[1] ? tmp2[1] : '=='
               v1 = PACKMAN::VersionSpec.new tmp2[2]
               v2 = PACKMAN::OS.version
               if eval "v2 #{operator} v1"
@@ -51,7 +51,7 @@ module PACKMAN
                 tmp2 = tmp1.last.split(':')
                 next if PACKMAN::OS.distro != tmp2.first.to_sym
                 tmp3 = tmp2.last.match(/(>=|==|=~)?\s*(.*)/)
-                operator = tmp3[1] rescue '=='
+                operator = tmp3[1] ? tmp3[1] : '=='
                 v1 = PACKMAN::VersionSpec.new tmp3[2]
                 v2 = PACKMAN::OS.version
                 if eval "v2 #{operator} v1"

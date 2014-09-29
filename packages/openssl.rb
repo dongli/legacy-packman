@@ -34,6 +34,8 @@ class Openssl < PACKMAN::Package
       return PACKMAN::OS.installed? ['openssl', 'openssl-devel']
     elsif PACKMAN::OS.mac_gang?
       return true
+    elsif PACKMAN::OS.cygwin_gang?
+      return PACKMAN::OS.installed? ['libopenssl100', 'cygwin64-openssl']
     end
   end
 
@@ -44,6 +46,8 @@ class Openssl < PACKMAN::Package
       return PACKMAN::OS.how_to_install ['openssl', 'openssl-devel']
     elsif PACKMAN::OS.mac_gang?
       return true
+    elsif PACKMAN::OS.cygwin_gang?
+      return PACKMAN::OS.how_to_install ['libopenssl100', 'cygwin64-openssl']
     end
   end
 end

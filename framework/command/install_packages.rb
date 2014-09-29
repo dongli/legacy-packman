@@ -187,9 +187,10 @@ module PACKMAN
     # the OS is connected with internet.
     begin
       PACKMAN.download_package package
-    rescue
+    rescue => e
       if not OS.connect_internet?
-        CLI.report_error "#{CLI.red package.filename} has not been downloaded!"
+        CLI.report_error "#{CLI.red package.filename} has not been downloaded!\n"+
+          "#{CLI.red '==>'} #{e}"
       end
     end
     # Install package.
