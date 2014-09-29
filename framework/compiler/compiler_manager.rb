@@ -29,7 +29,7 @@ module PACKMAN
 
     def self.default_flags language, compiler
       @@compiler_groups.each do |g|
-        if compiler.to_s.include? g.compiler_commands[language]
+        if g.compiler_commands.has_key? language and compiler.to_s.include? g.compiler_commands[language]
           return g.default_flags[language]
         end
       end

@@ -32,7 +32,6 @@ PACKMAN::OS.init
 PACKMAN::CommandLine.init
 PACKMAN::ConfigManager.init
 PACKMAN::CompilerManager.init
-PACKMAN::PackageLoader.init
 
 begin
   PACKMAN::ConfigManager.parse
@@ -41,6 +40,8 @@ rescue => e
     PACKMAN::CLI.report_error "Failed to parse #{PACKMAN::CLI.red PACKMAN::CommandLine.config_file}!\n#{e}"
   end
 end
+
+PACKMAN::PackageLoader.init
 
 Kernel.trap('INT') do
   print "GOOD BYE!\n"
