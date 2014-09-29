@@ -16,7 +16,7 @@ module PACKMAN
   def self.update_by_direct_download
     # Read the current version tag.
     version_file = "#{ENV['PACKMAN_ROOT']}/.version"
-    if not File.exist? version_file
+    if File.exist? version_file
       current_version = File.open(version_file, 'r').read
     else
       current_version = nil
@@ -25,10 +25,10 @@ module PACKMAN
     url = 'https://api.github.com/repos/dongli/packman/tags'
     begin
       tags = eval `curl -s #{url}`.gsub(': ', ' => ')
-      latest_version = tags.last['name']
-      latest_tarball_url = tags.last['tarball_url']
-    rescue
-      CLI.report_error "Failed to retrieve information from #{url}!"
+      latest_version = tags.first['name']
+      latest_tarball_url = tags.first['tarball_url']
+    rescue => e
+      CLI.report_error "Failed to retrieve information from #{url}!\n#{CLI.red '==>'} #{e}"
     end
     if current_version != latest_version
       tarball = "#{File.basename(URI.parse(latest_tarball_url).path)}.tar.gz"
