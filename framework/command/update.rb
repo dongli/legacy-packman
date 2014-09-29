@@ -1,10 +1,24 @@
 module PACKMAN
   def self.update
     PACKMAN.cd ENV['PACKMAN_ROOT']
-    if Dir.exist? '.git'
-      update_by_using_git
-    else
-      update_by_direct_download
+    begin
+      if Dir.exist? '.git'
+        update_by_using_git
+      else
+        update_by_direct_download
+      end
+    rescue => e
+      if not OS.connect_internet?
+        if ConfigManager.use_ftp_mirror == 'no'
+          CLI.report_error "This machine can not connect internet! "+
+            "You may use a FTP mirror in your location.\n"+
+            "#{CLI.red '==>'} #{e}"
+        else
+          CLI.report_error "This machine can not connect internet, "+
+            "but FTP mirror is used. I am working on it!\n"+
+            "#{CLI.red '==>'} #{e}"
+        end
+      end
     end
     PACKMAN.cd_back
   end
@@ -17,7 +31,7 @@ module PACKMAN
     # Read the current version tag.
     version_file = "#{ENV['PACKMAN_ROOT']}/.version"
     if File.exist? version_file
-      current_version = File.open(version_file, 'r').read
+      current_version = File.open(version_file, 'r').read.strip
     else
       current_version = nil
       CLI.report_warning "#{CLI.red version_file} does not exist!"
