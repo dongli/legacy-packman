@@ -1,0 +1,6 @@
+#!/bin/sh
+
+# Update the version information.
+echo $(echo $@ | cut -d ' ' -f 1) > .version
+# Directly stage .version file.
+git add .version
