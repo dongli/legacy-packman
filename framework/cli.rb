@@ -77,6 +77,7 @@ module PACKMAN
 
     def self.under_construction!
       print ":( PACKMAN is under construction for this function! Thank you for your support!\n"
+      print_call_stack if PACKMAN::CommandLine.has_option? '-debug'
       exit
     end
 

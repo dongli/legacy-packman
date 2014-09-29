@@ -21,56 +21,57 @@ module PACKMAN
 
     def set_active_spec requested_spec
       if requested_spec
-        if self.respond_to? requested_spec
-          @active_spec = self.send requested_spec
-        else
-          found = false
-          expected_package_version = requested_spec.to_s =~ /@/ ? requested_spec.to_s.split('@')[0] : nil
-          use_history_version = true if expected_package_version
-          if expected_package_version
-            @binary.each_value do |b|
-              if b.version == expected_package_version
-                use_history_version = false
-                expected_package_version = nil
-                break
-              end
+        if requested_spec.class == Hash
+          case requested_spec[:in]
+          when :history_versions
+            if not history_versions.has_key? requested_spec[:version]
+              PACKMAN::CLI.report_error "There is no #{PACKMAN::CLI.red requested_spec[:version]} in "+
+                "#{PACKMAN::CLI.red self.class}!"
             end
-          end
-          if use_history_version
-            check_hash = @history_binary_versions
-          elsif @binary
-            check_hash = @binary
-          end
-          if check_hash.has_key? requested_spec
-            @active_spec = check_hash[requested_spec]
-            return
-          end
-          check_hash.each do |key, value|
-            key.to_s.split('|').each do |version_distro_version|
-              tmp1 = version_distro_version.split('@')
-              package_version = tmp1.first
-              next if expected_package_version and package_version != expected_package_version
-              tmp2 = tmp1.last.split(':')
-              distro = tmp2.first.to_sym
-              next if not distro == PACKMAN::OS.distro
-              tmp3 = tmp2.last.match(/(>=|==|=~)?\s*(.*)/)
-              operator = tmp3[1] rescue '=='
-              v1 = PACKMAN::VersionSpec.new tmp3[2]
+            @active_spec = history_versions[requested_spec[:version]]
+          when :binary
+            @binary.each do |key, value|
+              tmp1 = key.to_s.split(':')
+              next if PACKMAN::OS.distro != tmp1.first.to_sym
+              tmp2 = tmp1.last.match(/(>=|==|=~)?\s*(.*)/)
+              operator = tmp2[1] rescue '=='
+              v1 = PACKMAN::VersionSpec.new tmp2[2]
               v2 = PACKMAN::OS.version
               if eval "v2 #{operator} v1"
-                found = true
                 @active_spec = value
                 break
               end
             end
-            break if found
+          when :history_binary_versions
+            @history_binary_versions.each do |key, value|
+              key.to_s.split('|').each do |x|
+                tmp1 = x.split('@')
+                package_version = tmp1.first
+                next if package_version != requested_spec[:version]
+                tmp2 = tmp1.last.split(':')
+                next if PACKMAN::OS.distro != tmp2.first.to_sym
+                tmp3 = tmp2.last.match(/(>=|==|=~)?\s*(.*)/)
+                operator = tmp3[1] rescue '=='
+                v1 = PACKMAN::VersionSpec.new tmp3[2]
+                v2 = PACKMAN::OS.version
+                if eval "v2 #{operator} v1"
+                  @active_spec = value
+                  break
+                end
+              end
+              break if @active_spec
+            end
           end
-          if not found
-            PACKMAN::CLI.report_error "Can not find requested package spec #{requested_spec}!"
+        elsif requested_spec.class == Symbol
+          if self.respond_to? requested_spec
+            @active_spec = self.send requested_spec
           end
         end
       else
         @active_spec = stable || devel
+      end
+      if not @active_spec
+        PACKMAN::CLI.report_error "Unknown requested_spec #{PACKMAN::CLI.red requested_spec}!"
       end
     end
 
@@ -92,7 +93,6 @@ module PACKMAN
     def skip_distros; @active_spec.skip_distros; end
     def option_valid_types; @active_spec.option_valid_types; end
     def options; @active_spec.options; end
-
     def has_binary?; defined? @binary; end
 
     def all_specs
@@ -219,16 +219,37 @@ module PACKMAN
 
     def self.instance package_name, install_spec = {}
       begin
+        requested_spec = {}
         if install_spec['use_binary']
           if install_spec['version']
-            eval "#{package_name}.new :'#{install_spec['version']}@#{PACKMAN::OS.distro}:#{PACKMAN::OS.version}'"
+            requested_spec[:version] = install_spec['version']
+            if eval "defined? @@#{package_name}_binary"
+              eval("@@#{package_name}_binary").each do |key, value|
+                if value.version == requested_spec[:version]
+                  requested_spec[:in] = :binary
+                  break
+                end
+              end
+            end
+            if not requested_spec.has_key? :in and eval "defined? @@#{package_name}_history_binary_versions"
+              requested_spec[:in] = :history_binary_versions
+            end
           else
-            eval "#{package_name}.new :'#{PACKMAN::OS.distro}:#{PACKMAN::OS.version}'"
+            requested_spec[:in] = :binary
           end
-        else
-          eval "#{package_name}.new"
+        elsif install_spec['version']
+          if eval "defined? @@#{package_name}_history_versions"
+            requested_spec[:in] = :history_versions
+            requested_spec[:version] = install_spec['version']
+          end
         end
-      rescue
+        requested_spec = nil if requested_spec.empty?
+        eval "#{package_name}.new requested_spec"
+      rescue NameError => e
+        if e.class == NoMethodError
+          PACKMAN::CLI.report_error "Encounter error while instancing package!\n"+
+            "#{PACKMAN::CLI.red '==>'} #{e}"
+        end
         load "#{ENV['PACKMAN_ROOT']}/packages/#{package_name.to_s.downcase}.rb"
         instance package_name, install_spec
       end

@@ -24,6 +24,12 @@ module PACKMAN
         next
       end
       package = Package.instance package_name, install_spec
+      if package.has_binary?
+        # Binary is preferred.
+        install_spec['use_binary'] = true
+        # Reinstance package to make binary choice effective.
+        package = Package.instance package_name, install_spec
+      end
       # Check if the compiler_set option is set when necessary.
       if not install_spec['use_binary'] and
         not package.has_label? 'compiler_insensitive' and
@@ -255,10 +261,10 @@ module PACKMAN
         # Clean the customized flags if there is any.
         CompilerManager.clean_customized_flags
       end
+      # Clean build files.
+      FileUtils.rm_rf build_upper_dir if Dir.exist? build_upper_dir
+      # Clean the bashrc pathes.
+      RunManager.clean_bashrc_path if not options.include? :depend
     end
-    # Clean build files.
-    FileUtils.rm_rf build_upper_dir if Dir.exist? build_upper_dir
-    # Clean the bashrc pathes.
-    RunManager.clean_bashrc_path if not options.include? :depend
   end
 end

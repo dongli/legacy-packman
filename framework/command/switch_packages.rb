@@ -18,7 +18,7 @@ module PACKMAN
           next if not File.directory? subdir
           if File.exist? "#{subdir}/bashrc"
             # The package is compiler insensitive.
-            bashrc_files << "source #{subdir}/bashrc\n"
+            bashrc_files << "#{subdir}/bashrc"
           elsif File.exist? "#{subdir}/#{ConfigManager.defaults['compiler_set']}/bashrc"
             package_name = File.basename(dir)
             package = Package.instance package_name.capitalize
@@ -35,11 +35,12 @@ module PACKMAN
               end
             end
             # The package is built by the active compiler set.
-            bashrc_files << "source #{subdir}/#{ConfigManager.defaults['compiler_set']}/bashrc\n"
+            bashrc_files << "#{subdir}/#{ConfigManager.defaults['compiler_set']}/bashrc"
           end
         end
+        bashrc_files.sort!
         if bashrc_files.size == 1
-          file << bashrc_files.first
+          file << "source #{bashrc_files.first}\n"
         elsif bashrc_files.size > 1
           available_versions = bashrc_files.map { |p| File.basename(PACKMAN.strip_dir(p, 2)) }
           package_name = File.basename(dir).capitalize.to_sym
@@ -49,19 +50,22 @@ module PACKMAN
             available_versions.each do |v|
               msg << "#{CLI.yellow '==>'} #{v}\n"
             end
-            msg << "You should choose one in #{CommandLine.config_file}!"
-            CLI.report_error msg
+            msg << "PACKMAN will use #{CLI.green PACKMAN.strip_dir bashrc_files.last, 2}!\n"
+            msg << "If this is not what you want, you can specify the version in #{CLI.red CommandLine.config_file}."
+            CLI.report_warning msg
+            file << "source #{bashrc_files.last}\n"
+            next
           end
           bashrc_files.each do |f|
             if f =~ /#{ConfigManager.packages[package_name]['version']}/
-              file << f
+              file << "source #{f}\n"
               break
             end
           end
         end
       end
     end
-    PACKMAN::CLI.report_notice "Add \"source #{ConfigManager.install_root}/bashrc\" to your BASH configuation file if it is not there."
-    PACKMAN::CLI.report_notice "You need to login again to make the changes effective."
+    CLI.report_notice "Add \"source #{ConfigManager.install_root}/bashrc\" to your BASH configuation file if it is not there."
+    CLI.report_notice "You need to login again to make the changes effective."
   end
 end

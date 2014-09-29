@@ -13,29 +13,28 @@ class Netcdf_fortran < PACKMAN::Package
 
   option 'use_mpi' => :package_name
 
-  if PACKMAN::OS.type == :Darwin and options['use_mpi']
-    label 'under_construction: Parallel build check fails in Mac!'
-  end
-
   def install
+    curl = PACKMAN::Package.prefix(Curl)
+    zlib = PACKMAN::Package.prefix(Zlib)
+    hdf5 = PACKMAN::Package.prefix(Hdf5)
     netcdf_c = PACKMAN::Package.prefix(Netcdf_c)
     PACKMAN.append_env "PATH=#{netcdf_c}/bin:$PATH"
     # TODO: Turn 'version' from String to VersionSpec.
+    cppflags = "-I#{curl}/include -I#{zlib}/include -I#{hdf5}/include -I#{netcdf_c}/include"
     if version != '4.4.1'
-      PACKMAN.append_env "CPPFLAGS='-I#{netcdf_c}/include'"
-    else
       # Refer http://www.unidata.ucar.edu/support/help/MailArchives/netcdf/msg11622.html.
       # Version '4.4.1' does not need the following kludge.
       case PACKMAN.compiler_command 'fortran'
       when /gfortran/
-        PACKMAN.append_env "CPPFLAGS='-DgFortran -I#{netcdf_c}/include'"
+        cppflags << ' -DgFortran'
       when /ifort/
-        PACKMAN.append_env "CPPFLAGS='-DINTEL_COMPILER -I#{netcdf_c}/include'"
+        cppflags << ' -DINTEL_COMPILER'
       else
         PACKMAN::CLI.under_construction!
       end
     end
-    PACKMAN.append_env "LDFLAGS='-L#{netcdf_c}/lib'"
+    PACKMAN.append_env "CPPFLAGS='#{cppflags}'"
+    PACKMAN.append_env "LDFLAGS='-L#{curl}/lib -L#{zlib}/lib -L#{hdf5}/lib -L#{netcdf_c}/lib -lcurl -lz -lhdf5 -lhdf5_hl -lnetcdf'"
     if PACKMAN::OS.mac_gang? and PACKMAN.compiler_vendor('fortran') == 'intel'
       PACKMAN.append_env "FCFLAGS='-xHost -ip -no-prec-div -mdynamic-no-pic'"
       PACKMAN.append_env "FFLAGS='-xHost -ip -no-prec-div -mdynamic-no-pic'"
