@@ -54,6 +54,10 @@ module PACKMAN
       PACKMAN.download '.', latest_tarball_url, tarball
       PACKMAN.decompress tarball
       dec_dir = (Dir.glob('*').reject { |x| x == tarball }).first
+      # Save the user customized config file.
+      if File.exist? "#{ENV['PACKMAN_ROOT']}/packman.config"
+        PACKMAN.cp "#{ENV['PACKMAN_ROOT']}/packman.config", dec_dir
+      end
       PACKMAN.rm ENV['PACKMAN_ROOT']
       PACKMAN.mv dec_dir, ENV['PACKMAN_ROOT']
       PACKMAN.cd_back
