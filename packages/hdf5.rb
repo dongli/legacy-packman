@@ -25,6 +25,18 @@ class Hdf5 < PACKMAN::Package
       --enable-fortran
       --enable-fortran2003
     ]
+    if PACKMAN::OS.cygwin_gang?
+      ['.', 'c++', 'fortran'].each do |language|
+        ["#{language}/src/Makefile", "hl/#{language}/src/Makefile"].each do |makefile|
+          ['am', 'in'].each do |suffix|
+            PACKMAN.replace "#{makefile}.#{suffix}", {
+              /^(\w+)_la_LDFLAGS\s*=\s*(.*)$/ => '\1_la_LDFLAGS = \2 -no-undefined'
+            }
+          end
+        end
+      end
+      args << '--enable-unsupported'
+    end
     if options['use_mpi']
       args << '--enable-parallel'
       # --enable-cxx and --enable-parallel flags are incompatible.
@@ -34,7 +46,6 @@ class Hdf5 < PACKMAN::Package
     PACKMAN.run 'make -j2'
     PACKMAN.run 'make test' if not options['skip_test']
     PACKMAN.run 'make install'
-    PACKMAN.clean_env
   end
 
   def check_consistency

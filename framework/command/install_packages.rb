@@ -109,15 +109,17 @@ module PACKMAN
       package.options.each do |key, value|
         case key
         when 'use_mpi'
-          if ConfigManager.defaults.has_key? 'mpi' and not CommandLine.has_option? '-ask'
-            package.options[key] = ConfigManager.defaults['mpi']
-          else
-            tmp = ['no', 'mpich', 'openmpi']
-            CLI.ask "#{CLI.red package.class} can be built with MPI, do you want this?", tmp
-            ans = CLI.get_answer tmp, :only_one
-            package.options[key] = ans == 0 ? nil : tmp[ans]
+          if not CommandLine.has_option? '-no-mpi'
+            if ConfigManager.defaults.has_key? 'mpi' and not CommandLine.has_option? '-ask'
+              package.options[key] = ConfigManager.defaults['mpi']
+            else
+              tmp = ['no', 'mpich', 'openmpi']
+              CLI.ask "#{CLI.red package.class} can be built with MPI, do you want this?", tmp
+              ans = CLI.get_answer tmp, :only_one
+              package.options[key] = ans == 0 ? nil : tmp[ans]
+            end
+            package_config['use_mpi'] = package.options[key]
           end
-          package_config['use_mpi'] = package.options[key]
         end
       end
       # Let user to choose which compiler sets to use.

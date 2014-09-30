@@ -8,7 +8,9 @@ class Openssl < PACKMAN::Package
   # Ubuntu add version information into Openssl so that other tools will
   # complain about the missing version information if PACKMAN install
   # Openssl
-  label 'should_provided_by_system'
+  if not PACKMAN::OS.cygwin_gang?
+    label 'should_provided_by_system'
+  end
 
   def install
     args = %W[

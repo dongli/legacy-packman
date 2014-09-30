@@ -25,7 +25,8 @@ module PACKMAN
       :install => {
         '-verbose' => 'Show verbose information.',
         '-ask'     => 'Ask user when there are choices.',
-        '-debug'   => 'Print debug information.'
+        '-debug'   => 'Print debug information.',
+        '-no-mpi'  => 'Suppress MPI dependency.'
       },
       :remove => {
         '-all'   => 'Remove all versions and compiler sets.',
@@ -80,9 +81,11 @@ module PACKMAN
         @@config_file = "#{ENV['PACKMAN_ROOT']}/packman.config"
         if not File.exist? @@config_file
           PACKMAN::ConfigManager.template("#{ENV['PACKMAN_ROOT']}/packman.config")
-          PACKMAN::CLI.report_warning "Lack configure file, PACKMAN generate one for you! Edit "+
-            "#{PACKMAN::CLI.red @@config_file} and come back."
-          exit
+          if not @@subcommand == :config
+            PACKMAN::CLI.report_warning "Lack configure file, PACKMAN generate one for you! Edit "+
+              "#{PACKMAN::CLI.red @@config_file} and come back."
+            exit
+          end
         end
       end
     end
