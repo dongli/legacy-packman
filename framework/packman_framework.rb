@@ -35,7 +35,7 @@ PACKMAN::CompilerManager.init
 
 begin
   PACKMAN::ConfigManager.parse
-rescue => e
+rescue SyntaxError => e
   if not PACKMAN::CommandLine.subcommand == :config
     PACKMAN::CLI.report_error "Failed to parse #{PACKMAN::CLI.red PACKMAN::CommandLine.config_file}!\n#{e}"
   end
