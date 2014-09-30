@@ -1,9 +1,9 @@
 class Libpng < PACKMAN::Package
-  url 'https://downloads.sf.net/project/libpng/libpng16/1.6.12/libpng-1.6.12.tar.gz'
-  sha1 '6bcd6efa7f20ccee51e70453426d7f4aea7cf4bb'
-  version '1.6.12'
+  url 'https://downloads.sf.net/project/libpng/libpng16/1.6.13/libpng-1.6.13.tar.xz'
+  sha1 '5ae32b6b99cef6c5c85feab8edf9d619e1773b15'
+  version '1.6.13'
 
-  skip_on :Mac_OS_X
+  # skip_on :Mac_OS_X
 
   def install
     args = %W[
