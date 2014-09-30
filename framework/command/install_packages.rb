@@ -222,8 +222,6 @@ module PACKMAN
       build_upper_dir = "#{ConfigManager.package_root}/#{package.class}"
       compiler_sets.each do |compiler_set|
         Package.compiler_set = compiler_set
-        # Set the MPI compiler wrappers.
-        use_mpi package.options['use_mpi'] if package.options['use_mpi']
         # Check if the package has alreadly installed.
         bashrc = "#{Package.prefix(package)}/bashrc"
         if File.exist? bashrc
@@ -255,6 +253,8 @@ module PACKMAN
         msg << " #{PACKMAN::CLI.green ConfigManager.compiler_sets.index(compiler_set)}"
         msg << " and #{PACKMAN::CLI.red package.options['use_mpi'].capitalize} library" if package.options['use_mpi']
         CLI.report_notice msg+"."
+        # Set the MPI compiler wrappers.
+        use_mpi package.options['use_mpi'] if package.options['use_mpi']
         package.install
         PACKMAN.cd_back
         FileUtils.rm_rf build_dir
