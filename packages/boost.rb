@@ -9,8 +9,8 @@ class Boost < PACKMAN::Package
 
   def install
     cxx_compiler = PACKMAN.compiler_command 'c++'
-    default_flags = PACKMAN.default_flags 'c++', cxx_compiler
-    toolset = PACKMAN.compiler_vendor 'c++', cxx_compiler
+    compiler_flags = PACKMAN.default_compiler_flags 'c++'
+    toolset = PACKMAN.compiler_vendor 'c++'
     if toolset == 'intel'
       # Lower version (e.g. 11.1) has issues to compile Boost.
       helper = PACKMAN.compiler_helper 'intel'
@@ -24,6 +24,13 @@ class Boost < PACKMAN::Package
       when :Linux
         toolset << '-linux'
       end
+    elsif toolset == 'gnu'
+      case PACKMAN::OS.type
+      when :Darwin
+        toolset = 'darwin-gcc'
+      when :Linux
+        toolset = 'linux-gcc'
+      end
     elsif toolset == 'llvm'
       case PACKMAN::OS.type
       when :Darwin
@@ -33,7 +40,7 @@ class Boost < PACKMAN::Package
       end
     end
     open('user-config.jam', 'w') do |file|
-      file << "using #{toolset} : : #{cxx_compiler} : <compilerflags>#{default_flags}"
+      file << "using #{toolset} : : #{cxx_compiler} : <compilerflags>#{compiler_flags}"
     end
     args = %W[
       --prefix=#{PACKMAN::Package.prefix(self)}

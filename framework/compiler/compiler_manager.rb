@@ -29,7 +29,9 @@ module PACKMAN
 
     def self.default_flags language, compiler
       @@compiler_groups.each do |g|
-        if g.compiler_commands.has_key? language and compiler.to_s.include? g.compiler_commands[language]
+        if g.compiler_commands.has_key? language and
+          (compiler.include? g.compiler_commands[language] or
+           g.compiler_commands[language].include? compiler)
           return g.default_flags[language]
         end
       end
@@ -37,8 +39,9 @@ module PACKMAN
 
     def self.customized_flags language, compiler
       @@compiler_groups.each do |g|
-        if compiler.to_s.include? g.compiler_commands[language] or
-           g.compiler_commands[language].include? compiler
+        if g.compiler_commands.has_key? language and
+          (compiler.include? g.compiler_commands[language] or
+           g.compiler_commands[language].include? compiler)
           return g.customized_flags[language]
         end
       end
@@ -130,6 +133,16 @@ module PACKMAN
 
   def self.compiler_command language
     Package.compiler_set[language]
+  end
+
+  def self.default_compiler_flags language, compiler = nil
+    compiler ||= Package.compiler_set[language]
+    CompilerManager.default_flags language, compiler
+  end
+
+  def self.customized_compiler_flags language, compiler = nil
+    compiler ||= Package.compiler_set[language]
+    CompilerManager.customized_flags language, compiler
   end
 
   def self.append_customized_flags language, flags

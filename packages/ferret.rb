@@ -140,10 +140,10 @@ class Ferret < PACKMAN::Package
     if build_type == 'x86_64-darwin'
       File.open('xgks/CUSTOMIZE.x86_64-darwin', 'w') do |file|
         file << "CC=#{PACKMAN.compiler_command('c')}\n"
-        file << "CFLAGS='#{PACKMAN.default_flags('c', PACKMAN.compiler_command('c'))}'\n"
+        file << "CFLAGS='#{PACKMAN.default_compiler_flags 'c'}'\n"
         file << "CPPFLAGS='-DNDEBUG'\n"
         file << "FC=#{PACKMAN.compiler_command('fortran')}\n"
-        file << "FFLAGS='#{PACKMAN.default_flags('fortran', PACKMAN.compiler_command('fortran'))}'\n"
+        file << "FFLAGS='#{PACKMAN.default_compiler_flags 'fortran'}'\n"
         file << "OS=macosx\n"
         file << "prefix=..\n"
         file << "CPP_X11='/usr/X11R6/include'\n"
