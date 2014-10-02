@@ -69,6 +69,5 @@ class Boost < PACKMAN::Package
       args << "--without-log"
     end
     PACKMAN.run './b2', *args
-    create_cmake_config 'Boost', 'include/boost', 'lib'
   end
 end
