@@ -11,12 +11,22 @@ module PACKMAN
     end
   end
 
-  def self.download root, url, rename = nil
+  def self.download root, url, rename = nil, cmd = :curl
     FileUtils.mkdir root if not Dir.exist? root
-    check_command 'curl'
+    check_command cmd
     filename = rename ? rename : File.basename(URI.parse(url).path)
-    system "curl -f#L -C - -o #{root}/#{filename} #{url}"
+    case cmd
+    when :curl
+      system "curl -f#L -C - -o #{root}/#{filename} #{url}"
+    when :wget
+      system "wget -O #{root}/#{filename} -c #{url}"
+    end
     if not $?.success?
+      if cmd == :curl
+        # Use wget instead.
+        CLI.report_warning 'Curl failed! Try to use wget.'
+        download root, url, rename, :wget
+      end
       case $?.exitstatus
       when 23
         CLI.report_error "Failed to create file in #{CLI.red root}!"

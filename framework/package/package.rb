@@ -32,14 +32,21 @@ module PACKMAN
           when :binary
             @binary.each do |key, value|
               tmp1 = key.to_s.split(':')
-              next if PACKMAN::OS.distro != tmp1.first.to_sym
-              tmp2 = tmp1.last.match(/(>=|==|=~)?\s*(.*)/)
-              operator = tmp2[1] ? tmp2[1] : '=='
-              v1 = PACKMAN::VersionSpec.new tmp2[2]
-              v2 = PACKMAN::OS.version
-              if eval "v2 #{operator} v1"
-                @active_spec = value
-                break
+              if requested_spec.has_key? :os_distro
+                if requested_spec[:os_distro] == tmp1.first.to_sym
+                  @active_spec = value
+                  break
+                end
+              else
+                next if PACKMAN::OS.distro != tmp1.first.to_sym
+                tmp2 = tmp1.last.match(/(>=|==|=~)?\s*(.*)/)
+                operator = tmp2[1] ? tmp2[1] : '=='
+                v1 = PACKMAN::VersionSpec.new tmp2[2]
+                v2 = PACKMAN::OS.version
+                if eval "v2 #{operator} v1"
+                  @active_spec = value
+                  break
+                end
               end
             end
           when :history_binary_versions
@@ -94,16 +101,6 @@ module PACKMAN
     def option_valid_types; @active_spec.option_valid_types; end
     def options; @active_spec.options; end
     def has_binary?; defined? @binary; end
-
-    def all_specs
-      specs = []
-      specs << :stable if stable
-      specs << :devel if devel
-      specs += @binary.keys if @binary
-      specs += @history_versions.keys if @history_versions
-      specs += @history_binary_versions.keys if @history_binary_versions
-      return specs
-    end
 
     # Package DSL.
     class << self
@@ -258,8 +255,31 @@ module PACKMAN
     def self.all_instances package_name
       begin
         instances = []
-        eval("#{package_name}.new").all_specs.each do |spec|
-          instances << eval("#{package_name}.new spec")
+        instances << eval("#{package_name}.new :stable") if eval "defined? @@#{package_name}_stable"
+        instances << eval("#{package_name}.new :devel") if eval "defined? @@#{package_name}_devel"
+        requested_spec = {}
+        if self.class_variable_defined? "@@#{package_name}_history_versions"
+          requested_spec[:in] = :history_versions
+          eval("@@#{package_name}_history_versions").each do |key, value|
+            requested_spec[:version] = value.version
+            instances << eval("#{package_name}.new requested_spec")
+          end
+        end
+        if self.class_variable_defined? "@@#{package_name}_binary"
+          requested_spec[:in] = :binary
+          eval("@@#{package_name}_binary").each do |key, value|
+            requested_spec[:version] = value.version
+            requested_spec[:os_distro] = key.to_s.split(':')[0].to_sym
+            instances << eval("#{package_name}.new requested_spec")
+          end
+        end
+        if self.class_variable_defined? "@@#{package_name}_history_binary_versions"
+          requested_spec[:in] = :history_binary_versions
+          eval("@@#{package_name}_history_binary_versions").each do |key, value|
+            requested_spec[:version] = value.version
+            requested_spec[:os_distro] = key.to_s.split(':')[0].to_sym
+            instances << eval("#{package_name}.new requested_spec")
+          end
         end
         return instances
       rescue
