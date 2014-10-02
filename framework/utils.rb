@@ -11,7 +11,8 @@ module PACKMAN
     end
   end
 
-  def self.download root, url, rename = nil, cmd = :curl
+  def self.download root, url, rename = nil, cmd = nil
+    cmd ||= ConfigManager.download_command
     FileUtils.mkdir root if not Dir.exist? root
     check_command cmd
     filename = rename ? rename : File.basename(URI.parse(url).path)
