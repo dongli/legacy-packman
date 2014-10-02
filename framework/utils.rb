@@ -27,6 +27,7 @@ module PACKMAN
         # Use wget instead.
         CLI.report_warning 'Curl failed! Try to use wget.'
         download root, url, rename, :wget
+        return
       end
       case $?.exitstatus
       when 23
