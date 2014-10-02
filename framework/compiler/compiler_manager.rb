@@ -156,4 +156,10 @@ module PACKMAN
   def self.use_mpi mpi_vendor
     CompilerManager.use_mpi mpi_vendor
   end
+
+  def self.compiler_support_openmp? language, compiler = nil
+    compiler ||= Package.compiler_set[language]
+    vendor = CompilerManager.compiler_vendor language, compiler
+    CompilerManager.compiler_group(vendor).flags.has_key? :openmp
+  end
 end

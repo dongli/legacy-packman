@@ -400,32 +400,54 @@ module PACKMAN
       ]
     end
 
-    def create_cmake_config(name, include_dirs, libraries)
+    def create_cmake_config name, include_dirs, library_dirs, libraries = []
+      include_dirs = [include_dirs] if not include_dirs.class == Array
+      library_dirs = [library_dirs] if not library_dirs.class == Array
+      libraries = [libraries] if not libraries.class == Array
       prefix = Package.prefix(self)
       if not Dir.exist? "#{prefix}/include" or not Dir.exist? "#{prefix}/lib"
         PACKMAN::CLI.report_error "Nonstandard package #{PACKMAN::CLI.red self.class} without \"include\" or \"lib\" directories!"
       end
-      if Dir.exist? "#{prefix}/lib/cmake"
+      if not Dir.glob("#{prefix}/**/#{name.downcase}-config.cmake").empty? or
+         not Dir.glob("#{prefix}/**/#{name.downcase.capitalize}Config.cmake").empty?
         PACKMAN::CLI.report_error "Cmake configure file has alreadly been installed for #{PACKMAN::CLI.red self.class}!"
       end
-      PACKMAN.mkdir "#{prefix}/lib/cmake"
-      File.open("#{prefix}/lib/cmake/#{self.class.to_s.downcase}-config.cmake", 'w') do |file|
-        file << "set (#{name}_INCLUDE_DIRS"
-        case include_dirs.class
-        when Array
-          include_dirs.each { |dir| file << " #{dir}" }
-        when String
-          file << include_dirs
+      File.open("#{prefix}/#{name.downcase}-config.cmake", 'w') do |file|
+        file << "set (#{name}_INCLUDE_DIRS \""
+        for i in 0..include_dirs.size-1
+          file << ' ' if i > 0
+          file << "#{prefix}/#{include_dirs[i]}"
         end
-        file << ")\n"
-        file << "set (#{name}_LIBRARIES"
-        case libraries.class
-        when Array
-          libraries.each { |lib| file << " #{lib}" }
-        when String
-          file << libraries
+        file << "\")\n"
+        file << "set (#{name}_LIBRARY_DIRS \""
+        for i in 0..library_dirs.size-1
+          file << ' ' if i > 0
+          file << "#{prefix}/#{library_dirs[i]}"
         end
-        file << ")\n"
+        file << "\")\n"
+        if not libraries.empty?
+          file << "set (#{name}_LIBRARIES \""
+          for i in 0..libraries.size-1
+            file << ' ' if i > 0
+            file << "#{libraries[i]}"
+          end
+          file << "\")\n"
+        end
+      end
+      File.open("#{prefix}/#{name.downcase}-config-version.cmake", 'w') do |file|
+        file << <<-EOT
+          set (PACKAGE_VERSION \"#{self.version}\")
+          if ("${PACKAGE_VERSION}" VERSION_LESS "${PACKAGE_FIND_VERSION}")
+            set (PACKAGE_VERSION_COMPATIBLE FALSE)
+          else ()
+            set (PACKAGE_VERSION_COMPATIBLE TRUE)
+            if ("${PACKAGE_VERSION}" VERSION_EQUAL "${PACKAGE_FIND_VERSION}")
+              set (PACKAGE_VERSION_EXACT TRUE)
+            else ()
+              set (PACKAGE_VERSION_EXACT FALSE)
+            endif ()
+          endif ()
+        EOT
       end
     end
 
