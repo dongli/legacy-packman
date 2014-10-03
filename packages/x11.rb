@@ -5,9 +5,14 @@ class X11 < PACKMAN::Package
     if PACKMAN::OS.mac_gang?
       return Dir.exist? '/usr/X11'
     elsif PACKMAN::OS.debian_gang?
-      return PACKMAN::OS.installed? ['libx11-dev', 'xorg-dev']
+      return PACKMAN::OS.installed? [
+        'libx11-dev', 'xorg-dev'
+      ]
     elsif PACKMAN::OS.redhat_gang?
-      return PACKMAN::OS.installed? ['libX11-devel']
+      return PACKMAN::OS.installed? [
+        'libX11-devel',
+        'libXaw', 'libXaw-devel'
+      ]
     end
   end
 
@@ -17,7 +22,10 @@ class X11 < PACKMAN::Package
     elsif PACKMAN::OS.debian_gang?
       return PACKMAN::OS.how_to_install ['libX11-dev', 'xorg-dev']
     elsif PACKMAN::OS.redhat_gang?
-      return PACKMAN::OS.how_to_install ['libX11-devel']
+      return PACKMAN::OS.how_to_install [
+        'libX11-devel',
+        'libXaw', 'libXaw-devel'
+      ]
     end
   end
 end
