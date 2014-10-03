@@ -68,6 +68,18 @@ module PACKMAN
         compiler_set = self.method(m).call
         @@compiler_sets << compiler_set if compiler_set != nil
       end
+      # Check if defaults has been set.
+      if not @@defaults
+        msg = <<EOT
+Defaults section has not been set in #{PACKMAN::CLI.red file_path}!
+Example:
+#{PACKMAN::CLI.red '==>'} defaults = {
+#{PACKMAN::CLI.red '==>'}   "compiler_set" => ...,
+#{PACKMAN::CLI.red '==>'}   "mpi" => "..."
+#{PACKMAN::CLI.red '==>'} }
+EOT
+        PACKMAN::CLI.report_error msg
+      end
     end
 
     def self.template(file_path)
