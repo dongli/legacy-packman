@@ -29,6 +29,14 @@ Features
 - The packages can be installed anywhere you like.
 - All processes are automatically (basicly).
 
+Donation
+========
+
+If you find `packman` is useful (I spent hours to create it) and would like to
+support the further development of it, consider make a generous donation please:
+
+![](https://gist.githubusercontent.com/dongli/9634592/raw/52aaee8b20222e9757429bce3efc6b8c819037a8/ap4l61nbskhw46qnef.png =32x32)
+
 Author
 ======
 

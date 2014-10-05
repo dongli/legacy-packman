@@ -4,7 +4,15 @@ class Openblas < PACKMAN::Package
   version '0.2.11'
 
   def install
-    PACKMAN.run 'make'
+    args = []
+    if PACKMAN::OS.mac_gang? and PACKMAN.compiler_vendor('c') == 'gnu'
+      # On Mac, only clang support AVX instructions, see http://trac.macports.org/ticket/40592.
+      args << 'NO_AVX=1'
+    end
+    if PACKMAN.compiler_support_openmp? 'c'
+      args << 'USE_OPENMP=1'
+    end
+    PACKMAN.run 'make', *args
     PACKMAN.run "make install PREFIX=#{PACKMAN::Package.prefix(self)}"
   end
 end

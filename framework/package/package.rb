@@ -32,14 +32,21 @@ module PACKMAN
           when :binary
             @binary.each do |key, value|
               tmp1 = key.to_s.split(':')
-              next if PACKMAN::OS.distro != tmp1.first.to_sym
-              tmp2 = tmp1.last.match(/(>=|==|=~)?\s*(.*)/)
-              operator = tmp2[1] ? tmp2[1] : '=='
-              v1 = PACKMAN::VersionSpec.new tmp2[2]
-              v2 = PACKMAN::OS.version
-              if eval "v2 #{operator} v1"
-                @active_spec = value
-                break
+              if requested_spec.has_key? :os_distro
+                if requested_spec[:os_distro] == tmp1.first.to_sym
+                  @active_spec = value
+                  break
+                end
+              else
+                next if PACKMAN::OS.distro != tmp1.first.to_sym
+                tmp2 = tmp1.last.match(/(>=|==|=~)?\s*(.*)/)
+                operator = tmp2[1] ? tmp2[1] : '=='
+                v1 = PACKMAN::VersionSpec.new tmp2[2]
+                v2 = PACKMAN::OS.version
+                if eval "v2 #{operator} v1"
+                  @active_spec = value
+                  break
+                end
               end
             end
           when :history_binary_versions
@@ -94,16 +101,6 @@ module PACKMAN
     def option_valid_types; @active_spec.option_valid_types; end
     def options; @active_spec.options; end
     def has_binary?; defined? @binary; end
-
-    def all_specs
-      specs = []
-      specs << :stable if stable
-      specs << :devel if devel
-      specs += @binary.keys if @binary
-      specs += @history_versions.keys if @history_versions
-      specs += @history_binary_versions.keys if @history_binary_versions
-      return specs
-    end
 
     # Package DSL.
     class << self
@@ -258,8 +255,31 @@ module PACKMAN
     def self.all_instances package_name
       begin
         instances = []
-        eval("#{package_name}.new").all_specs.each do |spec|
-          instances << eval("#{package_name}.new spec")
+        instances << eval("#{package_name}.new :stable") if eval "defined? @@#{package_name}_stable"
+        instances << eval("#{package_name}.new :devel") if eval "defined? @@#{package_name}_devel"
+        requested_spec = {}
+        if self.class_variable_defined? "@@#{package_name}_history_versions"
+          requested_spec[:in] = :history_versions
+          eval("@@#{package_name}_history_versions").each do |key, value|
+            requested_spec[:version] = value.version
+            instances << eval("#{package_name}.new requested_spec")
+          end
+        end
+        if self.class_variable_defined? "@@#{package_name}_binary"
+          requested_spec[:in] = :binary
+          eval("@@#{package_name}_binary").each do |key, value|
+            requested_spec[:version] = value.version
+            requested_spec[:os_distro] = key.to_s.split(':')[0].to_sym
+            instances << eval("#{package_name}.new requested_spec")
+          end
+        end
+        if self.class_variable_defined? "@@#{package_name}_history_binary_versions"
+          requested_spec[:in] = :history_binary_versions
+          eval("@@#{package_name}_history_binary_versions").each do |key, value|
+            requested_spec[:version] = value.version
+            requested_spec[:os_distro] = key.to_s.split(':')[0].to_sym
+            instances << eval("#{package_name}.new requested_spec")
+          end
         end
         return instances
       rescue
@@ -400,32 +420,54 @@ module PACKMAN
       ]
     end
 
-    def create_cmake_config(name, include_dirs, libraries)
+    def create_cmake_config name, include_dirs, library_dirs, libraries = []
+      include_dirs = [include_dirs] if not include_dirs.class == Array
+      library_dirs = [library_dirs] if not library_dirs.class == Array
+      libraries = [libraries] if not libraries.class == Array
       prefix = Package.prefix(self)
       if not Dir.exist? "#{prefix}/include" or not Dir.exist? "#{prefix}/lib"
         PACKMAN::CLI.report_error "Nonstandard package #{PACKMAN::CLI.red self.class} without \"include\" or \"lib\" directories!"
       end
-      if Dir.exist? "#{prefix}/lib/cmake"
+      if not Dir.glob("#{prefix}/**/#{name.downcase}-config.cmake").empty? or
+         not Dir.glob("#{prefix}/**/#{name.downcase.capitalize}Config.cmake").empty?
         PACKMAN::CLI.report_error "Cmake configure file has alreadly been installed for #{PACKMAN::CLI.red self.class}!"
       end
-      PACKMAN.mkdir "#{prefix}/lib/cmake"
-      File.open("#{prefix}/lib/cmake/#{self.class.to_s.downcase}-config.cmake", 'w') do |file|
-        file << "set (#{name}_INCLUDE_DIRS"
-        case include_dirs.class
-        when Array
-          include_dirs.each { |dir| file << " #{dir}" }
-        when String
-          file << include_dirs
+      File.open("#{prefix}/#{name.downcase}-config.cmake", 'w') do |file|
+        file << "set (#{name}_INCLUDE_DIRS \""
+        for i in 0..include_dirs.size-1
+          file << ' ' if i > 0
+          file << "#{prefix}/#{include_dirs[i]}"
         end
-        file << ")\n"
-        file << "set (#{name}_LIBRARIES"
-        case libraries.class
-        when Array
-          libraries.each { |lib| file << " #{lib}" }
-        when String
-          file << libraries
+        file << "\")\n"
+        file << "set (#{name}_LIBRARY_DIRS \""
+        for i in 0..library_dirs.size-1
+          file << ' ' if i > 0
+          file << "#{prefix}/#{library_dirs[i]}"
         end
-        file << ")\n"
+        file << "\")\n"
+        if not libraries.empty?
+          file << "set (#{name}_LIBRARIES \""
+          for i in 0..libraries.size-1
+            file << ' ' if i > 0
+            file << "#{libraries[i]}"
+          end
+          file << "\")\n"
+        end
+      end
+      File.open("#{prefix}/#{name.downcase}-config-version.cmake", 'w') do |file|
+        file << <<-EOT
+          set (PACKAGE_VERSION \"#{self.version}\")
+          if ("${PACKAGE_VERSION}" VERSION_LESS "${PACKAGE_FIND_VERSION}")
+            set (PACKAGE_VERSION_COMPATIBLE FALSE)
+          else ()
+            set (PACKAGE_VERSION_COMPATIBLE TRUE)
+            if ("${PACKAGE_VERSION}" VERSION_EQUAL "${PACKAGE_FIND_VERSION}")
+              set (PACKAGE_VERSION_EXACT TRUE)
+            else ()
+              set (PACKAGE_VERSION_EXACT FALSE)
+            endif ()
+          endif ()
+        EOT
       end
     end
 

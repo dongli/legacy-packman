@@ -98,8 +98,8 @@ module PACKMAN
         # Handle compiler default flags.
         Package.compiler_set.each do |language, compiler|
           next if language == 'installed_by_packman'
-          flags = PACKMAN::CompilerManager.default_flags(language, compiler)
-          tmp = PACKMAN::CompilerManager.customized_flags(language, compiler)
+          flags = PACKMAN.default_compiler_flags language, compiler
+          tmp = PACKMAN.customized_compiler_flags language, compiler
           flags << tmp if tmp
           cmd_str << "#{build_helper.wrap_flags language, flags} "
         end
@@ -110,8 +110,8 @@ module PACKMAN
         # Handle compiler default flags.
         Package.compiler_set.each do |language, compiler|
           next if language == 'installed_by_packman'
-          flags = PACKMAN::CompilerManager.default_flags(language, compiler)
-          tmp = PACKMAN::CompilerManager.customized_flags(language, compiler)
+          flags = PACKMAN.default_compiler_flags language, compiler
+          tmp = PACKMAN.customized_compiler_flags language, compiler
           flags << tmp if tmp
           cmd_str << "#{build_helper.wrap_flags language, flags} "
         end

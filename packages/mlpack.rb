@@ -10,11 +10,13 @@ class Mlpack < PACKMAN::Package
   depends_on 'hdf5'
 
   def install
+    # Note: DBoost_NO_BOOST_CMAKE is set to ON to let CMake do the dirty job.
     args = %W[
       -DCMAKE_INSTALL_PREFIX=#{PACKMAN::Package.prefix(self)}
       -DCMAKE_BUILD_TYPE="Release"
       -DARMADILLO_INCLUDE_DIR=#{PACKMAN::Package.prefix(Armadillo)}/include
       -DARMADILLO_LIBRARY=#{PACKMAN::Package.prefix(Armadillo)}/lib/libarmadillo.#{PACKMAN::OS.shared_library_suffix}
+      -DBoost_NO_BOOST_CMAKE=ON
       -DCMAKE_CXX_FLAGS='-I#{PACKMAN::Package.prefix(Hdf5)}/include'
     ]
     PACKMAN.mkdir 'build', :force do

@@ -5,6 +5,7 @@ module PACKMAN
       install_root
       defaults
       use_ftp_mirror
+      download_command
       compiler_set_0
       compiler_set_1
       compiler_set_2
@@ -22,6 +23,7 @@ module PACKMAN
       end
       # Set default values.
       @@use_ftp_mirror = 'no'
+      @@download_command = :curl
     end
 
     def self.compiler_sets
@@ -60,10 +62,23 @@ module PACKMAN
       end
       config.gsub!(/^ *package_(\w+) *=/, 'self.package "\1",')
       class_eval config
+      @@download_command = @@download_command.to_sym
       @@compiler_sets = []
       ( self.methods.select { |m| m.to_s =~ /compiler_set_\d$/ } ).each do |m|
         compiler_set = self.method(m).call
         @@compiler_sets << compiler_set if compiler_set != nil
+      end
+      # Check if defaults has been set.
+      if not @@defaults
+        msg = <<EOT
+Defaults section has not been set in #{PACKMAN::CLI.red file_path}!
+Example:
+#{PACKMAN::CLI.red '==>'} defaults = {
+#{PACKMAN::CLI.red '==>'}   "compiler_set" => ...,
+#{PACKMAN::CLI.red '==>'}   "mpi" => "..."
+#{PACKMAN::CLI.red '==>'} }
+EOT
+        PACKMAN::CLI.report_error msg
       end
     end
 

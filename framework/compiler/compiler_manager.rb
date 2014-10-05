@@ -20,7 +20,8 @@ module PACKMAN
 
     def self.compiler_vendor language, compiler
       @@compiler_groups.each do |g|
-        if g.compiler_commands[language] =~ /#{compiler}/ or compiler =~ /#{g.compiler_commands[language]}/
+        if g.compiler_commands[language] =~ /\b#{compiler}\b/ or
+           compiler =~ /\b#{g.compiler_commands[language]}\b/
           return g.vendor
         end
       end
@@ -29,7 +30,9 @@ module PACKMAN
 
     def self.default_flags language, compiler
       @@compiler_groups.each do |g|
-        if g.compiler_commands.has_key? language and compiler.to_s.include? g.compiler_commands[language]
+        if g.compiler_commands.has_key? language and
+          (g.compiler_commands[language] =~ /\b#{compiler}\b/ or
+           compiler =~ /\b#{g.compiler_commands[language]}\b/)
           return g.default_flags[language]
         end
       end
@@ -37,8 +40,9 @@ module PACKMAN
 
     def self.customized_flags language, compiler
       @@compiler_groups.each do |g|
-        if compiler.to_s.include? g.compiler_commands[language] or
-           g.compiler_commands[language].include? compiler
+        if g.compiler_commands.has_key? language and
+          (compiler.include? g.compiler_commands[language] or
+           g.compiler_commands[language].include? compiler)
           return g.customized_flags[language]
         end
       end
@@ -132,6 +136,16 @@ module PACKMAN
     Package.compiler_set[language]
   end
 
+  def self.default_compiler_flags language, compiler = nil
+    compiler ||= Package.compiler_set[language]
+    CompilerManager.default_flags language, compiler
+  end
+
+  def self.customized_compiler_flags language, compiler = nil
+    compiler ||= Package.compiler_set[language]
+    CompilerManager.customized_flags language, compiler
+  end
+
   def self.append_customized_flags language, flags
     CompilerManager.append_customized_flags language, flags
   end
@@ -142,5 +156,11 @@ module PACKMAN
 
   def self.use_mpi mpi_vendor
     CompilerManager.use_mpi mpi_vendor
+  end
+
+  def self.compiler_support_openmp? language, compiler = nil
+    compiler ||= Package.compiler_set[language]
+    vendor = CompilerManager.compiler_vendor language, compiler
+    CompilerManager.compiler_group(vendor).flags.has_key? :openmp
   end
 end
