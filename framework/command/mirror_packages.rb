@@ -1,5 +1,6 @@
 module PACKMAN
   def self.mirror_packages
+    PackageLoader.load_package :Proftpd
     if CommandLine.has_option? '-init'
       init_mirror_service
     elsif CommandLine.has_option? '-start'
@@ -16,7 +17,6 @@ module PACKMAN
   def self.init_mirror_service
     sync_mirror_service
     # Install proftpd.
-    PackageLoader.load_package :Proftpd
     install_package ConfigManager.compiler_sets[0], Proftpd.new
     # Edit proftpd config file.
     replace "#{Package.prefix(Proftpd)}/../config/proftpd.conf", {
