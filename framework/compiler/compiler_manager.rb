@@ -20,7 +20,8 @@ module PACKMAN
 
     def self.compiler_vendor language, compiler
       @@compiler_groups.each do |g|
-        if g.compiler_commands[language] =~ /#{compiler}/ or compiler =~ /#{g.compiler_commands[language]}/
+        if g.compiler_commands[language] =~ /\b#{compiler}\b/ or
+           compiler =~ /\b#{g.compiler_commands[language]}\b/
           return g.vendor
         end
       end
@@ -30,8 +31,8 @@ module PACKMAN
     def self.default_flags language, compiler
       @@compiler_groups.each do |g|
         if g.compiler_commands.has_key? language and
-          (compiler.include? g.compiler_commands[language] or
-           g.compiler_commands[language].include? compiler)
+          (g.compiler_commands[language] =~ /\b#{compiler}\b/ or
+           compiler =~ /\b#{g.compiler_commands[language]}\b/)
           return g.default_flags[language]
         end
       end
