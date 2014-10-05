@@ -10,7 +10,7 @@ module PACKMAN
     end
 
     # Define a recursive function to load package definition files.
-    def self.load_package package_name, install_spec
+    def self.load_package package_name, install_spec = nil
       load @@package_files[package_name]
       if install_spec
         package = PACKMAN::Package.instance package_name, install_spec

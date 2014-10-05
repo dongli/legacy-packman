@@ -168,6 +168,7 @@ module PACKMAN
   end
 
   def self.install_package compiler_sets, package, options = []
+    compiler_sets = [compiler_sets] if not compiler_sets.class == Array
     options = [options] if not options.class == Array
     # Check dependencies.
     package.dependencies.each do |depend|
