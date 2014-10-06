@@ -1,6 +1,6 @@
 module PACKMAN
   class AutotoolHelper
-    def self.wrap_flags language, flags
+    def self.wrap_flags language, flags, cmd_args
       case language
       when 'c'
         "CFLAGS=\"$CFLAGS #{flags}\""

@@ -9,6 +9,7 @@ class Armadillo < PACKMAN::Package
     depends_on 'openblas'
   end
   depends_on 'arpack'
+  depends_on 'hdf5'
 
   def install
     if PACKMAN::OS.type == :Linux
