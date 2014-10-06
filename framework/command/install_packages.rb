@@ -175,6 +175,10 @@ module PACKMAN
       # TODO: How to handle dependency install_spec?
       depend_package = Package.instance depend
       install_package compiler_sets, depend_package, :depend
+      # When there is any dependency use MPI, we should use MPI for the package.
+      if depend_package.conflict_reasons.include? 'mpi'
+        use_mpi depend.to_s.downcase
+      end
       RunManager.append_bashrc_path("#{Package.prefix(depend_package)}/bashrc") if not depend_package.skip?
     end
     # Check if the package should be skipped.

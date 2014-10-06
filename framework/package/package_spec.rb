@@ -74,7 +74,7 @@ module PACKMAN
     end
 
     def because_they_both_provide val
-      @conflict_reasons << val
+      @conflict_reasons << val if not @conflict_reasons.include? val
     end
 
     def conflicts_with? val;  @conflict_packages.include? val; end
