@@ -7,6 +7,8 @@ class Boost < PACKMAN::Package
   #   acc, como, darwin, gcc, intel-darwin, intel-linux, kcc, kylix,
   #   mipspro, mingw(msys), pathscale, pgi, qcc, sun, sunpro, tru64cxx, vacpp
 
+  option 'disable_c++11' => :boolean
+
   def install
     cxx_compiler = PACKMAN.compiler_command 'c++'
     compiler_flags = PACKMAN.default_compiler_flags 'c++'
@@ -39,6 +41,7 @@ class Boost < PACKMAN::Package
         toolset = 'clang-linux'
       end
     end
+    compiler_flags << ' -std=c++11' if not options['disable_c++11']
     open('user-config.jam', 'w') do |file|
       file << "using #{toolset} : : #{cxx_compiler} : <compilerflags>#{compiler_flags}"
     end
