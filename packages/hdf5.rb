@@ -22,9 +22,12 @@ class Hdf5 < PACKMAN::Package
       --enable-static=yes
       --enable-shared=yes
       --enable-cxx
-      --enable-fortran
-      --enable-fortran2003
     ]
+    if PACKMAN.compiler_command 'fortran'
+      args << '--enable-fortran --enable-fortran2003'
+    else
+      args << '--disable-fortran'
+    end
     if PACKMAN::OS.cygwin_gang?
       ['.', 'c++', 'fortran'].each do |language|
         ["#{language}/src/Makefile", "hl/#{language}/src/Makefile"].each do |makefile|

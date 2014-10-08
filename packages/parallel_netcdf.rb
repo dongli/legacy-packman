@@ -17,6 +17,11 @@ class Parallel_netcdf < PACKMAN::Package
     args = %W[
       --prefix=#{PACKMAN::Package.prefix(self)}
     ]
+    if PACKMAN.compiler_command 'fortran'
+      args << '--enable-fortran'
+    else
+      args << '--disable-fortran'
+    end
     PACKMAN.use_mpi options['use_mpi']
     PACKMAN.run './configure', *args
     PACKMAN.run 'make -j2'
