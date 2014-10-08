@@ -22,27 +22,32 @@ module PACKMAN
       end
       for j in 0..versions.size-1
         if removed_versions.include? j or removed_versions.include? versions.size
-          sets = Dir.glob("#{versions[j]}/*").sort
-          if sets.size > 1 and not CommandLine.has_option? '-all'
-            CLI.report_warning "Package #{CLI.red package_name} (#{File.basename versions[j]}) "+
-              "has been compiled by multiple compiler sets."
-            tmp = sets.map { |s| i = File.basename(s).to_i; "#{ConfigManager.compiler_sets[i]}" }
-            tmp << 'all'
-            CLI.ask 'Which set do you want to remove?', tmp
-            removed_sets = CLI.get_answer tmp
-          elsif sets.size == 1
-            removed_sets = [0]
-          elsif CommandLine.has_option? '-all'
-            removed_sets = []
-            for i in 0..sets.size-1
-              removed_sets << i
+          if not package.has_label? 'compiler_insensitive'
+            sets = Dir.glob("#{versions[j]}/*").sort
+            if sets.size > 1 and not CommandLine.has_option? '-all'
+              CLI.report_warning "Package #{CLI.red package_name} (#{File.basename versions[j]}) "+
+                "has been compiled by multiple compiler sets."
+              tmp = sets.map { |s| i = File.basename(s).to_i; "#{ConfigManager.compiler_sets[i]}" }
+              tmp << 'all'
+              CLI.ask 'Which set do you want to remove?', tmp
+              removed_sets = CLI.get_answer tmp
+            elsif sets.size == 1
+              removed_sets = [0]
+            elsif CommandLine.has_option? '-all'
+              removed_sets = []
+              for i in 0..sets.size-1
+                removed_sets << i
+              end
             end
-          end
-          for i in 0..ConfigManager.compiler_sets.size-1
-            if removed_sets.include? i or removed_sets.include? ConfigManager.compiler_sets.size
-              CLI.report_notice "Remove #{CLI.red sets[i]}."
-              PACKMAN.rm sets[i]
+            for i in 0..ConfigManager.compiler_sets.size-1
+              if removed_sets.include? i or removed_sets.include? ConfigManager.compiler_sets.size
+                CLI.report_notice "Remove #{CLI.red sets[i]}."
+                PACKMAN.rm sets[i]
+              end
             end
+          else
+            CLI.report_notice "Remove #{CLI.red versions[j]}."
+            PACKMAN.rm versions[j]
           end
         end
       end

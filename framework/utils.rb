@@ -137,7 +137,7 @@ module PACKMAN
     content = File.open(filepath, 'r').read
     replaces.each do |pattern, replacement|
       if content.gsub!(pattern, replacement) == nil
-        raise "Pattern \"#{pattern}\" is not found in \"#{filepath}\"!"
+        CLI.report_error "Pattern \"#{pattern}\" is not found in \"#{filepath}\"!"
       end
     end
     file = File.open(filepath, 'w')
@@ -148,16 +148,6 @@ module PACKMAN
   def self.grep file_path, pattern
     content = File.open(file_path, 'r').read
     content.scan(pattern)
-  end
-
-  def self.new_class(class_name)
-    if class_name == ''
-      PACKMAN::CLI.report_error "Empty class!"
-    end
-    if not PACKMAN.class_defined? class_name
-      PACKMAN::CLI.report_error "Unknown class #{CLI.red class_name}!"
-    end
-    eval "#{class_name}.new"
   end
 
   def self.decompress(filepath)
@@ -175,11 +165,11 @@ module PACKMAN
     end
   end
 
-  def self.rm(filepath)
-    FileUtils.rm_rf filepath
+  def self.rm file_path
+    FileUtils.rm_rf Dir.glob(file_path), :secure => true
   end
 
-  def self.ln(src, dst)
+  def self.ln src, dst
     FileUtils.ln_s src, dst
   end
 
