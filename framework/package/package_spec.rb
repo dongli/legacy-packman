@@ -58,7 +58,7 @@ module PACKMAN
         val = val.capitalize.to_sym
         @dependencies << val if not @dependencies.include? val
       rescue
-        PACKMAN::CLI.report_error "Package definition syntax error!"
+        CLI.report_error "Package definition syntax error!"
       end
     end
 

@@ -17,7 +17,7 @@ module PACKMAN
       key = env[0, idx]
       value = env[idx+1..-1]
       if @@envs.has_key? key
-        PACKMAN::CLI.report_error "Environment #{PACKMAN::CLI.red key} has been set!"
+        CLI.report_error "Environment #{CLI.red key} has been set!"
       else
         @@envs[key] = value
       end
@@ -117,22 +117,22 @@ module PACKMAN
         end
       end
       cmd_str << "#{cmd_args} "
-      if not PACKMAN::CommandLine.has_option? '-verbose'
+      if not CommandLine.has_option? '-verbose'
         cmd_str << "1> #{ConfigManager.package_root}/stdout 2> #{ConfigManager.package_root}/stderr"
       end
-      print "#{PACKMAN::CLI.blue '==>'} #{PACKMAN::CLI.truncate("#{cmd} #{args.join(' ')}")}\n"
+      print "#{CLI.blue '==>'} #{CLI.truncate("#{cmd} #{args.join(' ')}")}\n"
       system cmd_str
       if not $?.success?
         info =  "PATH: #{FileUtils.pwd}\n"
         info << "Command: #{cmd_str}\n"
         info << "Return: #{$?}\n"
-        if not PACKMAN::CommandLine.has_option? '-verbose'
+        if not CommandLine.has_option? '-verbose'
           info << "Standard output: #{ConfigManager.package_root}/stdout\n"
           info << "Standard error: #{ConfigManager.package_root}/stderr\n"
         end
-        PACKMAN::CLI.report_error "Failed to run the following command:\n"+info
+        CLI.report_error "Failed to run the following command:\n"+info
       end
-      if not PACKMAN::CommandLine.has_option? '-verbose'
+      if not CommandLine.has_option? '-verbose'
         FileUtils.rm("#{ConfigManager.package_root}/stdout")
         FileUtils.rm("#{ConfigManager.package_root}/stderr")
       end

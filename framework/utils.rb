@@ -78,11 +78,11 @@ module PACKMAN
       if expect.eql? current
         return true
       else
-        PACKMAN::CLI.report_warning "Directory #{filepath} SHA1 is #{current}."
+        CLI.report_warning "Directory #{filepath} SHA1 is #{current}."
         return false
       end
     else
-      PACKMAN::CLI.report_error "Unknown file type \"#{filepath}\"!"
+      CLI.report_error "Unknown file type \"#{filepath}\"!"
     end
   end
 
@@ -98,7 +98,7 @@ module PACKMAN
     elsif filepath =~ /\.(zip)$/
       return :zip
     else
-      PACKMAN::CLI.report_error "Unknown compression type of \"#{filepath}\"!"
+      CLI.report_error "Unknown compression type of \"#{filepath}\"!"
     end
   end
 

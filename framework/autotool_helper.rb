@@ -9,7 +9,7 @@ module PACKMAN
       when 'fortran'
         "FCFLAGS=\"$FCFLAGS #{flags}\""
       else
-        PACKMAN::CLI.report_error "Unknown language #{PACKMAN::CLI.red language}!"
+        CLI.report_error "Unknown language #{CLI.red language}!"
       end
     end
 

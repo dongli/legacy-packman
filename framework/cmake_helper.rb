@@ -25,7 +25,7 @@ module PACKMAN
           "-DCMAKE_FORTRAN_FLAGS='#{flags}'"
         end
       else
-        PACKMAN::CLI.report_error "Unknown language #{PACKMAN::CLI.red language}!"
+        CLI.report_error "Unknown language #{CLI.red language}!"
       end
     end
 

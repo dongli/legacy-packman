@@ -25,8 +25,8 @@ module PACKMAN
           case requested_spec[:in]
           when :history_versions
             if not history_versions.has_key? requested_spec[:version]
-              PACKMAN::CLI.report_error "There is no #{PACKMAN::CLI.red requested_spec[:version]} in "+
-                "#{PACKMAN::CLI.red self.class}!"
+              CLI.report_error "There is no #{CLI.red requested_spec[:version]} in "+
+                "#{CLI.red self.class}!"
             end
             @active_spec = history_versions[requested_spec[:version]]
           when :binary
@@ -38,11 +38,11 @@ module PACKMAN
                   break
                 end
               else
-                next if PACKMAN::OS.distro != tmp1.first.to_sym
+                next if OS.distro != tmp1.first.to_sym
                 tmp2 = tmp1.last.match(/(>=|==|=~)?\s*(.*)/)
                 operator = tmp2[1] ? tmp2[1] : '=='
-                v1 = PACKMAN::VersionSpec.new tmp2[2]
-                v2 = PACKMAN::OS.version
+                v1 = VersionSpec.new tmp2[2]
+                v2 = OS.version
                 if eval "v2 #{operator} v1"
                   @active_spec = value
                   break
@@ -56,11 +56,11 @@ module PACKMAN
                 package_version = tmp1.first
                 next if package_version != requested_spec[:version]
                 tmp2 = tmp1.last.split(':')
-                next if PACKMAN::OS.distro != tmp2.first.to_sym
+                next if OS.distro != tmp2.first.to_sym
                 tmp3 = tmp2.last.match(/(>=|==|=~)?\s*(.*)/)
                 operator = tmp3[1] ? tmp3[1] : '=='
-                v1 = PACKMAN::VersionSpec.new tmp3[2]
-                v2 = PACKMAN::OS.version
+                v1 = VersionSpec.new tmp3[2]
+                v2 = OS.version
                 if eval "v2 #{operator} v1"
                   @active_spec = value
                   break
@@ -78,7 +78,7 @@ module PACKMAN
         @active_spec = stable || devel
       end
       if not @active_spec
-        PACKMAN::CLI.report_error "Unknown requested_spec #{PACKMAN::CLI.red requested_spec}!"
+        CLI.report_error "Unknown requested_spec #{CLI.red requested_spec}!"
       end
     end
 
@@ -165,7 +165,7 @@ module PACKMAN
         versions = [versions] if not versions.class == Array
         key = []
         for i in 0..distros.size-1
-          PACKMAN::VersionSpec.validate versions[i]
+          VersionSpec.validate versions[i]
           key << "#{distros[i]}:#{versions[i]}"
         end
         key = key.join('|').to_sym
@@ -185,7 +185,7 @@ module PACKMAN
           eval "@@#{self}_history_versions[version].instance_eval &block"
           eval "@@#{self}_history_versions[version].version version"
         else
-          PACKMAN::CLI.report_error "No block is given!"
+          CLI.report_error "No block is given!"
         end
       end
 
@@ -195,7 +195,7 @@ module PACKMAN
         versions = [versions] if not versions.class == Array
         key = []
         for i in 0..distros.size-1
-          PACKMAN::VersionSpec.validate versions[i]
+          VersionSpec.validate versions[i]
           key << "#{version}@#{distros[i]}:#{versions[i]}"
         end
         key = key.join('|').to_sym
@@ -205,7 +205,7 @@ module PACKMAN
           eval "@@#{self}_history_binary_versions[key].version version"
           eval "@@#{self}_history_binary_versions[key].label 'binary'"
         else
-          PACKMAN::CLI.report_error "No block is given!"
+          CLI.report_error "No block is given!"
         end
       end
     end
@@ -244,8 +244,8 @@ module PACKMAN
         eval "#{package_name}.new requested_spec"
       rescue NameError => e
         if e.class == NoMethodError
-          PACKMAN::CLI.report_error "Encounter error while instancing package!\n"+
-            "#{PACKMAN::CLI.red '==>'} #{e}"
+          CLI.report_error "Encounter error while instancing package!\n"+
+            "#{CLI.red '==>'} #{e}"
         end
         load "#{ENV['PACKMAN_ROOT']}/packages/#{package_name.to_s.downcase}.rb"
         instance package_name, install_spec
@@ -306,14 +306,14 @@ module PACKMAN
         patch_file = "#{ConfigManager.package_root}/#{package.class}.patch.#{i}"
         PACKMAN.run "patch --ignore-whitespace -N -p1 < #{patch_file}"
         if not $?.success?
-          PACKMAN::CLI.report_error "Failed to apply patch for #{PACKMAN::CLI.red package.class}!"
+          CLI.report_error "Failed to apply patch for #{CLI.red package.class}!"
         end
       end
       package.embeded_patches.each do |patch|
-        PACKMAN::CLI.report_notice "Apply embeded patch."
+        CLI.report_notice "Apply embeded patch."
         IO.popen("patch --ignore-whitespace -N -p1", "w") { |p| p.write(patch) }
         if not $?.success?
-          PACKMAN::CLI.report_error "Failed to apply embeded patch for #{PACKMAN::CLI.red package.class}!"
+          CLI.report_error "Failed to apply embeded patch for #{CLI.red package.class}!"
         end
       end
     end
@@ -321,16 +321,16 @@ module PACKMAN
     def postfix; end
 
     def skip?
-      skip_distros.include? PACKMAN::OS.distro or
+      skip_distros.include? OS.distro or
       skip_distros.include? :all or
       labels.include? 'should_provided_by_system' or
       ( labels.include? 'use_system_first' and installed? )
     end
 
     def decompress_to(root)
-      PACKMAN::CLI.report_notice "Decompress #{filename}."
+      CLI.report_notice "Decompress #{filename}."
       if not File.exist? "#{root}/#{filename}"
-        PACKMAN::CLI.report_error "Package #{CLI.red self.class} has not been downloaded!"
+        CLI.report_error "Package #{CLI.red self.class} has not been downloaded!"
       end
       decom_dir = "#{root}/#{self.class}"
       PACKMAN.mkdir(decom_dir, :force)
@@ -340,9 +340,9 @@ module PACKMAN
     end
 
     def copy_to(root)
-      PACKMAN::CLI.report_notice "Copy #{dirname}."
+      CLI.report_notice "Copy #{dirname}."
       if not Dir.exist? "#{root}/#{dirname}"
-        PACKMAN::CLI.report_error "Package #{CLI.red self.class} has not been downloaded!"
+        CLI.report_error "Package #{CLI.red self.class} has not been downloaded!"
       end
       copy_dir = "#{root}/#{self.class}"
       PACKMAN.mkdir(copy_dir, :force)
@@ -352,7 +352,7 @@ module PACKMAN
     def self.prefix package, options = []
       options = [options] if not options.class == Array
       if package.class == Class or package.class == String
-        package = PACKMAN::Package.instance package
+        package = Package.instance package
       end
       prefix = "#{ConfigManager.install_root}/#{package.class.to_s.downcase}/#{package.version}"
       if not package.has_label? 'compiler' and
@@ -401,7 +401,7 @@ module PACKMAN
         end
         if not libs.empty?
           file << "export #{class_name}_LIBRARY=\"-L#{libs.join(' -L')}\"\n"
-          file << "export #{PACKMAN::OS.ld_library_path_name}=\"#{libs.join(':')}:${#{PACKMAN::OS.ld_library_path_name}}\"\n"
+          file << "export #{OS.ld_library_path_name}=\"#{libs.join(':')}:${#{OS.ld_library_path_name}}\"\n"
           file << "export #{class_name}_RPATH=\"#{libs.join(':')}\"\n"
         end
         if Dir.exist?("#{prefix}/lib/pkgconfig")
@@ -426,11 +426,11 @@ module PACKMAN
       libraries = [libraries] if not libraries.class == Array
       prefix = Package.prefix(self)
       if not Dir.exist? "#{prefix}/include" or not Dir.exist? "#{prefix}/lib"
-        PACKMAN::CLI.report_error "Nonstandard package #{PACKMAN::CLI.red self.class} without \"include\" or \"lib\" directories!"
+        CLI.report_error "Nonstandard package #{CLI.red self.class} without \"include\" or \"lib\" directories!"
       end
       if not Dir.glob("#{prefix}/**/#{name.downcase}-config.cmake").empty? or
          not Dir.glob("#{prefix}/**/#{name.downcase.capitalize}Config.cmake").empty?
-        PACKMAN::CLI.report_error "Cmake configure file has alreadly been installed for #{PACKMAN::CLI.red self.class}!"
+        CLI.report_error "Cmake configure file has alreadly been installed for #{CLI.red self.class}!"
       end
       File.open("#{prefix}/#{name.downcase}-config.cmake", 'w') do |file|
         file << "set (#{name}_INCLUDE_DIRS \""

@@ -40,8 +40,8 @@ module PACKMAN
       spec['compiler_set'] = [spec['compiler_set']] if spec['compiler_set'].class == Fixnum
       name = name.capitalize.to_sym
       @@packages[name] = spec
-      if not PACKMAN::Package.defined? name
-        PACKMAN::CLI.report_error "Unknown package #{PACKMAN::CLI.red name}!"
+      if not Package.defined? name
+        CLI.report_error "Unknown package #{CLI.red name}!"
       end
     end
 
@@ -50,10 +50,10 @@ module PACKMAN
     end
 
     def self.parse
-      file_path = PACKMAN::CommandLine.config_file
+      file_path = CommandLine.config_file
       return if not file_path
       if not File.exist? file_path
-        PACKMAN::CLI.report_error "Configuation file #{PACKMAN::CLI.red file_path} does not exist!"
+        CLI.report_error "Configuation file #{CLI.red file_path} does not exist!"
       end
       config = File.open(file_path, 'r').read
       # Modify the config to fulfill the needs of Ruby.
@@ -71,21 +71,21 @@ module PACKMAN
       # Check if defaults has been set.
       if not @@defaults
         msg = <<EOT
-Defaults section has not been set in #{PACKMAN::CLI.red file_path}!
+Defaults section has not been set in #{CLI.red file_path}!
 Example:
-#{PACKMAN::CLI.red '==>'} defaults = {
-#{PACKMAN::CLI.red '==>'}   "compiler_set" => ...,
-#{PACKMAN::CLI.red '==>'}   "mpi" => "..."
-#{PACKMAN::CLI.red '==>'} }
+#{CLI.red '==>'} defaults = {
+#{CLI.red '==>'}   "compiler_set" => ...,
+#{CLI.red '==>'}   "mpi" => "..."
+#{CLI.red '==>'} }
 EOT
-        PACKMAN::CLI.report_error msg
+        CLI.report_error msg
       end
     end
 
     def self.template(file_path)
       if File.exist? file_path
-        PACKMAN::CLI.report_error "A configure file is needed "+
-          "and #{PACKMAN::CLI.red file_path} exists, consider to use it!"
+        CLI.report_error "A configure file is needed "+
+          "and #{CLI.red file_path} exists, consider to use it!"
       end
       File.open(file_path, 'w') do |file|
         file << <<-EOT

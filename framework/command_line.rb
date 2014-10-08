@@ -49,7 +49,7 @@ module PACKMAN
 
     def self.init
       if ARGV.empty?
-        PACKMAN::CLI.report_error "PACKMAN expects a subcommand!"
+        CLI.report_error "PACKMAN expects a subcommand!"
       end
       ARGV.each do |arg|
         if @@permitted_subcommands.keys.include? arg.to_sym
@@ -57,20 +57,20 @@ module PACKMAN
           next
         end
         if not @@subcommand
-          PACKMAN::CLI.report_error "PACKMAN expects a subcommand!"
+          CLI.report_error "PACKMAN expects a subcommand!"
         end
         if File.file? arg
           @@config_file = arg
           next
         end
-        if PACKMAN::Package.all_package_names.include? arg
+        if Package.all_package_names.include? arg
           @@packages << arg.capitalize.to_sym
           next
         end
         if @@permitted_options[@@subcommand].has_key? arg
           @@options << arg
         else
-          PACKMAN::CLI.report_error "Invalid command option #{PACKMAN::CLI.red arg}!\n"+
+          CLI.report_error "Invalid command option #{CLI.red arg}!\n"+
             "The available options are:\n#{print_options(@@subcommand, 2).chomp}"
         end
       end
@@ -80,10 +80,10 @@ module PACKMAN
         # Check if there is a configuration file in PACKMAN_ROOT.
         @@config_file = "#{ENV['PACKMAN_ROOT']}/packman.config"
         if not File.exist? @@config_file
-          PACKMAN::ConfigManager.template("#{ENV['PACKMAN_ROOT']}/packman.config")
+          ConfigManager.template("#{ENV['PACKMAN_ROOT']}/packman.config")
           if not @@subcommand == :config
-            PACKMAN::CLI.report_warning "Lack configure file, PACKMAN generate one for you! Edit "+
-              "#{PACKMAN::CLI.red @@config_file} and come back."
+            CLI.report_warning "Lack configure file, PACKMAN generate one for you! Edit "+
+              "#{CLI.red @@config_file} and come back."
             exit
           end
         end
@@ -112,7 +112,7 @@ module PACKMAN
         for i in 0..indent-1
           res << ' '
         end
-        res << "#{PACKMAN::CLI.bold(option)}\t#{meaning}\n"
+        res << "#{CLI.bold(option)}\t#{meaning}\n"
       end
       return res
     end
@@ -123,7 +123,7 @@ module PACKMAN
         for i in 0..indent-1
           res << ' '
         end
-        res << "#{PACKMAN::CLI.bold(subcommand.to_s)}\t#{meaning}\n\n"
+        res << "#{CLI.bold(subcommand.to_s)}\t#{meaning}\n\n"
         res << print_options(subcommand, indent+2)
         res.chomp!
         res << "\n\n"
