@@ -42,7 +42,9 @@ rescue SyntaxError => e
   end
 end
 
-PACKMAN::PackageLoader.init
+if not PACKMAN::CommandLine.subcommand == :config
+  PACKMAN::PackageLoader.init
+end
 
 Kernel.trap('INT') do
   print "GOOD BYE!\n"

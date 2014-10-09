@@ -17,7 +17,9 @@ module PACKMAN
       :report  => 'Report version of PACKMAN an other information.'
     }
     @@permitted_options = {
-      :config  => {},
+      :config  => {
+        '-debug' => 'Print debug information.'
+      },
       :collect => {
         '-all' => 'Collect all packages.',
         '-debug' => 'Print debug information.'
