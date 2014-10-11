@@ -62,6 +62,8 @@ module PACKMAN
       end
       config.gsub!(/^ *package_(\w+) *=/, 'self.package "\1",')
       class_eval config
+      PACKMAN.expand_tilde @@package_root
+      PACKMAN.expand_tilde @@install_root
       @@download_command = @@download_command.to_sym
       @@compiler_sets = []
       ( self.methods.select { |m| m.to_s =~ /compiler_set_\d$/ } ).each do |m|
@@ -69,7 +71,7 @@ module PACKMAN
         @@compiler_sets << compiler_set if compiler_set != nil
       end
       # Check if defaults has been set.
-      if not @@defaults
+      if not @@defaults and not CommandLine.subcommand == :config
         msg = <<EOT
 Defaults section has not been set in #{CLI.red file_path}!
 Example:

@@ -35,7 +35,7 @@ class Tomcat < PACKMAN::Package
     is_found_aval_port = false
     port = 8080
     while port <= 10000
-      if not PACKMAN.is_port_open? 'localhost', port
+      if not PACKMAN::NetworkManager.is_port_open? 'localhost', port
         is_found_aval_port = true
         break
       end

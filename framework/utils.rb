@@ -190,4 +190,8 @@ module PACKMAN
     end
     return dir
   end
+
+  def self.expand_tilde path
+    path.gsub! '~', Dir.home
+  end
 end
