@@ -10,7 +10,7 @@ class Proftpd < PACKMAN::Package
     PACKMAN.replace 'sample-configurations/basic.conf', {
       /^Group\s*nogroup/ => 'Group nobody'
     }
-    proftpd = PACKMAN::Package.prefix(self)
+    proftpd = PACKMAN.prefix(self)
     args = %W[
       --prefix=#{proftpd}
       --sysconfdir=#{proftpd}/../config
@@ -25,8 +25,8 @@ class Proftpd < PACKMAN::Package
   end
 
   def postfix
-    PACKMAN.replace "#{PACKMAN::Package.prefix(self)}/../config/proftpd.conf", {
-      /^(ServerType\s*.*)$/ => "\\1\nServerLog #{PACKMAN::Package.prefix(self)}/var/proftpd.log"
+    PACKMAN.replace "#{PACKMAN.prefix(self)}/../config/proftpd.conf", {
+      /^(ServerType\s*.*)$/ => "\\1\nServerLog #{PACKMAN.prefix(self)}/var/proftpd.log"
     }
   end
 end

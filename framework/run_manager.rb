@@ -46,7 +46,7 @@ module PACKMAN
       cmd_str = ''
       # Handle PACKMAN installed compiler.
       if Package.compiler_set.has_key? 'installed_by_packman'
-        compiler_prefix = Package.prefix(Package.compiler_set['installed_by_packman'])
+        compiler_prefix = PACKMAN.prefix(Package.compiler_set['installed_by_packman'])
         append_bashrc_path("#{compiler_prefix}/bashrc")
       end
       # Handle customized bashrc.
@@ -120,7 +120,12 @@ module PACKMAN
       if not CommandLine.has_option? '-verbose'
         cmd_str << "1> #{ConfigManager.package_root}/stdout 2> #{ConfigManager.package_root}/stderr"
       end
-      print "#{CLI.blue '==>'} #{CLI.truncate("#{cmd} #{args.join(' ')}")}\n"
+      print "#{CLI.blue '==>'} "
+      if CommandLine.has_option? '-debug'
+        print "#{cmd_str}\n"
+      else
+        print "#{CLI.truncate("#{cmd} #{args.join(' ')}")}\n"
+      end
       system cmd_str
       if not $?.success?
         info =  "PATH: #{FileUtils.pwd}\n"

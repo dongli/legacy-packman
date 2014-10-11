@@ -32,8 +32,8 @@ class Vis5dx < PACKMAN::Package
         "      IYEAR=DateArray(3)\n"
     }
     args = %W[
-      --prefix=#{PACKMAN::Package.prefix(self)}
-      --with-netcdf=#{PACKMAN::Package.prefix(Netcdf_c)}
+      --prefix=#{PACKMAN.prefix(self)}
+      --with-netcdf=#{PACKMAN.prefix(Netcdf_c)}
     ]
     if PACKMAN::OS.distro == :Mac_OS_X
       args << 'CPPFLAGS="-I/usr/X11R6/include"'

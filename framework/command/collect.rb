@@ -40,8 +40,10 @@ module PACKMAN
         download_package Package.instance depend
       end
     end
-    # Skip package that is provided by system.
-    return if package.labels.include?('should_provided_by_system')
+    # Skip the package that should be provided by system.
+    return if package.has_label? 'should_provided_by_system'
+    # Skip the package that is a master.
+    return if package.has_label? 'master_package'
     # Check if there is any patch to download.
     patch_counter = -1
     package.patches.each do |patch|

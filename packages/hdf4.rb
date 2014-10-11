@@ -11,10 +11,10 @@ class Hdf4 < PACKMAN::Package
 
   def install
     args = %W[
-      --prefix=#{PACKMAN::Package.prefix(self)}
-      --with-zlib=#{PACKMAN::Package.prefix(Zlib)}
-      --with-jpeg=#{PACKMAN::Package.prefix(Jpeg)}
-      --with-szlib=#{PACKMAN::Package.prefix(Szip)}
+      --prefix=#{PACKMAN.prefix(self)}
+      --with-zlib=#{PACKMAN.prefix(Zlib)}
+      --with-jpeg=#{PACKMAN.prefix(Jpeg)}
+      --with-szlib=#{PACKMAN.prefix(Szip)}
       --disable-netcdf
       --enable-fortran
     ]

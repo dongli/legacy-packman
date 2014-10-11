@@ -6,7 +6,7 @@ module PACKMAN
       open("#{ConfigManager.install_root}/bashrc", 'w') do |file|
         # Check if the active compiler is installed by PACKMAN.
         if compiler_set.has_key?('installed_by_packman')
-          file << "source #{Package.prefix(compiler_set['installed_by_packman'])}/bashrc\n"
+          file << "source #{PACKMAN.prefix(compiler_set['installed_by_packman'])}/bashrc\n"
         end
         Dir.foreach(ConfigManager.install_root) do |dir|
           next if dir =~ /^\.{1,2}$/

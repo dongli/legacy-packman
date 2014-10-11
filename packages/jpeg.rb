@@ -5,16 +5,16 @@ class Jpeg < PACKMAN::Package
 
   def install
     args = %W[
-      --prefix=#{PACKMAN::Package.prefix(self)}
+      --prefix=#{PACKMAN.prefix(self)}
       --disable-dependency-tracking
     ]
     PACKMAN.run './configure', *args
     PACKMAN.run 'make'
     # Silly Jpeg does not mkdir necessary install directories!
-    PACKMAN.mkdir "#{PACKMAN::Package.prefix(self)}/bin", :force
-    PACKMAN.mkdir "#{PACKMAN::Package.prefix(self)}/include", :force
-    PACKMAN.mkdir "#{PACKMAN::Package.prefix(self)}/lib", :force
-    PACKMAN.mkdir "#{PACKMAN::Package.prefix(self)}/man/man1", :force
+    PACKMAN.mkdir "#{PACKMAN.prefix(self)}/bin", :force
+    PACKMAN.mkdir "#{PACKMAN.prefix(self)}/include", :force
+    PACKMAN.mkdir "#{PACKMAN.prefix(self)}/lib", :force
+    PACKMAN.mkdir "#{PACKMAN.prefix(self)}/man/man1", :force
     PACKMAN.run 'make install'
     PACKMAN.run 'make install-lib'
     PACKMAN.run 'make install-headers'

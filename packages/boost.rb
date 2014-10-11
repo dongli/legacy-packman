@@ -46,11 +46,11 @@ class Boost < PACKMAN::Package
       file << "using #{toolset} : : #{cxx_compiler} : <compilerflags>#{compiler_flags}"
     end
     args = %W[
-      --prefix=#{PACKMAN::Package.prefix(self)}
+      --prefix=#{PACKMAN.prefix(self)}
     ]
     PACKMAN.run './bootstrap.sh', *args
     args = %W[
-      --prefix=#{PACKMAN::Package.prefix(self)}
+      --prefix=#{PACKMAN.prefix(self)}
       -q
       -d2
       -j2

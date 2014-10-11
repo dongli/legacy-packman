@@ -1,20 +1,20 @@
 class Opendap < PACKMAN::Package
-  url 'http://www.opendap.org/pub/source/libdap-3.12.1.tar.gz'
-  sha1 'bfb72dd3035e7720b1ada0bf762b9ab80bb6bbf2'
-  version '3.12.1'
+  url 'http://www.opendap.org/pub/source/libdap-3.13.1.tar.gz'
+  sha1 'fdfd5f311c920e9efb450e8ff82f42bc58197f23'
+  version '3.13.1'
 
   depends_on 'uuid'
   depends_on 'curl'
 
   def install
     args = %W[
-      --prefix=#{PACKMAN::Package.prefix(self)}
+      --prefix=#{PACKMAN.prefix(self)}
       --disable-debug
       --disable-dependency-tracking
-      --with-curl=#{PACKMAN::Package.prefix(Curl)}
+      --with-curl=#{PACKMAN.prefix(Curl)}
       --with-included-regex
-      CPPFLAGS='-I#{PACKMAN::Package.prefix(Uuid)}/include'
-      LDFLAGS='-L#{PACKMAN::Package.prefix(Uuid)}/lib'
+      CPPFLAGS='-I#{PACKMAN.prefix(Uuid)}/include'
+      LDFLAGS='-L#{PACKMAN.prefix(Uuid)}/lib'
     ]
     PACKMAN.run './configure', *args
     PACKMAN.run 'make -j2'

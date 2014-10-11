@@ -9,7 +9,7 @@ class Ncurses < PACKMAN::Package
 
   def install
     args = %W[
-      --prefix=#{PACKMAN::Package.prefix(self)}
+      --prefix=#{PACKMAN.prefix(self)}
       --disable-debug
     ]
     PACKMAN.run './configure', *args

@@ -2,7 +2,7 @@ module PACKMAN
   class PackageSpec
     attr_reader :labels, :dependencies, :skip_distros
     attr_reader :conflict_packages, :conflict_reasons
-    attr_reader :provided_stuffs
+    attr_reader :provided_stuffs, :master_package
     attr_reader :patches, :embeded_patches, :attachments
     attr_accessor :option_valid_types, :options
 
@@ -58,7 +58,19 @@ module PACKMAN
         val = val.capitalize.to_sym
         @dependencies << val if not @dependencies.include? val
       rescue
-        CLI.report_error "Package definition syntax error!"
+        CLI.report_error 'Package definition syntax error!'
+      end
+    end
+
+    def belongs_to val
+      val = val.capitalize.to_sym
+      if defined? @master_package and @master_package != val
+        CLI.report_error 'Only one master package can be specified!'
+      end
+      begin
+        @master_package = val
+      rescue
+        CLI.report_error 'Package definition syntax error!'
       end
     end
 

@@ -8,12 +8,12 @@ class Netcdf_cxx < PACKMAN::Package
   option 'use_mpi' => :package_name
 
   def install
-    netcdf_c_prefix = PACKMAN::Package.prefix(Netcdf_c)
+    netcdf_c_prefix = PACKMAN.prefix(Netcdf_c)
     PACKMAN.append_env "PATH=#{netcdf_c_prefix}/bin:$PATH"
     PACKMAN.append_env "CPPFLAGS='-I#{netcdf_c_prefix}/include'"
     PACKMAN.append_env "LDFLAGS='-L#{netcdf_c_prefix}/lib'"
     args = %W[
-      --prefix=#{PACKMAN::Package.prefix(self)}
+      --prefix=#{PACKMAN.prefix(self)}
       --disable-dependency-tracking
       --disable-dap-remote-tests
       --enable-static

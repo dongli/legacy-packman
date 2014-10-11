@@ -13,7 +13,7 @@ class Szip < PACKMAN::Package
       }
     end
     args = %W[
-      --prefix=#{PACKMAN::Package.prefix(self)}
+      --prefix=#{PACKMAN.prefix(self)}
       --disable-debug
       --disable-dependency-tracking
     ]

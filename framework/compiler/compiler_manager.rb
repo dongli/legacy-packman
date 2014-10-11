@@ -89,7 +89,7 @@ module PACKMAN
             CLI.report_error "Unknown PACKMAN installed compiler #{CLI.red compiler_name}!"
           end
           compiler_package = Package.instance compiler_name
-          prefix = Package.prefix compiler_package
+          prefix = PACKMAN.prefix compiler_package
           compiler_package.provided_stuffs.each do |language, compiler|
             if ['c', 'c++', 'fortran'].include? language
               # User can overwrite the compiler.
@@ -111,7 +111,7 @@ module PACKMAN
       # Check if the MPI library is installed by PACKMAN or not.
       if File.directory? "#{ConfigManager.install_root}/#{mpi_vendor}"
         mpi = Package.instance mpi_vendor.to_s.capitalize
-        prefix = Package.prefix mpi
+        prefix = PACKMAN.prefix mpi
         # Override the CC, CXX, F77, FC if they are set.
         PACKMAN.change_env "CC=#{prefix}/bin/#{mpi.provided_stuffs['c']}"
         PACKMAN.change_env "MPICC=#{prefix}/bin/#{mpi.provided_stuffs['c']}"

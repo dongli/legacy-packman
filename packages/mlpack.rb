@@ -13,17 +13,17 @@ class Mlpack < PACKMAN::Package
   def install
     # Note: DBoost_NO_BOOST_CMAKE is set to ON to let CMake do the dirty job.
     args = %W[
-      -DCMAKE_INSTALL_PREFIX=#{PACKMAN::Package.prefix(self)}
+      -DCMAKE_INSTALL_PREFIX=#{PACKMAN.prefix(self)}
       -DCMAKE_BUILD_TYPE='Release'
-      -DARMADILLO_INCLUDE_DIR=#{PACKMAN::Package.prefix(Armadillo)}/include
-      -DARMADILLO_LIBRARY=#{PACKMAN::Package.prefix(Armadillo)}/lib/libarmadillo.#{PACKMAN::OS.shared_library_suffix}
+      -DARMADILLO_INCLUDE_DIR=#{PACKMAN.prefix(Armadillo)}/include
+      -DARMADILLO_LIBRARY=#{PACKMAN.prefix(Armadillo)}/lib/libarmadillo.#{PACKMAN::OS.shared_library_suffix}
       -DBoost_NO_BOOST_CMAKE=ON
-      -DCMAKE_EXE_LINKER_FLAGS='-L#{PACKMAN::Package.prefix(Hdf5)}/lib'
+      -DCMAKE_EXE_LINKER_FLAGS='-L#{PACKMAN.prefix(Hdf5)}/lib'
     ]
     if options['disable_c++11']
-      args << "-DCMAKE_CXX_FLAGS='-I#{PACKMAN::Package.prefix(Hdf5)}/include'"
+      args << "-DCMAKE_CXX_FLAGS='-I#{PACKMAN.prefix(Hdf5)}/include'"
     else
-      args << "-DCMAKE_CXX_FLAGS='-I#{PACKMAN::Package.prefix(Hdf5)}/include -std=c++11'"
+      args << "-DCMAKE_CXX_FLAGS='-I#{PACKMAN.prefix(Hdf5)}/include -std=c++11'"
     end
     PACKMAN.mkdir 'build', :force do
       PACKMAN.run 'cmake ..', *args

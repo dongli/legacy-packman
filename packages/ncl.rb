@@ -101,7 +101,7 @@ class Ncl < PACKMAN::Package
           "--> #{PACKMAN::CLI.bold(PACKMAN::OS.how_to_install xaw_package)}"
       end
     end
-    PACKMAN::RunManager.append_env "NCARG=#{PACKMAN::Package.prefix(self)}"
+    PACKMAN::RunManager.append_env "NCARG=#{PACKMAN.prefix(self)}"
     # Copy Triangle codes into necessary place.
     PACKMAN.mkdir 'triangle'
     PACKMAN.cd 'triangle'
@@ -130,10 +130,10 @@ class Ncl < PACKMAN::Package
       writer.print("y\n")
       # Parent installation directory?
       reader.expect(/Enter Return \(default\), new directory, or q\(quit\) >/)
-      writer.print("#{PACKMAN::Package.prefix(self)}\n")
+      writer.print("#{PACKMAN.prefix(self)}\n")
       # System temp space directory?
       reader.expect(/Enter Return \(default\), new directory, or q\(quit\) >/)
-      writer.print("#{PACKMAN::Package.prefix(self)}/tmp\n")
+      writer.print("#{PACKMAN.prefix(self)}/tmp\n")
       # Build NetCDF4 feature support (optional)?
       reader.expect(/Enter Return \(default\), y\(yes\), n\(no\), or q\(quit\) > /)
       writer.print("y\n")
@@ -184,8 +184,8 @@ class Ncl < PACKMAN::Package
       [ Expat, Freetype, Fontconfig, Szip, Jasper, Cairo, Jpeg, Libpng, Hdf4, Hdf5,
         Netcdf_c, Netcdf_fortran, Pixman, Hdf_eos2, Hdf_eos5, Grib2_c, Gdal, Proj,
       Udunits, Vis5dx ].each do |lib|
-        if not Dir.exist? "#{PACKMAN::Package.prefix(lib)}/lib"
-          writer.print "#{PACKMAN::Package.prefix(lib)}/lib "
+        if not Dir.exist? "#{PACKMAN.prefix(lib)}/lib"
+          writer.print "#{PACKMAN.prefix(lib)}/lib "
         end
       end
       writer.print "\n"
@@ -197,14 +197,14 @@ class Ncl < PACKMAN::Package
       [ Expat, Freetype, Fontconfig, Szip, Jasper, Cairo, Jpeg, Libpng, Hdf4, Hdf5,
         Netcdf_c, Netcdf_fortran, Pixman, Hdf_eos2, Hdf_eos5, Grib2_c, Gdal, Proj,
       Udunits, Vis5dx ].each do |lib|
-        if not Dir.exist? "#{PACKMAN::Package.prefix(lib)}/include"
-          writer.print "#{PACKMAN::Package.prefix(lib)}/include "
+        if not Dir.exist? "#{PACKMAN.prefix(lib)}/include"
+          writer.print "#{PACKMAN.prefix(lib)}/include "
         end
       end
       if PACKMAN::OS.redhat_gang?
         writer.print "/usr/include/freetype2 "
       end
-      writer.print "#{PACKMAN::Package.prefix(Gcc)}/include "
+      writer.print "#{PACKMAN.prefix(Gcc)}/include "
       writer.print "\n"
       # Go back and make more changes or review?
       reader.expect(/Enter Return\(default\), y\(yes\), n\(no\), or q\(quit\) > /)
@@ -217,17 +217,17 @@ class Ncl < PACKMAN::Package
     # Make NCL.
     PACKMAN.run 'make Everything'
     # Make sure command 'ncl' is built.
-    PACKMAN.run "ls #{PACKMAN::Package.prefix(self)}/bin/ncl"
+    PACKMAN.run "ls #{PACKMAN.prefix(self)}/bin/ncl"
     # Create 'tmp' directory.
-    PACKMAN.mkdir "#{PACKMAN::Package.prefix(self)}/tmp"
+    PACKMAN.mkdir "#{PACKMAN.prefix(self)}/tmp"
     PACKMAN::RunManager.clean_env
   end
 
   def postfix
     if active_spec.has_label? 'binary'
-      ncl = PACKMAN::Package.prefix self, :compiler_insensitive
+      ncl = PACKMAN.prefix self, :compiler_insensitive
     else
-      ncl = PACKMAN::Package.prefix self
+      ncl = PACKMAN.prefix self
     end
     PACKMAN.replace "#{ncl}/bashrc", {
       /NCL_ROOT/ => 'NCARG_ROOT'

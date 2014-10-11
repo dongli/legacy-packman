@@ -8,11 +8,11 @@ class Cloog < PACKMAN::Package
 
   def install
     args = %W[
-      --prefix=#{PACKMAN::Package.prefix(self)}
+      --prefix=#{PACKMAN.prefix(self)}
       --disable-dependency-tracking
       --disable-silent-rules
-      --with-gmp-prefix=#{PACKMAN::Package.prefix(Gmp)}
-      --with-isl-prefix=#{PACKMAN::Package.prefix(Isl)}
+      --with-gmp-prefix=#{PACKMAN.prefix(Gmp)}
+      --with-isl-prefix=#{PACKMAN.prefix(Isl)}
     ]
     PACKMAN.run './configure', *args
     PACKMAN.run 'make install'

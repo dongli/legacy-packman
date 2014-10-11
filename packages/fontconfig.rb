@@ -12,10 +12,10 @@ class Fontconfig < PACKMAN::Package
 
   def install
     args = %W[
-      --prefix=#{PACKMAN::Package.prefix(self)}
+      --prefix=#{PACKMAN.prefix(self)}
       --disable-dependency-tracking
       --disable-silent-rules
-      --with-expat=#{PACKMAN::Package.prefix(Expat)}
+      --with-expat=#{PACKMAN.prefix(Expat)}
     ]
     if PACKMAN::OS.type == :Darwin
       args << '--with-add-fonts=/System/Library/Fonts,/Library/Fonts,~/Library/Fonts'

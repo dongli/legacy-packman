@@ -9,19 +9,19 @@ class Hdf_eos2 < PACKMAN::Package
 
   def install
     args = %W[
-      --prefix=#{PACKMAN::Package.prefix(self)}
-      --with-hdf4=#{PACKMAN::Package.prefix(Hdf4)}
-      --with-zlib=#{PACKMAN::Package.prefix(Zlib)}
-      --with-szlib=#{PACKMAN::Package.prefix(Szip)}
-      --with-jpeg=#{PACKMAN::Package.prefix(Jpeg)}
-      CC='#{PACKMAN::Package.prefix(Hdf4)}/bin/h4cc -Df2cFortran'
+      --prefix=#{PACKMAN.prefix(self)}
+      --with-hdf4=#{PACKMAN.prefix(Hdf4)}
+      --with-zlib=#{PACKMAN.prefix(Zlib)}
+      --with-szlib=#{PACKMAN.prefix(Szip)}
+      --with-jpeg=#{PACKMAN.prefix(Jpeg)}
+      CC='#{PACKMAN.prefix(Hdf4)}/bin/h4cc -Df2cFortran'
     ]
     PACKMAN.run './configure', *args
     PACKMAN.run 'make -j2'
     PACKMAN.run 'make install'
     # Bad HDF-EOS2 developer does not install 'include'!
-    PACKMAN.cd 'include'
-    PACKMAN.run 'make install'
-    PACKMAN.cd_back
+    PACKMAN.work_in 'include' do
+      PACKMAN.run 'make install'
+    end
   end
 end

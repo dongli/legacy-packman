@@ -27,7 +27,9 @@ class Tomcat < PACKMAN::Package
 </tomcat-users>
       EOT
     }
-    tomcat = PACKMAN::Package.prefix(self)
+    # Check if 8080 port is occupied, if so we should choose another one.
+    
+    tomcat = PACKMAN.prefix(self)
     PACKMAN.mkdir tomcat, :force
     PACKMAN.cp '.', tomcat
   end

@@ -21,13 +21,13 @@ class Gcc < PACKMAN::Package
       languages = %W[c c++ fortran]
     end
     args = %W[
-      --prefix=#{PACKMAN::Package.prefix(self)}
+      --prefix=#{PACKMAN.prefix(self)}
       --enable-languages=#{languages.join(',')}
-      --with-gmp=#{PACKMAN::Package.prefix(Gmp)}
-      --with-mpfr=#{PACKMAN::Package.prefix(Mpfr)}
-      --with-mpc=#{PACKMAN::Package.prefix(Mpc)}
-      --with-cloog=#{PACKMAN::Package.prefix(Cloog)}
-      --with-isl=#{PACKMAN::Package.prefix(Isl)}
+      --with-gmp=#{PACKMAN.prefix(Gmp)}
+      --with-mpfr=#{PACKMAN.prefix(Mpfr)}
+      --with-mpc=#{PACKMAN.prefix(Mpc)}
+      --with-cloog=#{PACKMAN.prefix(Cloog)}
+      --with-isl=#{PACKMAN.prefix(Isl)}
       --disable-multilib
     ]
     PACKMAN.mkdir 'build', :force do
@@ -40,11 +40,11 @@ class Gcc < PACKMAN::Package
   def postfix
     # Source the dependent packages in the Gcc bashrc so that Gcc can find
     # those package when doing dynamic loading.
-    PACKMAN.append "#{PACKMAN::Package.prefix(self)}/bashrc",
-      ". #{PACKMAN::Package.prefix(Gmp)}/bashrc\n"+
-      ". #{PACKMAN::Package.prefix(Mpfr)}/bashrc\n"+
-      ". #{PACKMAN::Package.prefix(Mpc)}/bashrc\n"+
-      ". #{PACKMAN::Package.prefix(Isl)}/bashrc\n"+
-      ". #{PACKMAN::Package.prefix(Cloog)}/bashrc\n"
+    PACKMAN.append "#{PACKMAN.prefix(self)}/bashrc",
+      ". #{PACKMAN.prefix(Gmp)}/bashrc\n"+
+      ". #{PACKMAN.prefix(Mpfr)}/bashrc\n"+
+      ". #{PACKMAN.prefix(Mpc)}/bashrc\n"+
+      ". #{PACKMAN.prefix(Isl)}/bashrc\n"+
+      ". #{PACKMAN.prefix(Cloog)}/bashrc\n"
   end
 end

@@ -7,7 +7,7 @@ class Uuid < PACKMAN::Package
   label 'use_system_first'
 
   def install
-    uuid = PACKMAN::Package.prefix(self)
+    uuid = PACKMAN.prefix(self)
     args = %W[
       --prefix=#{uuid}
       CFLAGS=-fPIC

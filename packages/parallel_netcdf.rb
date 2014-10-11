@@ -15,7 +15,7 @@ class Parallel_netcdf < PACKMAN::Package
       PACKMAN.append_customized_flags :all, :pic
     end
     args = %W[
-      --prefix=#{PACKMAN::Package.prefix(self)}
+      --prefix=#{PACKMAN.prefix(self)}
     ]
     if PACKMAN.compiler_command 'fortran'
       args << '--enable-fortran'

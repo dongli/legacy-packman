@@ -34,13 +34,13 @@ module PACKMAN
         CLI.report_error "Failed to create file in #{CLI.red root}!"
       end
       if ConfigManager.use_ftp_mirror == 'no'
-        if OS.connect_internet?
+        if NetworkManager.is_connect_internet?
           CLI.report_error "Failed to download #{CLI.red url}!"
         else
           CLI.report_error "This machine can not connect internet! You may use a FTP mirror in your location."
         end
       else
-        if OS.connect_internet?
+        if NetworkManager.is_connect_internet?
           CLI.report_error "FTP mirror failed to provide #{CLI.red filename}, you may consider to switch off mirror."
         else
           case $?.exitstatus
@@ -116,16 +116,27 @@ module PACKMAN
     end
   end
 
-  def self.cd(dir)
-    @@prev_dir = FileUtils.pwd
+  def self.cd dir, options = []
+    options = [options] if not options.class == Array
+    @@dir_stack ||= []
+    @@dir_stack << FileUtils.pwd if not options.include? :norecord
     FileUtils.chdir dir
   end
 
   def self.cd_back
-    FileUtils.chdir @@prev_dir
+    CLI.report_error 'There is no more directory to change back!' if @@dir_stack.empty?
+    FileUtils.chdir @@dir_stack.last
+    @@dir_stack = @@dir_stack[0..-1]
   end
 
-  def self.cp(src, dest)
+  def self.work_in dir
+    CLI.report_error 'No work block is given!' if not block_given?
+    PACKMAN.cd dir
+    yield
+    PACKMAN.cd_back
+  end
+
+  def self.cp src, dest
     FileUtils.cp_r src, dest
   end
 
@@ -133,14 +144,14 @@ module PACKMAN
     FileUtils.mv src, dest
   end
 
-  def self.replace(filepath, replaces)
-    content = File.open(filepath, 'r').read
+  def self.replace file_path, replaces
+    content = File.open(file_path, 'r').read
     replaces.each do |pattern, replacement|
       if content.gsub!(pattern, replacement) == nil
-        CLI.report_error "Pattern \"#{pattern}\" is not found in \"#{filepath}\"!"
+        CLI.report_error "Pattern \"#{pattern}\" is not found in \"#{file_path}\"!"
       end
     end
-    file = File.open(filepath, 'w')
+    file = File.open file_path, 'w'
     file << content
     file.close
   end
@@ -150,18 +161,18 @@ module PACKMAN
     content.scan(pattern)
   end
 
-  def self.decompress(filepath)
-    case PACKMAN.compression_type filepath
+  def self.decompress file_path
+    case PACKMAN.compression_type file_path
     when :tar_Z
-      system "tar xzf #{filepath}"
+      system "tar xzf #{file_path}"
     when :tar
-      system "tar xf #{filepath}"
+      system "tar xf #{file_path}"
     when :gzip
-      system "gzip -d #{filepath}"
+      system "gzip -d #{file_path}"
     when :bzip2
-      system "bzip2 -d #{filepath}"
+      system "bzip2 -d #{file_path}"
     when :zip
-      system "unzip -o #{filepath} 1> /dev/null"
+      system "unzip -o #{file_path} 1> /dev/null"
     end
   end
 

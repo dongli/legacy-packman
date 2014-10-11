@@ -12,12 +12,12 @@ class Hdf5 < PACKMAN::Package
 
   def install
     args = %W[
-      --prefix=#{PACKMAN::Package.prefix(self)}
+      --prefix=#{PACKMAN.prefix(self)}
       --enable-production
       --enable-debug=no
       --disable-dependency-tracking
-      --with-zlib=#{PACKMAN::Package.prefix(Zlib)}
-      --with-szlib=#{PACKMAN::Package.prefix(Szip)}
+      --with-zlib=#{PACKMAN.prefix(Zlib)}
+      --with-szlib=#{PACKMAN.prefix(Szip)}
       --enable-filters=all
       --enable-static=yes
       --enable-shared=yes
@@ -52,10 +52,10 @@ class Hdf5 < PACKMAN::Package
   end
 
   def check_consistency
-    res = PACKMAN.grep "#{PACKMAN::Package.prefix(self)}/lib/libhdf5.settings", /Parallel HDF5:\s*(.*)$/
+    res = PACKMAN.grep "#{PACKMAN.prefix(self)}/lib/libhdf5.settings", /Parallel HDF5:\s*(.*)$/
     if not res.size == 1
       PACKMAN::CLI.report_error "Failed to check consistency of #{PACKMAN::CLI.red 'Hdf5'}! "+
-        "Bad content in #{PACKMAN::Package.prefix(self)}/lib/libhdf5.settings."
+        "Bad content in #{PACKMAN.prefix(self)}/lib/libhdf5.settings."
     end
     if res.first.first == 'no' and options['use_mpi']
       return false

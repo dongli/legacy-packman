@@ -20,7 +20,7 @@ module PACKMAN
       # Install proftpd.
       install_package ConfigManager.compiler_sets[0], Proftpd.new
       # Edit proftpd config file.
-      PACKMAN.replace "#{Package.prefix(Proftpd)}/../config/proftpd.conf", {
+      PACKMAN.replace "#{PACKMAN.prefix(Proftpd)}/../config/proftpd.conf", {
         /^ServerName.*$/ => 'ServerName "PACKMAN FTP Mirror Service"',
         /^<Anonymous\s*.*>$/ => "<Anonymous #{ConfigManager.package_root}>"
       }
@@ -29,7 +29,7 @@ module PACKMAN
     def self.start_mirror_service
       Package.compiler_set = ConfigManager.compiler_sets[0]
       CLI.report_notice "Start FTP mirror service."
-      cmd = "#{Package.prefix(Proftpd)}/sbin/proftpd"
+      cmd = "#{PACKMAN.prefix(Proftpd)}/sbin/proftpd"
       if ENV['USER'] != 'root'
         system "sudo #{cmd}"
       else
@@ -39,7 +39,7 @@ module PACKMAN
 
     def self.stop_mirror_service
       Package.compiler_set = ConfigManager.compiler_sets[0]
-      pid = "#{Package.prefix(Proftpd)}/var/proftpd.pid"
+      pid = "#{PACKMAN.prefix(Proftpd)}/var/proftpd.pid"
       if not File.exist? pid
         CLI.report_warning "FTP mirror service is not running!"
         exit
@@ -55,7 +55,7 @@ module PACKMAN
 
     def self.status_mirror_service
       Package.compiler_set = ConfigManager.compiler_sets[0]
-      pid = "#{Package.prefix(Proftpd)}/var/proftpd.pid"
+      pid = "#{PACKMAN.prefix(Proftpd)}/var/proftpd.pid"
       if File.exist? pid
         CLI.report_notice "FTP mirror service is #{CLI.green 'on'}."
       else

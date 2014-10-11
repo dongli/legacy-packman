@@ -7,7 +7,7 @@ class Freetype < PACKMAN::Package
     PACKMAN.replace 'include/config/ftoption.h',
       /\/\* (#define FT_CONFIG_OPTION_SUBPIXEL_RENDERING) \*\// => '\1'
     args = %W[
-      --prefix=#{PACKMAN::Package.prefix(self)}
+      --prefix=#{PACKMAN.prefix(self)}
       --without-harfbuzz
     ]
     PACKMAN.run './configure', *args

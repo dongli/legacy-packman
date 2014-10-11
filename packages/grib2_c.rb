@@ -9,17 +9,17 @@ class Grib2_c < PACKMAN::Package
   def install
     defs = 'DEFS=-DUSE_JPEG2000 -DUSE_PNG'
     defs << ' -D__64BIT__' if PACKMAN::OS.x86_64?
-    inc = "-I#{PACKMAN::Package.prefix(Jasper)}/include"
-    inc << " -I#{PACKMAN::Package.prefix(Libpng)}/include" if not PACKMAN::OS.distro == :Mac_OS_X
+    inc = "-I#{PACKMAN.prefix(Jasper)}/include"
+    inc << " -I#{PACKMAN.prefix(Libpng)}/include" if not PACKMAN::OS.distro == :Mac_OS_X
     PACKMAN.replace 'makefile', {
       /^DEFS=.*$/ => defs,
       /^(INC=.*)$/ => "\\1 #{inc}",
       /^CC=.*$/ => "CC=#{PACKMAN.compiler_command 'c'}",
     }
     PACKMAN.run 'make all'
-    PACKMAN.mkdir "#{PACKMAN::Package.prefix(self)}/include"
-    PACKMAN.cp 'grib2.h', "#{PACKMAN::Package.prefix(self)}/include"
-    PACKMAN.mkdir "#{PACKMAN::Package.prefix(self)}/lib"
-    PACKMAN.cp 'libgrib2c.a', "#{PACKMAN::Package.prefix(self)}/lib"
+    PACKMAN.mkdir "#{PACKMAN.prefix(self)}/include"
+    PACKMAN.cp 'grib2.h', "#{PACKMAN.prefix(self)}/include"
+    PACKMAN.mkdir "#{PACKMAN.prefix(self)}/lib"
+    PACKMAN.cp 'libgrib2c.a', "#{PACKMAN.prefix(self)}/lib"
   end
 end

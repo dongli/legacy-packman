@@ -92,6 +92,7 @@ module PACKMAN
     def conflict_reasons; @active_spec.conflict_reasons; end
     def conflict_with? val; @active_spec.conflict_with? val; end
     def dependencies; @active_spec.dependencies; end
+    def master_package; @active_spec.master_package; end
     def patches; @active_spec.patches; end
     def embeded_patches; @active_spec.embeded_patches; end
     def attachments; @active_spec.attachments; end
@@ -111,6 +112,7 @@ module PACKMAN
       def label val; stable.label val; end
       def conflicts_with val, &block; stable.conflicts_with val, &block; end
       def depends_on val; stable.depends_on val; end
+      def belongs_to val; stable.belongs_to val; end
       def provide val; stable.provide val; end
       def skip_on val; stable.skip_on val; end
       def option key; stable.option key; end
@@ -333,7 +335,7 @@ module PACKMAN
         CLI.report_error "Package #{CLI.red self.class} has not been downloaded!"
       end
       decom_dir = "#{root}/#{self.class}"
-      PACKMAN.mkdir(decom_dir, :force)
+      PACKMAN.mkdir decom_dir, :force
       PACKMAN.cd decom_dir
       PACKMAN.decompress "#{root}/#{filename}"
       PACKMAN.cd_back
@@ -349,21 +351,6 @@ module PACKMAN
       PACKMAN.cp "#{root}/#{dirname}", copy_dir
     end
 
-    def self.prefix package, options = []
-      options = [options] if not options.class == Array
-      if package.class == Class or package.class == String
-        package = Package.instance package
-      end
-      prefix = "#{ConfigManager.install_root}/#{package.class.to_s.downcase}/#{package.version}"
-      if not package.has_label? 'compiler' and
-        not package.has_label? 'compiler_insensitive' and
-        not options.include? :compiler_insensitive
-        compiler_set_index = ConfigManager.compiler_sets.index(Package.compiler_set)
-        prefix << "/#{compiler_set_index}"
-      end
-      return prefix
-    end
-
     def self.compiler_set
       @@compiler_set
     end
@@ -374,11 +361,33 @@ module PACKMAN
 
     def self.bashrc package, options = []
       options = [options] if not options.class == Array
-      prefix = prefix package, options
-      class_name = package.class.name.upcase
+      prefix = PACKMAN.prefix package, options
+      if package.master_package
+        class_name = package.master_package.to_s.upcase
+      else
+        class_name = package.class.name.upcase
+      end
+      if File.exist? "#{prefix}/bashrc"
+        content = File.open("#{prefix}/bashrc", 'r').read
+        slave_package_tags = content.scan(/^# (\w+) (\w{40})$/)
+      end
       root = "#{class_name}_ROOT"
-      open("#{prefix}/bashrc", "w") do |file|
-        file << "# #{package.sha1}\n"
+      File.open("#{prefix}/bashrc", 'w') do |file|
+        # Write package tag or tags.
+        if package.master_package and slave_package_tags
+          tmp = package.class.name.upcase.to_sym
+          slave_package_tags.each do |tag|
+            if tag.first.to_sym == tmp
+              file << "# #{package.class.name.upcase} #{package.sha1}\n"
+              updated = true
+            else
+              file << "# #{tag.first} #{tag.last}\n"
+            end
+          end
+        end
+        if not defined? updated
+          file << "# #{package.class.name.upcase} #{package.sha1}\n"
+        end
         file << "export #{root}=#{prefix}\n"
         if Dir.exist?("#{prefix}/bin")
           file << "export PATH=${#{root}}/bin:${PATH}\n"
@@ -424,7 +433,7 @@ module PACKMAN
       include_dirs = [include_dirs] if not include_dirs.class == Array
       library_dirs = [library_dirs] if not library_dirs.class == Array
       libraries = [libraries] if not libraries.class == Array
-      prefix = Package.prefix(self)
+      prefix = PACKMAN.prefix(self)
       if not Dir.exist? "#{prefix}/include" or not Dir.exist? "#{prefix}/lib"
         CLI.report_error "Nonstandard package #{CLI.red self.class} without \"include\" or \"lib\" directories!"
       end
@@ -474,5 +483,25 @@ module PACKMAN
     def install_method
       "Not available!"
     end
+  end
+
+  def self.prefix package, options = []
+    options = [options] if not options.class == Array
+    if package.class == Class or package.class == String
+      package = Package.instance package
+    end
+    if package.master_package
+      package_ = Package.instance package.master_package
+    else
+      package_ = package
+    end
+    prefix = "#{ConfigManager.install_root}/#{package_.class.to_s.downcase}/#{package_.version}"
+    if not package_.has_label? 'compiler' and
+      not package_.has_label? 'compiler_insensitive' and
+      not options.include? :binary
+      compiler_set_index = ConfigManager.compiler_sets.index(Package.compiler_set)
+      prefix << "/#{compiler_set_index}"
+    end
+    return prefix
   end
 end

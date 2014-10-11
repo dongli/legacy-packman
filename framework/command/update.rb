@@ -9,7 +9,7 @@ module PACKMAN
           update_by_direct_download
         end
       rescue => e
-        if not OS.connect_internet?
+        if not NetworkManager.is_connect_internet?
           if ConfigManager.use_ftp_mirror == 'no'
             CLI.report_error "This machine can not connect internet! "+
               "You may use a FTP mirror in your location.\n"+

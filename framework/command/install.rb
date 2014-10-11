@@ -180,7 +180,12 @@ module PACKMAN
         if depend_package.conflict_reasons.include? 'mpi'
           PACKMAN.use_mpi depend.to_s.downcase
         end
-        RunManager.append_bashrc_path("#{Package.prefix(depend_package)}/bashrc") if not depend_package.skip?
+        RunManager.append_bashrc_path("#{PACKMAN.prefix(depend_package)}/bashrc") if not depend_package.skip?
+      end
+      # Check if the package is a master.
+      if package.has_label? 'package_master'
+        CLI.report_notice "Package master #{CLI.green package.class} has been installed."
+        return
       end
       # Check if the package should be skipped.
       if package.skip?
@@ -196,7 +201,7 @@ module PACKMAN
       begin
         PACKMAN.download_package package
       rescue => e
-        if not OS.connect_internet?
+        if not NetworkManager.is_connect_internet?
           CLI.report_error "#{CLI.red package.filename} has not been downloaded!\n"+
             "#{CLI.red '==>'} #{e}"
         end
@@ -204,12 +209,12 @@ module PACKMAN
       # Install package.
       if compiler_sets.empty?
         # Install precompiled package.
-        prefix = Package.prefix package, :compiler_insensitive
+        prefix = PACKMAN.prefix package, :binary
         # Check if the package has alreadly installed.
         bashrc = "#{prefix}/bashrc"
         if File.exist?(bashrc)
-          first_line = File.new(bashrc, 'r').readline
-          if first_line =~ /#{package.sha1}/
+            content = File.open("#{bashrc}", 'r').readlines
+            if not content.grep(/#{package.sha1}/).empty?
             CLI.report_notice "Package #{CLI.green package.class} has been installed." if not options.include? :depend
             return
           end
@@ -221,7 +226,7 @@ module PACKMAN
         PACKMAN.decompress "#{ConfigManager.package_root}/#{package.filename}"
         PACKMAN.cd_back
         # Write bashrc file for the package.
-        Package.bashrc package, :compiler_insensitive
+        Package.bashrc package, :binary
         package.postfix
       else
         # Build package for each compiler set.
@@ -229,10 +234,10 @@ module PACKMAN
         compiler_sets.each do |compiler_set|
           Package.compiler_set = compiler_set
           # Check if the package has alreadly installed.
-          bashrc = "#{Package.prefix(package)}/bashrc"
+          bashrc = "#{PACKMAN.prefix(package)}/bashrc"
           if File.exist? bashrc
-            first_line = File.new(bashrc, 'r').readline
-            if first_line =~ /#{package.sha1}/
+            content = File.open("#{bashrc}", 'r').readlines
+            if not content.grep(/#{package.sha1}/).empty?
               if (package.respond_to? :check_consistency and package.check_consistency) or
                 not package.respond_to? :check_consistency
                 CLI.report_notice "Package #{CLI.green package.class} has been installed." if not options.include? :depend
