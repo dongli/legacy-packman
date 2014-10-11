@@ -3,43 +3,65 @@
 export PACKMAN_ROOT=$(cd $(dirname $BASH_ARGV) && pwd)
 export PATH=$PACKMAN_ROOT:$PATH
 
-# command line completion
-function _packman_()
+# Set command line completion for packman command
+subcommands="config collect install remove switch mirror update help report start stop"
+config_options="-debug"
+collect_options="-debug -all"
+install_options="-debug -verbose"
+remove_options="-debug -all -purge"
+switch_options="-debug"
+mirror_options="-debug -init -start -status -stop -sync"
+update_options="-debug"
+help_options="-debug"
+report_options="-debug"
+start_options="-debug"
+stop="-debug"
+
+package_names=""
+for file in $(ls $PACKMAN_ROOT/packages); do
+    package_names="$package_names $(basename -s .rb $file)"
+done
+
+function find_subcommand()
 {
-    local prev_argv=${COMP_WORDS[COMP_CWORD-1]}
-    local curr_argv=${COMP_WORDS[COMP_CWORD]}
-    completed_words=""
-    case "${prev_argv##*/}" in
-    "packman")
-        completed_words="config collect install remove switch mirror update help report"
-        ;;
-    "collect")
-        completed_words="-all -debug"
-        ;;
-    "install")
-        completed_words="-verbose -debug"
-        # Append package names.
-        for file in $(ls $PACKMAN_ROOT/packages); do
-            package_name=$(basename -s .rb $file)
-            completed_words="$completed_words $package_name"
-        done
-        ;;
-    "remove")
-        completed_words="-all -purge -debug"
-        # Append package names.
-        for file in $(ls $PACKMAN_ROOT/packages); do
-            package_name=$(basename -s .rb $file)
-            completed_words="$completed_words $package_name"
-        done
-        ;;
-    "mirror")
-        completed_words="-init -start -stop -status -sync -debug"
-        ;;
-    esac
-    COMPREPLY=($(compgen -W "$completed_words" -- $curr_argv))
+    if [[ $subcommand ]]; then
+        return
+    fi
+    for (( i = 0; i < $COMP_CWORD; ++i )); do
+        if [[ $subcommands =~ ${COMP_WORDS[i]} ]]; then
+            subcommand=${COMP_WORDS[i]}
+        fi
+    done
 }
 
-complete -o default -F _packman_ packman
+function complete_packman()
+{
+    find_subcommand
+    local prev_word=${COMP_WORDS[COMP_CWORD-1]}
+    local curr_word=${COMP_WORDS[COMP_CWORD]}
+    completed_words=""
+    case "${prev_word##*/}" in
+    "packman")
+        completed_words=$subcommands
+        ;;
+    "config" | "collect" | "switch" | "mirror" | "update" | "help" | "report")
+        completed_words=$(eval "echo \$${prev_word##*/}_options")
+        ;;
+    "install" | "remove" | "start" | "stop")
+        completed_words="$(eval "echo \$${prev_word##*/}_options") $package_names"
+        ;;
+    *)
+        if [[ $subcommand ]]; then
+            if [[ "install remove start stop" =~ $subcommand ]]; then
+                completed_words="$(eval "echo \$${subcommand}_options") $package_names"
+            fi
+        fi
+        ;;
+    esac
+    COMPREPLY=($(compgen -W "$completed_words" -- $curr_word))
+}
+
+complete -o bashdefault -F complete_packman packman
 
 
 # Check if Ruby is available or not, and it must be >= 1.9.

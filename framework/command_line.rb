@@ -14,26 +14,26 @@ module PACKMAN
       :mirror  => 'Control FTP mirror service.',
       :update  => 'Update PACKMAN.',
       :help    => 'Print help message.',
-      :report  => 'Report version of PACKMAN an other information.'
+      :report  => 'Report version of PACKMAN an other information.',
+      :start   => 'Start a package if it provides a start method.',
+      :stop    => 'Stop a package if it provides a stop method.'
+    }
+    @@permitted_common_options = {
+      '-debug' => 'Print debug information.'
     }
     @@permitted_options = {
-      :config  => {
-        '-debug' => 'Print debug information.'
-      },
+      :config  => {},
       :collect => {
-        '-all' => 'Collect all packages.',
-        '-debug' => 'Print debug information.'
+        '-all'   => 'Collect all packages.'
       },
       :install => {
         '-verbose' => 'Show verbose information.',
         '-ask'     => 'Ask user when there are choices.',
-        '-debug'   => 'Print debug information.',
         '-no-mpi'  => 'Suppress MPI dependency.'
       },
       :remove => {
         '-all'   => 'Remove all versions and compiler sets.',
-        '-purge' => 'Also remove unneeded dependencies.',
-        '-debug' => 'Print debug information.'
+        '-purge' => 'Also remove unneeded dependencies.'
       },
       :switch  => {},
       :mirror  => {
@@ -41,12 +41,13 @@ module PACKMAN
         '-start'  => 'Start FTP mirror service.',
         '-stop'   => 'Stop FTP mirror service.',
         '-status' => 'Check if FTP mirror service is on or off.',
-        '-sync'   => 'Synchronize the packages.',
-        '-debug' => 'Print debug information.'
+        '-sync'   => 'Synchronize the packages.'
       },
       :update  => {},
       :help    => {},
-      :report  => {}
+      :report  => {},
+      :start   => {},
+      :stop    => {}
     }
 
     def self.init
@@ -69,7 +70,8 @@ module PACKMAN
           @@packages << arg.capitalize.to_sym
           next
         end
-        if @@permitted_options[@@subcommand].has_key? arg
+        if @@permitted_options[@@subcommand].has_key? arg or
+          @@permitted_common_options.has_key? arg
           @@options << arg
         else
           CLI.report_error "Invalid command option #{CLI.red arg}!\n"+
@@ -77,7 +79,7 @@ module PACKMAN
         end
       end
       if [:config, :collect, :install, :remove,
-          :switch, :mirror].include? @@subcommand and
+          :switch, :mirror,  :start,   :stop].include? @@subcommand and
          not @@config_file
         # Check if there is a configuration file in PACKMAN_ROOT.
         @@config_file = "#{ENV['PACKMAN_ROOT']}/packman.config"
