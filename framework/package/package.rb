@@ -31,13 +31,15 @@ module PACKMAN
             @active_spec = history_versions[requested_spec[:version]]
           when :binary
             @binary.each do |key, value|
-              tmp1 = key.to_s.split(':')
-              if requested_spec.has_key? :os_distro
-                if requested_spec[:os_distro] == tmp1.first.to_sym
+              if requested_spec.has_key? :key
+                # TODO: Should we judge version here? Because there should be
+                # only one version in the binary.
+                if requested_spec[:key] == key and requested_spec[:version] == value.version
                   @active_spec = value
                   break
                 end
               else
+                tmp1 = key.to_s.split(':')
                 next if OS.distro != tmp1.first.to_sym
                 tmp2 = tmp1.last.match(/(>=|==|=~)?\s*(.*)/)
                 operator = tmp2[1] ? tmp2[1] : '=='
@@ -51,22 +53,31 @@ module PACKMAN
             end
           when :history_binary_versions
             @history_binary_versions.each do |key, value|
-              key.to_s.split('|').each do |x|
-                tmp1 = x.split('@')
-                package_version = tmp1.first
-                next if package_version != requested_spec[:version]
-                tmp2 = tmp1.last.split(':')
-                next if OS.distro != tmp2.first.to_sym
-                tmp3 = tmp2.last.match(/(>=|==|=~)?\s*(.*)/)
-                operator = tmp3[1] ? tmp3[1] : '=='
-                v1 = VersionSpec.new tmp3[2]
-                v2 = OS.version
-                if eval "v2 #{operator} v1"
+              if requested_spec.has_key? :key
+                if requested_spec[:key] == key
                   @active_spec = value
                   break
                 end
+              else
+                key.to_s.split('|').each do |x|
+                  tmp1 = x.split('@')
+                  package_version = tmp1.first
+                  next if package_version != requested_spec[:version]
+                  tmp2 = tmp1.last.split(':')
+                  p OS.distro
+                  p tmp2.first
+                  next if OS.distro != tmp2.first.to_sym
+                  tmp3 = tmp2.last.match(/(>=|==|=~)?\s*(.*)/)
+                  operator = tmp3[1] ? tmp3[1] : '=='
+                  v1 = VersionSpec.new tmp3[2]
+                  v2 = OS.version
+                  if eval "v2 #{operator} v1"
+                    @active_spec = value
+                    break
+                  end
+                end
+                break if @active_spec
               end
-              break if @active_spec
             end
           end
         elsif requested_spec.class == Symbol
@@ -270,16 +281,16 @@ module PACKMAN
         if self.class_variable_defined? "@@#{package_name}_binary"
           requested_spec[:in] = :binary
           eval("@@#{package_name}_binary").each do |key, value|
+            # TODO: Check if we need to set version here.
             requested_spec[:version] = value.version
-            requested_spec[:os_distro] = key.to_s.split(':')[0].to_sym
+            requested_spec[:key] = key
             instances << eval("#{package_name}.new requested_spec")
           end
         end
         if self.class_variable_defined? "@@#{package_name}_history_binary_versions"
           requested_spec[:in] = :history_binary_versions
           eval("@@#{package_name}_history_binary_versions").each do |key, value|
-            requested_spec[:version] = value.version
-            requested_spec[:os_distro] = key.to_s.split(':')[0].to_sym
+            requested_spec[:key] = key
             instances << eval("#{package_name}.new requested_spec")
           end
         end
