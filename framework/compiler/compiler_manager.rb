@@ -80,6 +80,17 @@ module PACKMAN
       end
     end
 
+    def self.check_compilers compiler_set
+      compiler_set.each do |language, compiler|
+        next if language == 'installed_by_packman'
+        begin
+          PACKMAN.check_command compiler
+        rescue
+          CLI.report_error "Compiler #{CLI.red compiler} for #{CLI.red language} does not exist!"
+        end
+      end
+    end
+
     def self.expand_packman_compiler_sets
       for i in 0..ConfigManager.compiler_sets.size-1
         if ConfigManager.compiler_sets[i].keys.include? 'installed_by_packman'

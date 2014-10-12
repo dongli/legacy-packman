@@ -14,6 +14,7 @@ class Hyrax_gateway_module < PACKMAN::Package
     args = %W[
       --prefix=#{PACKMAN.prefix(self)}
       --disable-dependency-tracking
+      DAP_CFLAGS='#{`#{PACKMAN.prefix(Opendap)}/bin/dap-config --cflags`.strip}'
     ]
     PACKMAN.run './configure', *args
     PACKMAN.run 'make'

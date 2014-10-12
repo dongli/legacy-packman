@@ -23,12 +23,12 @@ class Hyrax < PACKMAN::Package
   def start
     # Start Hyrax server.
     # - Start Tomcat server with OLFS app.
-    PACKMAN.slim_run "startup.sh"
+    PACKMAN.run "#{PACKMAN.prefix(Tomcat)}/bin/startup.sh"
     # - Start BES server.
     if ENV['USER'] != 'root'
-      PACKMAN.slim_run "sudo besctl start"
+      PACKMAN.run "sudo #{PACKMAN.prefix(Hyrax)}/bin/besctl start"
     else
-      PACKMAN.slim_run "besctl start"
+      PACKMAN.run "#{PACKMAN.prefix(Hyrax)}/bin/besctl start"
     end
   end
 
@@ -36,11 +36,11 @@ class Hyrax < PACKMAN::Package
     # Stop Hyrax server.
     # - Stop BES server.
     if ENV['USER'] != 'root'
-      PACKMAN.slim_run "sudo besctl stop"
+      PACKMAN.run "sudo #{PACKMAN.prefix(Hyrax)}/bin/besctl stop"
     else
-      PACKMAN.slim_run "besctl stop"
+      PACKMAN.run "#{PACKMAN.prefix(Hyrax)}/bin/besctl stop"
     end
     # - Stop Tomcat server with OLFS app.
-    PACKMAN.slim_run "shutdown.sh"
+    PACKMAN.run "#{PACKMAN.prefix(Tomcat)}/bin/shutdown.sh"
   end
 end

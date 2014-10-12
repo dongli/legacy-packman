@@ -14,6 +14,7 @@ class Hyrax_fits_handler < PACKMAN::Package
       --prefix=#{PACKMAN.prefix(self)}
       --disable-dependency-tracking
       --with-cfits=#{PACKMAN.prefix(Cfitsio)}
+      LDFLAGS='-lm'
     ]
     PACKMAN.run './configure', *args
     PACKMAN.run 'make'

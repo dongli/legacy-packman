@@ -5,7 +5,7 @@ require "fileutils"
 
 module PACKMAN
   def self.check_command cmd
-    `which #{cmd}`
+    `which #{cmd} 2>&1`
     if not $?.success?
       raise "Command \"#{cmd}\" does not exist!"
     end

@@ -50,6 +50,7 @@ module PACKMAN
     end
 
     def self.parse
+      return if CommandLine.subcommand == :config
       file_path = CommandLine.config_file
       return if not file_path
       if not File.exist? file_path
@@ -61,17 +62,26 @@ module PACKMAN
         config.gsub!(/^ *#{key} *=/, "self.#{key}=")
       end
       config.gsub!(/^ *package_(\w+) *=/, 'self.package "\1",')
-      class_eval config
+      begin
+        class_eval config
+      rescue SyntaxError => e
+        CLI.report_error "Failed to parse #{CLI.red CommandLine.config_file}!\n#{e}"
+      end
       PACKMAN.expand_tilde @@package_root
       PACKMAN.expand_tilde @@install_root
+      CLI.report_error "package_root #{CLI.red @@package_root} does not exist!" if not Dir.exist? @@package_root
+      CLI.report_error "install_root #{CLI.red @@install_root} does not exist!" if not Dir.exist? @@install_root
       @@download_command = @@download_command.to_sym
       @@compiler_sets = []
       ( self.methods.select { |m| m.to_s =~ /compiler_set_\d$/ } ).each do |m|
         compiler_set = self.method(m).call
-        @@compiler_sets << compiler_set if compiler_set != nil
+        if compiler_set != nil
+          CompilerManager.check_compilers compiler_set
+          @@compiler_sets << compiler_set
+        end
       end
       # Check if defaults has been set.
-      if not @@defaults and not CommandLine.subcommand == :config
+      if not @@defaults
         msg = <<EOT
 Defaults section has not been set in #{CLI.red file_path}!
 Example:
@@ -91,20 +101,17 @@ EOT
       end
       File.open(file_path, 'w') do |file|
         file << <<-EOT
-package_root = "..."
-install_root = "..."
+package_root = "<CHANGE ME>"
+install_root = "<CHANGE ME>"
 use_ftp_mirror = "no"
 defaults = {
   "compiler_set" => 0,
   "mpi" => "mpich"
 }
 compiler_set_0 = {
-  "c" => "...",
-  "c++" => "...",
-  "fortran" => "..."
-}
-package_... = {
-  "compiler_set" => [...]
+  "c" => "<CHANGE ME>",
+  "c++" => "<CHANGE ME>",
+  "fortran" => "<CHANGE ME>"
 }
         EOT
       end

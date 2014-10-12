@@ -155,12 +155,6 @@ module PACKMAN
     end
   end
 
-  def self.slim_run cmd, *args
-    res = `#{cmd} #{args.join(' ')} 1> /dev/null 2>&1`
-    raise "Command failed!" if not $?.success?
-    return res
-  end
-
   def self.append_env env
     RunManager.append_env env
   end

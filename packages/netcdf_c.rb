@@ -3,6 +3,7 @@ class Netcdf_c < PACKMAN::Package
   sha1 '6e1bacab02e5220954fe0328d710ebb71c071d19'
   version '4.3.2'
 
+  depends_on 'patch'
   depends_on 'curl'
   depends_on 'zlib'
   depends_on 'szip'

@@ -5,6 +5,7 @@ class Hyrax_bes < PACKMAN::Package
 
   belongs_to 'hyrax'
 
+  depends_on 'uuid'
   depends_on 'readline'
   depends_on 'libxml2'
   depends_on 'opendap'
@@ -15,15 +16,29 @@ class Hyrax_bes < PACKMAN::Package
     # include directory of Libxml2!
     args = %W[
       --prefix=#{PACKMAN.prefix(self)}
-      DAP_CFLAGS='#{`#{PACKMAN.prefix(Opendap)}/bin/dap-config --cflags`}'
+      DAP_CFLAGS='#{`#{PACKMAN.prefix(Opendap)}/bin/dap-config --cflags`.strip}'
     ]
     if not PACKMAN::OS.mac_gang?
-      args << "CPPFLAGS='-I#{PACKMAN.prefix(Readline)}/include'"
-      args << "LDFLAGS='-L#{PACKMAN.prefix(Readline)}/lib'"
+      args << "CPPFLAGS='-I#{PACKMAN.prefix(Uuid)}/include -I#{PACKMAN.prefix(Readline)}/include'"
+      args << "LDFLAGS='-L#{PACKMAN.prefix(Ncurses)}/lib -L#{PACKMAN.prefix(Readline)}/lib'"
     end
     PACKMAN.run './configure', *args
     PACKMAN.run 'make'
     PACKMAN.run 'make check'
     PACKMAN.run 'make install'
+  end
+
+  def postfix
+    # Change user name and group name in bes.conf
+    user_name = ENV['USER']
+    if PACKMAN::OS.mac_gang?
+      group_name = 'wheel'
+    else
+      group_name = user_name
+    end
+    PACKMAN.replace "#{PACKMAN.prefix(self)}/etc/bes/bes.conf", {
+      'BES.User=user_name' => "BES.User=#{user_name}",
+      'BES.Group=group_name' => "BES.Group=#{group_name}"
+    }
   end
 end

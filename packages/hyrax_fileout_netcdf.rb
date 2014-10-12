@@ -14,6 +14,7 @@ class Hyrax_fileout_netcdf < PACKMAN::Package
       --prefix=#{PACKMAN.prefix(self)}
       --disable-dependency-tracking
       --with-netcdf=#{PACKMAN.prefix(Netcdf_c)}
+      DAP_CFLAGS='#{`#{PACKMAN.prefix(Opendap)}/bin/dap-config --cflags`.strip}'
     ]
     PACKMAN.run './configure', *args
     PACKMAN.run 'make'

@@ -5,6 +5,7 @@ class Hyrax_ncml_module < PACKMAN::Package
 
   belongs_to 'hyrax'
 
+  depends_on 'autoconf'
   depends_on 'libxml2'
   depends_on 'opendap'
   depends_on 'hyrax_bes'

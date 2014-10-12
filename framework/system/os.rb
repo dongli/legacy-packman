@@ -125,9 +125,11 @@ module PACKMAN
       package.each do |p|
         begin
           if debian_gang?
-            PACKMAN.slim_run "dpkg-query -l #{p}"
+            `dpkg-query -l #{p} 1>/dev/null 2>&1`
+            flag = false if not $?.success?
           elsif redhat_gang?
-            PACKMAN.slim_run "rpm -q #{p}"
+            `rpm -q #{p} 1>/dev/null 2>&1`
+            flag = false if not $?.success?
           elsif mac_gang?
             # TODO: How to handle this branch?
             PACKMAN.under_construction!

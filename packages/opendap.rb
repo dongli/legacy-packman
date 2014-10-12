@@ -5,6 +5,7 @@ class Opendap < PACKMAN::Package
 
   depends_on 'uuid'
   depends_on 'curl'
+  depends_on 'libxml2'
 
   def install
     args = %W[
@@ -12,6 +13,7 @@ class Opendap < PACKMAN::Package
       --disable-debug
       --disable-dependency-tracking
       --with-curl=#{PACKMAN.prefix(Curl)}
+      --with-xml2=#{PACKMAN.prefix(Libxml2)}
       --with-included-regex
       CPPFLAGS='-I#{PACKMAN.prefix(Uuid)}/include'
       LDFLAGS='-L#{PACKMAN.prefix(Uuid)}/lib'

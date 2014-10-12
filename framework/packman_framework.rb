@@ -3,11 +3,11 @@ require "cli"
 require "version_spec"
 require "command_line"
 require "config_manager"
-require "os"
 require "autotool_helper"
 require "cmake_helper"
 require "run_manager"
-require "network/network_manager"
+require "system/os"
+require "system/network_manager"
 require "compiler/compiler_group_spec"
 require "compiler/compiler_group"
 require "compiler/gcc_compiler_group"
@@ -40,9 +40,7 @@ PACKMAN::CompilerManager.init
 begin
   PACKMAN::ConfigManager.parse
 rescue SyntaxError => e
-  if not PACKMAN::CommandLine.subcommand == :config
-    PACKMAN::CLI.report_error "Failed to parse #{PACKMAN::CLI.red PACKMAN::CommandLine.config_file}!\n#{e}"
-  end
+  PACKMAN::CLI.report_error "Failed to parse #{PACKMAN::CLI.red PACKMAN::CommandLine.config_file}!\n#{e}"
 end
 
 if not PACKMAN::CommandLine.subcommand == :config
