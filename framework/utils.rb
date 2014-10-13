@@ -128,7 +128,7 @@ module PACKMAN
   def self.cd_back
     CLI.report_error 'There is no more directory to change back!' if @@dir_stack.empty?
     FileUtils.chdir @@dir_stack.last
-    @@dir_stack = @@dir_stack[0..-1]
+    @@dir_stack.delete_at(@@dir_stack.size-1)
   end
 
   def self.work_in dir
