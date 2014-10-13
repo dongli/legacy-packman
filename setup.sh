@@ -4,7 +4,7 @@ export PACKMAN_ROOT=$(cd $(dirname $BASH_ARGV) && pwd)
 export PATH=$PACKMAN_ROOT:$PATH
 
 # Set command line completion for packman command
-subcommands="config collect install remove switch mirror update help report start stop"
+subcommands="config collect install remove switch mirror update help report start stop status"
 config_options="-debug"
 collect_options="-debug -all"
 install_options="-debug -verbose"
@@ -16,6 +16,7 @@ help_options="-debug"
 report_options="-debug"
 start_options="-debug"
 stop="-debug"
+status="-debug"
 
 package_names=""
 for file in $(ls $PACKMAN_ROOT/packages); do
@@ -47,7 +48,7 @@ function complete_packman()
     "config" | "collect" | "switch" | "mirror" | "update" | "help" | "report")
         completed_words=$(eval "echo \$${prev_word##*/}_options")
         ;;
-    "install" | "remove" | "start" | "stop")
+    "install" | "remove" | "start" | "stop" | "status")
         completed_words="$(eval "echo \$${prev_word##*/}_options") $package_names"
         ;;
     *)

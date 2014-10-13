@@ -34,7 +34,7 @@ module PACKMAN
     end
   end
 
-  def is_port_open? ip, port
+  def self.is_port_open? ip, port
     NetworkManager.is_port_open? ip, port
   end
 end

@@ -16,7 +16,8 @@ module PACKMAN
       :help    => 'Print help message.',
       :report  => 'Report version of PACKMAN an other information.',
       :start   => 'Start a package if it provides a start method.',
-      :stop    => 'Stop a package if it provides a stop method.'
+      :stop    => 'Stop a package if it provides a stop method.',
+      :status  => 'Check the status of a package if it provides a status method.'
     }
     @@permitted_common_options = {
       '-debug' => 'Print debug information.'
@@ -47,7 +48,8 @@ module PACKMAN
       :help    => {},
       :report  => {},
       :start   => {},
-      :stop    => {}
+      :stop    => {},
+      :status  => {}
     }
 
     def self.init
@@ -78,8 +80,8 @@ module PACKMAN
             "The available options are:\n#{print_options(@@subcommand, 2).chomp}"
         end
       end
-      if [:config, :collect, :install, :remove,
-          :switch, :mirror,  :start,   :stop].include? @@subcommand and
+      if [:config, :collect, :install, :remove, :switch, :mirror,
+          :start,   :stop, :status].include? @@subcommand and
          not @@config_file
         # Check if there is a configuration file in PACKMAN_ROOT.
         @@config_file = "#{ENV['PACKMAN_ROOT']}/packman.config"
