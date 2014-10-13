@@ -83,9 +83,7 @@ module PACKMAN
     def self.check_compilers compiler_set
       compiler_set.each do |language, compiler|
         next if language == 'installed_by_packman'
-        begin
-          PACKMAN.check_command compiler
-        rescue
+        if not PACKMAN.does_command_exist? compiler
           CLI.report_error "Compiler #{CLI.red compiler} for #{CLI.red language} does not exist!"
         end
       end

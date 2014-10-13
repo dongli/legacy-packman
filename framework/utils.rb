@@ -4,17 +4,17 @@ require "digest"
 require "fileutils"
 
 module PACKMAN
-  def self.check_command cmd
+  def self.does_command_exist? cmd
     `which #{cmd} 2>&1`
-    if not $?.success?
-      raise "Command \"#{cmd}\" does not exist!"
-    end
+    return $?.success?
   end
 
   def self.download root, url, rename = nil, cmd = nil
     cmd ||= ConfigManager.download_command
     FileUtils.mkdir root if not Dir.exist? root
-    check_command cmd
+    if not does_command_exist? cmd
+      CLI.report_error "Download command #{CLI.red cmd} does not exist!"
+    end
     filename = rename ? rename : File.basename(URI.parse(url).path)
     case cmd
     when :curl
@@ -56,7 +56,9 @@ module PACKMAN
     if Dir.exist? "#{root}/#{rename}"
       FileUtils.rm_rf "#{root}/#{rename}"
     end
-    check_command('git')
+    if not does_command_exist? 'git'
+      CLI.report_error "#{CLI.red 'git'} does not exist!"
+    end
     args = "-b #{tag} #{url} #{root}/#{rename}"
     system "git clone #{args}"
   end
