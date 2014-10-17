@@ -1,4 +1,5 @@
 .idea
+.pid
 ruby
 .DS_Store
 *.tar.bz2

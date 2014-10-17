@@ -50,5 +50,7 @@ end
 
 Kernel.trap('INT') do
   print "GOOD BYE!\n"
+  pid_file = "#{ENV['PACKMAN_ROOT']}/.pid"
+  PACKMAN.rm pid_file if File.exist? pid_file and CommandLine.process_exclusive?
   exit
 end

@@ -94,10 +94,22 @@ module PACKMAN
           end
         end
       end
+      @@process_exclusive = false
+      if [:install, :remove, :switch, :mirror].include? @@subcommand
+        @@process_exclusive = true
+      end
     end
 
     def self.subcommand
       @@subcommand
+    end
+
+    def self.process_exclusive?
+      if defined? @@process_exclusive
+        return @@process_exclusive
+      else
+        CLI.report_error "Unexpected branch!"
+      end
     end
 
     def self.config_file
