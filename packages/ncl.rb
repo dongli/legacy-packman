@@ -71,7 +71,7 @@ class Ncl < PACKMAN::Package
     filename 'ncl_ncarg-6.2.1.Linux_RHEL5.10_x86_64_gcc412.tar.gz'
   end
 
-  binary [:RedHat_Enterprise, :Fedora, :CentOS], ['=~ 6', '=~ 14', '=~ 6'] do
+  binary [:RedHat_Enterprise, :Fedora, :CentOS], ['=~ 6', '>= 14', '=~ 6'] do
     url 'https://www.earthsystemgrid.org/download/fileDownload.htm?logicalFileId=38232b22-351d-11e4-a4b4-00c0f03d5b7c'
     sha1 '7f7980f944bd39192482d9260b9cbb619ce33a44'
     version '6.2.1'

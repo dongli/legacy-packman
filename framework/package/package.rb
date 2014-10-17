@@ -39,15 +39,17 @@ module PACKMAN
                   break
                 end
               else
-                tmp1 = key.to_s.split(':')
-                next if OS.distro != tmp1.first.to_sym
-                tmp2 = tmp1.last.match(/(>=|==|=~)?\s*(.*)/)
-                operator = tmp2[1] ? tmp2[1] : '=='
-                v1 = VersionSpec.new tmp2[2]
-                v2 = OS.version
-                if eval "v2 #{operator} v1"
-                  @active_spec = value
-                  break
+                key.to_s.split('|').each do |split_key|
+                  tmp1 = split_key.split(':')
+                  next if OS.distro != tmp1.first.to_sym
+                  tmp2 = tmp1.last.match(/(>=|==|=~)?\s*(.*)/)
+                  operator = tmp2[1] ? tmp2[1] : '=='
+                  v1 = VersionSpec.new tmp2[2]
+                  v2 = OS.version
+                  if eval "v2 #{operator} v1"
+                    @active_spec = value
+                    break
+                  end
                 end
               end
             end
