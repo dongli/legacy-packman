@@ -46,7 +46,10 @@ module PACKMAN
       },
       :update  => {},
       :help    => {},
-      :report  => {},
+      :report  => {
+        '-package-root' => 'Print the download root of all packages.',
+        '-install-root' => 'Print the installation root of all packages.'
+      },
       :start   => {},
       :stop    => {},
       :status  => {}
