@@ -20,7 +20,7 @@ status="-debug"
 
 package_names=""
 for file in $(ls $PACKMAN_ROOT/packages); do
-    package_names="$package_names $(basename -s .rb $file)"
+    package_names="$package_names $(basename $file .rb)"
 done
 
 function find_subcommand()
