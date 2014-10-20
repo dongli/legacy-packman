@@ -19,6 +19,8 @@ class Proftpd < PACKMAN::Package
     PACKMAN.run './configure', *args
     if PACKMAN::OS.mac_gang?
       PACKMAN.run "make INSTALL_USER=`whoami` INSTALL_GROUP=admin install"
+    elsif PACKMAN::OS.cygwin_gang?
+      PACKMAN.run 'make install'
     else
       PACKMAN.run "make INSTALL_USER=`whoami` INSTALL_GROUP=`whoami` install"
     end
@@ -28,5 +30,25 @@ class Proftpd < PACKMAN::Package
     PACKMAN.replace "#{PACKMAN.prefix(self)}/../config/proftpd.conf", {
       /^(ServerType\s*.*)$/ => "\\1\nServerLog #{PACKMAN.prefix(self)}/var/proftpd.log"
     }
+    if PACKMAN::OS.cygwin_gang?
+      PACKMAN.replace "#{PACKMAN.prefix(self)}/../config/proftpd.conf", {
+        /^User\s*\w+$/ => "User SYSTEM",
+        /^Group\s*\w+$/ => "Group Administrators"
+      }
+      File.open("#{PACKMAN.prefix(self)}/../register_proftpd_service_on_cygwin.sh", 'w') do |file|
+        file << <<-EOT
+#!/bin/sh
+# File: proftpd-config.sh
+# Purpose: Installs proftpd daemon as a Windows service
+
+cygrunsrv --install proftpd \
+          --path #{PACKMAN.prefx(self)}/sbin/proftpd.exe \
+          --args "--nodaemon" \
+          --type manual \
+          --disp "Cygwin proftpd" \
+          --desc "ProFTPD FTP daemon"
+        EOT
+      end
+    end
   end
 end
