@@ -68,8 +68,6 @@ module PACKMAN
     def self.report_error message
       print "[#{red 'Error'}]: #{message}\n"
       print_call_stack if CommandLine.has_option? '-debug'
-      pid_file = "#{ENV['PACKMAN_ROOT']}/.pid"
-      PACKMAN.rm pid_file if File.exist? pid_file and CommandLine.process_exclusive?
       exit
     end
 
