@@ -509,8 +509,7 @@ module PACKMAN
       package_ = package
     end
     prefix = "#{ConfigManager.install_root}/#{package_.class.to_s.downcase}/#{package_.version}"
-    if not package_.has_label? 'compiler' and
-      not package_.has_label? 'compiler_insensitive' and
+    if not package_.has_label? 'compiler_insensitive' and
       not options.include? :compiler_insensitive
       compiler_set_index = ConfigManager.compiler_sets.index(Package.compiler_set)
       prefix << "/#{compiler_set_index}"

@@ -43,7 +43,7 @@ module PACKMAN
       return @filename
     end
 
-    def label val; @labels << val; end
+    def label val; @labels << val if not @labels.include? val; end
 
     def has_label? val
       @labels.each do |label|

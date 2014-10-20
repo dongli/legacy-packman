@@ -98,7 +98,7 @@ module PACKMAN
         end
       end
       @@process_exclusive = false
-      if [:install, :remove, :switch, :mirror].include? @@subcommand
+      if [:install, :remove, :mirror].include? @@subcommand
         @@process_exclusive = true
       end
     end

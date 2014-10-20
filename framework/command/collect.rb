@@ -3,9 +3,6 @@ module PACKMAN
     def self.collect options = []
       options = [options] if not options.class == Array
       PACKMAN.mkdir ConfigManager.package_root
-      if not ConfigManager.use_ftp_mirror == 'no'
-        CLI.report_notice "Use FTP mirror #{CLI.blue ConfigManager.use_ftp_mirror}."
-      end
       # Download packages to package_root.
       collect_all = ( CommandLine.has_option? '-all' or options.include? :all )
       if collect_all

@@ -1,21 +1,15 @@
 module PACKMAN
   class Commands
     def self.install
-      CompilerManager.expand_packman_compiler_sets
-      # Report compilers and their flags.
-      for i in 0..ConfigManager.compiler_sets.size-1
-        CLI.report_notice "Compiler set #{CLI.green i}:"
-        ConfigManager.compiler_sets[i].each do |language, compiler|
-          next if language == 'installed_by_packman'
-          print "#{CLI.blue '==>'} #{language}: #{compiler} #{PACKMAN.default_compiler_flags language, compiler}\n"
-        end
-      end
+      @@is_any_package_installed = false
       # Install packages.
       if CommandLine.packages.empty?
         install_packages_defined_in_config_file
       else
         install_packages_defined_in_command_line
       end
+      # Invoke switch subcommand.
+      Commands.switch if @@is_any_package_installed
     end
 
     def self.install_packages_defined_in_config_file
@@ -168,6 +162,26 @@ module PACKMAN
       ConfigManager.write
     end
 
+    def self.is_package_installed? package, options
+        if options.include? :binary
+          bashrc = "#{PACKMAN.prefix package, :compiler_insensitive}/bashrc"
+        else
+          bashrc = "#{PACKMAN.prefix package}/bashrc"
+        end
+        if File.exist? bashrc
+          content = File.open("#{bashrc}", 'r').readlines
+          if not content.grep(/#{package.sha1}/).empty?
+            if (package.respond_to? :check_consistency and package.check_consistency) or
+              not package.respond_to? :check_consistency
+              CLI.report_notice "Package #{CLI.green package.class} has been installed." if not options.include? :depend
+              return true
+            end
+          end
+        end
+        @@is_any_package_installed = true
+        return false
+    end
+
     def self.install_package compiler_sets, package, options = []
       compiler_sets = [compiler_sets] if not compiler_sets.class == Array
       options = [options] if not options.class == Array
@@ -211,14 +225,7 @@ module PACKMAN
         # Install precompiled package.
         prefix = PACKMAN.prefix package, :compiler_insensitive
         # Check if the package has alreadly installed.
-        bashrc = "#{prefix}/bashrc"
-        if File.exist?(bashrc)
-            content = File.open("#{bashrc}", 'r').readlines
-            if not content.grep(/#{package.sha1}/).empty?
-            CLI.report_notice "Package #{CLI.green package.class} has been installed." if not options.include? :depend
-            return
-          end
-        end
+        return if is_package_installed? package, options << :binary
         # Use precompiled binary file.
         CLI.report_notice "Use precompiled binary files for #{CLI.green package.class}."
         PACKMAN.mkdir prefix, :force
@@ -234,17 +241,7 @@ module PACKMAN
         compiler_sets.each do |compiler_set|
           Package.compiler_set = compiler_set
           # Check if the package has alreadly installed.
-          bashrc = "#{PACKMAN.prefix(package)}/bashrc"
-          if File.exist? bashrc
-            content = File.open("#{bashrc}", 'r').readlines
-            if not content.grep(/#{package.sha1}/).empty?
-              if (package.respond_to? :check_consistency and package.check_consistency) or
-                not package.respond_to? :check_consistency
-                CLI.report_notice "Package #{CLI.green package.class} has been installed." if not options.include? :depend
-                next
-              end
-            end
-          end
+          next if is_package_installed? package, options
           # Decompress package file.
           if package.respond_to? :filename
             package.decompress_to ConfigManager.package_root

@@ -39,6 +39,8 @@ module PACKMAN
                 for i in 0..sets.size-1
                   removed_sets << i
                 end
+              else
+                CLI.report_error "Unexpected situation!"
               end
               for i in 0..ConfigManager.compiler_sets.size-1
                 if removed_sets.include? i or removed_sets.include? ConfigManager.compiler_sets.size

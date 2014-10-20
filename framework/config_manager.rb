@@ -92,6 +92,20 @@ Example:
 EOT
         CLI.report_error msg
       end
+      # Report configuation.
+      # - FTP mirror.
+      if not @@use_ftp_mirror == 'no'
+        CLI.report_notice "Use FTP mirror #{CLI.blue @@use_ftp_mirror}."
+      end
+      # - Compilers and their flags.
+      CompilerManager.expand_packman_compiler_sets
+      for i in 0..ConfigManager.compiler_sets.size-1
+        CLI.report_notice "Compiler set #{CLI.green i}:"
+        ConfigManager.compiler_sets[i].each do |language, compiler|
+          next if language == 'installed_by_packman'
+          print "#{CLI.blue '==>'} #{language}: #{compiler} #{PACKMAN.default_compiler_flags language, compiler}\n"
+        end
+      end
     end
 
     def self.template(file_path)

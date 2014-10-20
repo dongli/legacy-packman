@@ -1,9 +1,8 @@
 module PACKMAN
   class Commands
     def self.switch
-      CompilerManager.expand_packman_compiler_sets
       compiler_set = ConfigManager.compiler_sets[ConfigManager.defaults['compiler_set']]
-      open("#{ConfigManager.install_root}/bashrc", 'w') do |file|
+      File.open("#{ConfigManager.install_root}/packman.bashrc", 'w') do |file|
         # Check if the active compiler is installed by PACKMAN.
         if compiler_set.has_key?('installed_by_packman')
           file << "source #{PACKMAN.prefix(compiler_set['installed_by_packman'])}/bashrc\n"
@@ -66,8 +65,11 @@ module PACKMAN
           end
         end
       end
-      CLI.report_notice "Add \"source #{ConfigManager.install_root}/bashrc\" to your BASH configuation file if it is not there."
-      CLI.report_notice "You need to login again to make the changes effective."
+      if not File.open("#{ENV['HOME']}/.bashrc", 'r').read.match /source.*packman\.bashrc/
+        CLI.report_notice "Add #{CLI.red "source #{ConfigManager.install_root}/packman.bashrc"} to "+
+          "#{CLI.blue '~/.bashrc'} if it is not there."
+      end
+      CLI.report_notice "You may need to login again to make the changes effective."
     end
   end
 end
