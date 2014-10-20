@@ -209,7 +209,7 @@ module PACKMAN
       # Install package.
       if compiler_sets.empty?
         # Install precompiled package.
-        prefix = PACKMAN.prefix package, :binary
+        prefix = PACKMAN.prefix package, :compiler_insensitive
         # Check if the package has alreadly installed.
         bashrc = "#{prefix}/bashrc"
         if File.exist?(bashrc)
@@ -226,7 +226,7 @@ module PACKMAN
         PACKMAN.decompress "#{ConfigManager.package_root}/#{package.filename}"
         PACKMAN.cd_back
         # Write bashrc file for the package.
-        Package.bashrc package, :binary
+        Package.bashrc package, :compiler_insensitive
         package.postfix
       else
         # Build package for each compiler set.

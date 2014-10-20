@@ -224,7 +224,7 @@ class Ncl < PACKMAN::Package
   end
 
   def postfix
-    if active_spec.has_label? 'binary'
+    if has_label? 'binary'
       ncl = PACKMAN.prefix self, :compiler_insensitive
     else
       ncl = PACKMAN.prefix self
