@@ -30,11 +30,11 @@ module PACKMAN
       @@compiler_sets
     end
 
-    def self.compiler_sets=(compiler_sets)
+    def self.compiler_sets= compiler_sets
       @@compiler_sets = compiler_sets
     end
 
-    def self.package(name, spec)
+    def self.package name, spec
       # Default install specifications.
       spec['use_binary'] = false if not spec.has_key? 'use_binary'
       spec['compiler_set'] = [spec['compiler_set']] if spec['compiler_set'].class == Fixnum
@@ -69,8 +69,8 @@ module PACKMAN
       end
       PACKMAN.expand_tilde @@package_root
       PACKMAN.expand_tilde @@install_root
-      CLI.report_error "package_root #{CLI.red @@package_root} does not exist!" if not Dir.exist? @@package_root
-      CLI.report_error "install_root #{CLI.red @@install_root} does not exist!" if not Dir.exist? @@install_root
+      PACKMAN.mkdir @@package_root
+      PACKMAN.mkdir @@install_root
       @@download_command = @@download_command.to_sym
       @@compiler_sets = []
       ( self.methods.select { |m| m.to_s =~ /compiler_set_\d$/ } ).each do |m|

@@ -104,14 +104,22 @@ module PACKMAN
     end
   end
 
-  def self.append(filepath, lines)
+  def self.append filepath, lines
     File.open(filepath, "a") { |file|  file << lines }
   end
 
-  def self.mkdir(dir, options = [])
+  def self.mkdir dir, options = []
     options = [options] if not options.class == Array
     FileUtils.rm_rf(dir) if Dir.exist? dir and options.include? :force
-    FileUtils.mkdir_p(dir) if not Dir.exist? dir
+    if not Dir.exist? dir
+      begin
+        FileUtils.mkdir_p(dir)
+        CLI.report_notice "Create directory #{CLI.green dir}."
+      rescue => e
+        CLI.report_error "Failed to create directory #{CLI.red dir}!\n"+
+          "#{CLI.red '==>'} #{e}"
+      end
+    end
     if block_given?
       FileUtils.chdir(dir)
       yield
