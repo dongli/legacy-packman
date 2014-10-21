@@ -57,37 +57,39 @@ module PACKMAN
       return true
     end
 
-    def == other
-      CLI.report_error "Invalid argument #{other}!" if other.class != VersionSpec
-      return false if (self.major and not other.major) or (not self.major and other.major)
-      return false if self.major and other.major and self.major != other.major
-      return false if (self.minor and not other.major) or (not self.minor and other.minor)
-      return false if self.minor and other.minor and self.minor != other.minor
-      return false if (self.revision and not other.revision) or (not self.revision and other.revision)
-      return false if self.revision and other.revision and self.revision != other.revision
-      return false if (self.alpha and not other.alpha) or (not self.alpha and other.alpha)
-      return false if self.alpha and other.alpha and self.alpha != other.alpha
-      return false if (self.beta and not other.beta) or (not self.beta and other.beta)
-      return false if self.beta and other.beta and self.beta != other.beta
-      return false if (self.release_candidate and not other.release_candidate) or (not self.release_candidate and other.release_candidate)
-      return false if self.release_candidate and other.release_candidate and self.release_candidate != other.release_candidate
+    def == other_
+      CLI.report_error "Invalid argument #{other}!" if other.class != VersionSpec and other.class != String
+      other_ = other.class == String ? VersionSpec.new(other) : other
+      return false if (self.major and not other_.major) or (not self.major and other_.major)
+      return false if self.major and other_.major and self.major != other_.major
+      return false if (self.minor and not other_.major) or (not self.minor and other_.minor)
+      return false if self.minor and other_.minor and self.minor != other_.minor
+      return false if (self.revision and not other_.revision) or (not self.revision and other_.revision)
+      return false if self.revision and other_.revision and self.revision != other_.revision
+      return false if (self.alpha and not other_.alpha) or (not self.alpha and other_.alpha)
+      return false if self.alpha and other_.alpha and self.alpha != other_.alpha
+      return false if (self.beta and not other_.beta) or (not self.beta and other_.beta)
+      return false if self.beta and other_.beta and self.beta != other_.beta
+      return false if (self.release_candidate and not other_.release_candidate) or (not self.release_candidate and other_.release_candidate)
+      return false if self.release_candidate and other_.release_candidate and self.release_candidate != other_.release_candidate
       return true
     end
 
     def =~ other
-      CLI.report_error "Invalid argument #{other}!" if other.class != VersionSpec
-      return false if not self.major and other.major
-      return false if self.major and other.major and self.major != other.major
-      return false if not self.minor and other.minor
-      return false if self.minor and other.minor and self.minor != other.minor
-      return false if not self.revision and other.revision
-      return false if self.revision and other.revision and self.revision != other.revision
-      return false if not self.alpha and other.alpha
-      return false if self.alpha and other.alpha and self.alpha != other.alpha
-      return false if not self.beta and other.beta
-      return false if self.beta and other.beta and self.beta != other.beta
-      return false if not self.release_candidate and other.release_candidate
-      return false if self.release_candidate and other.release_candidate and self.release_candidate != other.release_candidate
+      CLI.report_error "Invalid argument #{other}!" if other.class != VersionSpec and other.class != String
+      other_ = other.class == String ? VersionSpec.new(other) : other
+      return false if not self.major and other_.major
+      return false if self.major and other_.major and self.major != other_.major
+      return false if not self.minor and other_.minor
+      return false if self.minor and other_.minor and self.minor != other_.minor
+      return false if not self.revision and other_.revision
+      return false if self.revision and other_.revision and self.revision != other_.revision
+      return false if not self.alpha and other_.alpha
+      return false if self.alpha and other_.alpha and self.alpha != other_.alpha
+      return false if not self.beta and other_.beta
+      return false if self.beta and other_.beta and self.beta != other_.beta
+      return false if not self.release_candidate and other_.release_candidate
+      return false if self.release_candidate and other_.release_candidate and self.release_candidate != other_.release_candidate
       return true
     end
 
