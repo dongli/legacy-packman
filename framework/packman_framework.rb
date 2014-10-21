@@ -33,6 +33,11 @@ require "package/package_loader"
 require "pty"
 require "expect"
 
+# Until this moment, we can add packages directory to $LOAD_PATH. Because there
+# may be occasions that the name of some package class is the same with the
+# builtin Ruby object.
+$LOAD_PATH << "#{ENV['PACKMAN_ROOT']}/packages"
+
 PACKMAN::OS.init
 PACKMAN::CommandLine.init
 PACKMAN::ConfigManager.init

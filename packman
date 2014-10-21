@@ -7,7 +7,6 @@ if not ENV.has_key? 'PACKMAN_ROOT'
 end
 
 $LOAD_PATH << "#{ENV['PACKMAN_ROOT']}/framework"
-$LOAD_PATH << "#{ENV['PACKMAN_ROOT']}/packages"
 require 'packman_framework'
 
 # Check if there is already a PACKMAN running.
