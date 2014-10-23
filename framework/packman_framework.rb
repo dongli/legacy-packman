@@ -59,3 +59,10 @@ Kernel.trap('INT') do
   PACKMAN.rm pid_file if File.exist? pid_file and PACKMAN::CommandLine.process_exclusive?
   exit
 end
+
+at_exit {
+  if $!
+    pid_file = "#{ENV['PACKMAN_ROOT']}/.pid"
+    PACKMAN.rm pid_file if File.exist? pid_file and PACKMAN::CommandLine.process_exclusive?  
+  end
+}
