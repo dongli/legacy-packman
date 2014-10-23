@@ -41,23 +41,24 @@ module PACKMAN
     end
 
     def >= other
-      CLI.report_error "Invalid argument #{other}!" if other.class != VersionSpec
-      return false if self.major and other.major and self.major < other.major
-      return true  if self.major and other.major and self.major > other.major
-      return false if self.minor and other.minor and self.minor < other.minor
-      return true  if self.minor and other.minor and self.minor > other.minor
-      return false if self.revision and other.revision and self.revision < other.revision
-      return true  if self.revision and other.revision and self.revision > other.revision
-      return false if self.alpha and other.alpha and self.alpha < other.alpha
-      return true  if self.alpha and other.alpha and self.alpha > other.alpha
-      return false if self.beta and other.beta and self.beta < other.beta
-      return true  if self.beta and other.beta and self.beta > other.beta
-      return false if self.release_candidate and other.release_candidate and self.release_candidate < other.release_candidate
-      return true  if self.release_candidate and other.release_candidate and self.release_candidate > other.release_candidate
+      CLI.report_error "Invalid argument #{other}!" if other.class != VersionSpec and other.class != String
+      other_ = other.class == String ? VersionSpec.new(other) : other
+      return false if self.major and other_.major and self.major < other_.major
+      return true  if self.major and other_.major and self.major > other_.major
+      return false if self.minor and other_.minor and self.minor < other_.minor
+      return true  if self.minor and other_.minor and self.minor > other_.minor
+      return false if self.revision and other_.revision and self.revision < other_.revision
+      return true  if self.revision and other_.revision and self.revision > other_.revision
+      return false if self.alpha and other_.alpha and self.alpha < other_.alpha
+      return true  if self.alpha and other_.alpha and self.alpha > other_.alpha
+      return false if self.beta and other_.beta and self.beta < other_.beta
+      return true  if self.beta and other_.beta and self.beta > other_.beta
+      return false if self.release_candidate and other_.release_candidate and self.release_candidate < other_.release_candidate
+      return true  if self.release_candidate and other_.release_candidate and self.release_candidate > other_.release_candidate
       return true
     end
 
-    def == other_
+    def == other
       CLI.report_error "Invalid argument #{other}!" if other.class != VersionSpec and other.class != String
       other_ = other.class == String ? VersionSpec.new(other) : other
       return false if (self.major and not other_.major) or (not self.major and other_.major)

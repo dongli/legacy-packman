@@ -348,7 +348,7 @@ module PACKMAN
         CLI.report_error "Package #{CLI.red self.class} has not been downloaded!"
       end
       decom_dir = "#{root}/#{self.class}"
-      PACKMAN.mkdir decom_dir, :force
+      PACKMAN.mkdir decom_dir, [:force, :silent]
       PACKMAN.cd decom_dir
       PACKMAN.decompress "#{root}/#{filename}"
       PACKMAN.cd_back
