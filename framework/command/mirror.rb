@@ -12,6 +12,8 @@ module PACKMAN
         status_mirror_service
       elsif CommandLine.has_option? '-sync'
         sync_mirror_service
+      else
+        CLI.report_error "An option must be given!"
       end
     end
 

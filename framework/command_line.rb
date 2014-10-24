@@ -1,66 +1,63 @@
 module PACKMAN
   class CommandLine
-    @@subcommand = nil
-    @@config_file = nil
-    @@options = []
-    @@packages = []
-
-    @@permitted_subcommands = {
-      :config  => 'Edit the config file in the default location.',
+    PermittedSubcommands = {
+      :config => 'Edit the config file in the default location.',
       :collect => 'Collect packages from internet.',
       :install => 'Install packages and their dependencies.',
-      :remove  => 'Remove packages.',
-      :switch  => 'Switch different compiler set (new bashrc will be generated).',
-      :mirror  => 'Control FTP mirror service.',
-      :update  => 'Update PACKMAN.',
-      :help    => 'Print help message.',
-      :report  => 'Report version of PACKMAN an other information.',
-      :start   => 'Start a package if it provides a start method.',
-      :stop    => 'Stop a package if it provides a stop method.',
-      :status  => 'Check the status of a package if it provides a status method.'
-    }
-    @@permitted_common_options = {
+      :remove => 'Remove packages.',
+      :switch => 'Switch different compiler set (new bashrc will be generated).',
+      :mirror => 'Control FTP mirror service.',
+      :update => 'Update PACKMAN.',
+      :help => 'Print help message.',
+      :report => 'Report version of PACKMAN an other information.',
+      :start => 'Start a package if it provides a start method.',
+      :stop => 'Stop a package if it provides a stop method.',
+      :status => 'Check the status of a package if it provides a status method.'
+    }.freeze
+    PermittedCommonOptions = {
       '-debug' => 'Print debug information.'
-    }
-    @@permitted_options = {
-      :config  => {},
+    }.freeze
+    PermittedOptions = {
+      :config => {},
       :collect => {
-        '-all'   => 'Collect all packages.'
+        '-all' => 'Collect all packages.'
       },
       :install => {
         '-verbose' => 'Show verbose information.',
-        '-ask'     => 'Ask user when there are choices.',
-        '-no-mpi'  => 'Suppress MPI dependency.'
       },
       :remove => {
-        '-all'   => 'Remove all versions and compiler sets.',
+        '-all' => 'Remove all versions and compiler sets.',
         '-purge' => 'Also remove unneeded dependencies.'
       },
-      :switch  => {},
-      :mirror  => {
-        '-init'   => 'Initialize FTP mirror service.',
-        '-start'  => 'Start FTP mirror service.',
-        '-stop'   => 'Stop FTP mirror service.',
-        '-status' => 'Check if FTP mirror service is on or off.',
-        '-sync'   => 'Synchronize the packages.'
+      :switch => {
+        '-compiler_set_index' => 'Choose which compiler set will be used.'
       },
-      :update  => {},
-      :help    => {},
-      :report  => {
+      :mirror => {
+        '-init' => 'Initialize FTP mirror service.',
+        '-start' => 'Start FTP mirror service.',
+        '-stop' => 'Stop FTP mirror service.',
+        '-status' => 'Check if FTP mirror service is on or off.',
+        '-sync' => 'Synchronize the packages.'
+      },
+      :update => {},
+      :help => {},
+      :report => {
         '-package-root' => 'Print the download root of all packages.',
         '-install-root' => 'Print the installation root of all packages.'
       },
-      :start   => {},
-      :stop    => {},
-      :status  => {}
-    }
+      :start => {},
+      :stop => {},
+      :status => {}
+    }.freeze
 
     def self.init
-      if ARGV.empty?
-        CLI.report_error "PACKMAN expects a subcommand!"
-      end
+      CLI.report_error "PACKMAN expects a subcommand!" if ARGV.empty?
+      @@subcommand = nil
+      @@config_file = nil
+      @@packages = []
+      @@options = {}
       ARGV.each do |arg|
-        if @@permitted_subcommands.keys.include? arg.to_sym
+        if PermittedSubcommands.keys.include? arg.to_sym
           @@subcommand = arg.to_sym
           next
         end
@@ -75,12 +72,12 @@ module PACKMAN
           @@packages << arg.capitalize.to_sym
           next
         end
-        if @@permitted_options[@@subcommand].has_key? arg or
-          @@permitted_common_options.has_key? arg
-          @@options << arg
+        key = arg.gsub(/=.*/, '')
+        value = arg.match(/=(.*)/)
+        if value
+          @@options[key] = value[1]
         else
-          CLI.report_error "Invalid command option #{CLI.red arg}!\n"+
-            "The available options are:\n#{print_options(@@subcommand, 2).chomp}"
+          @@options[key] = nil
         end
       end
       if [:config, :collect, :install, :remove, :switch, :mirror,
@@ -104,7 +101,7 @@ module PACKMAN
     end
 
     def self.subcommand
-      @@subcommand
+      @@subcommand ||= nil
     end
 
     def self.process_exclusive?
@@ -116,20 +113,59 @@ module PACKMAN
     end
 
     def self.config_file
-      @@config_file
+      @@config_file ||= nil
     end
 
     def self.packages
-      @@packages
+      @@packages ||= []
+    end
+
+    def self.options
+      @@options ||= {}
+    end
+
+    def self.is_option_defined_in? package, option_name
+      package.dependencies.each do |depend|
+        depend_package = Package.instance depend
+        return true if is_option_defined_in? depend_package, option_name
+      end
+      package.options.has_key? option_name.gsub(/^-/, '')
+    end
+
+    def self.check_options
+      # Check options.
+      @@options.each_key do |key|
+        next if PermittedOptions[@@subcommand].has_key? key or PermittedCommonOptions.has_key? key
+        is_found = false
+        @@packages.each do |package_name|
+          package = Package.instance package_name
+          if is_option_defined_in? package, key
+            is_found = true
+            break
+          end
+        end
+        ConfigManager.package_options.each_key do |package_name|
+          package = Package.instance package_name
+          if is_option_defined_in? package, key
+            is_found = true
+            break
+          end
+        end
+        next if is_found or PackageSpec::CommonOptions.has_key? key.gsub(/^-/, '')
+        if not is_found
+          CLI.report_error "Invalid command option #{CLI.red key}!\n"+
+            "The available options are:\n#{print_options(@@subcommand, 2).chomp}"
+        end
+      end
     end
 
     def self.has_option? option
-      @@options.include? option
+      options.has_key? option
     end
 
     def self.print_options subcommand, indent = 0
       res = ''
-      @@permitted_options[subcommand].each do |option, meaning|
+      PermittedOptions[subcommand].each do |option, meaning|
         for i in 0..indent-1
           res << ' '
         end
@@ -140,7 +176,7 @@ module PACKMAN
 
     def self.print_usage indent = 2
       res = "Usage: packman <subcommand> [options] <config file>\n\n"
-      @@permitted_subcommands.each do |subcommand, meaning|
+      PermittedSubcommands.each do |subcommand, meaning|
         for i in 0..indent-1
           res << ' '
         end
@@ -150,6 +186,16 @@ module PACKMAN
         res << "\n\n"
       end
       print res
+    end
+
+    def self.propagate_options_to package
+      return if not options or options.empty?
+      for i in 0..package.options.size-1
+        key = package.options.keys[i]
+        next if not options.has_key? "-#{key}"
+        value = options["-#{key}"]
+        package.update_option key, value
+      end
     end
   end
 end

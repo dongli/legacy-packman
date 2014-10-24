@@ -11,6 +11,39 @@ module PACKMAN
       hand_over_spec :history_binary_versions
 
       set_active_spec requested_spec
+
+      # Define short-hand method for package options.
+      for i in 0..active_spec.options.size-1
+        case active_spec.option_valid_types[active_spec.options.keys[i]]
+        when :boolean
+          self.instance_eval <<-EOT
+            def #{active_spec.options.keys[i]}?
+              active_spec.options["#{active_spec.options.keys[i]}"]
+            end
+          EOT
+        when :package_name
+          if active_spec.options.keys[i] =~ /use_/
+            self.instance_eval <<-EOT
+              def #{active_spec.options.keys[i].gsub('use_', '')}
+                active_spec.options["#{active_spec.options.keys[i]}"]
+              end
+            EOT
+            self.instance_eval <<-EOT
+              def #{active_spec.options.keys[i]}?
+                active_spec.options["#{active_spec.options.keys[i]}"]
+              end
+            EOT
+          else
+            CLI.report_error "Unsupported option name #{CLI.red active_spec.options.keys[i]}!"
+          end
+        else
+          self.instance_eval <<-EOT
+            def #{active_spec.options.keys[i]}
+              active_spec.options["#{active_spec.options.keys[i]}"]
+            end
+          EOT
+        end
+      end
     end
 
     def hand_over_spec name
@@ -114,6 +147,8 @@ module PACKMAN
     def skip_distros; @active_spec.skip_distros; end
     def option_valid_types; @active_spec.option_valid_types; end
     def options; @active_spec.options; end
+    def has_option? key; @active_spec.has_option? key; end
+    def update_option key, value, ignore_error = false; @active_spec.update_option key, value, ignore_error; end
     def has_binary?; defined? @binary; end
 
     # Package DSL.
@@ -229,12 +264,12 @@ module PACKMAN
       File.exist? "#{ENV['PACKMAN_ROOT']}/packages/#{package_name.downcase}.rb"
     end
 
-    def self.instance package_name, install_spec = {}
+    def self.instance package_name, options = {}
       begin
         requested_spec = {}
-        if install_spec['use_binary']
-          if install_spec['version']
-            requested_spec[:version] = install_spec['version']
+        if options['use_binary']
+          if options['version']
+            requested_spec[:version] = options['version']
             if eval "defined? @@#{package_name}_binary"
               eval("@@#{package_name}_binary").each do |key, value|
                 if value.version == requested_spec[:version]
@@ -249,21 +284,24 @@ module PACKMAN
           else
             requested_spec[:in] = :binary
           end
-        elsif install_spec['version']
+        elsif options['version']
           if eval "defined? @@#{package_name}_history_versions"
             requested_spec[:in] = :history_versions
-            requested_spec[:version] = install_spec['version']
+            requested_spec[:version] = options['version']
           end
         end
         requested_spec = nil if requested_spec.empty?
-        eval "#{package_name}.new requested_spec"
+        package = eval "#{package_name}.new requested_spec"
+        # Propagete the given options.
+        options.each { |key, value| package.update_option key, value, true }
+        return package
       rescue NameError => e
         if e.class == NoMethodError
           CLI.report_error "Encounter error while instancing package!\n"+
             "#{CLI.red '==>'} #{e}"
         end
         load "#{ENV['PACKMAN_ROOT']}/packages/#{package_name.to_s.downcase}.rb"
-        instance package_name, install_spec
+        instance package_name, options
       end
     end
 
@@ -452,7 +490,7 @@ module PACKMAN
       end
       if not Dir.glob("#{prefix}/**/#{name.downcase}-config.cmake").empty? or
          not Dir.glob("#{prefix}/**/#{name.downcase.capitalize}Config.cmake").empty?
-        CLI.report_error "Cmake configure file has alreadly been installed for #{CLI.red self.class}!"
+        CLI.report_error "CMake configure file has already been installed for #{CLI.red self.class}!"
       end
       File.open("#{prefix}/#{name.downcase}-config.cmake", 'w') do |file|
         file << "set (#{name}_INCLUDE_DIRS \""

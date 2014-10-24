@@ -14,6 +14,7 @@ class Netcdf_fortran < PACKMAN::Package
   option 'use_mpi' => :package_name
 
   def install
+    PACKMAN.check_compiler 'fortran'
     curl = PACKMAN.prefix(Curl)
     zlib = PACKMAN.prefix(Zlib)
     hdf5 = PACKMAN.prefix(Hdf5)
@@ -53,7 +54,7 @@ class Netcdf_fortran < PACKMAN::Package
     end
     PACKMAN.run './configure', *args
     PACKMAN.run 'make -j2'
-    PACKMAN.run 'make check'
+    PACKMAN.run 'make check' if not skip_test?
     PACKMAN.run 'make install'
     PACKMAN.clean_env
   end

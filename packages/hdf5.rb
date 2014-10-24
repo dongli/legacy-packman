@@ -7,7 +7,6 @@ class Hdf5 < PACKMAN::Package
   depends_on 'szip'
   depends_on options['use_mpi'] if options['use_mpi']
 
-  option 'skip_test' => :boolean
   option 'use_mpi' => :package_name
 
   def install
@@ -40,14 +39,14 @@ class Hdf5 < PACKMAN::Package
       end
       args << '--enable-unsupported'
     end
-    if options['use_mpi']
+    if use_mpi?
       args << '--enable-parallel'
       # --enable-cxx and --enable-parallel flags are incompatible.
       args.delete '--enable-cxx'
     end
     PACKMAN.run './configure', *args
     PACKMAN.run 'make -j2'
-    PACKMAN.run 'make test' if not options['skip_test']
+    PACKMAN.run 'make test' if not skip_test?
     PACKMAN.run 'make install'
   end
 

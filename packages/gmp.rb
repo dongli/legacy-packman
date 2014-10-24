@@ -11,7 +11,7 @@ class Gmp < PACKMAN::Package
     ]
     PACKMAN.run './configure', *args
     PACKMAN.run 'make'
-    PACKMAN.run 'make check'
+    PACKMAN.run 'make check' if not skip_test?
     PACKMAN.run 'make install'
   end
 end

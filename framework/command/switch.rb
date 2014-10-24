@@ -1,7 +1,12 @@
 module PACKMAN
   class Commands
     def self.switch
-      compiler_set = ConfigManager.compiler_sets[ConfigManager.defaults['compiler_set']]
+      if CommandLine.has_option? '-compiler_set_index'
+        compiler_set_index = Integer(CommandLine.options['-compiler_set_index'])
+      else
+        compiler_set_index = Integer(ConfigManager.defaults['compiler_set_index'])
+      end
+      compiler_set = ConfigManager.compiler_sets[compiler_set_index]
       File.open("#{ConfigManager.install_root}/packman.bashrc", 'w') do |file|
         # Check if the active compiler is installed by PACKMAN.
         if compiler_set.has_key?('installed_by_packman')
@@ -19,7 +24,7 @@ module PACKMAN
             if File.exist? "#{subdir}/bashrc"
               # The package is compiler insensitive.
               bashrc_files << "#{subdir}/bashrc"
-            elsif File.exist? "#{subdir}/#{ConfigManager.defaults['compiler_set']}/bashrc"
+            elsif File.exist? "#{subdir}/#{compiler_set_index}/bashrc"
               package_name = File.basename(dir)
               package = Package.instance package_name.capitalize
               if not package.conflict_packages.empty?
@@ -35,7 +40,7 @@ module PACKMAN
                 end
               end
               # The package is built by the active compiler set.
-              bashrc_files << "#{subdir}/#{ConfigManager.defaults['compiler_set']}/bashrc"
+              bashrc_files << "#{subdir}/#{compiler_set_index}/bashrc"
             end
           end
           bashrc_files.sort!
@@ -44,8 +49,8 @@ module PACKMAN
           elsif bashrc_files.size > 1
             available_versions = bashrc_files.map { |p| File.basename(PACKMAN.strip_dir(p, 2)) }
             package_name = File.basename(dir).capitalize.to_sym
-            if not ConfigManager.packages.has_key? package_name or
-              not ConfigManager.packages[package_name].has_key? 'version'
+            if not ConfigManager.package_options.has_key? package_name or
+              not ConfigManager.package_options[package_name].has_key? 'version'
               msg = "Package #{CLI.red package_name} has multiple versions:\n"
               available_versions.each do |v|
                 msg << "#{CLI.yellow '==>'} #{v}\n"
@@ -57,7 +62,7 @@ module PACKMAN
               next
             end
             bashrc_files.each do |f|
-              if f =~ /#{ConfigManager.packages[package_name]['version']}/
+              if f =~ /#{ConfigManager.package_options[package_name]['version']}/
                 file << "source #{f}\n"
                 break
               end

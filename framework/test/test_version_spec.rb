@@ -55,7 +55,7 @@ describe PACKMAN::VersionSpec do
     v.release_candidate.must_equal nil
   end
 
-  it 'should not be initialized successfully from invalid version string.' do
+  it 'should not be initialized from invalid version string.' do
     proc {
       begin
         PACKMAN::VersionSpec.new '3.0.1.1'

@@ -6,6 +6,12 @@ module PACKMAN
     attr_reader :patches, :embeded_patches, :attachments
     attr_accessor :option_valid_types, :options
 
+    CommonOptions = {
+      'skip_test' => :boolean,
+      'compiler_set_indices' => :integer_array,
+      'use_binary' => :boolean
+    }.freeze
+
     def initialize
       @labels = []
       @dependencies = []
@@ -18,6 +24,10 @@ module PACKMAN
       @attachments = []
       @option_valid_types = {}
       @options = {}
+
+      CommonOptions.each do |key, type|
+        option key => type
+      end
     end
 
     def url val = nil
@@ -117,14 +127,104 @@ module PACKMAN
       end
     end
 
-    def option val
-      if val.class == Hash
-        @option_valid_types.merge! val
-        val.each_key do |key|
-          @options[key] ||= nil
+    def option option_hash
+      if option_hash.class == Hash
+        if option_hash.size > 1
+          CLI.report_error "Only one package option must be added once a time!"
+        end
+        key = option_hash.keys.first
+        value = option_hash.values.first
+        is_option_added = true if @options.has_key? key
+        if value.class == Symbol
+          return if is_option_added and @option_valid_types[key] == value
+          # Default value for the option.
+          case value
+          when :boolean
+            @options[key] = false
+          when :integer_array
+            @options[key] = []
+          when :package_name
+            @options[key] = nil
+          else
+            CLI.under_construction!
+          end
+          @option_valid_types[key] = value
+        elsif value.class == TrueClass or value.class == FalseClass
+          return if is_option_added and @options[key] == value 
+          @options[key] = value
+          @option_valid_types[key] = :boolean
+        elsif value.class == Fixnum
+          if @option_valid_types[key] and
+             @option_valid_types[key] == :integer_array
+            return if is_option_added and @options[key] == [value]
+            @options[key] = [value]
+          else
+            return if is_option_added and @options[key] == value
+            @options[key] = value
+            @option_valid_types[key] = :integer
+          end
+        else
+          CLI.report_error "Unexpected package option #{CLI.red option_hash}!"
+        end
+        if is_option_added
+          CLI.report_warning "Package option #{CLI.red option_hash} has already been added!"
         end
       else
-        @options[val] ||= nil
+        CLI.report_error "The valid type or default value for the package option #{CLI.red option_hash} is not provided!"
+      end
+    end
+
+    def has_option? key
+      options.has_key? key
+    end
+
+    def update_option key, value, ignore_error = false
+      return if not options.has_key? key
+      case option_valid_types[key]
+      when :boolean
+        if value == nil
+          options[key] = true
+        elsif value.class == TrueClass or value.class == FalseClass
+          options[key] = value
+        elsif value == 'true' or value == 'false'
+          options[key] = eval value
+        else
+          CLI.report_error "A boolean is needed for option #{CLI.red key} or nothing at all!" if not ignore_error
+        end
+      when :integer_array
+        if value.class == Fixnum
+          options[key] << value
+        elsif value.class == Array
+          options[key] += value # Keep previous values.
+        elsif value.class == String
+          begin
+            options[key] += eval "[#{value}]"
+          rescue
+            CLI.report_error "Failed to parse the value (#{CLI.red value}) of option #{CLI.red key}!" if not ignore_error
+          end
+        else
+          CLI.report_error "A integer array is needed for option #{CLI.red key}!" if not ignore_error
+        end
+        options[key].uniq!
+        options[key].each { |x| raise ArgumentError if x.class != Fixnum }
+      when :package_name
+        if not Package.all_package_names.include? value
+          CLI.report_error "A package name is needed for option #{CLI.red key}!" if not ignore_error
+        end
+        options[key] = value
+      end
+    end
+
+    def self.default_option_value type
+      case type
+      when :boolean
+        false
+      when :integer_array
+        []
+      when :package_name
+        nil
+      else
+        CLI.report_error "Invalid option type #{CLI.red type}!"
       end
     end
   end

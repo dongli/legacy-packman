@@ -1,3 +1,5 @@
+require "fileutils"
+
 module PACKMAN
   def self.cp src, dest
     FileUtils.cp_r src, dest

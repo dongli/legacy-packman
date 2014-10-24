@@ -12,7 +12,7 @@ class Lapack < PACKMAN::Package
     ]
     PACKMAN.run 'cmake', *args
     PACKMAN.run 'make -j2'
-    PACKMAN.run 'make test'
+    PACKMAN.run 'make test' if not skip_test?
     PACKMAN.run 'make install'
   end
 end

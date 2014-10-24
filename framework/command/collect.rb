@@ -8,12 +8,11 @@ module PACKMAN
       if collect_all
         package_names = Dir.glob("#{ENV['PACKMAN_ROOT']}/packages/*.rb").map { |f| File.basename(f).gsub('.rb', '').capitalize.to_sym }
       else
-        package_names = ConfigManager.packages.keys
+        package_names = ConfigManager.package_options.keys
       end
       package_names.each do |package_name|
         if not collect_all
-          install_spec = ConfigManager.packages[package_name]
-          package = Package.instance package_name, install_spec
+          package = Package.instance package_name, ConfigManager.package_options[package_name]
           PACKMAN.download_package package
         else
           all_instances = Package.all_instances package_name
@@ -33,7 +32,7 @@ module PACKMAN
     options = [options] if not options.class == Array
     # Recursively download dependency packages.
     package.dependencies.each do |depend|
-      if not ConfigManager.packages.keys.include? depend
+      if not ConfigManager.package_options.keys.include? depend
         download_package Package.instance depend
       end
     end

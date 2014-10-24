@@ -25,7 +25,7 @@ class Openssl < PACKMAN::Package
       /^LIBZLIB=\s*$/ => "LIBZLIB=-L#{PACKMAN.prefix(Zlib)}/lib"
     }
     PACKMAN.run 'make'
-    PACKMAN.run 'make test'
+    PACKMAN.run 'make test' if not skip_test?
     PACKMAN.run 'make install'
   end
 

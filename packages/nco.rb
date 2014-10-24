@@ -31,7 +31,7 @@ class Nco < PACKMAN::Package
     ]
     PACKMAN.run './configure', *args
     PACKMAN.run 'make -j2'
-    PACKMAN.run 'make check'
+    PACKMAN.run 'make check' if not skip_test?
     PACKMAN.run 'make install'
     PACKMAN.clean_env
   end

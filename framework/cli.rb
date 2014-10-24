@@ -63,6 +63,7 @@ module PACKMAN
 
     def self.report_warning message
       print "[#{yellow 'Warning'}]: #{message}\n"
+      print_call_stack if CommandLine.has_option? '-debug'
     end
 
     def self.report_error message, options = []

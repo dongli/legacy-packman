@@ -8,7 +8,7 @@ class Mlpack < PACKMAN::Package
   depends_on 'boost'
   depends_on 'libxml2'
 
-  option 'disable_c++11' => :boolean
+  option 'use_cxx11' => true
 
   def install
     # Note: DBoost_NO_BOOST_CMAKE is set to ON to let CMake do the dirty job.
@@ -20,15 +20,15 @@ class Mlpack < PACKMAN::Package
       -DBoost_NO_BOOST_CMAKE=ON
       -DCMAKE_EXE_LINKER_FLAGS='-L#{PACKMAN.prefix(Hdf5)}/lib'
     ]
-    if options['disable_c++11']
-      args << "-DCMAKE_CXX_FLAGS='-I#{PACKMAN.prefix(Hdf5)}/include'"
-    else
+    if use_cxx11?
       args << "-DCMAKE_CXX_FLAGS='-I#{PACKMAN.prefix(Hdf5)}/include -std=c++11'"
+    else
+      args << "-DCMAKE_CXX_FLAGS='-I#{PACKMAN.prefix(Hdf5)}/include'"
     end
     PACKMAN.mkdir 'build', :force do
       PACKMAN.run 'cmake ..', *args
       PACKMAN.run "make -j2"
-      # PACKMAN.run 'make test'
+      PACKMAN.run 'make test' if not skip_test?
       PACKMAN.run 'make install'
     end
   end

@@ -172,4 +172,11 @@ module PACKMAN
     vendor = CompilerManager.compiler_vendor language, compiler
     CompilerManager.compiler_group(vendor).flags.has_key? :openmp
   end
+
+  def self.check_compiler language
+    if not Package.compiler_set.has_key? language
+      CLI.report_error "Compiler set #{ConfigManager.compiler_sets.index(Package.compiler_set)} "+
+        "does not have a compiler for #{CLI.red language}!"
+    end
+  end
 end

@@ -1,6 +1,9 @@
 module PACKMAN
   class Commands
     def self.remove
+      if CommandLine.packages.empty?
+        CLI.report_error "No package name is provided!"
+      end
       CommandLine.packages.each do |package_name|
         package = Package.instance package_name
         package_root = "#{ConfigManager.install_root}/#{package_name.to_s.downcase}"
@@ -26,6 +29,16 @@ module PACKMAN
           if removed_versions.include? j or removed_versions.include? versions.size
             if not package.has_label? 'compiler_insensitive'
               sets = Dir.glob("#{versions[j]}/*").sort
+              # Check if sets are 0, 1, ...
+              sets.each do |set|
+                begin
+                  compiler_set_index = Integer File.basename(set)
+                  raise if compiler_set_index >= ConfigManager.compiler_sets.size
+                rescue
+                  CLI.report_error "There are unknown files in #{package_root}!\n"+
+                    "#{CLI.red '==>'} #{set}"
+                end
+              end
               removed_sets = []
               if sets.size > 1 and not CommandLine.has_option? '-all'
                 CLI.report_warning "Package #{CLI.red package_name} (#{File.basename versions[j]}) "+
