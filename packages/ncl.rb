@@ -26,7 +26,7 @@ class Ncl < PACKMAN::Package
 
   label 'compiler_insensitive'
 
-  history_binary_version '6.2.0', :Mac_OS_X, '=~ 10.9' do
+  history_binary_version '6.2.0', :Mac_OS_X, '>= 10.9' do
     url 'https://www.earthsystemgrid.org/download/fileDownload.htm?logicalFileId=24ac2346-ba14-11e3-b322-00c0f03d5b7c'
     sha1 '2b7b1ce44b494d10a57ddce0e9405af53a9062d0'
     filename 'ncl_ncarg-6.2.0.MacOS_10.9_64bit_gcc481.tar.gz'
@@ -50,7 +50,7 @@ class Ncl < PACKMAN::Package
     filename 'ncl_ncarg-6.2.0.Linux_RHEL6.2_x86_64_gcc446.tar.gz'
   end
 
-  binary :Mac_OS_X, '=~ 10.9' do
+  binary :Mac_OS_X, '>= 10.9' do
     url 'https://www.earthsystemgrid.org/download/fileDownload.htm?logicalFileId=382dd989-351d-11e4-a4b4-00c0f03d5b7c'
     sha1 '36d82552f01e80fe82ab1687e361764dde5ccee7'
     version '6.2.1'
@@ -71,7 +71,7 @@ class Ncl < PACKMAN::Package
     filename 'ncl_ncarg-6.2.1.Linux_RHEL5.10_x86_64_gcc412.tar.gz'
   end
 
-  binary [:RedHat_Enterprise, :Fedora, :CentOS], ['=~ 6', '=~ 14', '=~ 6'] do
+  binary [:RedHat_Enterprise, :Fedora, :CentOS], ['=~ 6', '>= 14', '=~ 6'] do
     url 'https://www.earthsystemgrid.org/download/fileDownload.htm?logicalFileId=38232b22-351d-11e4-a4b4-00c0f03d5b7c'
     sha1 '7f7980f944bd39192482d9260b9cbb619ce33a44'
     version '6.2.1'
@@ -101,7 +101,7 @@ class Ncl < PACKMAN::Package
           "--> #{PACKMAN::CLI.bold(PACKMAN::OS.how_to_install xaw_package)}"
       end
     end
-    PACKMAN::RunManager.append_env "NCARG=#{PACKMAN::Package.prefix(self)}"
+    PACKMAN::RunManager.append_env "NCARG=#{PACKMAN.prefix(self)}"
     # Copy Triangle codes into necessary place.
     PACKMAN.mkdir 'triangle'
     PACKMAN.cd 'triangle'
@@ -130,10 +130,10 @@ class Ncl < PACKMAN::Package
       writer.print("y\n")
       # Parent installation directory?
       reader.expect(/Enter Return \(default\), new directory, or q\(quit\) >/)
-      writer.print("#{PACKMAN::Package.prefix(self)}\n")
+      writer.print("#{PACKMAN.prefix(self)}\n")
       # System temp space directory?
       reader.expect(/Enter Return \(default\), new directory, or q\(quit\) >/)
-      writer.print("#{PACKMAN::Package.prefix(self)}/tmp\n")
+      writer.print("#{PACKMAN.prefix(self)}/tmp\n")
       # Build NetCDF4 feature support (optional)?
       reader.expect(/Enter Return \(default\), y\(yes\), n\(no\), or q\(quit\) > /)
       writer.print("y\n")
@@ -184,8 +184,8 @@ class Ncl < PACKMAN::Package
       [ Expat, Freetype, Fontconfig, Szip, Jasper, Cairo, Jpeg, Libpng, Hdf4, Hdf5,
         Netcdf_c, Netcdf_fortran, Pixman, Hdf_eos2, Hdf_eos5, Grib2_c, Gdal, Proj,
       Udunits, Vis5dx ].each do |lib|
-        if not Dir.exist? "#{PACKMAN::Package.prefix(lib)}/lib"
-          writer.print "#{PACKMAN::Package.prefix(lib)}/lib "
+        if not Dir.exist? "#{PACKMAN.prefix(lib)}/lib"
+          writer.print "#{PACKMAN.prefix(lib)}/lib "
         end
       end
       writer.print "\n"
@@ -197,14 +197,14 @@ class Ncl < PACKMAN::Package
       [ Expat, Freetype, Fontconfig, Szip, Jasper, Cairo, Jpeg, Libpng, Hdf4, Hdf5,
         Netcdf_c, Netcdf_fortran, Pixman, Hdf_eos2, Hdf_eos5, Grib2_c, Gdal, Proj,
       Udunits, Vis5dx ].each do |lib|
-        if not Dir.exist? "#{PACKMAN::Package.prefix(lib)}/include"
-          writer.print "#{PACKMAN::Package.prefix(lib)}/include "
+        if not Dir.exist? "#{PACKMAN.prefix(lib)}/include"
+          writer.print "#{PACKMAN.prefix(lib)}/include "
         end
       end
       if PACKMAN::OS.redhat_gang?
         writer.print "/usr/include/freetype2 "
       end
-      writer.print "#{PACKMAN::Package.prefix(Gcc)}/include "
+      writer.print "#{PACKMAN.prefix(Gcc)}/include "
       writer.print "\n"
       # Go back and make more changes or review?
       reader.expect(/Enter Return\(default\), y\(yes\), n\(no\), or q\(quit\) > /)
@@ -217,17 +217,17 @@ class Ncl < PACKMAN::Package
     # Make NCL.
     PACKMAN.run 'make Everything'
     # Make sure command 'ncl' is built.
-    PACKMAN.run "ls #{PACKMAN::Package.prefix(self)}/bin/ncl"
+    PACKMAN.run "ls #{PACKMAN.prefix(self)}/bin/ncl"
     # Create 'tmp' directory.
-    PACKMAN.mkdir "#{PACKMAN::Package.prefix(self)}/tmp"
+    PACKMAN.mkdir "#{PACKMAN.prefix(self)}/tmp"
     PACKMAN::RunManager.clean_env
   end
 
   def postfix
-    if active_spec.has_label? 'binary'
-      ncl = PACKMAN::Package.prefix self, :compiler_insensitive
+    if has_label? 'binary'
+      ncl = PACKMAN.prefix self, :compiler_insensitive
     else
-      ncl = PACKMAN::Package.prefix self
+      ncl = PACKMAN.prefix self
     end
     PACKMAN.replace "#{ncl}/bashrc", {
       /NCL_ROOT/ => 'NCARG_ROOT'

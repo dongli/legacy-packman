@@ -1,6 +1,6 @@
 module PACKMAN
   class AutotoolHelper
-    def self.wrap_flags language, flags
+    def self.wrap_flags language, flags, cmd_args
       case language
       when 'c'
         "CFLAGS=\"$CFLAGS #{flags}\""
@@ -9,7 +9,7 @@ module PACKMAN
       when 'fortran'
         "FCFLAGS=\"$FCFLAGS #{flags}\""
       else
-        PACKMAN::CLI.report_error "Unknown language #{PACKMAN::CLI.red language}!"
+        CLI.report_error "Unknown language #{CLI.red language}!"
       end
     end
 

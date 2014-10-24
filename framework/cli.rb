@@ -63,11 +63,17 @@ module PACKMAN
 
     def self.report_warning message
       print "[#{yellow 'Warning'}]: #{message}\n"
+      print_call_stack if CommandLine.has_option? '-debug'
     end
 
-    def self.report_error message
+    def self.report_error message, options = []
+      options = [options] if options.class != Array
       print "[#{red 'Error'}]: #{message}\n"
-      print_call_stack if PACKMAN::CommandLine.has_option? '-debug'
+      print_call_stack if CommandLine.has_option? '-debug'
+      if not options.include? :keep_pid_file
+        pid_file = "#{ENV['PACKMAN_ROOT']}/.pid"
+        PACKMAN.rm pid_file if File.exist? pid_file and CommandLine.process_exclusive?
+      end
       exit
     end
 
@@ -77,7 +83,7 @@ module PACKMAN
 
     def self.under_construction!
       print ":( PACKMAN is under construction for this function! Thank you for your support!\n"
-      print_call_stack if PACKMAN::CommandLine.has_option? '-debug'
+      print_call_stack if CommandLine.has_option? '-debug'
       exit
     end
 

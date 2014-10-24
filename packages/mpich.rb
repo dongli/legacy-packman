@@ -14,13 +14,17 @@ class Mpich < PACKMAN::Package
 
   def install
     args = %W[
-      --prefix=#{PACKMAN::Package.prefix(self)}
+      --prefix=#{PACKMAN.prefix(self)}
       --disable-dependency-tracking
       --disable-silent-rules
       --disable-maintainer-mode
-      --enable-fortran=all
       --enable-cxx
     ]
+    if PACKMAN.compiler_command 'fortran'
+      args << '--enable-fortran=all' 
+    else
+      args << '--disable-fortran'
+    end
     PACKMAN.run './configure', *args
     PACKMAN.run 'make -j2'
     PACKMAN.run 'make install'

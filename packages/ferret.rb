@@ -22,19 +22,19 @@ class Ferret < PACKMAN::Package
 
   def install
     # Ferret's tar file contains two extra plain files which messes up PACKMAN.
-    PACKMAN.cd 'FERRET'
-    ferret = PACKMAN::Package.prefix(self)
-    ncurses = PACKMAN::Package.prefix(Ncurses)
-    readline = PACKMAN::Package.prefix(Readline)
-    jpeg = PACKMAN::Package.prefix(Jpeg)
-    hdf4 = PACKMAN::Package.prefix(Hdf4)
-    hdf5 = PACKMAN::Package.prefix(Hdf5)
-    netcdf_c = PACKMAN::Package.prefix(Netcdf_c)
-    netcdf_fortran = PACKMAN::Package.prefix(Netcdf_fortran)
-    zlib = PACKMAN::Package.prefix(Zlib)
-    szip = PACKMAN::Package.prefix(Szip)
-    curl = PACKMAN::Package.prefix(Curl)
-    opendap = PACKMAN::Package.prefix(Opendap)
+    PACKMAN.cd 'FERRET', :norecord
+    ferret = PACKMAN.prefix(self)
+    ncurses = PACKMAN.prefix(Ncurses)
+    readline = PACKMAN.prefix(Readline)
+    jpeg = PACKMAN.prefix(Jpeg)
+    hdf4 = PACKMAN.prefix(Hdf4)
+    hdf5 = PACKMAN.prefix(Hdf5)
+    netcdf_c = PACKMAN.prefix(Netcdf_c)
+    netcdf_fortran = PACKMAN.prefix(Netcdf_fortran)
+    zlib = PACKMAN.prefix(Zlib)
+    szip = PACKMAN.prefix(Szip)
+    curl = PACKMAN.prefix(Curl)
+    opendap = PACKMAN.prefix(Opendap)
     # Check build type since Ferret does not check it for us.
     build_type = ''
     if PACKMAN::OS.x86_64?
@@ -192,14 +192,14 @@ class Ferret < PACKMAN::Package
     # Make.
     PACKMAN.run 'make'
     PACKMAN.run 'make install'
-    PACKMAN.cd ferret
+    PACKMAN.cd ferret, :norecord
     PACKMAN.decompress 'fer_environment.tar.gz'
-    PACKMAN.cd File.dirname(ferret)
+    PACKMAN.cd File.dirname(ferret), :norecord
     PACKMAN.mkdir 'datasets'
-    PACKMAN.cd 'datasets'
+    PACKMAN.cd 'datasets', :norecord
     datasets = "#{PACKMAN::ConfigManager.package_root}/fer_dsets.tar.gz"
     PACKMAN.decompress datasets
-    PACKMAN.cd ferret
+    PACKMAN.cd ferret, :norecord
     # Do the final installation step.
     PACKMAN.rm 'ferret_paths.csh'
     PACKMAN.rm 'ferret_paths.sh'
@@ -222,11 +222,11 @@ class Ferret < PACKMAN::Package
   def postfix
     # Ferret has put its shell configuration into 'ferret_paths.sh', so we
     # respect it.
-    bashrc = "#{PACKMAN::Package.prefix(self)}/bashrc"
+    bashrc = "#{PACKMAN.prefix(self)}/bashrc"
     PACKMAN.rm bashrc
     File.open(bashrc, 'w') do |file|
       file << "# #{sha1}\n"
-      file << "source #{PACKMAN::Package.prefix(self)}/ferret_paths.sh\n"
+      file << "source #{PACKMAN.prefix(self)}/ferret_paths.sh\n"
     end
   end
 end

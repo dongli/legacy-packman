@@ -10,9 +10,9 @@ class Grib_api < PACKMAN::Package
 
   def install
     args = %W[
-      --prefix=#{PACKMAN::Package.prefix(self)}
-      --with-netcdf=#{PACKMAN::Package.prefix(Netcdf_c)}
-      --with-jasper=#{PACKMAN::Package.prefix(Jasper)}
+      --prefix=#{PACKMAN.prefix(self)}
+      --with-netcdf=#{PACKMAN.prefix(Netcdf_c)}
+      --with-jasper=#{PACKMAN.prefix(Jasper)}
     ]
     PACKMAN.run './configure', *args
     PACKMAN.run 'make install'

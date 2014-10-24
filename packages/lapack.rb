@@ -7,12 +7,12 @@ class Lapack < PACKMAN::Package
 
   def install
     args = %W[
-      -DCMAKE_INSTALL_PREFIX=#{PACKMAN::Package.prefix(self)}
+      -DCMAKE_INSTALL_PREFIX=#{PACKMAN.prefix(self)}
       -DCMAKE_BUILD_TYPE="Release"
     ]
     PACKMAN.run 'cmake', *args
     PACKMAN.run 'make -j2'
-    PACKMAN.run 'make test'
+    PACKMAN.run 'make test' if not skip_test?
     PACKMAN.run 'make install'
   end
 end

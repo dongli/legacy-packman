@@ -15,12 +15,17 @@ class Parallel_netcdf < PACKMAN::Package
       PACKMAN.append_customized_flags :all, :pic
     end
     args = %W[
-      --prefix=#{PACKMAN::Package.prefix(self)}
+      --prefix=#{PACKMAN.prefix(self)}
     ]
+    if PACKMAN.compiler_command 'fortran'
+      args << '--enable-fortran'
+    else
+      args << '--disable-fortran'
+    end
     PACKMAN.use_mpi options['use_mpi']
     PACKMAN.run './configure', *args
     PACKMAN.run 'make -j2'
-    PACKMAN.run 'make check'
+    PACKMAN.run 'make check' if not skip_test?
     PACKMAN.run 'make install'
   end
 end

@@ -17,7 +17,7 @@ module PACKMAN
       key = env[0, idx]
       value = env[idx+1..-1]
       if @@envs.has_key? key
-        PACKMAN::CLI.report_error "Environment #{PACKMAN::CLI.red key} has been set!"
+        CLI.report_error "Environment #{CLI.red key} has been set!"
       else
         @@envs[key] = value
       end
@@ -46,7 +46,7 @@ module PACKMAN
       cmd_str = ''
       # Handle PACKMAN installed compiler.
       if Package.compiler_set.has_key? 'installed_by_packman'
-        compiler_prefix = Package.prefix(Package.compiler_set['installed_by_packman'])
+        compiler_prefix = PACKMAN.prefix(Package.compiler_set['installed_by_packman'])
         append_bashrc_path("#{compiler_prefix}/bashrc")
       end
       # Handle customized bashrc.
@@ -94,6 +94,7 @@ module PACKMAN
 
     def self.run build_helper, cmd, *args
       cmd_str = default_command_prefix
+      cmd_args = args.join(' ')
       if build_helper and build_helper.should_insert_before_command?
         # Handle compiler default flags.
         Package.compiler_set.each do |language, compiler|
@@ -101,11 +102,10 @@ module PACKMAN
           flags = PACKMAN.default_compiler_flags language, compiler
           tmp = PACKMAN.customized_compiler_flags language, compiler
           flags << tmp if tmp
-          cmd_str << "#{build_helper.wrap_flags language, flags} "
+          cmd_str << "#{build_helper.wrap_flags language, flags, cmd_args} "
         end
       end
       cmd_str << " #{cmd} "
-      cmd_str << "#{args.join(' ')} "
       if build_helper and build_helper.should_insert_after_command?
         # Handle compiler default flags.
         Package.compiler_set.each do |language, compiler|
@@ -113,25 +113,31 @@ module PACKMAN
           flags = PACKMAN.default_compiler_flags language, compiler
           tmp = PACKMAN.customized_compiler_flags language, compiler
           flags << tmp if tmp
-          cmd_str << "#{build_helper.wrap_flags language, flags} "
+          cmd_str << "#{build_helper.wrap_flags language, flags, cmd_args} "
         end
       end
-      if not PACKMAN::CommandLine.has_option? '-verbose'
+      cmd_str << "#{cmd_args} "
+      if not CommandLine.has_option? '-verbose'
         cmd_str << "1> #{ConfigManager.package_root}/stdout 2> #{ConfigManager.package_root}/stderr"
       end
-      print "#{PACKMAN::CLI.blue '==>'} #{PACKMAN::CLI.truncate("#{cmd} #{args.join(' ')}")}\n"
+      print "#{CLI.blue '==>'} "
+      if CommandLine.has_option? '-debug'
+        print "#{cmd_str}\n"
+      else
+        print "#{CLI.truncate("#{cmd} #{args.join(' ')}")}\n"
+      end
       system cmd_str
       if not $?.success?
         info =  "PATH: #{FileUtils.pwd}\n"
         info << "Command: #{cmd_str}\n"
         info << "Return: #{$?}\n"
-        if not PACKMAN::CommandLine.has_option? '-verbose'
+        if not CommandLine.has_option? '-verbose'
           info << "Standard output: #{ConfigManager.package_root}/stdout\n"
           info << "Standard error: #{ConfigManager.package_root}/stderr\n"
         end
-        PACKMAN::CLI.report_error "Failed to run the following command:\n"+info
+        CLI.report_error "Failed to run the following command:\n"+info
       end
-      if not PACKMAN::CommandLine.has_option? '-verbose'
+      if not CommandLine.has_option? '-verbose'
         FileUtils.rm("#{ConfigManager.package_root}/stdout")
         FileUtils.rm("#{ConfigManager.package_root}/stderr")
       end
@@ -147,12 +153,6 @@ module PACKMAN
     else
       RunManager.run nil, cmd, *args
     end
-  end
-
-  def self.slim_run cmd, *args
-    res = `#{cmd} #{args.join(' ')} 1> /dev/null 2>&1`
-    raise "Command failed!" if not $?.success?
-    return res
   end
 
   def self.append_env env

@@ -9,9 +9,9 @@ class Proj < PACKMAN::Package
       /sign\s*\(/ => 'sign_in_proj('
     }
     args = %W[
-      --prefix=#{PACKMAN::Package.prefix(self)}
+      --prefix=#{PACKMAN.prefix(self)}
       --enable-static=yes
-      --enable-shared=no
+      --enable-shared=yes
     ]
     PACKMAN.run './configure', *args
     PACKMAN.run 'make all'

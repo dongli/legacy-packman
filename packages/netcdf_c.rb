@@ -3,6 +3,7 @@ class Netcdf_c < PACKMAN::Package
   sha1 '6e1bacab02e5220954fe0328d710ebb71c071d19'
   version '4.3.2'
 
+  depends_on 'patch'
   depends_on 'curl'
   depends_on 'zlib'
   depends_on 'szip'
@@ -24,12 +25,12 @@ class Netcdf_c < PACKMAN::Package
   end
 
   def install
-    curl = PACKMAN::Package.prefix(Curl)
-    zlib = PACKMAN::Package.prefix(Zlib)
-    szip = PACKMAN::Package.prefix(Szip)
-    hdf5 = PACKMAN::Package.prefix(Hdf5)
+    curl = PACKMAN.prefix(Curl)
+    zlib = PACKMAN.prefix(Zlib)
+    szip = PACKMAN.prefix(Szip)
+    hdf5 = PACKMAN.prefix(Hdf5)
     if options['use_mpi']
-      pnetcdf = PACKMAN::Package.prefix(Parallel_netcdf)
+      pnetcdf = PACKMAN.prefix(Parallel_netcdf)
       PACKMAN.append_env "CFLAGS='-I#{curl}/include -I#{zlib}/include -I#{szip}/include -I#{hdf5}/include -I#{pnetcdf}/include'"
       PACKMAN.append_env "LDFLAGS='-L#{curl}/lib -L#{zlib}/lib -L#{szip}/lib -L#{hdf5}/lib -L#{pnetcdf}/lib'"
     else
@@ -40,7 +41,7 @@ class Netcdf_c < PACKMAN::Package
     #       '--enable-dap' explicitly for reminding.
     # Build netcdf in parallel: http://www.unidata.ucar.edu/software/netcdf/docs/getting_and_building_netcdf.html#build_parallel
     args = %W[
-      --prefix=#{PACKMAN::Package.prefix(self)}
+      --prefix=#{PACKMAN.prefix(self)}
       --disable-dependency-tracking
       --disable-dap-remote-tests
       --enable-static
@@ -56,13 +57,13 @@ class Netcdf_c < PACKMAN::Package
     end
     PACKMAN.run './configure', *args
     PACKMAN.run 'make -j2'
-    PACKMAN.run 'make check'
+    PACKMAN.run 'make check' if not skip_test?
     PACKMAN.run 'make install'
     PACKMAN.clean_env
   end
 
   def check_consistency
-    res = `#{PACKMAN::Package.prefix(self)}/bin/nc-config --has-pnetcdf`.strip
+    res = `#{PACKMAN.prefix(self)}/bin/nc-config --has-pnetcdf`.strip
     if res == 'no' and options['use_mpi']
       return false
     end

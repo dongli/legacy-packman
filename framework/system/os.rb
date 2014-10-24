@@ -22,7 +22,7 @@ module PACKMAN
       when /^CYGWIN*/
         @@type = :Cygwin
       else
-        PACKMAN::CLI.report_error "Unknown OS type \"#{res}\"!"
+        CLI.report_error "Unknown OS type \"#{res}\"!"
       end
       # Check architecture
       @@arch = `uname -m`.chomp
@@ -30,44 +30,30 @@ module PACKMAN
       case @@type
       when :Darwin
         @@distro = :Mac_OS_X
-        @@version = PACKMAN::VersionSpec.new `sw_vers | grep ProductVersion | cut -d ':' -f 2`.strip
+        @@version = VersionSpec.new `sw_vers | grep ProductVersion | cut -d ':' -f 2`.strip
       when :Linux
         res = `cat /etc/*-release`
         case res
         when /Red Hat Enterprise Linux Server/
           @@distro = :RedHat_Enterprise
-          @@version = PACKMAN::VersionSpec.new res.match(/\d+\.\d+/)[0]
+          @@version = VersionSpec.new res.match(/\d+\.\d+/)[0]
         when /Ubuntu/
           @@distro = :Ubuntu
-          @@version = PACKMAN::VersionSpec.new res.match(/DISTRIB_RELEASE=(\d+\.\d+)/)[1]
+          @@version = VersionSpec.new res.match(/DISTRIB_RELEASE=(\d+\.\d+)/)[1]
         when /Fedora/
           @@distro = :Fedora
-          @@version = PACKMAN::VersionSpec.new res.match(/VERSION_ID=(\d+)/)[1]
+          @@version = VersionSpec.new res.match(/VERSION_ID=(\d+)/)[1]
         when /CentOS/
           @@distro = :CentOS
-          @@version = PACKMAN::VersionSpec.new res.match(/release (\d+\.\d+)/)[1]
+          @@version = VersionSpec.new res.match(/release (\d+\.\d+)/)[1]
         else
-          PACKMAN::CLI.report_error "Unknown distro \"#{res}\"!"
+          CLI.report_error "Unknown distro \"#{res}\"!"
         end
       when :Cygwin
         res = `uname`
         @@distro = :Cygwin
-        @@version = PACKMAN::VersionSpec.new res.match(/-(\d+\.\d+)-/)[1]
+        @@version = VersionSpec.new res.match(/-(\d+\.\d+)-/)[1]
       end
-    end
-
-    def self.connect_internet?
-      if not defined? @@connect_internet
-        require "resolv"
-        dns_resolver = Resolv::DNS.new()
-        begin
-          dns_resolver.getaddress("symbolics.com")
-          @@connect_internet = true
-        rescue Resolv::ResolvError => e
-          @@connect_internet = false
-        end
-      end
-      return @@connect_internet
     end
 
     def self.x86_64?
@@ -139,16 +125,18 @@ module PACKMAN
       package.each do |p|
         begin
           if debian_gang?
-            PACKMAN.slim_run "dpkg-query -l #{p}"
+            `dpkg-query -l #{p} 1>/dev/null 2>&1`
+            flag = false if not $?.success?
           elsif redhat_gang?
-            PACKMAN.slim_run "rpm -q #{p}"
+            `rpm -q #{p} 1>/dev/null 2>&1`
+            flag = false if not $?.success?
           elsif mac_gang?
             # TODO: How to handle this branch?
             PACKMAN.under_construction!
           elsif cygwin_gang?
             flag = false if not `cygcheck -c #{p}`.match(p)
           else
-            PACKMAN::CLI.report_error "Unknown OS!"
+            CLI.report_error "Unknown OS!"
           end
         rescue
           flag = false
@@ -170,9 +158,9 @@ module PACKMAN
           # TODO: How to handle this branch?
           PACKMAN.under_construction!
         elsif cygwin_gang?
-          res << "Use Cygwin Setup tool to install #{PACKMAN::CLI.red p}.\n"
+          res << "Use Cygwin Setup tool to install #{CLI.red p}.\n"
         else
-          PACKMAN::CLI.report_error "Unknown OS!"
+          CLI.report_error "Unknown OS!"
         end
       end
       return res

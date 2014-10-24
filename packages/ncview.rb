@@ -15,10 +15,10 @@ class Ncview < PACKMAN::Package
       'if test x$CC_TEST_SAME != x$NETCDF_CC_TEST_SAME; then' => 'if test x$CC_TEST_SAME == x$NETCDF_CC_TEST_SAME; then'
     }
     args = %W[
-      --prefix=#{PACKMAN::Package.prefix(self)}
-      --with-nc-config=#{PACKMAN::Package.prefix(Netcdf_c)}/bin/nc-config
-      --with-udunits2_incdir=#{PACKMAN::Package.prefix(Udunits)}/include
-      --with-udunits2_libdir=#{PACKMAN::Package.prefix(Udunits)}/lib
+      --prefix=#{PACKMAN.prefix(self)}
+      --with-nc-config=#{PACKMAN.prefix(Netcdf_c)}/bin/nc-config
+      --with-udunits2_incdir=#{PACKMAN.prefix(Udunits)}/include
+      --with-udunits2_libdir=#{PACKMAN.prefix(Udunits)}/lib
       --disable-dependency-tracking
     ]
     if PACKMAN::OS.mac_gang?

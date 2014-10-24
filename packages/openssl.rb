@@ -14,18 +14,18 @@ class Openssl < PACKMAN::Package
 
   def install
     args = %W[
-      --prefix=#{PACKMAN::Package.prefix(self)}
+      --prefix=#{PACKMAN.prefix(self)}
       zlib-dynamic
       shared
       enable-cms
     ]
     PACKMAN.run './config', *args
     PACKMAN.replace 'Makefile', {
-      /^ZLIB_INCLUDE=\s*$/ => "ZLIB_INCLUDE=-I#{PACKMAN::Package.prefix(Zlib)}/include",
-      /^LIBZLIB=\s*$/ => "LIBZLIB=-L#{PACKMAN::Package.prefix(Zlib)}/lib"
+      /^ZLIB_INCLUDE=\s*$/ => "ZLIB_INCLUDE=-I#{PACKMAN.prefix(Zlib)}/include",
+      /^LIBZLIB=\s*$/ => "LIBZLIB=-L#{PACKMAN.prefix(Zlib)}/lib"
     }
     PACKMAN.run 'make'
-    PACKMAN.run 'make test'
+    PACKMAN.run 'make test' if not skip_test?
     PACKMAN.run 'make install'
   end
 

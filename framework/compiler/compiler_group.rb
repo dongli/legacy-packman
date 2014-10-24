@@ -33,8 +33,12 @@ module PACKMAN
     def flags; active_spec.flags; end
     def version; active_spec.version; end
 
-    def append_customized_flags language, flags; active_spec.append_customized_flags language, flags; end
-    def clean_customized_flags language = nil; active_spec.clean_customized_flags language; end
+    def append_customized_flags language, flags
+      active_spec.append_customized_flags language, flags
+    end
+    def clean_customized_flags language = nil
+      active_spec.clean_customized_flags language
+    end
 
     class << self
       def normal
@@ -46,13 +50,13 @@ module PACKMAN
       
       def compiler_command val
         if not val.class == Hash
-          PACKMAN::CLI.report_error "Compiler group syntax error!"
+          CLI.report_error "Compiler group syntax error!"
         end
         if not val.keys.size == 1
-          PACKMAN::CLI.report_error "Compiler group syntax error!"
+          CLI.report_error "Compiler group syntax error!"
         end
         if not val.values.first.size == 2
-          PACKMAN::CLI.report_error "Compiler group syntax error!"
+          CLI.report_error "Compiler group syntax error!"
         end
         language = val.keys.first
         command = val.values.first.first
@@ -64,7 +68,7 @@ module PACKMAN
 
       def flag val
         if not val.class == Hash
-          PACKMAN::CLI.report_error "Compiler group syntax error!"
+          CLI.report_error "Compiler group syntax error!"
         end
         val.each do |key, value|
           normal.flags[key] = value

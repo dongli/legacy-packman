@@ -15,7 +15,7 @@ class Cairo < PACKMAN::Package
     # Disable LTO from GCC to avoid compilation failure. If use LTO,
     # then add 'ac_cv_prog_RANLIB=gcc-ranlib RANLIB="gcc-ranlib" AR="gcc-ar"' to args.
     args = %W[
-      --prefix=#{PACKMAN::Package.prefix(self)}
+      --prefix=#{PACKMAN.prefix(self)}
       --disable-dependency-tracking
       --with-x
       CFLAGS=-fno-lto

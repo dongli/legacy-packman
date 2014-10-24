@@ -14,10 +14,11 @@ class Netcdf_fortran < PACKMAN::Package
   option 'use_mpi' => :package_name
 
   def install
-    curl = PACKMAN::Package.prefix(Curl)
-    zlib = PACKMAN::Package.prefix(Zlib)
-    hdf5 = PACKMAN::Package.prefix(Hdf5)
-    netcdf_c = PACKMAN::Package.prefix(Netcdf_c)
+    PACKMAN.check_compiler 'fortran'
+    curl = PACKMAN.prefix(Curl)
+    zlib = PACKMAN.prefix(Zlib)
+    hdf5 = PACKMAN.prefix(Hdf5)
+    netcdf_c = PACKMAN.prefix(Netcdf_c)
     PACKMAN.append_env "PATH=#{netcdf_c}/bin:$PATH"
     # TODO: Turn 'version' from String to VersionSpec.
     cppflags = "-I#{curl}/include -I#{zlib}/include -I#{hdf5}/include -I#{netcdf_c}/include"
@@ -42,7 +43,7 @@ class Netcdf_fortran < PACKMAN::Package
       PACKMAN.append_env "lt_cv_ld_force_load=no"
     end
     args = %W[
-      --prefix=#{PACKMAN::Package.prefix(self)}
+      --prefix=#{PACKMAN.prefix(self)}
       --disable-dependency-tracking
       --disable-dap-remote-tests
       --enable-static
@@ -53,13 +54,13 @@ class Netcdf_fortran < PACKMAN::Package
     end
     PACKMAN.run './configure', *args
     PACKMAN.run 'make -j2'
-    PACKMAN.run 'make check'
+    PACKMAN.run 'make check' if not skip_test?
     PACKMAN.run 'make install'
     PACKMAN.clean_env
   end
 
   def check_consistency
-    res = `#{PACKMAN::Package.prefix(Netcdf_c)}/bin/nc-config --has-pnetcdf`
+    res = `#{PACKMAN.prefix(Netcdf_c)}/bin/nc-config --has-pnetcdf`
     if res == 'no' and options['use_mpi']
       return false
     end

@@ -9,10 +9,17 @@ class Gcc < PACKMAN::Package
   depends_on 'isl'
   depends_on 'cloog'
 
-  label 'compiler'
+  label 'compiler_insensitive'
   provide 'c' => 'gcc'
   provide 'c++' => 'g++'
   provide 'fortran' => 'gfortran'
+
+  if PACKMAN::OS.distro == :Mac_OS_X and PACKMAN::OS.version =~ '10.10'
+    patch do
+      url "https://raw.githubusercontent.com/DomT4/scripts/6c0e48921/Homebrew_Resources/Gcc/gcc1010.diff"
+      sha1 "083ec884399218584aec76ab8f2a0db97c12a3ba"
+    end
+  end
 
   def install
     if PACKMAN::OS.mac_gang?
@@ -21,13 +28,13 @@ class Gcc < PACKMAN::Package
       languages = %W[c c++ fortran]
     end
     args = %W[
-      --prefix=#{PACKMAN::Package.prefix(self)}
+      --prefix=#{PACKMAN.prefix(self)}
       --enable-languages=#{languages.join(',')}
-      --with-gmp=#{PACKMAN::Package.prefix(Gmp)}
-      --with-mpfr=#{PACKMAN::Package.prefix(Mpfr)}
-      --with-mpc=#{PACKMAN::Package.prefix(Mpc)}
-      --with-cloog=#{PACKMAN::Package.prefix(Cloog)}
-      --with-isl=#{PACKMAN::Package.prefix(Isl)}
+      --with-gmp=#{PACKMAN.prefix(Gmp)}
+      --with-mpfr=#{PACKMAN.prefix(Mpfr)}
+      --with-mpc=#{PACKMAN.prefix(Mpc)}
+      --with-cloog=#{PACKMAN.prefix(Cloog)}
+      --with-isl=#{PACKMAN.prefix(Isl)}
       --disable-multilib
     ]
     PACKMAN.mkdir 'build', :force do
@@ -40,11 +47,11 @@ class Gcc < PACKMAN::Package
   def postfix
     # Source the dependent packages in the Gcc bashrc so that Gcc can find
     # those package when doing dynamic loading.
-    PACKMAN.append "#{PACKMAN::Package.prefix(self)}/bashrc",
-      ". #{PACKMAN::Package.prefix(Gmp)}/bashrc\n"+
-      ". #{PACKMAN::Package.prefix(Mpfr)}/bashrc\n"+
-      ". #{PACKMAN::Package.prefix(Mpc)}/bashrc\n"+
-      ". #{PACKMAN::Package.prefix(Isl)}/bashrc\n"+
-      ". #{PACKMAN::Package.prefix(Cloog)}/bashrc\n"
+    PACKMAN.append "#{PACKMAN.prefix(self)}/bashrc",
+      ". #{PACKMAN.prefix(Gmp)}/bashrc\n"+
+      ". #{PACKMAN.prefix(Mpfr)}/bashrc\n"+
+      ". #{PACKMAN.prefix(Mpc)}/bashrc\n"+
+      ". #{PACKMAN.prefix(Isl)}/bashrc\n"+
+      ". #{PACKMAN.prefix(Cloog)}/bashrc\n"
   end
 end

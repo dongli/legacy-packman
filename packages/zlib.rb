@@ -5,7 +5,7 @@ class Zlib < PACKMAN::Package
 
   def install
     args = %W[
-      --prefix=#{PACKMAN::Package.prefix(self)}
+      --prefix=#{PACKMAN.prefix(self)}
     ]
     PACKMAN.run './configure', *args
     PACKMAN.run 'make install'

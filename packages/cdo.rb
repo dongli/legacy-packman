@@ -15,12 +15,12 @@ class Cdo < PACKMAN::Package
 
   def install
     args = %W[
-      --prefix=#{PACKMAN::Package.prefix(self)}
-      --with-hdf5=#{PACKMAN::Package.prefix(Hdf5)}
-      --with-netcdf=#{PACKMAN::Package.prefix(Netcdf_c)}
-      --with-szlib=#{PACKMAN::Package.prefix(Szip)}
-      --with-jasper=#{PACKMAN::Package.prefix(Jasper)}
-      --with-grib_api=#{PACKMAN::Package.prefix(Grib_api)}
+      --prefix=#{PACKMAN.prefix(self)}
+      --with-hdf5=#{PACKMAN.prefix(Hdf5)}
+      --with-netcdf=#{PACKMAN.prefix(Netcdf_c)}
+      --with-szlib=#{PACKMAN.prefix(Szip)}
+      --with-jasper=#{PACKMAN.prefix(Jasper)}
+      --with-grib_api=#{PACKMAN.prefix(Grib_api)}
       --disable-dependency-tracking
       --disable-debug
     ]

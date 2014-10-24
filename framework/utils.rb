@@ -4,17 +4,17 @@ require "digest"
 require "fileutils"
 
 module PACKMAN
-  def self.check_command cmd
-    `which #{cmd}`
-    if not $?.success?
-      raise "Command \"#{cmd}\" does not exist!"
-    end
+  def self.does_command_exist? cmd
+    `which #{cmd} 2>&1`
+    return $?.success?
   end
 
   def self.download root, url, rename = nil, cmd = nil
     cmd ||= ConfigManager.download_command
     FileUtils.mkdir root if not Dir.exist? root
-    check_command cmd
+    if not does_command_exist? cmd
+      CLI.report_error "Download command #{CLI.red cmd} does not exist!"
+    end
     filename = rename ? rename : File.basename(URI.parse(url).path)
     case cmd
     when :curl
@@ -34,13 +34,13 @@ module PACKMAN
         CLI.report_error "Failed to create file in #{CLI.red root}!"
       end
       if ConfigManager.use_ftp_mirror == 'no'
-        if OS.connect_internet?
+        if NetworkManager.is_connect_internet?
           CLI.report_error "Failed to download #{CLI.red url}!"
         else
           CLI.report_error "This machine can not connect internet! You may use a FTP mirror in your location."
         end
       else
-        if OS.connect_internet?
+        if NetworkManager.is_connect_internet?
           CLI.report_error "FTP mirror failed to provide #{CLI.red filename}, you may consider to switch off mirror."
         else
           case $?.exitstatus
@@ -56,7 +56,9 @@ module PACKMAN
     if Dir.exist? "#{root}/#{rename}"
       FileUtils.rm_rf "#{root}/#{rename}"
     end
-    check_command('git')
+    if not does_command_exist? 'git'
+      CLI.report_error "#{CLI.red 'git'} does not exist!"
+    end
     args = "-b #{tag} #{url} #{root}/#{rename}"
     system "git clone #{args}"
   end
@@ -78,11 +80,11 @@ module PACKMAN
       if expect.eql? current
         return true
       else
-        PACKMAN::CLI.report_warning "Directory #{filepath} SHA1 is #{current}."
+        CLI.report_warning "Directory #{filepath} SHA1 is #{current}."
         return false
       end
     else
-      PACKMAN::CLI.report_error "Unknown file type \"#{filepath}\"!"
+      CLI.report_error "Unknown file type \"#{filepath}\"!"
     end
   end
 
@@ -98,51 +100,32 @@ module PACKMAN
     elsif filepath =~ /\.(zip)$/
       return :zip
     else
-      PACKMAN::CLI.report_error "Unknown compression type of \"#{filepath}\"!"
+      CLI.report_error "Unknown compression type of \"#{filepath}\"!"
     end
   end
 
-  def self.append(filepath, lines)
+  def self.append filepath, lines
     File.open(filepath, "a") { |file|  file << lines }
   end
 
-  def self.mkdir(dir, options = [])
+  def self.cd dir, options = []
     options = [options] if not options.class == Array
-    FileUtils.rm_rf(dir) if Dir.exist? dir and options.include? :force
-    FileUtils.mkdir_p(dir) if not Dir.exist? dir
-    if block_given?
-      FileUtils.chdir(dir)
-      yield
-    end
-  end
-
-  def self.cd(dir)
-    @@prev_dir = FileUtils.pwd
+    @@dir_stack ||= []
+    @@dir_stack << FileUtils.pwd if not options.include? :norecord
     FileUtils.chdir dir
   end
 
   def self.cd_back
-    FileUtils.chdir @@prev_dir
+    CLI.report_error 'There is no more directory to change back!' if @@dir_stack.empty?
+    FileUtils.chdir @@dir_stack.last
+    @@dir_stack.delete_at(@@dir_stack.size-1)
   end
 
-  def self.cp(src, dest)
-    FileUtils.cp_r src, dest
-  end
-
-  def self.mv src, dest
-    FileUtils.mv src, dest
-  end
-
-  def self.replace(filepath, replaces)
-    content = File.open(filepath, 'r').read
-    replaces.each do |pattern, replacement|
-      if content.gsub!(pattern, replacement) == nil
-        raise "Pattern \"#{pattern}\" is not found in \"#{filepath}\"!"
-      end
-    end
-    file = File.open(filepath, 'w')
-    file << content
-    file.close
+  def self.work_in dir
+    CLI.report_error 'No work block is given!' if not block_given?
+    PACKMAN.cd dir
+    yield
+    PACKMAN.cd_back
   end
 
   def self.grep file_path, pattern
@@ -150,37 +133,19 @@ module PACKMAN
     content.scan(pattern)
   end
 
-  def self.new_class(class_name)
-    if class_name == ''
-      PACKMAN::CLI.report_error "Empty class!"
-    end
-    if not PACKMAN.class_defined? class_name
-      PACKMAN::CLI.report_error "Unknown class #{CLI.red class_name}!"
-    end
-    eval "#{class_name}.new"
-  end
-
-  def self.decompress(filepath)
-    case PACKMAN.compression_type filepath
+  def self.decompress file_path
+    case PACKMAN.compression_type file_path
     when :tar_Z
-      system "tar xzf #{filepath}"
+      system "tar xzf #{file_path}"
     when :tar
-      system "tar xf #{filepath}"
+      system "tar xf #{file_path}"
     when :gzip
-      system "gzip -d #{filepath}"
+      system "gzip -d #{file_path}"
     when :bzip2
-      system "bzip2 -d #{filepath}"
+      system "bzip2 -d #{file_path}"
     when :zip
-      system "unzip -o #{filepath} 1> /dev/null"
+      system "unzip -o #{file_path} 1> /dev/null"
     end
-  end
-
-  def self.rm(filepath)
-    FileUtils.rm_rf filepath
-  end
-
-  def self.ln(src, dst)
-    FileUtils.ln_s src, dst
   end
 
   def self.strip_dir dir, level
@@ -188,5 +153,9 @@ module PACKMAN
       dir = File.dirname dir
     end
     return dir
+  end
+
+  def self.expand_tilde path
+    path.gsub! '~', Dir.home
   end
 end

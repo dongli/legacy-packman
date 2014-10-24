@@ -3,11 +3,11 @@ class Libpng < PACKMAN::Package
   sha1 '5ae32b6b99cef6c5c85feab8edf9d619e1773b15'
   version '1.6.13'
 
-  # skip_on :Mac_OS_X
+  skip_on :Mac_OS_X
 
   def install
     args = %W[
-      --prefix=#{PACKMAN::Package.prefix(self)}
+      --prefix=#{PACKMAN.prefix(self)}
       --disable-dependency-tracking
       --disable-silent-rules
     ]

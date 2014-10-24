@@ -10,13 +10,13 @@ class Mpfr < PACKMAN::Package
 
   def install
     args = %W[
-      --prefix=#{PACKMAN::Package.prefix(self)}
+      --prefix=#{PACKMAN.prefix(self)}
       --disable-dependency-tracking
-      --with-gmp=#{PACKMAN::Package.prefix(Gmp)}
+      --with-gmp=#{PACKMAN.prefix(Gmp)}
     ]
     PACKMAN.run './configure', *args
     PACKMAN.run 'make'
-    PACKMAN.run 'make check'
+    PACKMAN.run 'make check' if not skip_test?
     PACKMAN.run 'make install'
   end
 end

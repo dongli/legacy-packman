@@ -13,6 +13,6 @@ class Openblas < PACKMAN::Package
       args << 'USE_OPENMP=1'
     end
     PACKMAN.run 'make', *args
-    PACKMAN.run "make install PREFIX=#{PACKMAN::Package.prefix(self)}"
+    PACKMAN.run "make install PREFIX=#{PACKMAN.prefix(self)}"
   end
 end

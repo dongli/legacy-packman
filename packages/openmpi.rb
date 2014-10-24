@@ -16,9 +16,9 @@ class Openmpi < PACKMAN::Package
   provide 'fortran:90' => 'mpif90'
 
   def install
-    # --with-libevent=#{PACKMAN::Package.prefix(Libevent)}
+    # --with-libevent=#{PACKMAN.prefix(Libevent)}
     args = %W[
-      --prefix=#{PACKMAN::Package.prefix(self)}
+      --prefix=#{PACKMAN.prefix(self)}
       --disable-dependency-tracking
       --disable-silent-rules
       --enable-ipv6
@@ -28,7 +28,7 @@ class Openmpi < PACKMAN::Package
     ]
     PACKMAN.run './configure', *args
     PACKMAN.run 'make -j2 all'
-    PACKMAN.run 'make check'
+    PACKMAN.run 'make check' if not skip_test?
     PACKMAN.run 'make install'
   end
 end

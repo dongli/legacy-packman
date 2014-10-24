@@ -12,26 +12,26 @@ class Nco < PACKMAN::Package
   label 'compiler_insensitive'
 
   def install
-    hdf5 = PACKMAN::Package.prefix(Hdf5)
-    curl = PACKMAN::Package.prefix(Curl)
+    hdf5 = PACKMAN.prefix(Hdf5)
+    curl = PACKMAN.prefix(Curl)
     PACKMAN.append_env "CFLAGS='-I#{curl}/include -I#{hdf5}/include'"
     PACKMAN.append_env "LDFLAGS='-L#{curl}/lib -L#{hdf5}/lib'"
     args = %W[
-      --prefix=#{PACKMAN::Package.prefix(self)}
+      --prefix=#{PACKMAN.prefix(self)}
       --enable-netcdf4
       --enable-dap
       --enable-ncap2
       --enable-udunits2
-      NETCDF_INC=#{PACKMAN::Package.prefix(Netcdf_c)}/include
-      NETCDF_LIB=#{PACKMAN::Package.prefix(Netcdf_c)}/lib
-      NETCDF4_ROOT=#{PACKMAN::Package.prefix(Netcdf_c)}
-      NETCDF_ROOT=#{PACKMAN::Package.prefix(Netcdf_c)}
-      UDUNITS2_PATH=#{PACKMAN::Package.prefix(Udunits)}
-      ANTLR_ROOT=#{PACKMAN::Package.prefix(Antlr2)}
+      NETCDF_INC=#{PACKMAN.prefix(Netcdf_c)}/include
+      NETCDF_LIB=#{PACKMAN.prefix(Netcdf_c)}/lib
+      NETCDF4_ROOT=#{PACKMAN.prefix(Netcdf_c)}
+      NETCDF_ROOT=#{PACKMAN.prefix(Netcdf_c)}
+      UDUNITS2_PATH=#{PACKMAN.prefix(Udunits)}
+      ANTLR_ROOT=#{PACKMAN.prefix(Antlr2)}
     ]
     PACKMAN.run './configure', *args
     PACKMAN.run 'make -j2'
-    PACKMAN.run 'make check'
+    PACKMAN.run 'make check' if not skip_test?
     PACKMAN.run 'make install'
     PACKMAN.clean_env
   end

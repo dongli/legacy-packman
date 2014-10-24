@@ -7,9 +7,9 @@ class Arpack < PACKMAN::Package
 
   def install
     args = %W[
-      --prefix=#{PACKMAN::Package.prefix(self)}
+      --prefix=#{PACKMAN.prefix(self)}
       --disable-dependency-tracking
-      --with-blas='-L#{PACKMAN::Package.prefix(Openblas)}/lib -lopenblas'
+      --with-blas='-L#{PACKMAN.prefix(Openblas)}/lib -lopenblas'
     ]
     PACKMAN.run './configure', *args
     PACKMAN.run 'make -j2'

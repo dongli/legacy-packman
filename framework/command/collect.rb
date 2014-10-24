@@ -1,29 +1,27 @@
 module PACKMAN
-  def self.collect_packages(options = [])
-    options = [options] if not options.class == Array
-    PACKMAN.mkdir ConfigManager.package_root
-    if not ConfigManager.use_ftp_mirror == 'no'
-      CLI.report_notice "Use FTP mirror #{CLI.blue ConfigManager.use_ftp_mirror}."
-    end
-    # Download packages to package_root.
-    collect_all = ( CommandLine.has_option? '-all' or options.include? :all )
-    if collect_all
-      package_names = Dir.glob("#{ENV['PACKMAN_ROOT']}/packages/*.rb").map { |f| File.basename(f).gsub('.rb', '').capitalize.to_sym }
-    else
-      package_names = ConfigManager.packages.keys
-    end
-    package_names.each do |package_name|
-      if not collect_all
-        install_spec = ConfigManager.packages[package_name]
-        package = Package.instance package_name, install_spec
-        download_package package
+  class Commands
+    def self.collect options = []
+      options = [options] if not options.class == Array
+      PACKMAN.mkdir ConfigManager.package_root
+      # Download packages to package_root.
+      collect_all = ( CommandLine.has_option? '-all' or options.include? :all )
+      if collect_all
+        package_names = Dir.glob("#{ENV['PACKMAN_ROOT']}/packages/*.rb").map { |f| File.basename(f).gsub('.rb', '').capitalize.to_sym }
       else
-        all_instances = Package.all_instances package_name
-        all_instances.each do |package|
-          if all_instances.size == 1
-            download_package package
-          elsif all_instances.size > 1
-            download_package package, :multiple_versions
+        package_names = ConfigManager.package_options.keys
+      end
+      package_names.each do |package_name|
+        if not collect_all
+          package = Package.instance package_name, ConfigManager.package_options[package_name]
+          PACKMAN.download_package package
+        else
+          all_instances = Package.all_instances package_name
+          all_instances.each do |package|
+            if all_instances.size == 1
+              PACKMAN.download_package package
+            elsif all_instances.size > 1
+              PACKMAN.download_package package, :multiple_versions
+            end
           end
         end
       end
@@ -34,12 +32,14 @@ module PACKMAN
     options = [options] if not options.class == Array
     # Recursively download dependency packages.
     package.dependencies.each do |depend|
-      if not ConfigManager.packages.keys.include? depend
+      if not ConfigManager.package_options.keys.include? depend
         download_package Package.instance depend
       end
     end
-    # Skip package that is provided by system.
-    return if package.labels.include?('should_provided_by_system')
+    # Skip the package that should be provided by system.
+    return if package.has_label? 'should_provided_by_system'
+    # Skip the package that is a master.
+    return if package.has_label? 'master_package'
     # Check if there is any patch to download.
     patch_counter = -1
     package.patches.each do |patch|

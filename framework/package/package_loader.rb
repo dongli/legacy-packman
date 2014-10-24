@@ -10,44 +10,35 @@ module PACKMAN
     end
 
     # Define a recursive function to load package definition files.
-    def self.load_package package_name, install_spec
+    def self.load_package package_name, options = {}
+      # Update package options from the external options.
       load @@package_files[package_name]
-      if install_spec
-        package = PACKMAN::Package.instance package_name, install_spec
-        install_spec.each do |key, value|
+      package = Package.instance package_name
+      if options
+        options.each do |key, value|
           if package.options.has_key? key
-            case package.option_valid_types[key]
-            when :package_name
-              if (not value.class == String and not value.class == Symbol) or not PACKMAN::Package.defined? value
-                PACKMAN::CLI.report_error "Option #{CLI.red key} for #{CLI.red package_name} should be set to a valid package name!"
-              end
-            when :boolean
-              if not !!value == value
-                PACKMAN::CLI.report_error "Option #{CLI.red key} for #{CLI.red package_name} should be set to a boolean!"
-              end
-            end
-            package.options[key] = value
+            package.update_option key, value, true
           end
         end
-      else
-        package = PACKMAN::Package.instance package_name
       end
+      # The package dependency may be changed by options.
+      load @@package_files[package_name]
+      package = Package.instance package_name, options # NOTE: We need 'options' argument!
+      # Load dependent packages.
       package.dependencies.each do |depend_name|
         next if depend_name == :package_name # Skip the placeholder :package_name.
         load @@package_files[depend_name]
-        depend_package = PACKMAN::Package.instance depend_name
+        depend_package = Package.instance depend_name
         package.options.each do |key, value|
-          if depend_package.options.has_key? key
-            depend_package.options[key] = value
-          end
+          depend_package.update_option key, value, true
         end
-        load_package depend_name, nil if not depend_package.options.empty?
+        load_package depend_name, options if not depend_package.options.empty?
       end
     end
 
     def self.init
-      PACKMAN::ConfigManager.packages.each do |package_name, install_spec|
-        load_package package_name, install_spec
+      ConfigManager.package_options.each do |package_name, options|
+        load_package package_name, options
       end
     end
   end

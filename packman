@@ -1,33 +1,36 @@
 #!/usr/bin/env ruby
 
 if not ENV.has_key? 'PACKMAN_ROOT'
-  print "[Error]: #{File.expand_path(File.dirname(__FILE__))}/setup.sh is not sourced!\n"
+  print "[Error]: #{File.expand_path(File.dirname(__FILE__))}/"+
+    "setup.sh is not sourced!\n"
   exit
 end
 
 $LOAD_PATH << "#{ENV['PACKMAN_ROOT']}/framework"
-$LOAD_PATH << "#{ENV['PACKMAN_ROOT']}/packages"
 require 'packman_framework'
 
-case PACKMAN::CommandLine.subcommand
-when :config
-  PACKMAN.edit_config_file
-when :collect
-  PACKMAN.collect_packages
-when :install
-  PACKMAN.install_packages
-when :remove
-  PACKMAN.remove_packages
-when :switch
-  PACKMAN.switch_packages
-when :mirror
-  PACKMAN.mirror_packages
-when :update
-  PACKMAN.update
-when :help
-  PACKMAN::CommandLine.print_usage
-when :report
-  PACKMAN.report
-else
-  PACKMAN::CLI.report_error "Unknown subcommand #{PACKMAN::CommandLine.subcommand}!"
+# Check if there is already a PACKMAN running.
+if PACKMAN::CommandLine.process_exclusive?
+  pid_file = "#{ENV['PACKMAN_ROOT']}/.pid"
+  if File.exist? pid_file
+    pid = File.open(pid_file, 'r').read.strip
+    PACKMAN::CLI.report_error "There is another "+
+      "#{PACKMAN::CLI.green 'packman'} process ("+
+      "#{PACKMAN::CLI.red pid}) running! Please "+
+      "wait until it is completed.", :keep_pid_file
+  else
+    File.open(pid_file, 'w') do |file|
+      file << Process.pid
+    end
+  end
 end
+
+if not PACKMAN::Commands.respond_to? PACKMAN::CommandLine.subcommand
+  PACKMAN::CLI.report_error "Unknown subcommand "+
+    "#{PACKMAN::CommandLine.subcommand}!"
+end
+
+PACKMAN::Commands.send PACKMAN::CommandLine.subcommand
+
+# Delete the pid file.
+PACKMAN.rm pid_file if PACKMAN::CommandLine.process_exclusive?

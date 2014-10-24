@@ -27,18 +27,18 @@ class Glib < PACKMAN::Package
       --disable-silent-rules
       --disable-dtrace
       --disable-libelf
-      --prefix=#{PACKMAN::Package.prefix(self)}
-      CFLAGS='-I#{PACKMAN::Package.prefix(Gettext)}/include'
-      LDFLAGS='-L#{PACKMAN::Package.prefix(Gettext)}/lib'
+      --prefix=#{PACKMAN.prefix(self)}
+      CFLAGS='-I#{PACKMAN.prefix(Gettext)}/include'
+      LDFLAGS='-L#{PACKMAN.prefix(Gettext)}/lib'
     ]
     PACKMAN.run './configure', *args
     PACKMAN.run 'make -j2'
     # PACKMAN.run 'ulimit -n 1024; make check'
     PACKMAN.run 'make install'
 
-    PACKMAN.replace "#{PACKMAN::Package.prefix(self)}/lib/pkgconfig/glib-2.0.pc", {
-      /(Libs: -L\$\{libdir\} -lglib-2.0) (-lintl)/ => "\\1 -L#{PACKMAN::Package.prefix(Gettext)}/lib \\2",
-      /(Cflags: -I\$\{includedir\}\/glib-2.0 -I\$\{libdir\}\/glib-2.0\/include)/ => "\\1 -I#{PACKMAN::Package.prefix(Gettext)}/include"
+    PACKMAN.replace "#{PACKMAN.prefix(self)}/lib/pkgconfig/glib-2.0.pc", {
+      /(Libs: -L\$\{libdir\} -lglib-2.0) (-lintl)/ => "\\1 -L#{PACKMAN.prefix(Gettext)}/lib \\2",
+      /(Cflags: -I\$\{includedir\}\/glib-2.0 -I\$\{libdir\}\/glib-2.0\/include)/ => "\\1 -I#{PACKMAN.prefix(Gettext)}/include"
     }
   end
 

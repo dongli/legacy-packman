@@ -9,12 +9,12 @@ class Readline < PACKMAN::Package
 
   def install
     args = %W[
-      --prefix=#{PACKMAN::Package.prefix(self)}
+      --prefix=#{PACKMAN.prefix(self)}
       --enable-multibyte
     ]
     if PACKMAN::OS.distro != :Mac_OS_X
       args << '--with-curses'
-      ncurses = PACKMAN::Package.prefix(Ncurses)
+      ncurses = PACKMAN.prefix(Ncurses)
       PACKMAN.append_env "CFLAGS='-I#{ncurses}/include'"
       PACKMAN.append_env "LDFLAGS='-L#{ncurses}/lib'"
     end
