@@ -42,8 +42,8 @@ module PACKMAN
       :update => {},
       :help => {},
       :report => {
-        '-package-root' => 'Print the download root of all packages.',
-        '-install-root' => 'Print the installation root of all packages.'
+        '-package_root' => 'Print the download root of all packages.',
+        '-install_root' => 'Print the installation root of all packages.'
       },
       :start => {},
       :stop => {},
@@ -81,7 +81,7 @@ module PACKMAN
         end
       end
       if [:config, :collect, :install, :remove, :switch, :mirror,
-          :start,   :stop, :status].include? @@subcommand and
+          :start,   :stop, :status, :report].include? @@subcommand and
          not @@config_file
         # Check if there is a configuration file in PACKMAN_ROOT.
         @@config_file = "#{ENV['PACKMAN_ROOT']}/packman.config"

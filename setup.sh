@@ -4,24 +4,41 @@ export PACKMAN_ROOT=$(cd $(dirname $BASH_ARGV) && pwd)
 export PATH=$PACKMAN_ROOT:$PATH
 
 # Set command line completion for packman command
-subcommands="config collect install remove switch mirror update help report start stop status"
-config_options="-debug"
-collect_options="-debug -all"
-install_options="-debug -verbose"
-remove_options="-debug -all"
-switch_options="-debug -compiler_set_index"
-mirror_options="-debug -init -start -status -stop -sync"
-update_options="-debug"
-help_options="-debug"
-report_options="-debug"
-start_options="-debug"
-stop="-debug"
-status="-debug"
-
-package_names=""
-for file in $(ls $PACKMAN_ROOT/packages); do
-    package_names="$package_names $(basename $file .rb)"
+subcommands=$(awk '
+    /PermittedSubcommands = {/ { start = 1 };
+    { if (start == 1 && match($1, ":")) { print substr($1, 2, length($1)-1) } };
+    /}.freeze/ { exit }' "$PACKMAN_ROOT/framework/command_line.rb")
+for subcommand in $subcommands; do
+    eval "${subcommand}_options=\$(awk -v subcommand=$subcommand '
+        /PermittedCommonOptions = {/ { start = 1 };
+        { if (start == 1 && match(\$1, \"-\")) { print substr(\$1, 2, length(\$1)-2) } };
+        /}.freeze/ { if (start == 1) start = 0 };
+        /PermittedOptions = {/ { start = 2 };
+        { if (start == 2 && match(\$1, subcommand)) start = 3 };
+        { if (start == 3 && match(\$1, \"-\")) { print substr(\$1, 2, length(\$1)-2) } };
+        /}/ { if (start == 3) exit }' \"$PACKMAN_ROOT/framework/command_line.rb\")"
 done
+
+available_package_names=""
+for file in $(ls "$PACKMAN_ROOT/packages"); do
+    available_package_names="$available_package_names $(basename \"$file\" .rb)"
+done
+
+if [[ -f "$PACKMAN_ROOT/packman.config" ]]; then
+    install_root=$(awk '/install_root/ { print substr($3, 2, length($3)-2) }' "$PACKMAN_ROOT/packman.config")
+fi
+installed_package_names=""
+if [[ -d "$install_root" ]]; then
+    for dir in $(ls "$install_root"); do
+        if [[ ! -d "$install_root/$dir" ]]; then
+            continue
+        fi
+        if [[ ! $available_package_names =~ $dir ]]; then
+            continue
+        fi
+        installed_package_names="$installed_package_names $dir"
+    done
+fi
 
 function find_subcommand()
 {
@@ -48,13 +65,18 @@ function complete_packman()
     "config" | "collect" | "switch" | "mirror" | "update" | "help" | "report")
         completed_words=$(eval "echo \$${prev_word##*/}_options")
         ;;
-    "install" | "remove" | "start" | "stop" | "status")
-        completed_words="$(eval "echo \$${prev_word##*/}_options") $package_names"
+    "install")
+        completed_words="$(eval "echo \$${prev_word##*/}_options") $available_package_names"
+        ;;
+    "remove" | "start" | "stop" | "status")
+        completed_words="$(eval "echo \$${prev_word##*/}_options") $installed_package_names"
         ;;
     *)
         if [[ $subcommand ]]; then
-            if [[ "install remove start stop" =~ $subcommand ]]; then
-                completed_words="$(eval "echo \$${subcommand}_options") $package_names"
+            if [[ "remove start stop status" =~ $subcommand ]]; then
+                completed_words="$(eval "echo \$${subcommand}_options") $available_package_names"
+            elif [[ "install" =~ $subcommand ]]; then
+                completed_words="$(eval "echo \$${subcommand}_options") $installed_package_names"
             fi
         fi
         ;;
