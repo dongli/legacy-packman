@@ -154,8 +154,7 @@ compiler_set_0 = {
         file << "defaults = {\n"
         str = []
         defaults.each do |key, value|
-          case value.class
-          when String
+          if value.class == String
             str << "  \"#{key}\" => \"#{value}\""
           else
             str << "  \"#{key}\" => #{value}"
