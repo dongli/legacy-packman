@@ -21,7 +21,7 @@ done
 
 available_package_names=""
 for file in $(ls "$PACKMAN_ROOT/packages"); do
-    available_package_names="$available_package_names $(basename \"$file\" .rb)"
+    available_package_names="$available_package_names $(basename "$file" .rb)"
 done
 
 if [[ -f "$PACKMAN_ROOT/packman.config" ]]; then
