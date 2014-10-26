@@ -20,7 +20,9 @@ module PACKMAN
     def self.init_mirror_service
       sync_mirror_service
       # Install proftpd.
-      install_package ConfigManager.compiler_sets[0], Proftpd.new
+      proftpd = Proftpd.new
+      proftpd.compiler_set_indices << 0
+      install_package proftpd
       # Edit proftpd config file.
       PACKMAN.replace "#{PACKMAN.prefix(Proftpd)}/../config/proftpd.conf", {
         /^ServerName.*$/ => 'ServerName "PACKMAN FTP Mirror Service"',

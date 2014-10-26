@@ -65,7 +65,7 @@ module PACKMAN
             else
               CLI.report_notice "Remove #{CLI.red versions[j]}."
               PACKMAN.delete_from_file "#{ConfigManager.install_root}/packman.bashrc",
-                "source #{versions[i]}/bashrc", :no_error
+                "source #{versions[j]}/bashrc", :no_error
               PACKMAN.rm versions[j]
             end
             # Remove empty directory if there is.

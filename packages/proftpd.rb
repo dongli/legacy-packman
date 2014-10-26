@@ -32,6 +32,7 @@ class Proftpd < PACKMAN::Package
     }
     if PACKMAN::OS.cygwin_gang?
       PACKMAN.replace "#{PACKMAN.prefix(self)}/../config/proftpd.conf", {
+        /^(DefaultServer.*$)/ => "\\1\nRequireValidShell no",
         /^User\s*\w+$/ => "User SYSTEM",
         /^Group\s*\w+$/ => "Group Administrators"
       }
