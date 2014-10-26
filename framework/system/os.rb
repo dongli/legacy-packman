@@ -31,6 +31,11 @@ module PACKMAN
       when :Darwin
         @@distro = :Mac_OS_X
         @@version = VersionSpec.new `sw_vers | grep ProductVersion | cut -d ':' -f 2`.strip
+        # TODO: Standardize the OS codes.
+        if not Dir.exist? '/usr/include'
+          CLI.report_error "You have not installed the command line tools! Run the following command:\n"+
+            "#{CLI.red "==>"} xcode-select --install"
+        end
       when :Linux
         res = `cat /etc/*-release`
         case res
