@@ -3,12 +3,12 @@ class Parallel_netcdf < PACKMAN::Package
   sha1 '41ec358878a97132b3bb1d1f67dcef96c492376c'
   version '1.5.0'
 
-  depends_on options['use_mpi'] if options['use_mpi']
-
   option 'use_mpi' => :package_name
 
+  depends_on mpi, use_mpi?
+
   def install
-    if not options.has_key? 'use_mpi'
+    if not use_mpi?
       PACKMAN::CLI.report_error "Option #{PACKMAN::CLI.red 'use_mpi'} must be set to build #{PACKMAN::CLI.green 'Parallel_netcdf'}!"
     end
     if PACKMAN::OS.type == :Linux
@@ -22,7 +22,6 @@ class Parallel_netcdf < PACKMAN::Package
     else
       args << '--disable-fortran'
     end
-    PACKMAN.use_mpi options['use_mpi']
     PACKMAN.run './configure', *args
     PACKMAN.run 'make -j2'
     PACKMAN.run 'make check' if not skip_test?

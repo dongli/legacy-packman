@@ -3,11 +3,11 @@ class Hdf5 < PACKMAN::Package
   sha1 '712955025f03db808f000d8f4976b8df0c0d37b5'
   version '1.8.13'
 
+  option 'use_mpi' => :package_name
+
   depends_on 'zlib'
   depends_on 'szip'
-  depends_on options['use_mpi'] if options['use_mpi']
-
-  option 'use_mpi' => :package_name
+  depends_on mpi, use_mpi?
 
   def install
     args = %W[
@@ -56,7 +56,7 @@ class Hdf5 < PACKMAN::Package
       PACKMAN::CLI.report_error "Failed to check consistency of #{PACKMAN::CLI.red 'Hdf5'}! "+
         "Bad content in #{PACKMAN.prefix(self)}/lib/libhdf5.settings."
     end
-    if res.first.first == 'no' and options['use_mpi']
+    if res.first.first == 'no' and use_mpi?
       return false
     end
     return true

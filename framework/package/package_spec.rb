@@ -62,11 +62,15 @@ module PACKMAN
       return false
     end
 
-    def depends_on val
-      return if val == :package_name
+    def depends_on val, condition = true
+      return if val == :package_name or not val
       begin
         val = val.capitalize.to_sym
-        @dependencies << val if not @dependencies.include? val
+        if condition
+          @dependencies << val if not @dependencies.include? val
+        else
+          @dependencies.delete val
+        end
       rescue
         CLI.report_error 'Package definition syntax error!'
       end
@@ -150,7 +154,7 @@ module PACKMAN
           end
           @option_valid_types[key] = value
         elsif value.class == TrueClass or value.class == FalseClass
-          return if is_option_added and @options[key] == value 
+          return if is_option_added
           @options[key] = value
           @option_valid_types[key] = :boolean
         elsif value.class == Fixnum

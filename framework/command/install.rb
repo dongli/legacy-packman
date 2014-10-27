@@ -33,9 +33,10 @@ module PACKMAN
           end
         end
         # Reload package definition file since user input may change its dependencies.
-        PackageLoader.load_package package_name, package.options
+        options = package.options.clone
+        PackageLoader.load_package package_name, options
         # Reinstance package to make changes effective.
-        package = Package.instance package_name, package.options
+        package = Package.instance package_name, options
         # Check if the package is still under construction.
         if package.has_label? 'under_construction'
           msg = "Sorry, #{CLI.red package.class} is still under construction"

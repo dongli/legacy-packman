@@ -3,6 +3,10 @@ class Netcdf_fortran < PACKMAN::Package
   sha1 '452a1b7ef12cbcace770dcc728a7b425cf7fb295'
   version '4.4.1'
 
+  belongs_to 'netcdf'
+
+  option 'use_mpi' => :package_name
+
   # This old version may be cleaned in near future.
   history_version '4.2' do
     url 'http://www.unidata.ucar.edu/downloads/netcdf/ftp/netcdf-fortran-4.2.tar.gz'
@@ -10,8 +14,6 @@ class Netcdf_fortran < PACKMAN::Package
   end
 
   depends_on 'netcdf_c'
-
-  option 'use_mpi' => :package_name
 
   def install
     PACKMAN.check_compiler 'fortran'
@@ -49,7 +51,7 @@ class Netcdf_fortran < PACKMAN::Package
       --enable-static
       --enable-shared
     ]
-    if options['use_mpi']
+    if use_mpi?
       args << '--enable-parallel-tests'
     end
     PACKMAN.run './configure', *args
@@ -61,7 +63,7 @@ class Netcdf_fortran < PACKMAN::Package
 
   def check_consistency
     res = `#{PACKMAN.prefix(Netcdf_c)}/bin/nc-config --has-pnetcdf`
-    if res == 'no' and options['use_mpi']
+    if res == 'no' and use_mpi?
       return false
     end
     return true

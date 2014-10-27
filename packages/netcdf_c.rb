@@ -3,14 +3,16 @@ class Netcdf_c < PACKMAN::Package
   sha1 '6e1bacab02e5220954fe0328d710ebb71c071d19'
   version '4.3.2'
 
+  belongs_to 'netcdf'
+
+  option 'use_mpi' => :package_name
+
   depends_on 'patch'
   depends_on 'curl'
   depends_on 'zlib'
   depends_on 'szip'
   depends_on 'hdf5'
-  depends_on 'parallel_netcdf' if options['use_mpi']
-
-  option 'use_mpi' => :package_name
+  depends_on 'parallel_netcdf', use_mpi?
 
   # HDF5 1.8.13 removes symbols related to MPI POSIX VFD, leading to
   # errors when linking hdf5 and netcdf5 such as "undefined reference to
@@ -29,7 +31,7 @@ class Netcdf_c < PACKMAN::Package
     zlib = PACKMAN.prefix(Zlib)
     szip = PACKMAN.prefix(Szip)
     hdf5 = PACKMAN.prefix(Hdf5)
-    if options['use_mpi']
+    if use_mpi?
       pnetcdf = PACKMAN.prefix(Parallel_netcdf)
       PACKMAN.append_env "CFLAGS='-I#{curl}/include -I#{zlib}/include -I#{szip}/include -I#{hdf5}/include -I#{pnetcdf}/include'"
       PACKMAN.append_env "LDFLAGS='-L#{curl}/lib -L#{zlib}/lib -L#{szip}/lib -L#{hdf5}/lib -L#{pnetcdf}/lib'"
@@ -50,7 +52,7 @@ class Netcdf_c < PACKMAN::Package
       --enable-dap
       --disable-doxygen
     ]
-    if options['use_mpi']
+    if use_mpi?
       args << '--enable-pnetcdf'
       # PnetCDF test has bug as discussed in http://www.unidata.ucar.edu/support/help/MailArchives/netcdf/msg12561.html
       PACKMAN.replace 'nc_test/run_pnetcdf_test.sh', { 'mpiexec -n 4' => 'mpiexec -n 2' }
@@ -64,7 +66,7 @@ class Netcdf_c < PACKMAN::Package
 
   def check_consistency
     res = `#{PACKMAN.prefix(self)}/bin/nc-config --has-pnetcdf`.strip
-    if res == 'no' and options['use_mpi']
+    if res == 'no' and use_mpi?
       return false
     end
     return true

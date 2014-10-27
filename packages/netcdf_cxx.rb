@@ -3,9 +3,11 @@ class Netcdf_cxx < PACKMAN::Package
   sha1 '0bb4a0807f10060f98745e789b6dc06deddf30ff'
   version '4.2.1'
 
-  depends_on 'netcdf_c'
+  belongs_to 'netcdf'
 
   option 'use_mpi' => :package_name
+
+  depends_on 'netcdf_c'
 
   def install
     netcdf_c_prefix = PACKMAN.prefix(Netcdf_c)

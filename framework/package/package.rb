@@ -14,35 +14,9 @@ module PACKMAN
 
       # Define short-hand method for package options.
       for i in 0..active_spec.options.size-1
-        case active_spec.option_valid_types[active_spec.options.keys[i]]
-        when :boolean
-          self.instance_eval <<-EOT
-            def #{active_spec.options.keys[i]}?
-              active_spec.options["#{active_spec.options.keys[i]}"]
-            end
-          EOT
-        when :package_name
-          if active_spec.options.keys[i] =~ /use_/
-            self.instance_eval <<-EOT
-              def #{active_spec.options.keys[i].gsub('use_', '')}
-                active_spec.options["#{active_spec.options.keys[i]}"]
-              end
-            EOT
-            self.instance_eval <<-EOT
-              def #{active_spec.options.keys[i]}?
-                active_spec.options["#{active_spec.options.keys[i]}"]
-              end
-            EOT
-          else
-            CLI.report_error "Unsupported option name #{CLI.red active_spec.options.keys[i]}!"
-          end
-        else
-          self.instance_eval <<-EOT
-            def #{active_spec.options.keys[i]}
-              active_spec.options["#{active_spec.options.keys[i]}"]
-            end
-          EOT
-        end
+        option_name = active_spec.options.keys[i]
+        option_type = active_spec.option_valid_types[active_spec.options.keys[i]]
+        PackageDslHelper.create_option_shortcut option_name, option_type, self, :active_spec
       end
     end
 
@@ -159,12 +133,16 @@ module PACKMAN
       def filename val; stable.filename val; end
       def label val; stable.label val; end
       def conflicts_with val, &block; stable.conflicts_with val, &block; end
-      def depends_on val; stable.depends_on val; end
+      def depends_on val, condition = true; stable.depends_on val, condition; end
       def belongs_to val; stable.belongs_to val; end
       def provide val; stable.provide val; end
       def skip_on val; stable.skip_on val; end
-      def option key; stable.option key; end
-      def options; stable.options; end
+      def option option_hash
+        stable.option option_hash
+        option_name = option_hash.keys.first
+        option_type = stable.option_valid_types[option_name]
+        PackageDslHelper.create_option_shortcut option_name, option_type, self, :"@@#{self}_stable", true
+      end
 
       def patch option = nil, &block
         if option == :embed
