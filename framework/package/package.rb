@@ -391,6 +391,9 @@ module PACKMAN
     def self.bashrc package, options = []
       options = [options] if not options.class == Array
       prefix = PACKMAN.prefix package, options
+      if not Dir.exist? prefix
+        CLI.report_error "Package #{CLI.red package.class} has not been installed!"
+      end
       if package.master_package
         class_name = package.master_package.to_s.upcase
       else

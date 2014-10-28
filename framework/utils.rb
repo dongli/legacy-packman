@@ -89,15 +89,15 @@ module PACKMAN
   end
 
   def self.compression_type(filepath)
-    if filepath =~ /\.tar.Z$/
+    if filepath =~ /\.tar.Z$/i
       return :tar_Z
-    elsif filepath =~ /\.(tar(\..*)?|tgz|tbz2)$/
+    elsif filepath =~ /\.(tar(\..*)?|tgz|tbz2)$/i
       return :tar
-    elsif filepath =~ /\.(gz)$/
+    elsif filepath =~ /\.(gz)$/i
       return :gzip
-    elsif filepath =~ /\.(bz2)$/
+    elsif filepath =~ /\.(bz2)$/i
       return :bzip2
-    elsif filepath =~ /\.(zip)$/
+    elsif filepath =~ /\.(zip)$/i
       return :zip
     else
       CLI.report_error "Unknown compression type of \"#{filepath}\"!"
