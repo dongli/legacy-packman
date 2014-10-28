@@ -1,6 +1,6 @@
 #!/bin/bash
 
-export PACKMAN_ROOT=$(cd $(dirname $BASH_ARGV) && pwd)
+export PACKMAN_ROOT=$(cd $(dirname $0) && pwd)
 export PATH=$PACKMAN_ROOT:$PATH
 
 # Set command line completion for packman command
