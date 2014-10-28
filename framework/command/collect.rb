@@ -8,11 +8,15 @@ module PACKMAN
       if collect_all
         package_names = Dir.glob("#{ENV['PACKMAN_ROOT']}/packages/*.rb").map { |f| File.basename(f).gsub('.rb', '').capitalize.to_sym }
       else
-        package_names = ConfigManager.package_options.keys
+        package_names = ConfigManager.package_options.keys | CommandLine.packages
       end
       package_names.each do |package_name|
         if not collect_all
-          package = Package.instance package_name, ConfigManager.package_options[package_name]
+          if ConfigManager.package_options.has_key? package_name
+            package = Package.instance package_name, ConfigManager.package_options[package_name]
+          else
+            package = Package.instance package_name
+          end
           PACKMAN.download_package package
         else
           all_instances = Package.all_instances package_name
