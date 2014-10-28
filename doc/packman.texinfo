@@ -1,0 +1,27 @@
+\input texinfo
+@setfilename packman.texinfo
+@settitle PACKMAN Manual version 1.0.0-a8
+
+@copying
+This manual is for PACKMAN, version 1.0.0-a8.
+
+Copyright @copyright{} 2014 Li Dong.
+@end copying
+
+@titlepage
+@title PACKMAN
+@subtitle Package Manager Open Platform version 1.0.0-a8
+@author Li Dong
+
+@page
+@vskip 0pt plus 1filll
+@insertcopying
+@end titlepage
+
+@contents
+
+@chapter Introduction
+
+Every human, who are using computer, will need some software to do specific tasks. Installing them is the first step. In the Linux world, there are several package managers born for this purpose.
+
+@bye

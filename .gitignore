@@ -5,3 +5,4 @@ ruby
 *.tar.bz2
 *.tar.gz
 packman.config
+doc
