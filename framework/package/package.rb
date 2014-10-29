@@ -363,7 +363,6 @@ module PACKMAN
     end
 
     def decompress_to root
-      CLI.report_notice "Decompress #{filename}."
       if not File.exist? "#{ConfigManager.package_root}/#{filename}"
         CLI.report_error "Package #{CLI.red self.class} has not been downloaded!"
       end
