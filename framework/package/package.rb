@@ -372,9 +372,9 @@ module PACKMAN
         dir = root
       end
       PACKMAN.mkdir dir, [:force, :silent]
-      PACKMAN.cd dir
-      PACKMAN.decompress "#{ConfigManager.package_root}/#{filename}"
-      PACKMAN.cd_back
+      PACKMAN.work_in dir do
+        PACKMAN.decompress "#{ConfigManager.package_root}/#{filename}"
+      end
     end
 
     def copy_to root
@@ -383,7 +383,7 @@ module PACKMAN
         CLI.report_error "Package #{CLI.red self.class} has not been downloaded!"
       end
       copy_dir = "#{root}/#{self.class}"
-      PACKMAN.mkdir(copy_dir, :force)
+      PACKMAN.mkdir copy_dir, :force
       PACKMAN.cp "#{root}/#{dirname}", copy_dir
     end
 

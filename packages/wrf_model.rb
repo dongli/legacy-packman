@@ -54,6 +54,9 @@ class Wrf_model < PACKMAN::Package
     PACKMAN.append_env "JASPERINC='#{includes.join(' ')}'"
     PACKMAN.append_env "JASPERLIB='#{libs.join(' ')}'"
     # Check input parameters.
+    if [use_serial?, use_smpar?, use_dmpar?, use_dm_sm?].count(true) != 1
+      PACKMAN::CLI.report_error 'Invalid build type!'
+    end
     if not [0, 1, 2, 3].include? use_nest
       PACKMAN::CLI.report_error "Invalid nest option #{PACKMAN::CLI.red use_nest}!"
     end
@@ -72,7 +75,7 @@ class Wrf_model < PACKMAN::Package
       print "./configure\n"
     end
     PTY.spawn("#{PACKMAN::RunManager.default_command_prefix} ./configure") do |reader, writer, pid|
-      reader.expect(/Enter selection \[1-63\] : /)
+      reader.expect(/Enter selection.*: /)
       writer.print("#{choose_platform}\n")
       reader.expect(/Compile for nesting.*: /)
       writer.print("#{use_nest}\n")
@@ -87,36 +90,36 @@ class Wrf_model < PACKMAN::Package
   end
 
   def choose_platform
-    os_type = PACKMAN::OS.type
     c_vendor = PACKMAN.compiler_vendor 'c'
     fortran_vendor = PACKMAN.compiler_vendor 'fortran'
-    if os_type == :Linux or os_type == :Darwin
+    case PACKMAN::OS.distro
+    when :RedHat_Enterprise
       if c_vendor == 'gnu' and fortran_vendor == 'gnu'
-        if use_serial?
-          platform = 32
-        elsif use_smpar?
-          platform = 33
-        elsif use_dmpar?
-          platform = 34
-        elsif use_dm_sm?
-          platform = 35
-        end
+        platforms = { :seriel => 32, :smpar => 33, :dmpar => 34, :dm_sm => 35 }
       elsif c_vendor == 'intel' and fortran_vendor == 'intel'
-        if use_serial?
-          platform = 13
-        elsif use_smpar?
-          platform = 14
-        elsif use_dmpar?
-          platform = 15
-        elsif use_dm_sm?
-          platform = 16
-        end
+        platforms = { :serial => 13, :smpar => 14, :dmpar => 15, :dm_sm => 16 }
       else
-        PACKMAN::CLI.under_construction!
+        PACKMAN::CLI.report_error 'Unsupported compiler set!'
+      end
+    when :CentOS
+      if c_vendor == 'gnu' and fortran_vendor == 'gnu'
+        platforms = { :seriel => 5, :smpar => 6, :dmpar => 7, :dm_sm => 8 }
+      elsif c_vendor == 'intel' and fortran_vendor == 'intel'
+        platforms = { :serial => 15, :smpar => 16, :dmpar => 17, :dm_sm => 18 }
+      else
+        PACKMAN::CLI.report_error 'Unsupported compiler set!'
       end
     else
-      PACKMAN::CLI.under_construction!
+      PACKMAN::CLI.report_error "Unsupported OS #{PACKMAN::CLI.red PACKMAN::OS.distro}!"
     end
-    return platform
+    if use_serial?
+      platforms[:serial]
+    elsif use_smpar?
+      platforms[:smpar]
+    elsif use_dmpar?
+      platforms[:dmpar]
+    elsif use_dm_sm?
+      platforms[:dm_sm]
+    end
   end
 end

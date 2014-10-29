@@ -11,10 +11,10 @@ class Jpeg < PACKMAN::Package
     PACKMAN.run './configure', *args
     PACKMAN.run 'make'
     # Silly Jpeg does not mkdir necessary install directories!
-    PACKMAN.mkdir "#{PACKMAN.prefix(self)}/bin", :force
-    PACKMAN.mkdir "#{PACKMAN.prefix(self)}/include", :force
-    PACKMAN.mkdir "#{PACKMAN.prefix(self)}/lib", :force
-    PACKMAN.mkdir "#{PACKMAN.prefix(self)}/man/man1", :force
+    PACKMAN.mkdir "#{PACKMAN.prefix(self)}/bin", [:force, :silent]
+    PACKMAN.mkdir "#{PACKMAN.prefix(self)}/include", [:force, :silent]
+    PACKMAN.mkdir "#{PACKMAN.prefix(self)}/lib", [:force, :silent]
+    PACKMAN.mkdir "#{PACKMAN.prefix(self)}/man/man1", [:force, :silent]
     PACKMAN.run 'make install'
     PACKMAN.run 'make install-lib'
     PACKMAN.run 'make install-headers'
