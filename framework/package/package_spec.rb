@@ -126,8 +126,15 @@ module PACKMAN
 
     def attach &block
       if block_given?
-        @attachments << PackageSpec.new
-        @attachments.last.instance_eval &block
+        attachment = PackageSpec.new
+        attachment.instance_eval &block
+        is_already_added = false
+        @attachments.each do |a|
+          if a.sha1 == attachment.sha1
+            is_already_added = true
+          end
+        end
+        @attachments << attachment if not is_already_added
       end
     end
 
@@ -141,17 +148,7 @@ module PACKMAN
         is_option_added = true if @options.has_key? key
         if value.class == Symbol
           return if is_option_added and @option_valid_types[key] == value
-          # Default value for the option.
-          case value
-          when :boolean
-            @options[key] = false
-          when :integer_array
-            @options[key] = []
-          when :package_name
-            @options[key] = nil
-          else
-            CLI.under_construction!
-          end
+          @options[key] = PackageSpec.default_option_value value
           @option_valid_types[key] = value
         elsif value.class == TrueClass or value.class == FalseClass
           return if is_option_added
@@ -167,6 +164,10 @@ module PACKMAN
             @options[key] = value
             @option_valid_types[key] = :integer
           end
+        elsif value.class == String
+          return if is_option_added
+          @options[key] = value
+          @option_valid_types[key] = :string
         else
           CLI.report_error "Unexpected package option #{CLI.red option_hash}!"
         end
@@ -216,6 +217,8 @@ module PACKMAN
           CLI.report_error "A package name is needed for option #{CLI.red key}!" if not ignore_error
         end
         options[key] = value
+      when :string
+        options[key] = value
       end
     end
 
@@ -226,6 +229,8 @@ module PACKMAN
       when :integer_array
         []
       when :package_name
+        nil
+      when :string
         nil
       else
         CLI.report_error "Invalid option type #{CLI.red type}!"

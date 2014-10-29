@@ -67,47 +67,6 @@ module PACKMAN
     Kernel.const_defined? class_name.to_s
   end
 
-  def self.sha1_same?(filepath, expect)
-    if File.file? filepath
-      expect.eql? Digest::SHA1.hexdigest(File.read(filepath))
-    elsif File.directory? filepath
-      tmp = []
-      Dir.glob("#{filepath}/**/*").each do |file|
-        next if File.directory? file
-        tmp << Digest::SHA1.hexdigest(File.read(file))
-      end
-      current = Digest::SHA1.hexdigest(tmp.sort.join)
-      if expect.eql? current
-        return true
-      else
-        CLI.report_warning "Directory #{filepath} SHA1 is #{current}."
-        return false
-      end
-    else
-      CLI.report_error "Unknown file type \"#{filepath}\"!"
-    end
-  end
-
-  def self.compression_type(filepath)
-    if filepath =~ /\.tar.Z$/i
-      return :tar_Z
-    elsif filepath =~ /\.(tar(\..*)?|tgz|tbz2)$/i
-      return :tar
-    elsif filepath =~ /\.(gz)$/i
-      return :gzip
-    elsif filepath =~ /\.(bz2)$/i
-      return :bzip2
-    elsif filepath =~ /\.(zip)$/i
-      return :zip
-    else
-      CLI.report_error "Unknown compression type of \"#{filepath}\"!"
-    end
-  end
-
-  def self.append filepath, lines
-    File.open(filepath, "a") { |file|  file << lines }
-  end
-
   def self.cd dir, options = []
     options = [options] if not options.class == Array
     @@dir_stack ||= []
@@ -131,21 +90,6 @@ module PACKMAN
   def self.grep file_path, pattern
     content = File.open(file_path, 'r').read
     content.scan(pattern)
-  end
-
-  def self.decompress file_path
-    case PACKMAN.compression_type file_path
-    when :tar_Z
-      system "tar xzf #{file_path}"
-    when :tar
-      system "tar xf #{file_path}"
-    when :gzip
-      system "gzip -d #{file_path}"
-    when :bzip2
-      system "bzip2 -d #{file_path}"
-    when :zip
-      system "unzip -o #{file_path} 1> /dev/null"
-    end
   end
 
   def self.strip_dir dir, level

@@ -12,6 +12,10 @@ module PACKMAN
 
       set_active_spec requested_spec
 
+      if active_spec.has_label? 'install_with_source'
+        active_spec.option 'target_dir' => :string
+      end
+
       # Define short-hand method for package options.
       for i in 0..active_spec.options.size-1
         option_name = active_spec.options.keys[i]
@@ -358,21 +362,25 @@ module PACKMAN
       ( labels.include? 'use_system_first' and installed? )
     end
 
-    def decompress_to(root)
+    def decompress_to root
       CLI.report_notice "Decompress #{filename}."
-      if not File.exist? "#{root}/#{filename}"
+      if not File.exist? "#{ConfigManager.package_root}/#{filename}"
         CLI.report_error "Package #{CLI.red self.class} has not been downloaded!"
       end
-      decom_dir = "#{root}/#{self.class}"
-      PACKMAN.mkdir decom_dir, [:force, :silent]
-      PACKMAN.cd decom_dir
-      PACKMAN.decompress "#{root}/#{filename}"
+      if root == ConfigManager.package_root
+        dir = "#{root}/#{self.class}"
+      else
+        dir = root
+      end
+      PACKMAN.mkdir dir, [:force, :silent]
+      PACKMAN.cd dir
+      PACKMAN.decompress "#{ConfigManager.package_root}/#{filename}"
       PACKMAN.cd_back
     end
 
-    def copy_to(root)
+    def copy_to root
       CLI.report_notice "Copy #{dirname}."
-      if not Dir.exist? "#{root}/#{dirname}"
+      if not Dir.exist? "#{ConfigManager.package_root}/#{dirname}"
         CLI.report_error "Package #{CLI.red self.class} has not been downloaded!"
       end
       copy_dir = "#{root}/#{self.class}"
@@ -527,11 +535,18 @@ module PACKMAN
     else
       package_ = package
     end
-    prefix = "#{ConfigManager.install_root}/#{package_.class.to_s.downcase}/#{package_.version}"
-    if not package_.has_label? 'compiler_insensitive' and
-      not options.include? :compiler_insensitive
-      compiler_set_index = ConfigManager.compiler_sets.index(Package.compiler_set)
-      prefix << "/#{compiler_set_index}"
+    if package_.has_label? 'install_with_source'
+      if not package_.target_dir
+        CLI.report_error "Use #{CLI.red '-target_dir'} to specify where to install #{CLI.green package.class}!"
+      end
+      prefix = package_.target_dir
+    else
+      prefix = "#{ConfigManager.install_root}/#{package_.class.to_s.downcase}/#{package_.version}"
+      if not package_.has_label? 'compiler_insensitive' and
+        not options.include? :compiler_insensitive
+        compiler_set_index = ConfigManager.compiler_sets.index(Package.compiler_set)
+        prefix << "/#{compiler_set_index}"
+      end
     end
     return prefix
   end

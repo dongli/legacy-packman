@@ -73,8 +73,8 @@ module PACKMAN
       end
       PACKMAN.expand_tilde @@package_root
       PACKMAN.expand_tilde @@install_root
-      PACKMAN.mkdir @@package_root
-      PACKMAN.mkdir @@install_root
+      PACKMAN.mkdir @@package_root if not Dir.exist? @@package_root
+      PACKMAN.mkdir @@install_root if not Dir.exist? @@install_root
       @@download_command = @@download_command.to_sym
       @@compiler_sets = []
       ( self.methods.select { |m| m.to_s =~ /compiler_set_\d$/ } ).each do |m|

@@ -105,7 +105,7 @@ module PACKMAN
         RunManager.append_bashrc_path("#{PACKMAN.prefix(depend_package)}/bashrc") if not depend_package.skip?
       end
       # Check if the package is a master.
-      if package.has_label? 'package_master'
+      if package.has_label? 'master_package' and not options.include? :depend
         CLI.report_notice "Package master #{CLI.green package.class} has been installed."
         return
       end
@@ -143,6 +143,28 @@ module PACKMAN
         # Write bashrc file for the package.
         Package.bashrc package, :compiler_insensitive
         package.postfix
+      elsif package.has_label? 'install_with_source'
+        if compiler_sets.size != 1
+          CLI.report_error "Currently, only one compiler set is allowed to build packages that are installed with source."
+        end
+        if not package.target_dir
+          CLI.report_error "Option #{CLI.red '-target_dir=...'} is needed!"
+        end
+        package.decompress_to package.target_dir
+        PACKMAN.work_in package.target_dir do
+          Package.apply_patch package
+          msg = "Build package #{CLI.green package.class} with compiler set"
+          msg << " #{CLI.green ConfigManager.compiler_sets.index(compiler_sets.first)}"
+          if package.has_option? 'use_mpi' and package.use_mpi?
+            msg << " and #{CLI.red package.mpi.capitalize} library"
+            PACKMAN.use_mpi package.mpi
+          end
+          CLI.report_notice msg+'.'
+          package.install
+        end
+        Package.bashrc package
+        package.postfix
+        CompilerManager.clean_customized_flags
       else
         # Build package for each compiler set.
         build_upper_dir = "#{ConfigManager.package_root}/#{package.class}"
@@ -172,7 +194,7 @@ module PACKMAN
             # Set the MPI compiler wrappers.
             PACKMAN.use_mpi package.mpi
           end
-          CLI.report_notice msg+"."
+          CLI.report_notice msg+'.'
           package.install
           PACKMAN.cd_back
           FileUtils.rm_rf build_dir
