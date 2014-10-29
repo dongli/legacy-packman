@@ -43,8 +43,8 @@ class Wrf_model < PACKMAN::Package
     PACKMAN.append_env "NETCDF='#{PACKMAN.prefix Netcdf}'"
     includes = []
     libs = []
-    includes << "-I#{PACKMAN.prefix Jasper}/include"
-    libs << "-L#{PACKMAN.prefix Jasper}/lib"
+    includes << "#{PACKMAN.prefix Jasper}/include" # NOTE: There is no '-I' ahead!
+    libs << "#{PACKMAN.prefix Jasper}/lib" # NOTE: There is no '-L' ahead!
     includes << "-I#{PACKMAN.prefix Zlib}/include"
     libs << "-L#{PACKMAN.prefix Zlib}/lib"
     if not PACKMAN::OS.mac_gang?
@@ -95,7 +95,7 @@ class Wrf_model < PACKMAN::Package
     case PACKMAN::OS.distro
     when :RedHat_Enterprise
       if c_vendor == 'gnu' and fortran_vendor == 'gnu'
-        platforms = { :seriel => 32, :smpar => 33, :dmpar => 34, :dm_sm => 35 }
+        platforms = { :serial => 32, :smpar => 33, :dmpar => 34, :dm_sm => 35 }
       elsif c_vendor == 'intel' and fortran_vendor == 'intel'
         platforms = { :serial => 13, :smpar => 14, :dmpar => 15, :dm_sm => 16 }
       else
@@ -103,7 +103,7 @@ class Wrf_model < PACKMAN::Package
       end
     when :CentOS
       if c_vendor == 'gnu' and fortran_vendor == 'gnu'
-        platforms = { :seriel => 5, :smpar => 6, :dmpar => 7, :dm_sm => 8 }
+        platforms = { :serial => 5, :smpar => 6, :dmpar => 7, :dm_sm => 8 }
       elsif c_vendor == 'intel' and fortran_vendor == 'intel'
         platforms = { :serial => 15, :smpar => 16, :dmpar => 17, :dm_sm => 18 }
       else
