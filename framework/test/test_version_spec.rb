@@ -30,6 +30,11 @@ describe PACKMAN::VersionSpec do
     v.beta.must_equal nil
     v.release_candidate.must_equal nil
 
+    v = PACKMAN::VersionSpec.new '14.7-0'
+    v.major.must_equal 14
+    v.minor.must_equal 7
+    v.beta.must_equal 0
+
     v = PACKMAN::VersionSpec.new '2.0b5'
     v.major.must_equal 2
     v.minor.must_equal 0
