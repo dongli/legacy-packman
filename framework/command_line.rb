@@ -23,7 +23,7 @@ module PACKMAN
         '-all' => 'Collect all packages.'
       },
       :install => {
-        '-verbose' => 'Show verbose information.',
+        '-verbose' => 'Show verbose information.'
       },
       :remove => {
         '-all' => 'Remove all versions and compiler sets.',

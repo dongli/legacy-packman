@@ -10,17 +10,15 @@ module PACKMAN
     end
 
     # Define a recursive function to load package definition files.
-    def self.load_package package_name, options = {}
+    def self.load_package package_name
       # Update package options from the external options.
       load @@package_files[package_name]
       package = Package.instance package_name
-      if options
-        options.each do |key, value|
-          if package.options.has_key? key
-            package.update_option key, value, true
-          end
-        end
-      end
+      # Check possible package options from config file.
+      ConfigManager.propagate_options_to package
+      # Check possible package options from command line.
+      CommandLine.propagate_options_to package
+      options = package.options.clone
       # The package dependency may be changed by options.
       load @@package_files[package_name]
       package = Package.instance package_name, options # NOTE: We need 'options' argument!
@@ -28,17 +26,14 @@ module PACKMAN
       package.dependencies.each do |depend_name|
         next if depend_name == :package_name # Skip the placeholder :package_name.
         load @@package_files[depend_name]
-        depend_package = Package.instance depend_name
-        package.options.each do |key, value|
-          depend_package.update_option key, value, true
-        end
-        load_package depend_name, options if not depend_package.options.empty?
+        load_package depend_name
       end
     end
 
     def self.init
-      ConfigManager.package_options.each do |package_name, options|
-        load_package package_name, options
+      packages = ( ConfigManager.package_options.keys | CommandLine.packages ).uniq
+      packages.each do |package_name|
+        load_package package_name
       end
     end
   end

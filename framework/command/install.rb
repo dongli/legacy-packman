@@ -3,13 +3,14 @@ module PACKMAN
     def self.install
       @@is_any_package_installed = false
       # Install packages.
-      packages = CommandLine.packages.empty? ? ConfigManager.package_options.keys : CommandLine.packages
+      packages = ( ConfigManager.package_options.keys | CommandLine.packages ).uniq
       packages.each do |package_name|
         package = Package.instance package_name
-        # Check possible package options from config file.
-        ConfigManager.propagate_options_to package
-        # Check possible package options from command line.
-        CommandLine.propagate_options_to package
+        if package.has_label? 'install_with_source' and
+           not CommandLine.packages.include? package_name
+          # 'install_with_source' packages should only be specified in command line.
+          next
+        end
         # Binary is preferred.
         if package.has_binary? and not package.use_binary?
           package.options['use_binary'] = true
@@ -32,11 +33,6 @@ module PACKMAN
             end
           end
         end
-        # Reload package definition file since user input may change its dependencies.
-        options = package.options.clone
-        PackageLoader.load_package package_name, options
-        # Reinstance package to make changes effective.
-        package = Package.instance package_name, options
         # Check if the package is still under construction.
         if package.has_label? 'under_construction'
           msg = "Sorry, #{CLI.red package.class} is still under construction"
@@ -89,13 +85,13 @@ module PACKMAN
     def self.install_package package, options = []
       options = [options] if not options.class == Array
       # Set compiler sets.
-      compiler_sets = ConfigManager.compiler_sets.select.with_index { |x, i| package.compiler_set_indices.include? i }
       # NOTE: To avoid GCC build itself!
       return if package.has_label? 'compiler_insensitive' and is_package_installed? package, options
       # Check dependencies.
       package.dependencies.each do |depend|
-        # TODO: How to handle dependency install_spec?
         depend_package = Package.instance depend
+        # Propagate compiler set indices.
+        depend_package.update_option 'compiler_set_indices', package.compiler_set_indices
         install_package depend_package, :depend
         # TODO: Clean this.
         # When there is any dependency use MPI, we should use MPI for the package.
@@ -129,6 +125,7 @@ module PACKMAN
         end
       end
       # Install package.
+      compiler_sets = ConfigManager.compiler_sets.select.with_index { |x, i| package.compiler_set_indices.include? i }
       if compiler_sets.empty?
         # Install precompiled package.
         prefix = PACKMAN.prefix package, :compiler_insensitive

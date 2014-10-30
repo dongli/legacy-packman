@@ -194,7 +194,11 @@ compiler_set_0 = {
     end
 
     def self.propagate_options_to package
-      options = package_options[package.class.to_s.to_sym]
+      if package.master_package
+        options = package_options[package.master_package]
+      else
+        options = package_options[package.class.to_s.to_sym]
+      end
       return if not options or options.empty?
       for i in 0..package.options.size-1
         key = package.options.keys[i]
