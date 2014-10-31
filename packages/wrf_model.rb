@@ -7,10 +7,7 @@ class Wrf_model < PACKMAN::Package
 
   belongs_to 'wrf'
 
-  option 'use_serial' => true
-  option 'use_smpar' => false
-  option 'use_dmpar' => false
-  option 'use_dm_sm' => false
+  option 'build_type' => 'serial'
   option 'use_nest' => 0
   option 'run_case' => 'em_real'
   option 'with_chem' => false
@@ -40,6 +37,16 @@ class Wrf_model < PACKMAN::Package
   end
 
   def install
+    # Prefix WRF due to some bugs.
+    if build_type == 'serial' or build_type == 'smpar'
+      PACKMAN.replace 'share/mediation_feedback_domain.F', {
+        /(USE module_dm), only: local_communicator/ => '\1'
+      }
+    end
+    # Set compilation environment.
+    PACKMAN.append_env "CURL_PATH='#{PACKMAN.prefix Curl}'"
+    PACKMAN.append_env "ZLIB_PATH='#{PACKMAN.prefix Zlib}'"
+    PACKMAN.append_env "HDF5_PATH='#{PACKMAN.prefix Hdf5}'"
     PACKMAN.append_env "NETCDF='#{PACKMAN.prefix Netcdf}'"
     includes = []
     libs = []
@@ -54,8 +61,8 @@ class Wrf_model < PACKMAN::Package
     PACKMAN.append_env "JASPERINC='#{includes.join(' ')}'"
     PACKMAN.append_env "JASPERLIB='#{libs.join(' ')}'"
     # Check input parameters.
-    if [use_serial?, use_smpar?, use_dmpar?, use_dm_sm?].count(true) != 1
-      PACKMAN::CLI.report_error 'Invalid build type!'
+    if not ['serial', 'smpar', 'dmpar', 'dm+sm'].include? build_type
+      PACKMAN::CLI.report_error "Invalid build type #{PACKMAN::CLI.red build_type}!"
     end
     if not [0, 1, 2, 3].include? use_nest
       PACKMAN::CLI.report_error "Invalid nest option #{PACKMAN::CLI.red use_nest}!"
@@ -75,8 +82,8 @@ class Wrf_model < PACKMAN::Package
       print "./configure\n"
     end
     PTY.spawn("#{PACKMAN::RunManager.default_command_prefix} ./configure") do |reader, writer, pid|
-      reader.expect(/Enter selection.*: /)
-      writer.print("#{choose_platform}\n")
+      output = reader.expect(/Enter selection.*: /)
+      writer.print("#{choose_platform output}\n")
       reader.expect(/Compile for nesting.*: /)
       writer.print("#{use_nest}\n")
       reader.expect(/\*/)
@@ -89,37 +96,26 @@ class Wrf_model < PACKMAN::Package
     PACKMAN.clean_env
   end
 
-  def choose_platform
+  def choose_platform output
     c_vendor = PACKMAN.compiler_vendor 'c'
     fortran_vendor = PACKMAN.compiler_vendor 'fortran'
-    case PACKMAN::OS.distro
-    when :RedHat_Enterprise
-      if c_vendor == 'gnu' and fortran_vendor == 'gnu'
-        platforms = { :serial => 32, :smpar => 33, :dmpar => 34, :dm_sm => 35 }
-      elsif c_vendor == 'intel' and fortran_vendor == 'intel'
-        platforms = { :serial => 13, :smpar => 14, :dmpar => 15, :dm_sm => 16 }
-      else
-        PACKMAN::CLI.report_error 'Unsupported compiler set!'
+    build_type_ = build_type == 'dm+sm' ? 'dm\+sm' : build_type
+    if c_vendor == 'gnu' and fortran_vendor == 'gnu'
+      # gcc_version = PACKMAN::CompilerManager.compiler_group('gnu').version
+      # if gcc_version <= '4.4.7'
+      #   PACKMAN::CLI.report_error "GCC version (#{gcc_version}) is too low to build WRF!"
+      # end
+      output.each do |line|
+        tmp = line.match(/(\d+)\.\s+.*gfortran compiler with gcc\s+\(#{build_type_}\)/)
+        return tmp[1] if tmp
       end
-    when :CentOS
-      if c_vendor == 'gnu' and fortran_vendor == 'gnu'
-        platforms = { :serial => 5, :smpar => 6, :dmpar => 7, :dm_sm => 8 }
-      elsif c_vendor == 'intel' and fortran_vendor == 'intel'
-        platforms = { :serial => 15, :smpar => 16, :dmpar => 17, :dm_sm => 18 }
-      else
-        PACKMAN::CLI.report_error 'Unsupported compiler set!'
+    elsif c_vendor == 'intel' and fortran_vendor == 'intel'
+      output.each do |line|
+        tmp = line.match(/(\d+)\.\s+.*ifort compiler with icc\s+\(#{build_type_}\)/)
+        return tmp[1] if tmp
       end
     else
-      PACKMAN::CLI.report_error "Unsupported OS #{PACKMAN::CLI.red PACKMAN::OS.distro}!"
-    end
-    if use_serial?
-      platforms[:serial]
-    elsif use_smpar?
-      platforms[:smpar]
-    elsif use_dmpar?
-      platforms[:dmpar]
-    elsif use_dm_sm?
-      platforms[:dm_sm]
+      PACKMAN::CLI.report_error 'Unsupported compiler set!'
     end
   end
 end
