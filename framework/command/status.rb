@@ -7,7 +7,7 @@ module PACKMAN
       CommandLine.packages.each do |package_name|
         package = Package.instance package_name
         set = ConfigManager.package_options[package_name]['compiler_set_indices']
-        Package.compiler_set = ConfigManager.compiler_sets[set.first]
+        CompilerManager.activate_compiler_set set.first
         if not package.respond_to? :status
           CLI.report_error "#{CLI.red package_name} does not provide #{CLI.blue 'status'} method!"
         end

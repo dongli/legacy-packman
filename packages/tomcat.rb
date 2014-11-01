@@ -31,7 +31,7 @@ class Tomcat < PACKMAN::Package
     PACKMAN.mkdir tomcat, :force
     PACKMAN.cp '.', tomcat
     # Check if 8080 port is occupied, if so we should choose another one.
-    PACKMAN::CLI.report_notice "Search an available port for #{PACKMAN::CLI.green Tomcat}."
+    PACKMAN.report_notice "Search an available port for #{PACKMAN.green Tomcat}."
     is_found_aval_port = false
     port = 8080
     while port <= 10000
@@ -41,9 +41,9 @@ class Tomcat < PACKMAN::Package
       end
     end
     if not is_found_aval_port
-      PACKMAN::CLI.report_error "Can not find an available port!"
+      PACKMAN.report_error "Can not find an available port!"
     else
-      PACKMAN::CLI.report_notice "Use port #{port}."
+      PACKMAN.report_notice "Use port #{port}."
       PACKMAN.replace "#{tomcat}/conf/server.xml", {
         '<Connector port="8080"' => "<Connector port=\"#{port}\""
       }

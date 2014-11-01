@@ -21,19 +21,19 @@ class Netcdf_fortran < PACKMAN::Package
     zlib = PACKMAN.prefix(Zlib)
     hdf5 = PACKMAN.prefix(Hdf5)
     netcdf_c = PACKMAN.prefix(Netcdf_c)
-    PACKMAN.append_env "PATH=#{netcdf_c}/bin:$PATH"
     # TODO: Turn 'version' from String to VersionSpec.
     cppflags = "-I#{curl}/include -I#{zlib}/include -I#{hdf5}/include -I#{netcdf_c}/include"
     if version != '4.4.1'
       # Refer http://www.unidata.ucar.edu/support/help/MailArchives/netcdf/msg11622.html.
       # Version '4.4.1' does not need the following kludge.
-      case PACKMAN.compiler_command 'fortran'
+      fortran_compiler = PACKMAN.compiler_command 'fortran'
+      case fortran_compiler
       when /gfortran/
         cppflags << ' -DgFortran'
       when /ifort/
         cppflags << ' -DINTEL_COMPILER'
       else
-        PACKMAN::CLI.under_construction!
+        PACKMAN.report_error "Unsupported Fortran compiler #{fortran_compiler}!"
       end
     end
     PACKMAN.append_env "CPPFLAGS='#{cppflags}'"
@@ -58,7 +58,6 @@ class Netcdf_fortran < PACKMAN::Package
     PACKMAN.run 'make -j2'
     PACKMAN.run 'make check' if not skip_test?
     PACKMAN.run 'make install'
-    PACKMAN.clean_env
   end
 
   def check_consistency

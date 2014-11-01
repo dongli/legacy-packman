@@ -116,7 +116,7 @@ class Ferret < PACKMAN::Package
     # Check if Xmu library is installed by system or not.
     if PACKMAN::OS.mac_gang?
       if not File.exist? '/usr/X11R6/include/X11/Xmu/WinUtil.h'
-        PACKMAN::CLI.report_error "Mac does not install X11 (search Xquartz)."
+        PACKMAN.report_error "Mac does not install X11 (search Xquartz)."
       end
     else
       xmu_package = ''
@@ -126,10 +126,10 @@ class Ferret < PACKMAN::Package
         xmu_package = 'libxmu-dev'
       end
       if not PACKMAN::OS.installed? xmu_package
-        PACKMAN::CLI.report_warning "System package "+
-          "#{PACKMAN::CLI.red xmu_package} is not "+
+        PACKMAN.report_warning "System package "+
+          "#{PACKMAN.red xmu_package} is not "+
           "installed! Macro NO_WIN_UTIL_H will be used."
-        PACKMAN::CLI.report_warning "If you want Ferret to use WIN_UTIL and you "+
+        PACKMAN.report_warning "If you want Ferret to use WIN_UTIL and you "+
           "have root previledge, you can install #{xmu_package} and come back."
         PACKMAN.replace "platform_specific.mk.#{build_type}", {
           /^(\s*CPP_FLAGS\s*=.*)$/ => "\\1\n-DNO_WIN_UTIL_H \\"

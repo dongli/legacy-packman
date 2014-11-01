@@ -8,9 +8,16 @@ class Wrf_model < PACKMAN::Package
   belongs_to 'wrf'
 
   option 'build_type' => 'serial'
+  option 'use_mpi' => :package_name
   option 'use_nest' => 0
   option 'run_case' => 'em_real'
   option 'with_chem' => false
+  if build_type == 'dmpar' or build_type == 'dm+sm'
+    if not use_mpi?
+      PACKMAN.report_error "MPI library needs to be specified with "+
+        "#{PACKMAN.red '-use_mpi=...'} option when building parallel WRF!"
+    end
+  end
 
   attach do
     url 'http://www2.mmm.ucar.edu/wrf/src/WRFV3-Chem-3.6.1.TAR.gz'
@@ -62,20 +69,20 @@ class Wrf_model < PACKMAN::Package
     PACKMAN.append_env "JASPERLIB='#{libs.join(' ')}'"
     # Check input parameters.
     if not ['serial', 'smpar', 'dmpar', 'dm+sm'].include? build_type
-      PACKMAN::CLI.report_error "Invalid build type #{PACKMAN::CLI.red build_type}!"
+      PACKMAN.report_error "Invalid build type #{PACKMAN.red build_type}!"
     end
     if not [0, 1, 2, 3].include? use_nest
-      PACKMAN::CLI.report_error "Invalid nest option #{PACKMAN::CLI.red use_nest}!"
+      PACKMAN.report_error "Invalid nest option #{PACKMAN.red use_nest}!"
     end
     if not ['em_b_wave', 'em_esmf_exp', 'em_fire', 'em_grav2d_x',
             'em_heldsuarez', 'em_hill2d_x', 'em_les', 'em_quarter_ss',
             'em_real', 'em_scm_xy', 'em_seabreeze2d_x', 'em_squall2d_x',
             'em_squall2d_y', 'em_tropical_cyclone', 'exp_real',
             'nmm_real', 'nmm_tropical_cyclone'].include? run_case
-      PACKMAN::CLI.report_error "Invalid run case #{PACKMAN::CLI.red run_case}!"
+      PACKMAN.report_error "Invalid run case #{PACKMAN.red run_case}!"
     end
     # Configure WRF model.
-    print "#{PACKMAN::CLI.blue '==>'} "
+    print "#{PACKMAN.blue '==>'} "
     if PACKMAN::CommandLine.has_option? '-debug'
       print "#{PACKMAN::RunManager.default_command_prefix} ./configure\n"
     else
@@ -89,7 +96,7 @@ class Wrf_model < PACKMAN::Package
       reader.expect(/\*/)
     end
     if not File.exist? 'configure.wrf'
-      PACKMAN::CLI.report_error "#{PACKMAN::CLI.red 'configure.wrf'} is not generated!"
+      PACKMAN.report_error "#{PACKMAN.red 'configure.wrf'} is not generated!"
     end
     # Compile WRF model.
     PACKMAN.run './compile', run_case
@@ -97,25 +104,27 @@ class Wrf_model < PACKMAN::Package
   end
 
   def choose_platform output
-    c_vendor = PACKMAN.compiler_vendor 'c'
-    fortran_vendor = PACKMAN.compiler_vendor 'fortran'
+    c_compiler_info = PACKMAN.compiler_info 'c'
+    fortran_compiler_info = PACKMAN.compiler_info 'fortran'
     build_type_ = build_type == 'dm+sm' ? 'dm\+sm' : build_type
-    if c_vendor == 'gnu' and fortran_vendor == 'gnu'
-      # gcc_version = PACKMAN::CompilerManager.compiler_group('gnu').version
-      # if gcc_version <= '4.4.7'
-      #   PACKMAN::CLI.report_error "GCC version (#{gcc_version}) is too low to build WRF!"
-      # end
-      output.each do |line|
-        tmp = line.match(/(\d+)\.\s+.*gfortran compiler with gcc\s+\(#{build_type_}\)/)
-        return tmp[1] if tmp
+    if c_compiler_info[:spec].vendor == 'gnu' and fortran_compiler_info[:spec].vendor == 'gnu'
+      if fortran_compiler_info[:spec].version <= '4.4.7'
+        PACKMAN.report_error "#{PACKMAN.blue 'gfortran'} version "+
+          "#{PACKMAN.red fortran_compiler_info[:spec].version} is too low to build WRF!"
       end
-    elsif c_vendor == 'intel' and fortran_vendor == 'intel'
       output.each do |line|
-        tmp = line.match(/(\d+)\.\s+.*ifort compiler with icc\s+\(#{build_type_}\)/)
-        return tmp[1] if tmp
+        tmp = line.match(/(\d+)\.\s+.*gfortran\s*\w*\s*with gcc\s+\(#{build_type_}\)/)
+        PACKMAN.report_error "Mess up with configure output of WRF!" if not tmp
+        return tmp[1]
+      end
+    elsif c_compiler_info[:spec].vendor == 'intel' and fortran_compiler_info[:spec].vendor == 'intel'
+      output.each do |line|
+        tmp = line.match(/(\d+)\.\s+.*ifort \w* with icc\s+\(#{build_type_}\)/)
+        PACKMAN.report_error "Mess up with configure output of WRF!" if not tmp
+        return tmp[1]
       end
     else
-      PACKMAN::CLI.report_error 'Unsupported compiler set!'
+      PACKMAN.report_error 'Unsupported compiler set!'
     end
   end
 end

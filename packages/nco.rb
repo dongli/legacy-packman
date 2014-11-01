@@ -12,10 +12,6 @@ class Nco < PACKMAN::Package
   label 'compiler_insensitive'
 
   def install
-    hdf5 = PACKMAN.prefix(Hdf5)
-    curl = PACKMAN.prefix(Curl)
-    PACKMAN.append_env "CFLAGS='-I#{curl}/include -I#{hdf5}/include'"
-    PACKMAN.append_env "LDFLAGS='-L#{curl}/lib -L#{hdf5}/lib'"
     args = %W[
       --prefix=#{PACKMAN.prefix(self)}
       --enable-netcdf4
@@ -28,11 +24,12 @@ class Nco < PACKMAN::Package
       NETCDF_ROOT=#{PACKMAN.prefix(Netcdf_c)}
       UDUNITS2_PATH=#{PACKMAN.prefix(Udunits)}
       ANTLR_ROOT=#{PACKMAN.prefix(Antlr2)}
+      CFLAGS='-I#{PACKMAN.prefix(Curl)}/include -I#{PACKMAN.prefix(Hdf5)}/include'
+      LDFLAGS='-L#{PACKMAN.prefix(Curl)}/lib -L#{PACKMAN.prefix(Hdf5)}/lib'
     ]
     PACKMAN.run './configure', *args
     PACKMAN.run 'make -j2'
     PACKMAN.run 'make check' if not skip_test?
     PACKMAN.run 'make install'
-    PACKMAN.clean_env
   end
 end

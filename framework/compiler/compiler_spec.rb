@@ -1,5 +1,5 @@
 module PACKMAN
-  class CompilerGroup
+  class CompilerSpec
     attr_reader :normal, :active_spec
 
     def initialize requested_spec = nil
@@ -11,8 +11,7 @@ module PACKMAN
     def hand_over_spec name
       tmp = self.class.to_s.gsub(/PACKMAN::/, '')
       return if not self.class.class_variable_defined? :"@@#{tmp}_#{name}"
-      spec = self.class.class_variable_get :"@@#{tmp}_#{name}"
-      spec.query_version
+      spec = self.class.class_variable_get(:"@@#{tmp}_#{name}").clone
       instance_variable_set "@#{name}", spec
     end
 
@@ -33,6 +32,10 @@ module PACKMAN
     def flags; active_spec.flags; end
     def version; active_spec.version; end
 
+    def activate_compiler language
+      active_spec.query_version language
+    end
+
     def append_customized_flags language, flags
       active_spec.append_customized_flags language, flags
     end
@@ -42,7 +45,7 @@ module PACKMAN
 
     class << self
       def normal
-        eval "@@#{self.to_s.gsub(/PACKMAN::/, '')}_normal ||= CompilerGroupSpec.new"
+        eval "@@#{self.to_s.gsub(/PACKMAN::/, '')}_normal ||= CompilerSpecSpec.new"
       end
 
       def vendor val; normal.vendor = val; end
@@ -50,13 +53,13 @@ module PACKMAN
       
       def compiler_command val
         if not val.class == Hash
-          CLI.report_error "Compiler group syntax error!"
+          CLI.report_error "Compiler spec syntax error!"
         end
         if not val.keys.size == 1
-          CLI.report_error "Compiler group syntax error!"
+          CLI.report_error "Compiler spec syntax error!"
         end
         if not val.values.first.size == 2
-          CLI.report_error "Compiler group syntax error!"
+          CLI.report_error "Compiler spec syntax error!"
         end
         language = val.keys.first
         command = val.values.first.first
@@ -68,7 +71,7 @@ module PACKMAN
 
       def flag val
         if not val.class == Hash
-          CLI.report_error "Compiler group syntax error!"
+          CLI.report_error "Compiler spec syntax error!"
         end
         val.each do |key, value|
           normal.flags[key] = value

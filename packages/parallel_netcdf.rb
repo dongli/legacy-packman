@@ -9,7 +9,7 @@ class Parallel_netcdf < PACKMAN::Package
 
   def install
     if not use_mpi?
-      PACKMAN::CLI.report_error "Option #{PACKMAN::CLI.red 'use_mpi'} must be set to build #{PACKMAN::CLI.green 'Parallel_netcdf'}!"
+      PACKMAN.report_error "Option #{PACKMAN.red 'use_mpi'} must be set to build #{PACKMAN.green 'Parallel_netcdf'}!"
     end
     if PACKMAN::OS.type == :Linux
       PACKMAN.append_customized_flags :all, :pic

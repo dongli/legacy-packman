@@ -23,16 +23,7 @@ module PACKMAN
       @@use_ftp_mirror = 'no'
       @@download_command = :curl
       @@defaults = {}
-      @@compiler_sets = []
       @@package_options = {}
-    end
-
-    def self.compiler_sets
-      @@compiler_sets
-    end
-
-    def self.compiler_sets= compiler_sets
-      @@compiler_sets = compiler_sets
     end
 
     def self.package_options
@@ -76,19 +67,22 @@ module PACKMAN
       PACKMAN.mkdir @@package_root if not Dir.exist? @@package_root
       PACKMAN.mkdir @@install_root if not Dir.exist? @@install_root
       @@download_command = @@download_command.to_sym
-      @@compiler_sets = []
+      command_hash_array = []
       ( self.methods.select { |m| m.to_s =~ /compiler_set_\d$/ } ).each do |m|
-        compiler_set = self.method(m).call
-        if compiler_set != nil
-          compiler_set.each do |key, value|
+        command_hash = self.method(m).call
+        if command_hash != nil
+          command_hash.each do |key, value|
             if value == '<CHANGE ME>'
               CLI.report_error "You haven't modified #{CLI.red key} compiler in #{CommandLine.config_file}!"
             end
           end
-          CompilerManager.check_compilers compiler_set
-          @@compiler_sets << compiler_set
+          command_hash_array << command_hash
         end
       end
+      if command_hash_array.empty?
+        CLI.report_error "There is no compiler set defined in #{CommandLine.config_file}!"
+      end
+      CompilerManager.set_compiler_sets command_hash_array
       # Check if defaults has been set.
       if defaults.empty?
         msg = <<EOT
@@ -109,13 +103,12 @@ EOT
         end
       end
       # - Compilers and their flags.
-      CompilerManager.expand_packman_compiler_sets
       if [:install].include? CommandLine.subcommand
-        for i in 0..ConfigManager.compiler_sets.size-1
+        for i in 0..CompilerManager.compiler_sets.size-1
           CLI.report_notice "Compiler set #{CLI.green i}:"
-          ConfigManager.compiler_sets[i].each do |language, compiler|
-            next if language == 'installed_by_packman'
-            print "#{CLI.blue '==>'} #{language}: #{compiler} #{PACKMAN.default_compiler_flags language, compiler}\n"
+          CompilerManager.compiler_sets[i].info.each do |language, compiler_info|
+            next if language == :installed_by_packman
+            print "#{CLI.blue '==>'} #{language}: #{compiler_info[:command]} #{compiler_info[:spec].default_flags[language]}\n"
           end
         end
       end
@@ -161,15 +154,11 @@ compiler_set_0 = {
           end
         end
         file << "#{str.join(",\n")}\n}\n"
-        for i in 0..compiler_sets.size-1
+        for i in 0..CompilerManager.compiler_sets.size-1
           file << "compiler_set_#{i} = {\n"
           str = []
-          compiler_sets[i].each do |language, compiler|
-            if language == 'installed_by_packman'
-              str = ["  \"installed_by_packman\" => \"#{compiler.downcase}\""]
-              break
-            end
-            str << "  \"#{language}\" => \"#{compiler}\""
+          CompilerManager.compiler_sets[i].command_hash.each do |key, value|
+            str << "  \"#{key}\" => \"#{value}\""
           end
           file << "#{str.join(",\n")}\n"
           file << "}\n"

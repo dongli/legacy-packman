@@ -12,6 +12,15 @@ class Hyrax_bes < PACKMAN::Package
   depends_on 'gdal' # TODO: How to solve gdal failure?
 
   def install
+    # Add the lacked 'cstring' header for GCC.
+    if PACKMAN.compiler_vendor('c++') == 'gnu'
+      PACKMAN.replace './cmdln/CmdClient.cc', {
+        /^\s*(#include <cstdlib>)\s*$/ => "\\1\n#include <cstring>"
+      }
+      PACKMAN.replace './standalone/StandAloneClient.cc', {
+        /^\s*(#include <cstdlib>)\s*$/ => "\\1\n#include <cstring>"
+      }
+    end
     # Why set DAP_CFLAGS? Because 'pkg-config --cflags libdap' does not give the
     # include directory of Libxml2!
     args = %W[

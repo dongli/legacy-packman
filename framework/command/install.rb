@@ -22,12 +22,12 @@ module PACKMAN
             package.compiler_set_indices << ConfigManager.defaults['compiler_set_index']
           else
             # Ask user to choose the compiler sets.
-            tmp = ConfigManager.compiler_sets.clone
+            tmp = CompilerManager.compiler_sets.clone
             tmp << 'all'
             CLI.ask 'Which compiler sets do you want to use?', tmp
             ans = CLI.get_answer tmp
-            for i in 0..ConfigManager.compiler_sets.size-1
-              if ans.include? i or ans.include? ConfigManager.compiler_sets.size
+            for i in 0..CompilerManager.compiler_sets.size-1
+              if ans.include? i or ans.include? CompilerManager.compiler_sets.size
                 package.compiler_set_indices << i
               end
             end
@@ -70,7 +70,7 @@ module PACKMAN
             if not options.include? :depend
               msg = "Package #{CLI.green package.class} has been installed"
               if not package.use_binary? and not package.has_label? 'compiler_insensitive'
-                msg << " by using compiler set #{CLI.green ConfigManager.compiler_sets.index(Package.compiler_set)}"
+                msg << " by using compiler set #{CLI.green CompilerManager.active_compiler_set_index}"
               end
               CLI.report_notice msg+'.'
             end
@@ -95,9 +95,9 @@ module PACKMAN
         install_package depend_package, :depend
         # TODO: Clean this.
         # When there is any dependency use MPI, we should use MPI for the package.
-        # if depend_package.conflict_reasons.include? 'mpi'
-        #   PACKMAN.use_mpi depend.to_s.downcase
-        # end
+        if depend_package.has_option? 'use_mpi' and depend_package.use_mpi?
+          PACKMAN.use_mpi depend_package.mpi
+        end
         RunManager.append_bashrc_path("#{PACKMAN.prefix(depend_package)}/bashrc") if not depend_package.skip?
       end
       # Check if the package is a master.
@@ -125,8 +125,7 @@ module PACKMAN
         end
       end
       # Install package.
-      compiler_sets = ConfigManager.compiler_sets.select.with_index { |x, i| package.compiler_set_indices.include? i }
-      if compiler_sets.empty?
+      if package.compiler_set_indices.empty?
         # Install precompiled package.
         prefix = PACKMAN.prefix package, :compiler_insensitive
         # Check if the package has already installed.
@@ -141,9 +140,10 @@ module PACKMAN
         Package.bashrc package, :compiler_insensitive
         package.postfix
       elsif package.has_label? 'install_with_source'
-        if compiler_sets.size != 1
+        if package.compiler_set_indices.size != 1
           CLI.report_error "Currently, only one compiler set is allowed to build packages that are installed with source."
         end
+        CompilerManager.activate_compiler_set package.compiler_set_indices.first
         if not package.target_dir
           CLI.report_error "Option #{CLI.red '-target_dir=...'} is needed!"
         end
@@ -151,7 +151,7 @@ module PACKMAN
         PACKMAN.work_in package.target_dir do
           Package.apply_patch package
           msg = "Build package #{CLI.green package.class} with compiler set"
-          msg << " #{CLI.green ConfigManager.compiler_sets.index(compiler_sets.first)}"
+          msg << " #{CLI.green CompilerManager.active_compiler_set_index}"
           if package.has_option? 'use_mpi' and package.use_mpi?
             msg << " and #{CLI.red package.mpi.capitalize} library"
             PACKMAN.use_mpi package.mpi
@@ -161,12 +161,12 @@ module PACKMAN
         end
         Package.bashrc package
         package.postfix
-        CompilerManager.clean_customized_flags
+        CompilerManager.clean_customized_flags :all
       else
         # Build package for each compiler set.
         build_upper_dir = "#{ConfigManager.package_root}/#{package.class}"
-        compiler_sets.each do |compiler_set|
-          Package.compiler_set = compiler_set
+        package.compiler_set_indices.each do |index|
+          CompilerManager.activate_compiler_set index
           # Check if the package has already installed.
           next if is_package_installed? package, options
           # Decompress package file.
@@ -185,7 +185,7 @@ module PACKMAN
           Package.apply_patch package
           # Install package.
           msg = "Install package #{CLI.green package.class} with compiler set"
-          msg << " #{CLI.green ConfigManager.compiler_sets.index(compiler_set)}"
+          msg << " #{CLI.green CompilerManager.active_compiler_set_index}"
           if package.has_option? 'use_mpi' and package.use_mpi?
             msg << " and #{CLI.red package.mpi.capitalize} library"
             # Set the MPI compiler wrappers.
@@ -199,12 +199,15 @@ module PACKMAN
           Package.bashrc package
           package.postfix
           # Clean the customized flags if there is any.
-          CompilerManager.clean_customized_flags
+          CompilerManager.clean_customized_flags :all
         end
         # Clean build files.
         FileUtils.rm_rf build_upper_dir if Dir.exist? build_upper_dir
         # Clean the bashrc pathes.
         RunManager.clean_bashrc_path if not options.include? :depend
+      end
+      if not options.include? :depend
+        RunManager.clean_env
       end
     end
   end

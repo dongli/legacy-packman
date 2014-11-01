@@ -1,5 +1,5 @@
 module PACKMAN
-  class IntelCompilerGroup < CompilerGroup
+  class IntelCompilerSpec < CompilerSpec
     vendor 'intel'
     compiler_command 'c'       => ['icc',   '-O2 -ip -fPIC']
     compiler_command 'c++'     => ['icpc',  '-O2 -ip -fPIC']

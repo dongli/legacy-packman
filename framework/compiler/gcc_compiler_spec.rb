@@ -1,11 +1,11 @@
 module PACKMAN
-  class GccCompilerGroup < CompilerGroup
+  class GccCompilerSpec < CompilerSpec
     vendor 'gnu'
     compiler_command 'c'       => ['gcc',      '-O2 -fPIC']
     compiler_command 'c++'     => ['g++',      '-O2 -fPIC']
     compiler_command 'fortran' => ['gfortran', '-O2 -fPIC']
     flag :openmp => '-fopenmp'
     flag :pic => '-fPIC'
-    version_pattern /\d+\.\d+\.\d+/
+    version_pattern /^gcc [^ ]+ (\d+\.\d+\.\d+)/
   end
 end

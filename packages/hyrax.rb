@@ -49,13 +49,13 @@ class Hyrax < PACKMAN::Package
     # - Check Tomcat server.
     port = File.open("#{PACKMAN.prefix(Tomcat)}/conf/server.xml", 'r').read.match(/<Connector port="(\d+)"/)[1].to_i
     if not PACKMAN::NetworkManager.is_port_open? 'localhost', port
-      PACKMAN::CLI.report_warning "#{PACKMAN::CLI.red 'Tomcat'} is not listening on port #{PACKMAN::CLI.red port}."
+      PACKMAN.report_warning "#{PACKMAN.red 'Tomcat'} is not listening on port #{PACKMAN.red port}."
       return :off
     end
     # - Check BES server.
     res = `#{PACKMAN.prefix(Hyrax)}/bin/besctl status`
     if res =~ /Could not find the BES PID file/
-      PACKMAN::CLI.report_warning "#{PACKMAN::CLI.red 'Hyrax BES'} is not working."
+      PACKMAN.report_warning "#{PACKMAN.red 'Hyrax BES'} is not working."
       return :off
     end
     return :on

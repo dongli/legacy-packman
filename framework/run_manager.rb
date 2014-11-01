@@ -45,8 +45,8 @@ module PACKMAN
     def self.default_command_prefix
       cmd_str = ''
       # Handle PACKMAN installed compiler.
-      if Package.compiler_set.has_key? 'installed_by_packman'
-        compiler_prefix = PACKMAN.prefix(Package.compiler_set['installed_by_packman'])
+      if CompilerManager.active_compiler_set.info.has_key? :installed_by_packman
+        compiler_prefix = PACKMAN.prefix CompilerManager.active_compiler_set.info[:installed_by_packman]
         append_bashrc_path("#{compiler_prefix}/bashrc")
       end
       # Handle customized bashrc.
@@ -72,15 +72,16 @@ module PACKMAN
         cmd_str << ' '
       end
       # Handle compilers. Check if the @@envs has already defined them.
-      Package.compiler_set.each do |language, compiler|
+      CompilerManager.active_compiler_set.info.each do |language, compiler_info|
+        next if language == :installed_by_packman
         case language
         when 'c'
-          cmd_str << "CC=#{compiler} " if not @@envs.has_key? 'CC'
+          cmd_str << "CC=#{compiler_info[:command]} " if not @@envs.has_key? 'CC'
         when 'c++'
-          cmd_str << "CXX=#{compiler} " if not @@envs.has_key? 'CXX'
+          cmd_str << "CXX=#{compiler_info[:command]} " if not @@envs.has_key? 'CXX'
         when 'fortran'
-          cmd_str << "F77=#{compiler} " if not @@envs.has_key? 'F77'
-          cmd_str << "FC=#{compiler} " if not @@envs.has_key? 'FC'
+          cmd_str << "F77=#{compiler_info[:command]} " if not @@envs.has_key? 'F77'
+          cmd_str << "FC=#{compiler_info[:command]} " if not @@envs.has_key? 'FC'
         end
       end
       # Handle customized environment variables.
@@ -97,10 +98,10 @@ module PACKMAN
       cmd_args = args.join(' ')
       if build_helper and build_helper.should_insert_before_command?
         # Handle compiler default flags.
-        Package.compiler_set.each do |language, compiler|
-          next if language == 'installed_by_packman'
-          flags = PACKMAN.default_compiler_flags language, compiler
-          tmp = PACKMAN.customized_compiler_flags language, compiler
+        CompilerManager.active_compiler_set.info.each_key do |language|
+          next if language == :installed_by_packman
+          flags = PACKMAN.default_compiler_flags language
+          tmp = PACKMAN.customized_compiler_flags language
           flags << tmp if tmp
           cmd_str << "#{build_helper.wrap_flags language, flags, cmd_args} "
         end
@@ -108,7 +109,7 @@ module PACKMAN
       cmd_str << " #{cmd} "
       if build_helper and build_helper.should_insert_after_command?
         # Handle compiler default flags.
-        Package.compiler_set.each do |language, compiler|
+        CompilerManager.active_compiler_set.each do |language, compiler|
           next if language == 'installed_by_packman'
           flags = PACKMAN.default_compiler_flags language, compiler
           tmp = PACKMAN.customized_compiler_flags language, compiler

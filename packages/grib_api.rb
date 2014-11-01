@@ -16,6 +16,5 @@ class Grib_api < PACKMAN::Package
     ]
     PACKMAN.run './configure', *args
     PACKMAN.run 'make install'
-    PACKMAN.clean_env
   end
 end

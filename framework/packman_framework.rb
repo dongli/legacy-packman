@@ -1,3 +1,6 @@
+require "pty"
+require "expect"
+
 require "utils"
 require "cli"
 require "version_spec"
@@ -9,12 +12,13 @@ require "run_manager"
 require "system/os"
 require "system/network_manager"
 require "file/file_manager"
-require "compiler/compiler_group_spec"
-require "compiler/compiler_group"
-require "compiler/gcc_compiler_group"
-require "compiler/intel_compiler_group"
-require "compiler/llvm_compiler_group"
-require "compiler/pgi_compiler_group"
+require "compiler/compiler_spec_spec"
+require "compiler/compiler_spec"
+require "compiler/gcc_compiler_spec"
+require "compiler/intel_compiler_spec"
+require "compiler/llvm_compiler_spec"
+require "compiler/pgi_compiler_spec"
+require "compiler/compiler_set"
 require "compiler/compiler_manager"
 require "command/config"
 require "command/collect"
@@ -34,8 +38,18 @@ require "package/package"
 require "package/package_loader"
 require "legacy/config_manager_legacy"
 
-require "pty"
-require "expect"
+PACKMAN.constants.each do |module_name|
+  module_object = PACKMAN.const_get module_name
+  next if not module_object.respond_to? :delegated_methods
+  module_object.delegated_methods.each do |method_name|
+    args = ( module_object.method(method_name).parameters.map { |a| a.last } ).join(', ')
+    PACKMAN.class_eval <<-EOT
+      def self.#{method_name} #{args}
+        #{module_name}.#{method_name} #{args} 
+      end
+    EOT
+  end
+end
 
 # Until this moment, we can add packages directory to $LOAD_PATH. Because there
 # may be occasions that the name of some package class is the same with the
@@ -50,7 +64,7 @@ PACKMAN::CompilerManager.init
 begin
   PACKMAN::ConfigManager.parse
 rescue SyntaxError => e
-  PACKMAN::CLI.report_error "Failed to parse #{PACKMAN::CLI.red PACKMAN::CommandLine.config_file}!\n#{e}"
+  PACKMAN.report_error "Failed to parse #{PACKMAN.red PACKMAN::CommandLine.config_file}!\n#{e}"
 end
 
 PACKMAN::CommandLine.check_options

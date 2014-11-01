@@ -169,7 +169,7 @@ module PACKMAN
         for i in 0..indent-1
           res << ' '
         end
-        res << "#{CLI.bold(option)}\t#{meaning}\n"
+        res << "#{CLI.bold option}\t#{meaning}\n"
       end
       return res
     end
@@ -180,7 +180,7 @@ module PACKMAN
         for i in 0..indent-1
           res << ' '
         end
-        res << "#{CLI.bold(subcommand.to_s)}\t#{meaning}\n\n"
+        res << "#{CLI.bold subcommand}\t#{meaning}\n\n"
         res << print_options(subcommand, indent+2)
         res.chomp!
         res << "\n\n"

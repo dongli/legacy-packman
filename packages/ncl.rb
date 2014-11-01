@@ -94,11 +94,11 @@ class Ncl < PACKMAN::Package
         xaw_package = ['libxt-dev', 'libxaw-headers']
       end
       if not PACKMAN::OS.installed? xaw_package
-        PACKMAN::CLI.report_warning "NCL needs Xaw (its headers) to build "+
-          "#{PACKMAN::CLI.red 'idt'}, but it is not installed by system! "+
+        PACKMAN.report_warning "NCL needs Xaw (its headers) to build "+
+          "#{PACKMAN.red 'idt'}, but it is not installed by system! "+
           "You can cancel to install it with the following command if you "+
-          "really need #{PACKMAN::CLI.red 'idt'}.\n\n"+
-          "--> #{PACKMAN::CLI.bold(PACKMAN::OS.how_to_install xaw_package)}"
+          "really need #{PACKMAN.red 'idt'}.\n\n"+
+          "#{PACKMAN.yellow '==>'} #{PACKMAN::OS.how_to_install xaw_package)}"
       end
     end
     PACKMAN::RunManager.append_env "NCARG=#{PACKMAN.prefix(self)}"
@@ -114,7 +114,7 @@ class Ncl < PACKMAN::Package
     PACKMAN.run 'make -f Makefile.ini'
     res ='./ymake -config `pwd`'
     if res == 'ymake: system unknown'
-      PACKMAN::CLI.report_error "Current system is not supported by NCL!"
+      PACKMAN.report_error "Current system is not supported by NCL!"
     end
     PACKMAN.cd_back
     # Configure NCL.

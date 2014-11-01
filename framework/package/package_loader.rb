@@ -27,6 +27,8 @@ module PACKMAN
         next if depend_name == :package_name # Skip the placeholder :package_name.
         load @@package_files[depend_name]
         load_package depend_name
+        depend_package = Package.instance depend_name
+        package.propagate_options_to depend_package
       end
     end
 

@@ -33,7 +33,7 @@ module PACKMAN
               sets.each do |set|
                 begin
                   compiler_set_index = Integer File.basename(set)
-                  raise if compiler_set_index >= ConfigManager.compiler_sets.size
+                  raise if compiler_set_index >= CompilerManager.compiler_sets.size
                 rescue
                   CLI.report_error "There are unknown files in #{package_root}!\n"+
                     "#{CLI.red '==>'} #{set}"
@@ -43,7 +43,7 @@ module PACKMAN
               if sets.size > 1 and not CommandLine.has_option? '-all'
                 CLI.report_warning "Package #{CLI.red package_name} (#{File.basename versions[j]}) "+
                   "has been compiled by multiple compiler sets."
-                tmp = sets.map { |s| i = File.basename(s).to_i; "#{ConfigManager.compiler_sets[i]}" }
+                tmp = sets.map { |s| i = File.basename(s).to_i; "#{CompilerManager.compiler_sets[i].command_hash}" }
                 tmp << 'all'
                 CLI.ask 'Which set do you want to remove?', tmp
                 removed_sets = CLI.get_answer tmp
@@ -54,8 +54,8 @@ module PACKMAN
                   removed_sets << i
                 end
               end
-              for i in 0..ConfigManager.compiler_sets.size-1
-                if removed_sets.include? i or removed_sets.include? ConfigManager.compiler_sets.size
+              for i in 0..CompilerManager.compiler_sets.size-1
+                if removed_sets.include? i or removed_sets.include? CompilerManager.compiler_sets.size
                   CLI.report_notice "Remove #{CLI.red sets[i]}."
                   PACKMAN.delete_from_file "#{ConfigManager.install_root}/packman.bashrc",
                     "source #{sets[i]}/bashrc", :no_error

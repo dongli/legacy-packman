@@ -9,6 +9,13 @@ class Hdf5 < PACKMAN::Package
   depends_on 'szip'
   depends_on mpi, use_mpi?
 
+  if PACKMAN::OS.distro == :Mac_OS_X and use_mpi?
+    PACKMAN.caveat <<-EOT.gsub(/^\s+/, '')
+      Parallel HDF5 can not be built succesfully in Mac OS X!
+      PACKMAN developer tried hard to solve this problem, but without success!
+    EOT
+  end
+
   def install
     args = %W[
       --prefix=#{PACKMAN.prefix(self)}
@@ -53,7 +60,7 @@ class Hdf5 < PACKMAN::Package
   def check_consistency
     res = PACKMAN.grep "#{PACKMAN.prefix(self)}/lib/libhdf5.settings", /Parallel HDF5:\s*(.*)$/
     if not res.size == 1
-      PACKMAN::CLI.report_error "Failed to check consistency of #{PACKMAN::CLI.red 'Hdf5'}! "+
+      PACKMAN.report_error "Failed to check consistency of #{PACKMAN.red 'Hdf5'}! "+
         "Bad content in #{PACKMAN.prefix(self)}/lib/libhdf5.settings."
     end
     if res.first.first == 'no' and use_mpi?

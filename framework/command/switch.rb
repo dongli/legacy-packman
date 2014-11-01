@@ -6,11 +6,11 @@ module PACKMAN
       else
         compiler_set_index = Integer(ConfigManager.defaults['compiler_set_index'])
       end
-      compiler_set = ConfigManager.compiler_sets[compiler_set_index]
+      compiler_set = CompilerManager.compiler_sets[compiler_set_index]
       File.open("#{ConfigManager.install_root}/packman.bashrc", 'w') do |file|
         # Check if the active compiler is installed by PACKMAN.
-        if compiler_set.has_key?('installed_by_packman')
-          file << "source #{PACKMAN.prefix(compiler_set['installed_by_packman'])}/bashrc\n"
+        if compiler_set.info.has_key? :installed_by_packman
+          file << "source #{PACKMAN.prefix(compiler_set.info[:installed_by_packman])}/bashrc\n"
         end
         Dir.foreach(ConfigManager.install_root) do |dir|
           next if dir =~ /^\.{1,2}$/

@@ -17,7 +17,7 @@ class Boost < PACKMAN::Package
       # Lower version (e.g. 11.1) has issues to compile Boost.
       helper = PACKMAN.compiler_helper 'intel'
       if ['11.1'].include? helper.version
-        PACKMAN::CLI.report_error "Intel compiler is too old to compile Boost! See "+
+        PACKMAN.report_error "Intel compiler is too old to compile Boost! See "+
           "https://software.intel.com/en-us/articles/boost-1400-compilation-error-while-building-with-intel-compiler/"
       end
       case PACKMAN::OS.type
@@ -60,10 +60,10 @@ class Boost < PACKMAN::Package
     ]
     # Check if python development files are installed.
     if not PACKMAN::OS.installed? ['python-dev', 'python-devel']
-      PACKMAN::CLI.report_warning 'Python development files are not installed, '+
+      PACKMAN.report_warning 'Python development files are not installed, '+
         'so Boost will be installed without python library.'
-      PACKMAN::CLI.report_warning "If you really need that library, cancel and "+
-        "install #{PACKMAN::CLI.red 'python-dev'} or #{PACKMAN::CLI.red 'python-devel'}."
+      PACKMAN.report_warning "If you really need that library, cancel and "+
+        "install #{PACKMAN.red 'python-dev'} or #{PACKMAN.red 'python-devel'}."
       args << '--without-python'
     end
     if PACKMAN::OS.mac_gang? and toolset =~ /clang/

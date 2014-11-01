@@ -387,14 +387,6 @@ module PACKMAN
       PACKMAN.cp "#{root}/#{dirname}", copy_dir
     end
 
-    def self.compiler_set
-      @@compiler_set
-    end
-
-    def self.compiler_set=(val)
-      @@compiler_set = val
-    end
-
     def self.bashrc package, options = []
       options = [options] if not options.class == Array
       prefix = PACKMAN.prefix package, options
@@ -522,6 +514,16 @@ module PACKMAN
     def install_method
       "Not available!"
     end
+
+    def propagate_options_to other
+      return if not active_spec.options or active_spec.options.empty?
+      for i in 0..other.options.size-1
+        key = other.options.keys[i]
+        next if not active_spec.options.has_key? key or not active_spec.options[key]
+        value = active_spec.options[key]
+        other.update_option key, value
+      end
+    end
   end
 
   def self.prefix package, options = []
@@ -543,7 +545,7 @@ module PACKMAN
       prefix = "#{ConfigManager.install_root}/#{package_.class.to_s.downcase}/#{package_.version}"
       if not package_.has_label? 'compiler_insensitive' and
         not options.include? :compiler_insensitive
-        compiler_set_index = ConfigManager.compiler_sets.index(Package.compiler_set)
+        compiler_set_index = CompilerManager.active_compiler_set_index
         prefix << "/#{compiler_set_index}"
       end
     end

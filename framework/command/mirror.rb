@@ -37,7 +37,6 @@ module PACKMAN
         CLI.report_notice 'FTP mirror service is already on.'
         return
       end
-      Package.compiler_set = ConfigManager.compiler_sets[0]
       CLI.report_notice "Start FTP mirror service."
       cmd = "#{PACKMAN.prefix(Proftpd)}/sbin/proftpd"
       if ENV['USER'] != 'root'
@@ -52,7 +51,6 @@ module PACKMAN
         CLI.report_notice 'FTP mirror service is already off.'
         return
       end
-      Package.compiler_set = ConfigManager.compiler_sets[0]
       pid_file = "#{PACKMAN.prefix(Proftpd)}/var/proftpd.pid"
       if not File.exist? pid_file
         pid = `pgrep proftpd`.split("\n")

@@ -2,7 +2,7 @@ module PACKMAN
   class Commands
     def self.collect options = []
       options = [options] if not options.class == Array
-      PACKMAN.mkdir ConfigManager.package_root
+      PACKMAN.mkdir ConfigManager.package_root, :silent
       # Download packages to package_root.
       collect_all = ( CommandLine.has_option? '-all' or options.include? :all )
       if collect_all
