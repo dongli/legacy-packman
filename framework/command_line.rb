@@ -129,7 +129,7 @@ module PACKMAN
         depend_package = Package.instance depend
         return true if is_option_defined_in? depend_package, option_name
       end
-      package.options.has_key? option_name.gsub(/^-/, '')
+      package.options.has_key? option_name.gsub(/^[-+]/, '')
     end
 
     def self.check_options
@@ -192,8 +192,19 @@ module PACKMAN
       return if not options or options.empty?
       for i in 0..package.options.size-1
         key = package.options.keys[i]
-        next if not options.has_key? "-#{key}"
-        value = options["-#{key}"]
+        if options.has_key? "-#{key}"
+          value = options["-#{key}"]
+        elsif options.has_key? "+#{key}"
+          # Only packages specified in command line should adopt the option.
+          if package.master_package
+            next if not CommandLine.packages.include? package.master_package
+          else
+            next if not CommandLine.packages.include? package.class.to_s.to_sym
+          end
+          value = options["+#{key}"]
+        else
+          next
+        end
         package.update_option key, value
       end
     end

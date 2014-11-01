@@ -42,10 +42,19 @@ PACKMAN.constants.each do |module_name|
   module_object = PACKMAN.const_get module_name
   next if not module_object.respond_to? :delegated_methods
   module_object.delegated_methods.each do |method_name|
-    args = ( module_object.method(method_name).parameters.map { |a| a.last } ).join(', ')
+    args = []
+    module_object.method(method_name).parameters.each do |p|
+      case p.first
+      when :req
+        args << p.last
+      when :opt
+        args << "#{p.last} = nil"
+      end          
+    end
+    args = args.join(', ')
     PACKMAN.class_eval <<-EOT
       def self.#{method_name} #{args}
-        #{module_name}.#{method_name} #{args} 
+        #{module_name}.#{method_name} #{args.gsub(/ = nil/, '')}
       end
     EOT
   end

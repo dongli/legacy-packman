@@ -24,7 +24,7 @@ module PACKMAN
       end
     end
 
-    def append_customized_flags language, flags
+    def append_customized_flags flags, language
       @customized_flags[language] ||= ''
       @customized_flags[language] << ' '+flags
     end

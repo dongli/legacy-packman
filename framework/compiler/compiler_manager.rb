@@ -91,24 +91,24 @@ module PACKMAN
       info[:spec].default_flags[language]
     end
 
-    def self.append_customized_flags language, flags
-      if language == :all
+    def self.append_customized_flags flags, language = nil
+      if not language
         @@active_compiler_set.info.each_key do |language|
           next if language == :installed_by_packman
-          append_customized_flags language, flags
+          append_customized_flags flags, language
         end
       else
         spec = @@active_compiler_set.info[language][:spec]
         if flags.class == Symbol
-          spec.append_customized_flags language, spec.flags[flags]
+          spec.append_customized_flags spec.flags[flags], language
         else
-          spec.append_customized_flags language, flags
+          spec.append_customized_flags flags, language
         end
       end
     end
 
-    def self.clean_customized_flags language
-      if language == :all
+    def self.clean_customized_flags language = nil
+      if not language
         @@active_compiler_set.info.each_key do |language|
           next if language == :installed_by_packman
           clean_customized_flags language
@@ -135,8 +135,8 @@ module PACKMAN
       @@active_compiler_set.info[language][:spec].vendor
     end
 
-    def self.use_openmp language = :all
-      append_customized_flags language, :openmp
+    def self.use_openmp language = nil
+      append_customized_flags :openmp, language
     end
 
     def self.use_mpi mpi_vendor

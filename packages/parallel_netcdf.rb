@@ -12,7 +12,7 @@ class Parallel_netcdf < PACKMAN::Package
       PACKMAN.report_error "Option #{PACKMAN.red 'use_mpi'} must be set to build #{PACKMAN.green 'Parallel_netcdf'}!"
     end
     if PACKMAN::OS.type == :Linux
-      PACKMAN.append_customized_flags :all, :pic
+      PACKMAN.append_customized_flags :pic
     end
     args = %W[
       --prefix=#{PACKMAN.prefix(self)}

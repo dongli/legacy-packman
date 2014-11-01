@@ -17,6 +17,10 @@ class Wrf_model < PACKMAN::Package
       PACKMAN.report_error "MPI library needs to be specified with "+
         "#{PACKMAN.red '-use_mpi=...'} option when building parallel WRF!"
     end
+  elsif build_type == 'serial' or build_type == 'smpar'
+    if use_mpi?
+      PACKMAN.report_error "MPI library should not be specified when building serial WRF!"
+    end
   end
 
   attach do
@@ -100,6 +104,10 @@ class Wrf_model < PACKMAN::Package
     end
     # Compile WRF model.
     PACKMAN.run './compile', run_case
+    # Check if the executables are generated.
+    if not File.exist? 'main/wrf.exe'
+      PACKMAN.report_error 'Failed to build WRF!'
+    end
     PACKMAN.clean_env
   end
 

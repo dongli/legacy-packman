@@ -1,7 +1,7 @@
 module PACKMAN
   class Commands
-    def self.collect options = []
-      options = [options] if not options.class == Array
+    def self.collect options = nil
+      options = [options] if not options or options.class != Array
       PACKMAN.mkdir ConfigManager.package_root, :silent
       # Download packages to package_root.
       collect_all = ( CommandLine.has_option? '-all' or options.include? :all )
@@ -32,12 +32,12 @@ module PACKMAN
     end
   end
 
-  def self.download_package package, options = []
-    options = [options] if not options.class == Array
+  def self.download_package package, options = nil
+    options = [options] if not options or options.class != Array
     # Recursively download dependency packages.
     package.dependencies.each do |depend|
       if not ConfigManager.package_options.keys.include? depend
-        download_package Package.instance depend
+        download_package Package.instance(depend)
       end
     end
     # Skip the package that should be provided by system.

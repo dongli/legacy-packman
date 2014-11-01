@@ -36,8 +36,8 @@ module PACKMAN
       active_spec.query_version language
     end
 
-    def append_customized_flags language, flags
-      active_spec.append_customized_flags language, flags
+    def append_customized_flags flags, language
+      active_spec.append_customized_flags flags, language
     end
     def clean_customized_flags language = nil
       active_spec.clean_customized_flags language

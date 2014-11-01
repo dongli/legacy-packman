@@ -71,8 +71,8 @@ module PACKMAN
       print_call_stack if CommandLine.has_option? '-debug'
     end
 
-    def self.report_error message, options = []
-      options = [options] if options.class != Array
+    def self.report_error message, options = nil
+      options = [options] if not options or options.class != Array
       print "[#{red 'Error'}]: #{message}\n"
       print_call_stack if CommandLine.has_option? '-debug'
       if not options.include? :keep_pid_file
@@ -80,10 +80,6 @@ module PACKMAN
         PACKMAN.rm pid_file if File.exist? pid_file and CommandLine.process_exclusive?
       end
       exit
-    end
-
-    def self.report_check message
-      print "[#{red 'CHECK'}]: #{message}\n"
     end
 
     def self.repeat x, times, color, suffix = nil
@@ -126,8 +122,8 @@ module PACKMAN
       end
     end
 
-    def self.get_answer possible_answers, options = []
-      options = [options] if not options.class == Array
+    def self.get_answer possible_answers, options = nil
+      options = [options] if not options or options.class != Array
       while true
         print '> '
         if possible_answers

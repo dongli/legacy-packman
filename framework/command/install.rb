@@ -161,7 +161,7 @@ module PACKMAN
         end
         Package.bashrc package
         package.postfix
-        CompilerManager.clean_customized_flags :all
+        CompilerManager.clean_customized_flags
       else
         # Build package for each compiler set.
         build_upper_dir = "#{ConfigManager.package_root}/#{package.class}"
@@ -199,7 +199,7 @@ module PACKMAN
           Package.bashrc package
           package.postfix
           # Clean the customized flags if there is any.
-          CompilerManager.clean_customized_flags :all
+          CompilerManager.clean_customized_flags
         end
         # Clean build files.
         FileUtils.rm_rf build_upper_dir if Dir.exist? build_upper_dir

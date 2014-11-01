@@ -67,8 +67,8 @@ module PACKMAN
     Kernel.const_defined? class_name.to_s
   end
 
-  def self.cd dir, options = []
-    options = [options] if not options.class == Array
+  def self.cd dir, options = nil
+    options = [options] if not options or options.class != Array
     @@dir_stack ||= []
     @@dir_stack << FileUtils.pwd if not options.include? :norecord
     FileUtils.chdir dir
