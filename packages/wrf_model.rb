@@ -30,9 +30,6 @@ class Wrf_model < PACKMAN::Package
   end
 
   depends_on 'netcdf'
-  depends_on 'libpng'
-  depends_on 'jasper'
-  depends_on 'zlib'
 
   def decompress_to target_dir
     PACKMAN.mkdir target_dir
@@ -59,18 +56,6 @@ class Wrf_model < PACKMAN::Package
     PACKMAN.append_env "ZLIB_PATH='#{PACKMAN.prefix Zlib}'"
     PACKMAN.append_env "HDF5_PATH='#{PACKMAN.prefix Hdf5}'"
     PACKMAN.append_env "NETCDF='#{PACKMAN.prefix Netcdf}'"
-    includes = []
-    libs = []
-    includes << "#{PACKMAN.prefix Jasper}/include" # NOTE: There is no '-I' ahead!
-    libs << "#{PACKMAN.prefix Jasper}/lib" # NOTE: There is no '-L' ahead!
-    includes << "-I#{PACKMAN.prefix Zlib}/include"
-    libs << "-L#{PACKMAN.prefix Zlib}/lib"
-    if not PACKMAN::OS.mac_gang?
-      includes << "-I#{PACKMAN.prefix Libpng}"
-      libs << "-L#{PACKMAN.prefix Libpng}"
-    end
-    PACKMAN.append_env "JASPERINC='#{includes.join(' ')}'"
-    PACKMAN.append_env "JASPERLIB='#{libs.join(' ')}'"
     # Check input parameters.
     if not ['serial', 'smpar', 'dmpar', 'dm+sm'].include? build_type
       PACKMAN.report_error "Invalid build type #{PACKMAN.red build_type}!"
@@ -108,7 +93,6 @@ class Wrf_model < PACKMAN::Package
     if not File.exist? 'main/wrf.exe'
       PACKMAN.report_error 'Failed to build WRF!'
     end
-    PACKMAN.clean_env
   end
 
   def choose_platform output
