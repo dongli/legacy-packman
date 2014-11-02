@@ -98,7 +98,7 @@ class Ncl < PACKMAN::Package
           "#{PACKMAN.red 'idt'}, but it is not installed by system! "+
           "You can cancel to install it with the following command if you "+
           "really need #{PACKMAN.red 'idt'}.\n\n"+
-          "#{PACKMAN.yellow '==>'} #{PACKMAN::OS.how_to_install xaw_package)}"
+          "#{PACKMAN.yellow '==>'} #{PACKMAN::OS.how_to_install xaw_package}"
       end
     end
     PACKMAN::RunManager.append_env "NCARG=#{PACKMAN.prefix(self)}"
