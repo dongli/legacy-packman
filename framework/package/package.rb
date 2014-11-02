@@ -31,6 +31,7 @@ module PACKMAN
     end
 
     def set_active_spec requested_spec
+      @active_spec = nil
       if requested_spec
         if requested_spec.class == Hash
           case requested_spec[:in]
@@ -62,6 +63,7 @@ module PACKMAN
                     break
                   end
                 end
+                break if @active_spec
               end
             end
           when :history_binary_versions
@@ -126,7 +128,10 @@ module PACKMAN
     def option_valid_types; @active_spec.option_valid_types; end
     def options; @active_spec.options; end
     def has_option? key; @active_spec.has_option? key; end
-    def update_option key, value, ignore_error = false; @active_spec.update_option key, value, ignore_error; end
+    def update_option key, value, ignore_error = false
+      return if key == 'use_binary' and not has_binary?
+      @active_spec.update_option key, value, ignore_error
+    end
     def has_binary?; defined? @binary; end
 
     # Package DSL.

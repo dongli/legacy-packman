@@ -12,8 +12,8 @@ module PACKMAN
           next
         end
         # Binary is preferred.
-        if package.has_binary? and not package.use_binary?
-          package.options['use_binary'] = true
+        if package.has_binary? and package.use_binary?
+          package = Package.instance package_name, 'use_binary' => true
         end
         # Let user to choose which compiler sets to use if no relevant option is set.
         if package.compiler_set_indices.empty? and not package.use_binary?
