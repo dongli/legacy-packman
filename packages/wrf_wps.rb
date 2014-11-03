@@ -30,8 +30,8 @@ class Wrf_wps < PACKMAN::Package
     includes << "-I#{PACKMAN.prefix Zlib}/include"
     libs << "-L#{PACKMAN.prefix Zlib}/lib"
     if not PACKMAN::OS.mac_gang?
-      includes << "-I#{PACKMAN.prefix Libpng}"
-      libs << "-L#{PACKMAN.prefix Libpng}"
+      includes << "-I#{PACKMAN.prefix Libpng}/include"
+      libs << "-L#{PACKMAN.prefix Libpng}/lib"
     end
     PACKMAN.append_env "JASPERINC='#{includes.join(' ')}'"
     PACKMAN.append_env "JASPERLIB='#{libs.join(' ')}'"
@@ -60,6 +60,10 @@ class Wrf_wps < PACKMAN::Package
         PACKMAN.replace 'configure.wps', {
           /^(FC\s*=)/ => "DM_FC = mpif90 -fc=$(SFC)\n"+
                          "DM_CC = mpicc -cc=$(SCC)\n\\1"
+        }
+      else
+        PACKMAN.replace 'configure.wps', {
+          /mpif90 -f90/ => 'mpif90 -fc'
         }
       end
       # Compile WPS.

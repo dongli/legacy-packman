@@ -5,6 +5,7 @@ class Parallel_netcdf < PACKMAN::Package
 
   option 'use_mpi' => :package_name
 
+  depends_on 'm4'
   depends_on mpi, use_mpi?
 
   def install
