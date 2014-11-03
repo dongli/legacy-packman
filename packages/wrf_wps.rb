@@ -53,9 +53,6 @@ class Wrf_wps < PACKMAN::Package
         PACKMAN.report_error "#{PACKMAN.red 'configure.wps'} is not generated!"
       end
       # Edit WRF_DIR.
-      PACKMAN.replace 'configure.wps', {
-        /WRF_DIR\s*=.*/ => 'WRF_DIR = ..'
-      }
       if PACKMAN::OS.type == :Darwin and ( build_type == 'dmpar' or build_type == 'dm+sm' )
         PACKMAN.replace 'configure.wps', {
           /^(FC\s*=)/ => "DM_FC = mpif90 -fc=$(SFC)\n"+

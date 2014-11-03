@@ -35,11 +35,11 @@ class Wrf_model < PACKMAN::Package
     PACKMAN.mkdir target_dir
     PACKMAN.work_in target_dir do
       PACKMAN.decompress "#{PACKMAN::ConfigManager.package_root}/#{filename}"
-      PACKMAN.mv Dir.glob('./WRFV3/*'), '.'
-      PACKMAN.rm './WRFV3'
-      if with_chem?
-        chem = attachments.first
-        PACKMAN.decompress "#{PACKMAN::ConfigManager.package_root}/#{chem.filename}"
+      PACKMAN.work_in 'WRFV3' do
+        if with_chem?
+          chem = attachments.first
+          PACKMAN.decompress "#{PACKMAN::ConfigManager.package_root}/#{chem.filename}"
+        end
       end
     end
   end
@@ -70,28 +70,30 @@ class Wrf_model < PACKMAN::Package
             'nmm_real', 'nmm_tropical_cyclone'].include? run_case
       PACKMAN.report_error "Invalid run case #{PACKMAN.red run_case}!"
     end
-    # Configure WRF model.
-    print "#{PACKMAN.blue '==>'} "
-    if PACKMAN::CommandLine.has_option? '-debug'
-      print "#{PACKMAN::RunManager.default_command_prefix} ./configure\n"
-    else
-      print "./configure\n"
-    end
-    PTY.spawn("#{PACKMAN::RunManager.default_command_prefix} ./configure") do |reader, writer, pid|
-      output = reader.expect(/Enter selection.*: /)
-      writer.print("#{choose_platform output}\n")
-      reader.expect(/Compile for nesting.*: /)
-      writer.print("#{use_nest}\n")
-      reader.expect(/\*/)
-    end
-    if not File.exist? 'configure.wrf'
-      PACKMAN.report_error "#{PACKMAN.red 'configure.wrf'} is not generated!"
-    end
-    # Compile WRF model.
-    PACKMAN.run './compile', run_case
-    # Check if the executables are generated.
-    if not File.exist? 'main/wrf.exe'
-      PACKMAN.report_error 'Failed to build WRF!'
+    PACKMAN.work_in 'WRFV3' do
+      # Configure WRF model.
+      print "#{PACKMAN.blue '==>'} "
+      if PACKMAN::CommandLine.has_option? '-debug'
+        print "#{PACKMAN::RunManager.default_command_prefix} ./configure\n"
+      else
+        print "./configure\n"
+      end
+      PTY.spawn("#{PACKMAN::RunManager.default_command_prefix} ./configure") do |reader, writer, pid|
+        output = reader.expect(/Enter selection.*: /)
+        writer.print("#{choose_platform output}\n")
+        reader.expect(/Compile for nesting.*: /)
+        writer.print("#{use_nest}\n")
+        reader.expect(/\*/)
+      end
+      if not File.exist? 'configure.wrf'
+        PACKMAN.report_error "#{PACKMAN.red 'configure.wrf'} is not generated!"
+      end
+      # Compile WRF model.
+      PACKMAN.run './compile', run_case
+      # Check if the executables are generated.
+      if not File.exist? 'main/wrf.exe'
+        PACKMAN.report_error 'Failed to build WRF!'
+      end
     end
   end
 
