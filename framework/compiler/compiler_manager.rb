@@ -4,7 +4,7 @@ module PACKMAN
       [:compiler_info, :compiler_vendor, :compiler_command,
        :default_compiler_flags, :append_customized_flags,
        :clean_customized_flags, :customized_compiler_flags,
-       :use_openmp, :use_mpi, :check_compiler]
+       :use_openmp, :compiler_support_openmp?, :use_mpi, :check_compiler]
     end
 
     def self.init
@@ -137,6 +137,10 @@ module PACKMAN
 
     def self.use_openmp language = nil
       append_customized_flags :openmp, language
+    end
+
+    def self.compiler_support_openmp? language
+      @@active_compiler_set.info[language][:spec].flags.has_key? :openmp
     end
 
     def self.use_mpi mpi_vendor

@@ -114,10 +114,10 @@ module PACKMAN
       cmd_str << " #{cmd} "
       if build_helper and build_helper.should_insert_after_command?
         # Handle compiler default flags.
-        CompilerManager.active_compiler_set.each do |language, compiler|
-          next if language == 'installed_by_packman'
-          flags = PACKMAN.default_compiler_flags language, compiler
-          tmp = PACKMAN.customized_compiler_flags language, compiler
+        CompilerManager.active_compiler_set.info.each_key do |language|
+          next if language == :installed_by_packman
+          flags = PACKMAN.default_compiler_flags language
+          tmp = PACKMAN.customized_compiler_flags language
           flags << tmp if tmp
           cmd_str << "#{build_helper.wrap_flags language, flags, cmd_args} "
         end
