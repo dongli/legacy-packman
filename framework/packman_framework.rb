@@ -76,11 +76,11 @@ rescue SyntaxError => e
   PACKMAN.report_error "Failed to parse #{PACKMAN.red PACKMAN::CommandLine.config_file}!\n#{e}"
 end
 
-PACKMAN::CommandLine.check_options
-
 if not PACKMAN::CommandLine.subcommand == :config
   PACKMAN::PackageLoader.init
 end
+
+PACKMAN::CommandLine.check_options
 
 Kernel.trap('INT') do
   print "GOOD BYE!\n"

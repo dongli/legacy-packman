@@ -1,5 +1,9 @@
 module PACKMAN
   class RunManager
+    def self.delegated_methods
+      [:append_env, :change_env, :clean_env]
+    end
+
     @@ld_library_pathes = []
     @@bashrc_pathes = []
     @@envs = {}
@@ -12,11 +16,12 @@ module PACKMAN
       @@ld_library_pathes.clear
     end
 
-    def self.append_env env
+    def self.append_env env, options = nil
+      options = [options] if not options or options.class != Array
       idx = env.index('=')
       key = env[0, idx]
       value = env[idx+1..-1]
-      if @@envs.has_key? key
+      if @@envs.has_key? key and not options.include? :ignore
         CLI.report_error "Environment #{CLI.red key} has been set!"
       else
         @@envs[key] = value
@@ -154,17 +159,5 @@ module PACKMAN
     else
       RunManager.run nil, cmd, *args
     end
-  end
-
-  def self.append_env env
-    RunManager.append_env env
-  end
-
-  def self.change_env env
-    RunManager.change_env env
-  end
-
-  def self.clean_env
-    RunManager.clean_env
   end
 end

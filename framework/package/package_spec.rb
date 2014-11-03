@@ -219,6 +219,8 @@ module PACKMAN
         options[key] = value
       when :string
         options[key] = value
+      when :directory
+        options[key] = File.expand_path value
       end
     end
 
@@ -231,6 +233,8 @@ module PACKMAN
       when :package_name
         nil
       when :string
+        nil
+      when :directory
         nil
       else
         CLI.report_error "Invalid option type #{CLI.red type}!"

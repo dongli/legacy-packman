@@ -13,7 +13,7 @@ module PACKMAN
       set_active_spec requested_spec
 
       if active_spec.has_label? 'install_with_source'
-        active_spec.option 'target_dir' => :string
+        active_spec.option 'target_dir' => :directory
       end
 
       # Define short-hand method for package options.
@@ -525,6 +525,7 @@ module PACKMAN
       for i in 0..other.options.size-1
         key = other.options.keys[i]
         next if not active_spec.options.has_key? key or not active_spec.options[key]
+        next if CommandLine.is_option_limited? key, other
         value = active_spec.options[key]
         other.update_option key, value
       end

@@ -62,8 +62,8 @@ module PACKMAN
       if install_root == '<CHANGE ME>'
         CLI.report_error "You haven't modified #{CLI.red 'install_root'} in #{CommandLine.config_file}!"
       end
-      PACKMAN.expand_tilde @@package_root
-      PACKMAN.expand_tilde @@install_root
+      @@package_root = File.expand_path @@package_root
+      @@install_root = File.expand_path @@install_root
       PACKMAN.mkdir @@package_root if not Dir.exist? @@package_root
       PACKMAN.mkdir @@install_root if not Dir.exist? @@install_root
       @@download_command = @@download_command.to_sym

@@ -135,7 +135,9 @@ module PACKMAN
     def self.check_options
       # Check options.
       @@options.each_key do |key|
-        next if PermittedOptions[@@subcommand].has_key? key or PermittedCommonOptions.has_key? key
+        next if PermittedOptions[@@subcommand].has_key? key
+        next if PermittedCommonOptions.has_key? key
+        next if PackageSpec::CommonOptions.has_key? key.gsub(/^-/, '')
         is_found = false
         @@packages.each do |package_name|
           package = Package.instance package_name
@@ -144,6 +146,7 @@ module PACKMAN
             break
           end
         end
+        next if is_found
         ConfigManager.package_options.each_key do |package_name|
           package = Package.instance package_name
           if is_option_defined_in? package, key
@@ -151,11 +154,9 @@ module PACKMAN
             break
           end
         end
-        next if is_found or PackageSpec::CommonOptions.has_key? key.gsub(/^-/, '')
-        if not is_found
-          CLI.report_error "Invalid command option #{CLI.red key}!\n"+
-            "The available options are:\n#{print_options(@@subcommand, 2).chomp}"
-        end
+        next if is_found
+        CLI.report_error "Invalid command option #{CLI.red key}!\n"+
+          "The available options are:\n#{print_options(@@subcommand, 2).chomp}"
       end
     end
 
@@ -188,19 +189,24 @@ module PACKMAN
       print res
     end
 
+    def self.is_option_limited? option_name, package
+      # Only packages specified in command line should adopt the option.
+      if package.master_package
+        package_name = package.master_package
+      else
+        package_name = package.class.to_s.to_sym
+      end
+      CommandLine.options.has_key? "+#{option_name}" and not CommandLine.packages.include? package_name
+    end
+
     def self.propagate_options_to package
       return if not options or options.empty?
       for i in 0..package.options.size-1
         key = package.options.keys[i]
+        next if is_option_limited? key, package
         if options.has_key? "-#{key}"
           value = options["-#{key}"]
         elsif options.has_key? "+#{key}"
-          # Only packages specified in command line should adopt the option.
-          if package.master_package
-            next if not CommandLine.packages.include? package.master_package
-          else
-            next if not CommandLine.packages.include? package.class.to_s.to_sym
-          end
           value = options["+#{key}"]
         else
           next

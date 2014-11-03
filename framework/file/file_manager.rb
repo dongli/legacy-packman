@@ -28,7 +28,7 @@ module PACKMAN
     end
     begin
       FileUtils.mkdir_p(dir)
-      CLI.report_notice "Create directory #{CLI.green dir}." if not options.include? :silent
+      CLI.report_notice "Create directory #{CLI.blue dir}." if not options.include? :silent
     rescue => e
       CLI.report_error "Failed to create directory #{CLI.red dir}!\n"+
         "#{CLI.red '==>'} #{e}"
