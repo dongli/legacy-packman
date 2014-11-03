@@ -22,6 +22,67 @@ Copyright @copyright{} 2014 Li Dong.
 
 @chapter Introduction
 
-Every human, who are using computer, will need some software to do specific tasks. Installing them is the first step. In the Linux world, there are several package managers born for this purpose.
+Every human, who are using computer, will need some software to do specific tasks. Installing them is the first step and may be the hard one. In the Linux world, there are several package managers born for this purpose, such as @code{RPM} in Red Hat Linux and @code{DPKG} in Debian Linux. They both solve the dependencies among software packages and distribute precompiled packages. The drawback of this distribution style is that users can not specify the compiler and options easily if not impossible. In some cases, this may force users to build the packages (e.g. @code{HDF5} and @code{NetCDF}) manually, and this will waste users too much time when things go wrong, needless to say the complicated dependencies among packages.
+
+@code{PACKMAN} can manage multiple compiler sets so that users can install packages built by different compiler set.
+
+@code{PACKMAN} also supports the programs developed by the scientific research groups, such as @code{Hyrax} OPeNDAP data server, which are not supported by the exist package managers. @code{PACKMAN} even provides the convenient operations (i.e. @code{start}, @code{stop} and @code{status}) on that data server, so even the most innocent user can construct a server with just a few commands.
+
+@chapter Design of PACKMAN
+
+The major objects of PACKMAN:
+@enumerate
+@item Operate without root privilege;
+@item Download packages even without internet connection (FTP mirror service);
+@item Support as many Linux-like platform as possible;
+@end enumerate
+
+@section Installation
+
+@example
+$ git clone https://github.com/dongli/packman
+@end example
+
+@section Usage for normal users
+
+The control options for packages are coming from two sources: 1) a configuration file; 2) the command line options.
+
+@subsection Configure file
+
+@subsection Command line options
+
+@example
+$ packman install netcdf -use_mpi=mpich
+@end example
+
+@example
+$ packman install wrf +use_mpi=mpich -build_type=dmpar
+@end example
+
+@section Usage for developers
+
+@example
+class <package_name> < PACKMAN::Package
+  url `<package_url>'
+  sha1 `<package_sha1>'
+  version `<version>'
+
+  depends_on `<dependent_package>'
+  ...
+
+  patch do
+    url `<patch_url>'
+    sha1 `<patch_sha1>'
+  end
+
+  def install
+    ...
+  end
+
+  def postfix
+    ...
+  end
+end
+@end example
 
 @bye
