@@ -1,7 +1,7 @@
 class Mlpack < PACKMAN::Package
-  url 'http://www.mlpack.org/files/mlpack-1.0.9.tar.gz'
-  sha1 '54e1958fc558b55625a7a52d2064420eb88c1ac1'
-  version '1.0.9'
+  url 'http://www.mlpack.org/files/mlpack-1.0.10.tar.gz'
+  sha1 '9c6f007007362a927ded79bd4835e266dbad4a77'
+  version '1.0.10'
 
   depends_on 'cmake'
   depends_on 'armadillo'
@@ -25,7 +25,7 @@ class Mlpack < PACKMAN::Package
     else
       args << "-DCMAKE_CXX_FLAGS='-I#{PACKMAN.prefix(Hdf5)}/include'"
     end
-    PACKMAN.mkdir 'build', :force do
+    PACKMAN.mkdir 'build', [:force, :silent] do
       PACKMAN.run 'cmake ..', *args
       PACKMAN.run "make -j2"
       PACKMAN.run 'make test' if not skip_test?
