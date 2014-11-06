@@ -6,6 +6,6 @@ module PACKMAN
     compiler_command 'fortran' => ['pgfortran', '-O2 -fPIC']
     flag :openmp => '-mp'
     flag :pic => '-fPIC'
-    version_pattern /\d+\.\d+-\d+/
+    version_pattern /(\d+\.\d+-\d+)/
   end
 end
