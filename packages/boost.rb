@@ -13,6 +13,7 @@ class Boost < PACKMAN::Package
     cxx_compiler = PACKMAN.compiler_command 'c++'
     compiler_flags = PACKMAN.default_compiler_flags 'c++'
     toolset = PACKMAN.compiler_vendor 'c++'
+    # Rename toolset according to Boost.Build rule.
     if toolset == 'intel'
       # Lower version (e.g. 11.1) has issues to compile Boost.
       helper = PACKMAN.compiler_helper 'intel'
@@ -27,12 +28,7 @@ class Boost < PACKMAN::Package
         toolset << '-linux'
       end
     elsif toolset == 'gnu'
-      case PACKMAN::OS.type
-      when :Darwin
-        toolset = 'darwin-gcc'
-      when :Linux
-        toolset = 'linux-gcc'
-      end
+      toolset = 'gcc'
     elsif toolset == 'llvm'
       case PACKMAN::OS.type
       when :Darwin
