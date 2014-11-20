@@ -124,11 +124,24 @@ module PACKMAN
       spec.customized_flags[language]
     end
 
-    def self.check_compiler language
+    def self.check_compiler language, options = []
+      options = [options] if not options.class == Array
+      if not @@active_compiler_set.info[language]
+        if options.include? :not_exit
+          return false
+        else
+          CLI.report_error "#{CLI.red language.capitalize} compiler is not specified in compiler set!"
+        end
+      end
       compiler_command = @@active_compiler_set.info[language][:command]
       if not PACKMAN.does_command_exist? compiler_command
-        CLI.report_error "Compiler #{CLI.red compiler_command} for #{CLI.red language} does not exist!"
+        if options.include? :not_exit
+          return false
+        else
+          CLI.report_error "Compiler #{CLI.red compiler_command} for #{CLI.red language} does not exist!"
+        end
       end
+      return true
     end
 
     def self.compiler_vendor language
