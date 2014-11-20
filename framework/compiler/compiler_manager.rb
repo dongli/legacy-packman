@@ -1,7 +1,7 @@
 module PACKMAN
   class CompilerManager
     def self.delegated_methods
-      [:compiler_info, :compiler_vendor, :compiler_command,
+      [:compiler_info, :compiler_vendor, :compiler_version, :compiler_command,
        :default_compiler_flags, :append_customized_flags,
        :clean_customized_flags, :customized_compiler_flags,
        :use_openmp, :compiler_support_openmp?, :use_mpi, :check_compiler]
@@ -146,6 +146,10 @@ module PACKMAN
 
     def self.compiler_vendor language
       @@active_compiler_set.info[language][:spec].vendor
+    end
+
+    def self.compiler_version language
+      @@active_compiler_set.info[language][:spec].version
     end
 
     def self.use_openmp language = nil

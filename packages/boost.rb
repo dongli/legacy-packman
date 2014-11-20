@@ -16,8 +16,7 @@ class Boost < PACKMAN::Package
     # Rename toolset according to Boost.Build rule.
     if toolset == 'intel'
       # Lower version (e.g. 11.1) has issues to compile Boost.
-      helper = PACKMAN.compiler_helper 'intel'
-      if ['11.1'].include? helper.version
+      if PACKMAN.compiler_version('c++') <= '11.1'
         PACKMAN.report_error "Intel compiler is too old to compile Boost! See "+
           "https://software.intel.com/en-us/articles/boost-1400-compilation-error-while-building-with-intel-compiler/"
       end
