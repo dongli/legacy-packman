@@ -1,7 +1,7 @@
 class Libpng < PACKMAN::Package
-  url 'https://downloads.sf.net/project/libpng/libpng16/1.6.13/libpng-1.6.13.tar.xz'
-  sha1 '5ae32b6b99cef6c5c85feab8edf9d619e1773b15'
-  version '1.6.13'
+  url 'http://jaist.dl.sourceforge.net/project/libpng/libpng16/1.6.14/libpng-1.6.14.tar.xz'
+  sha1 '9cc30ac84214fda2177a02da275359ffd5b068d9'
+  version '1.6.14'
 
   skip_on :Mac_OS_X
 
