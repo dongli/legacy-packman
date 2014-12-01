@@ -12,7 +12,7 @@ class Ncview < PACKMAN::Package
   def install
     # Ignore the C compiler difference, since we may use MPI wrapper to build Netcdf_c.
     PACKMAN.replace 'configure', {
-      'if test x$CC_TEST_SAME != x$NETCDF_CC_TEST_SAME; then' => 'if test x$CC_TEST_SAME == x$NETCDF_CC_TEST_SAME; then'
+      'if test x$CC_TEST_SAME != x$NETCDF_CC_TEST_SAME; then' => 'if false; then'
     }
     args = %W[
       --prefix=#{PACKMAN.prefix(self)}
