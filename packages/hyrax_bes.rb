@@ -35,6 +35,9 @@ class Hyrax_bes < PACKMAN::Package
     PACKMAN.run 'make'
     PACKMAN.run 'make check' if not skip_test?
     PACKMAN.run 'make install'
+    PACKMAN.caveat <<-EOT.gsub(/^\s+/, '')
+      Set "BES.Catalog.catalog.RootDirectory" in #{PACKMAN.prefix(self)}/etc/bes/bes.conf to the directory where your data reside.
+    EOT
   end
 
   def postfix
