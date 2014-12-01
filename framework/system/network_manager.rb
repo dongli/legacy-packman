@@ -4,6 +4,14 @@ require "resolv"
 
 module PACKMAN
   class NetworkManager
+    def self.delegated_methods
+      [:ip, :is_connect_internet?, :is_port_open?]
+    end
+
+    def self.ip
+      Socket.ip_address_list.find { |ai| ai.ipv4? && !ai.ipv4_loopback? }.ip_address
+    end
+
     def self.is_connect_internet?
       if not defined? @@is_connect_internet
         dns_resolver = Resolv::DNS.new()
@@ -32,9 +40,5 @@ module PACKMAN
       end
       return false
     end
-  end
-
-  def self.is_port_open? ip, port
-    NetworkManager.is_port_open? ip, port
   end
 end

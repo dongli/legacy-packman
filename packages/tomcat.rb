@@ -1,13 +1,7 @@
 class Tomcat < PACKMAN::Package
-  url 'http://mirror.bit.edu.cn/apache/tomcat/tomcat-7/v7.0.56/bin/apache-tomcat-7.0.56.tar.gz'
-  sha1 '21c16dfed30b4a15c129e4448e63834103c88272'
-  version '7.0.56'
-
-  devel do
-    url 'http://mirrors.hust.edu.cn/apache/tomcat/tomcat-8/v8.0.14/bin/apache-tomcat-8.0.14.tar.gz'
-    sha1 '1a63a44dbf1b73f2256a2f21521b3d5ee3e8b5bf'
-    version '8.0.14'
-  end
+  url 'http://mirrors.cnnic.cn/apache/tomcat/tomcat-7/v7.0.57/bin/apache-tomcat-7.0.57.tar.gz'
+  sha1 '49ffffe9c2e534e66f81b3173cdbf7e305a75fe2'
+  version '7.0.57'
 
   label 'compiler_insensitive'
 

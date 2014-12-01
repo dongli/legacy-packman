@@ -9,7 +9,7 @@ class Hyrax_ugrid < PACKMAN::Package
   depends_on 'libxml2'
   depends_on 'opendap'
   depends_on 'hyrax_bes'
-  depends_on 'gridfields'
+  # depends_on 'gridfields'
 
   def install
     args = %W[

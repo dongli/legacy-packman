@@ -41,7 +41,7 @@ class Hyrax_bes < PACKMAN::Package
     # Change user name and group name in bes.conf
     user_name = ENV['USER']
     if PACKMAN::OS.mac_gang?
-      group_name = 'wheel'
+      group_name = 'staff'
     else
       group_name = user_name
     end

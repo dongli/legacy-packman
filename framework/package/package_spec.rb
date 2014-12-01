@@ -220,7 +220,7 @@ module PACKMAN
       when :string
         options[key] = value
       when :directory
-        options[key] = File.expand_path value
+        options[key] = File.expand_path value if value
       end
     end
 

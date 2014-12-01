@@ -44,6 +44,7 @@ module PACKMAN
       else
         system cmd
       end
+      CLI.report_notice "Broadcast your IP #{CLI.green PACKMAN.ip}."
     end
 
     def self.stop_mirror_service
@@ -104,6 +105,10 @@ module PACKMAN
     def self.sync_mirror_service
       # Download all packages.
       CLI.report_notice 'Download all defined packages.'
+      # Load all packages first.
+      Package.all_package_names.each do |package_name|
+        PackageLoader.load_package package_name
+      end
       Commands.collect :all
     end
   end

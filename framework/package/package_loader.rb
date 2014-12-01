@@ -11,6 +11,7 @@ module PACKMAN
 
     # Define a recursive function to load package definition files.
     def self.load_package package_name
+      package_name = package_name.capitalize.to_sym if package_name.class == String
       # Update package options from the external options.
       load @@package_files[package_name]
       package = Package.instance package_name
