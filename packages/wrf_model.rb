@@ -47,7 +47,7 @@ class Wrf_model < PACKMAN::Package
   def install
     # Prefix WRF due to some bugs.
     if build_type == 'serial' or build_type == 'smpar'
-      PACKMAN.replace 'share/mediation_feedback_domain.F', {
+      PACKMAN.replace 'WRFV3/share/mediation_feedback_domain.F', {
         /(USE module_dm), only: local_communicator/ => '\1'
       }
     end
