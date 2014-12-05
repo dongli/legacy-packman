@@ -187,9 +187,7 @@ module PACKMAN
       return if not options.has_key? key
       case option_valid_types[key]
       when :boolean
-        if value == nil
-          options[key] = true
-        elsif value.class == TrueClass or value.class == FalseClass
+        if value.class == TrueClass or value.class == FalseClass
           options[key] = value
         elsif value == 'true' or value == 'false'
           options[key] = eval value
@@ -227,7 +225,7 @@ module PACKMAN
     def self.default_option_value type
       case type
       when :boolean
-        false
+        nil
       when :integer_array
         []
       when :package_name

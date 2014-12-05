@@ -11,8 +11,8 @@ module PACKMAN
           # 'install_with_source' packages should only be specified in command line.
           next
         end
-        # Binary is preferred.
-        if package.has_binary? and package.use_binary?
+        # Binary is preferred (default value is nil).
+        if ( package.has_binary? and package.use_binary? == nil ) or package.use_binary?
           package = Package.instance package_name, 'use_binary' => true
         end
         # Let user to choose which compiler sets to use if no relevant option is set.
@@ -57,7 +57,7 @@ module PACKMAN
 
     def self.is_package_installed? package, options = []
       if options.include? :binary
-        CLI.report_error "#{package.class}" if not package.use_binary?
+        CLI.report_error "#{CLI.red package.class} does not have precompiled binary!" if not package.use_binary?
         bashrc = "#{PACKMAN.prefix package, :compiler_insensitive}/bashrc"
       else
         bashrc = "#{PACKMAN.prefix package}/bashrc"

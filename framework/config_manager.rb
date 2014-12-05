@@ -144,6 +144,7 @@ compiler_set_0 = {
         file << "package_root = \"#{package_root}\"\n"
         file << "install_root = \"#{install_root}\"\n"
         file << "use_ftp_mirror = \"#{use_ftp_mirror}\"\n"
+        file << "download_command = \"#{download_command}\"\n"
         file << "defaults = {\n"
         str = []
         defaults.each do |key, value|
