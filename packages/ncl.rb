@@ -58,10 +58,16 @@ class Ncl < PACKMAN::Package
   end
 
   binary :Ubuntu, '>= 12.04' do
-    url 'https://www.earthsystemgrid.org/download/fileDownload.htm?logicalFileId=38263864-351d-11e4-a4b4-00c0f03d5b7c'
-    sha1 'b7c885391891cb5709c44df3314391787c3ed9c3'
+    if PACKMAN::OS.x86_64?
+      url 'https://www.earthsystemgrid.org/download/fileDownload.htm?logicalFileId=38263864-351d-11e4-a4b4-00c0f03d5b7c'
+      sha1 'b7c885391891cb5709c44df3314391787c3ed9c3'
+      filename 'ncl_ncarg-6.2.1.Linux_Debian7.6_x86_64_gcc472.tar.gz'
+    else
+      url 'https://www.earthsystemgrid.org/download/fileDownload.htm?logicalFileId=382af357-351d-11e4-a4b4-00c0f03d5b7c'
+      sha1 '2330bccc6ac34f652c30a9d35d9c1579e9187469'
+      filename 'ncl_ncarg-6.2.1.Linux_Debian6.0_i686_gcc445.tar.gz'
+    end
     version '6.2.1'
-    filename 'ncl_ncarg-6.2.1.Linux_Debian7.6_x86_64_gcc472.tar.gz'
   end
 
   binary :RedHat_Enterprise, '=~ 5' do

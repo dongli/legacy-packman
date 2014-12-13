@@ -62,7 +62,7 @@ module PACKMAN
     end
 
     def self.x86_64?
-      @@arch == 'x86_64'
+      @@arch == 'x86_64' ? true : false
     end
 
     def self.redhat_gang?
