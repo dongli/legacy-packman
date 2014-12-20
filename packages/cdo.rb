@@ -1,6 +1,6 @@
 class Cdo < PACKMAN::Package
   url 'https://code.zmaw.de/attachments/download/9367/cdo-1.6.6.tar.gz'
-  sha1 'a324a9ab55b125aefe8b66003ac6a669dfe25bc2'
+  sha1 'ef2176164bf166c8d5e7a3bfc5163b642312eeb2'
   version '1.6.6'
 
   depends_on 'hdf5'
