@@ -6,6 +6,7 @@ class Ncview < PACKMAN::Package
   depends_on 'x11'
   depends_on 'netcdf_c'
   depends_on 'udunits'
+  depends_on 'libpng'
 
   patch :embed
 
@@ -19,6 +20,8 @@ class Ncview < PACKMAN::Package
       --with-nc-config=#{PACKMAN.prefix(Netcdf_c)}/bin/nc-config
       --with-udunits2_incdir=#{PACKMAN.prefix(Udunits)}/include
       --with-udunits2_libdir=#{PACKMAN.prefix(Udunits)}/lib
+      --with-libpng_incdir=#{PACKMAN.prefix(Libpng)}/include
+      --with-libpng_libdir=#{PACKMAN.prefix(Libpng)}/lib
       --disable-dependency-tracking
     ]
     if PACKMAN::OS.mac_gang?
