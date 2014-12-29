@@ -30,7 +30,7 @@ module PACKMAN
           next
         end
         @info[language] = {}
-        @info[language][:command] = compiler_command
+        @info[language][:command] = `which #{compiler_command}`.chomp
         @info[language][:spec] = CompilerManager.compiler_spec language, compiler_command
       end
     end

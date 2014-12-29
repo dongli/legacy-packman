@@ -34,8 +34,6 @@ module PACKMAN
         spec = eval "#{compiler_spec_class}.new" # Temporary variable.
         if spec.compiler_commands[language] =~ /\b#{compiler_command}\b/ or
            compiler_command =~ /\b#{spec.compiler_commands[language]}\b/
-          # Reset the compiler command.
-          spec.compiler_commands[language] = compiler_command
           spec.activate_compiler language
           return spec.clone
         end
