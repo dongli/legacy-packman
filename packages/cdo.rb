@@ -26,7 +26,7 @@ class Cdo < PACKMAN::Package
       --disable-dependency-tracking
       --disable-debug
     ]
-    PACKMAN.run './configure', *args
+    PACKMAN.run "LDFLAGS='-L#{PACKMAN.prefix(Udunits)}/lib' LIBS='-lexpat' ./configure", *args
     PACKMAN.run 'make install'
   end
 end
