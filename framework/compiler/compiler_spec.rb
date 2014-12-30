@@ -32,8 +32,8 @@ module PACKMAN
     def flags; active_spec.flags; end
     def version; active_spec.version; end
 
-    def activate_compiler language
-      active_spec.query_version language
+    def activate_compiler language, command
+      active_spec.query_version command
     end
 
     def append_customized_flags flags, language
