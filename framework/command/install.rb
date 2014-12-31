@@ -3,7 +3,7 @@ module PACKMAN
     def self.install
       @@is_any_package_installed = false
       # Install packages.
-      packages = ( ConfigManager.package_options.keys | CommandLine.packages ).uniq
+      packages = CommandLine.packages.empty? ? ConfigManager.package_options.keys : CommandLine.packages.uniq
       packages.each do |package_name|
         package = Package.instance package_name
         if package.has_label? 'install_with_source' and
@@ -98,7 +98,6 @@ module PACKMAN
         if depend_package.has_option? 'use_mpi' and depend_package.use_mpi?
           PACKMAN.use_mpi depend_package.mpi
         end
-        RunManager.append_bashrc_path("#{PACKMAN.prefix(depend_package)}/bashrc") if not depend_package.skip?
       end
       # Check if the package is a master.
       if package.has_label? 'master_package' and not options.include? :depend
@@ -169,6 +168,11 @@ module PACKMAN
           CompilerManager.activate_compiler_set index
           # Check if the package has already installed.
           next if is_package_installed? package, options
+          # Append bashrc file.
+          package.dependencies.each do |depend|
+            depend_package = Package.instance depend
+            RunManager.append_bashrc_path("#{PACKMAN.prefix(depend_package)}/bashrc") if not depend_package.skip?
+          end
           # Decompress package file.
           if package.respond_to? :filename
             package.decompress_to ConfigManager.package_root
@@ -200,11 +204,11 @@ module PACKMAN
           package.postfix
           # Clean the customized flags if there is any.
           CompilerManager.clean_customized_flags
+          # Clean build files.
+          FileUtils.rm_rf build_upper_dir if Dir.exist? build_upper_dir
+          # Clean the bashrc pathes.
+          RunManager.clean_bashrc_path if not options.include? :depend
         end
-        # Clean build files.
-        FileUtils.rm_rf build_upper_dir if Dir.exist? build_upper_dir
-        # Clean the bashrc pathes.
-        RunManager.clean_bashrc_path if not options.include? :depend
       end
       if not options.include? :depend
         RunManager.clean_env
