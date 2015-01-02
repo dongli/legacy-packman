@@ -1,7 +1,7 @@
 class Regcm < PACKMAN::Package
-  url 'http://gforge.ictp.it/gf/download/frsrelease/212/1370/RegCM-4.4.0.tar.gz'
-  sha1 '643f209f6bc1ef6311485d5c6e9a2f31269d1ec7'
-  version '4.4.0'
+  url 'http://gforge.ictp.it/gf/download/frsrelease/217/1375/RegCM-4.4.5.tar.gz'
+  sha1 '9bb6a5dcb9fc70203c3465c9a4cc1bf9424c3ae2'
+  version '4.4.5'
 
   label 'install_with_source'
 
@@ -20,9 +20,9 @@ class Regcm < PACKMAN::Package
     # if not mpi
     #   PACKMAN.report_error "You should use #{PACKMAN.red '-use_mpi=<...>'} to specify MPI library."
     # end
-    PACKMAN.work_in 'RegCM-4.4.0' do
+    PACKMAN.work_in 'RegCM-4.4.5' do
       if PACKMAN.compiler_vendor('fortran') == 'gnu'
-        PACKMAN.append_env 'FCFLAGS="$FCFLAGS -fno-range-check"'
+        PACKMAN.append_env 'FCFLAGS="$FCFLAGS -fno-range-check -std=legacy"'
       end
       args = %W[
         --with-netcdf=#{PACKMAN.prefix(Netcdf)}
