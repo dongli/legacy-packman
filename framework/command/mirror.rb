@@ -19,15 +19,38 @@ module PACKMAN
       end
     end
 
+    def self.get_ftp_port
+      port = File.open("#{PACKMAN.prefix(Proftpd)}/../config/proftpd.conf", 'r').read.scan(/^Port (\d+)/)[0][0]
+    end
+
     def self.init_mirror_service
+      if status_mirror_service :silent
+        CLI.report_notice 'FTP mirror service is already on.'
+        return
+      end
       sync_mirror_service
       # Install proftpd.
       proftpd = Proftpd.new
       proftpd.compiler_set_indices << 0
       install_package proftpd
+      # Check available port for FTP service.
+      port = 2121
+      while port <= 10000
+        if not PACKMAN::NetworkManager.is_port_open? 'localhost', port
+          is_found_aval_port = true
+          break
+        end
+        port += 1
+      end
+      if not is_found_aval_port
+        PACKMAN.report_error 'Can not find an available port!'
+      else
+        PACKMAN.report_notice "Use port #{port} for FTP mirror service."
+      end
       # Edit proftpd config file.
       PACKMAN.replace "#{PACKMAN.prefix(Proftpd)}/../config/proftpd.conf", {
         /^ServerName.*$/ => 'ServerName "PACKMAN FTP Mirror Service"',
+        /^Port.*$/ => "Port #{port}",
         /^<Anonymous\s*.*>$/ => "<Anonymous #{ConfigManager.package_root}>"
       }
       PACKMAN.work_in "#{ENV['PACKMAN_ROOT']}/.." do
@@ -48,7 +71,7 @@ module PACKMAN
       else
         system cmd
       end
-      CLI.report_notice "Broadcast your IP #{CLI.green PACKMAN.ip}."
+      CLI.report_notice "Broadcast #{CLI.green "ftp://#{PACKMAN.ip}:#{get_ftp_port}"}."
     end
 
     def self.stop_mirror_service
@@ -84,7 +107,8 @@ module PACKMAN
     def self.status_mirror_service options = []
       options = [options] if not options.class == Array
       begin
-        proftpd = Net::FTP.new 'localhost'
+        proftpd = Net::FTP.new
+        proftpd.connect 'localhost', get_ftp_port
       rescue Errno::ECONNREFUSED
         CLI.report_notice "FTP mirror service is #{CLI.red 'off'}." if not options.include? :silent
         return false
