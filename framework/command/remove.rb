@@ -60,13 +60,19 @@ module PACKMAN
                   PACKMAN.delete_from_file "#{ConfigManager.install_root}/packman.bashrc",
                     "source #{sets[i]}/bashrc", :no_error
                   PACKMAN.rm sets[i]
+                  ConfigManager.package_options[package_name]['compiler_set_indices'].delete i
                 end
+              end
+              # When all compiler sets compiled versions are removed, remove the package item from config file.
+              if ConfigManager.package_options[package_name]['compiler_set_indices'].empty?
+                ConfigManager.package_options.delete package_name
               end
             else
               CLI.report_notice "Remove #{CLI.red versions[j]}."
               PACKMAN.delete_from_file "#{ConfigManager.install_root}/packman.bashrc",
                 "source #{versions[j]}/bashrc", :no_error
               PACKMAN.rm versions[j]
+              ConfigManager.package_options.delete package_name # Remove the package item from config file.
             end
             # Remove empty directory if there is.
             PACKMAN.rm versions[j] if PACKMAN.is_directory_empty? versions[j]
@@ -75,6 +81,8 @@ module PACKMAN
         # Remove empty directory if there is.
         PACKMAN.rm package_root if PACKMAN.is_directory_empty? package_root
       end
+      # Update config file.
+      ConfigManager.write
     end
   end
 end
