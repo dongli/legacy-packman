@@ -30,6 +30,10 @@ module PACKMAN
         /^ServerName.*$/ => 'ServerName "PACKMAN FTP Mirror Service"',
         /^<Anonymous\s*.*>$/ => "<Anonymous #{ConfigManager.package_root}>"
       }
+      PACKMAN.work_in "#{ENV['PACKMAN_ROOT']}/.." do
+        system "tar czf packman.tar.gz --exclude='packman.config' #{File.basename ENV['PACKMAN_ROOT']}"
+        PACKMAN.mv 'packman.tar.gz', ConfigManager.package_root
+      end
     end
 
     def self.start_mirror_service
