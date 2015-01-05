@@ -82,6 +82,14 @@ module PACKMAN
       return false
     end
 
+    def self.append_bashrc package
+      package.dependencies.each do |depend|
+        depend_package = Package.instance depend
+        append_bashrc depend_package
+        RunManager.append_bashrc_path("#{PACKMAN.prefix(depend_package)}/bashrc") if not depend_package.skip?
+      end
+    end
+
     def self.install_package package, options = []
       options = [options] if not options.class == Array
       # Set compiler sets.
@@ -169,10 +177,7 @@ module PACKMAN
           # Check if the package has already installed.
           next if is_package_installed? package, options
           # Append bashrc file.
-          package.dependencies.each do |depend|
-            depend_package = Package.instance depend
-            RunManager.append_bashrc_path("#{PACKMAN.prefix(depend_package)}/bashrc") if not depend_package.skip?
-          end
+          append_bashrc package
           # Decompress package file.
           if package.respond_to? :filename
             package.decompress_to ConfigManager.package_root
