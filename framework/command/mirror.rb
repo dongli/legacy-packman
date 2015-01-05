@@ -20,7 +20,7 @@ module PACKMAN
     end
 
     def self.get_ftp_port
-      port = File.open("#{PACKMAN.prefix(Proftpd)}/../config/proftpd.conf", 'r').read.scan(/^Port (\d+)/)[0][0]
+      port = File.open("#{PACKMAN.prefix(Proftpd)}/../config/proftpd.conf", 'r').read.scan(/^Port\s+(\d+)/)[0][0]
     end
 
     def self.init_mirror_service

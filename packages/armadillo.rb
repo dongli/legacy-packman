@@ -3,6 +3,8 @@ class Armadillo < PACKMAN::Package
   sha1 '0decfda2f7cfa3c3dc534a7e7cc5d88e11794f70'
   version '4.300.3'
 
+  option 'use_mkl' => true
+
   depends_on 'cmake'
   if PACKMAN::OS.type == :Linux
     depends_on 'lapack'
@@ -12,13 +14,19 @@ class Armadillo < PACKMAN::Package
   depends_on 'hdf5'
 
   def install
+    # The CMake find modules provided by Armadillo is so weak that
+    # they can not find the dependent libraries just installed.
     if PACKMAN::OS.type == :Linux
-      # The CMake find modules provided by Armadillo is so weak that
-      # they can not find the Lapack and Openblas just installed
       PACKMAN.replace 'build_aux/cmake/Modules/ARMA_FindLAPACK.cmake',
         /^  PATHS / => "  PATHS #{PACKMAN.prefix(Lapack)}/lib "
       PACKMAN.replace 'build_aux/cmake/Modules/ARMA_FindOpenBLAS.cmake',
         /^  PATHS / => "  PATHS #{PACKMAN.prefix(Openblas)}/lib "
+    end
+    PACKMAN.replace 'build_aux/cmake/Modules/ARMA_FindARPACK.cmake',
+      /^  PATHS / => "  PATHS #{PACKMAN.prefix(Arpack)}/lib "
+    # In some cases, the MKL does not work as expected.
+    if not use_mkl?
+      PACKMAN.replace 'CMakeLists.txt', /(include\(ARMA_FindMKL\))/ => '#\1'
     end
     args = %W[
       -DCMAKE_INSTALL_PREFIX=#{PACKMAN.prefix(self)}

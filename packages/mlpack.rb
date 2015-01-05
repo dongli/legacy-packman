@@ -27,7 +27,7 @@ class Mlpack < PACKMAN::Package
     end
     PACKMAN.mkdir 'build', [:force, :silent] do
       PACKMAN.run 'cmake ..', *args
-      PACKMAN.run "make -j2"
+      PACKMAN.run 'make -j2'
       PACKMAN.run 'make test' if not skip_test?
       PACKMAN.run 'make install'
     end
