@@ -4,7 +4,8 @@ module PACKMAN
       [:compiler_info, :compiler_vendor, :compiler_version, :compiler_command,
        :default_compiler_flags, :append_customized_flags,
        :clean_customized_flags, :customized_compiler_flags,
-       :use_openmp, :compiler_support_openmp?, :use_mpi, :check_compiler]
+       :use_openmp, :compiler_support_openmp?, :all_compiler_support_openmp?,
+       :use_mpi, :check_compiler]
     end
 
     def self.init
@@ -156,6 +157,20 @@ module PACKMAN
 
     def self.compiler_support_openmp? language
       @@active_compiler_set.info[language][:spec].flags.has_key? :openmp
+    end
+
+    def self.all_compiler_support_openmp?
+      @@active_compiler_set.info.each do |language, info|
+        next if language == :installed_by_packman
+        if not info[:spec].flags.has_key? :openmp
+          return false
+        end
+      end
+      if compiler_vendor('c') == 'gnu' and compiler_version('c') >= '4.9' and
+         compiler_vendor('fortran') == 'intel' and compiler_version('fortran') <= '14.0.3'
+        return false
+      end
+      return true
     end
 
     def self.use_mpi mpi_vendor

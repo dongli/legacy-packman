@@ -3,10 +3,10 @@ class Armadillo < PACKMAN::Package
   sha1 '0decfda2f7cfa3c3dc534a7e7cc5d88e11794f70'
   version '4.300.3'
 
-  option 'use_mkl' => true
+  option 'use_mkl' => false
 
   depends_on 'cmake'
-  if PACKMAN::OS.type == :Linux
+  if PACKMAN::OS.type == :Linux and not use_mkl?
     depends_on 'lapack'
     depends_on 'openblas'
   end
@@ -16,7 +16,7 @@ class Armadillo < PACKMAN::Package
   def install
     # The CMake find modules provided by Armadillo is so weak that
     # they can not find the dependent libraries just installed.
-    if PACKMAN::OS.type == :Linux
+    if PACKMAN::OS.type == :Linux and not use_mkl?
       PACKMAN.replace 'build_aux/cmake/Modules/ARMA_FindLAPACK.cmake',
         /^  PATHS / => "  PATHS #{PACKMAN.prefix(Lapack)}/lib "
       PACKMAN.replace 'build_aux/cmake/Modules/ARMA_FindOpenBLAS.cmake',

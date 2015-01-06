@@ -20,6 +20,7 @@ module PACKMAN
       # Check possible package options from command line.
       CommandLine.propagate_options_to package
       options = package.options.clone
+      package.dependencies.clear
       # The package dependency may be changed by options.
       load @@package_files[package_name]
       package = Package.instance package_name, options # NOTE: We need 'options' argument!

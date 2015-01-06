@@ -47,6 +47,7 @@ class Boost < PACKMAN::Package
     end
     args = %W[
       --prefix=#{PACKMAN.prefix(self)}
+      --with-toolset=#{toolset}
     ]
     PACKMAN.run './bootstrap.sh', *args
     args = %W[

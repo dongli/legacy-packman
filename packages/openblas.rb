@@ -9,9 +9,7 @@ class Openblas < PACKMAN::Package
       # On Mac, only clang support AVX instructions, see http://trac.macports.org/ticket/40592.
       args << 'NO_AVX=1'
     end
-    if PACKMAN.compiler_support_openmp? 'c'
-      args << 'USE_OPENMP=1'
-    end
+    args << 'USE_OPENMP=1' if PACKMAN.all_compiler_support_openmp?
     PACKMAN.run 'make', *args
     PACKMAN.run "make install PREFIX=#{PACKMAN.prefix(self)}"
   end
