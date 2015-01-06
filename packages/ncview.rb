@@ -3,6 +3,8 @@ class Ncview < PACKMAN::Package
   sha1 '425b0f5d505af9c1f974903435af385582be7ae4'
   version '2.1.2'
 
+  label 'compiler_insensitive'
+
   depends_on 'x11'
   depends_on 'netcdf_c'
   depends_on 'udunits'
@@ -20,13 +22,14 @@ class Ncview < PACKMAN::Package
       --with-nc-config=#{PACKMAN.prefix(Netcdf_c)}/bin/nc-config
       --with-udunits2_incdir=#{PACKMAN.prefix(Udunits)}/include
       --with-udunits2_libdir=#{PACKMAN.prefix(Udunits)}/lib
-      --with-png_incdir=#{PACKMAN.prefix(Libpng)}/include
-      --with-png_libdir=#{PACKMAN.prefix(Libpng)}/lib
       --disable-dependency-tracking
     ]
     if PACKMAN::OS.mac_gang?
       args << '--x-includes=/usr/X11/include'
       args << '--x-libraries=/usr/X11/lib'
+    else
+      args << "--with-png_incdir=#{PACKMAN.prefix(Libpng)}/include"
+      args << "--with-png_libdir=#{PACKMAN.prefix(Libpng)}/lib"
     end
     PACKMAN.run './configure', *args
     PACKMAN.run 'make install'

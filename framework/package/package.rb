@@ -547,6 +547,9 @@ module PACKMAN
         CLI.report_error "Use #{CLI.red '-target_dir'} to specify where to install #{CLI.green package.class}!"
       end
       prefix = package_.target_dir
+    elsif package_.methods.include? :prefix
+      # Package is already installed somewhere else, use it.
+      prefix = package_.prefix
     else
       prefix = "#{ConfigManager.install_root}/#{package_.class.to_s.downcase}/#{package_.version}"
       if not package_.has_label? 'compiler_insensitive' and
