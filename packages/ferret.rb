@@ -1,9 +1,12 @@
 class Ferret < PACKMAN::Package
   url 'ftp://ftp.pmel.noaa.gov/ferret/pub/source/fer_source.tar.gz'
-  sha1 '8290af0fc18df2a6f3552f771a6c5140ef35a256'
+  sha1 '1b63fa4c6577db871f705cabe05ebbee6f3811cd'
   version '6.9'
 
+  label 'compiler_insensitive'
+
   depends_on 'readline'
+  depends_on 'lesstif'
   depends_on 'jpeg'
   depends_on 'hdf4'
   depends_on 'hdf5'
@@ -26,6 +29,7 @@ class Ferret < PACKMAN::Package
     ferret = PACKMAN.prefix(self)
     ncurses = PACKMAN.prefix(Ncurses)
     readline = PACKMAN.prefix(Readline)
+    lesstif = PACKMAN.prefix(Lesstif)
     jpeg = PACKMAN.prefix(Jpeg)
     hdf4 = PACKMAN.prefix(Hdf4)
     hdf5 = PACKMAN.prefix(Hdf5)
@@ -76,6 +80,7 @@ class Ferret < PACKMAN::Package
         "-L#{hdf5}/lib -lhdf5_hl -lhdf5 "+
         "-L#{zlib}/lib -lz -lm -L#{szip}/lib -lsz -L#{opendap}/lib -ldap -ldapclient "+
         "-L#{curl}/lib -lcurl -lxml2 -lpthread -licucore -lstdc++",
+        /\/usr\/local\/lib\/libXm.a/ => "#{lesstif}/lib/libXm.a",
         # Why Ferret developers put fixed intel library into the configuration file??
         /\/opt\/intel\/Compiler\/11\.1\/058\/lib\/lib\{ifcore,ifport,irc,imf,svml\}\.a/ => '',
         # Why Ferret developers write a wrong library path??
@@ -92,16 +97,17 @@ class Ferret < PACKMAN::Package
         /^i386-apple-darwin:$/ => "#{build_type}:",
         /CFLAGS="(.*)"/ => 'CFLAGS="\1 -I/usr/X11R6/include"'
       }
-      if PACKMAN.compiler_command('fortran') == 'gfortran'
+      if PACKMAN.compiler_vendor('fortran') == 'gnu'
         # Fix the wrong compiler flags.
         PACKMAN.replace "platform_specific.mk.#{build_type}", {
           /^(CPP_FLAGS\s*=.*)$/ => "\\1\n-DMANDATORY_FORMAT_WIDTHS -DNO_OPEN_SHARED -DNO_OPEN_READONLY "+
           "-DNO_OPEN_RECORDTYPE -DNO_OPEN_CARRIAGECONTROL -Dreclen_in_bytes -DG77_SIGNAL -DG77 -DNEED_IAND "+
           "-DINTERNAL_READ_FORMAT_BUG -DNO_PREPEND_STRING -Ddouble_p \\",
           /^\s*PPLUS_FFLAGS\s*=.*$/ => 'PPLUS_FFLAGS = -fno-automatic -fno-second-underscore '+
-          '-fdollar-ok -ffixed-line-length-132 $(FINCLUDES)',
+          '-fdollar-ok -ffixed-line-length-132 -falign-commons -Dunix -DNEED_IAND -DFORTRAN_90 $(FINCLUDES)',
           /^\s*FFLAGS\s*=.*$/ => 'FFLAGS = -fno-automatic -fno-second-underscore -fdollar-ok '+
-          '-ffixed-line-length-132 -ffpe-trap=overflow -fimplicit-none -fdefault-real-8 -fdefault-double-8 $(FINCLUDES)',
+          '-ffixed-line-length-132 -falign-commons -ffpe-trap=overflow -fimplicit-none -fdefault-real-8 '+
+          '-fdefault-double-8 -Dunix -DNEED_IAND -DFORTRAN_90 $(FINCLUDES)',
           /^(LD\s*=)/ => "PPLUS_FFLAGS += $(CPP_FLAGS)\nFFLAGS += $(CPP_FLAGS)\n\\1"
         }
       end
@@ -156,16 +162,6 @@ class Ferret < PACKMAN::Package
       #   /IF \(first_call\) old_handler = SIGNAL\( 2, CTRLC_AST, -1 \)/ => 'IF (first_call) old_handler = SIGNAL( 2, CTRLC_AST )'
       # }
     end
-    # Bad COMMON BLOCK usage.
-    PACKMAN.replace 'external_functions/ef_utility/ferret_cmn/EF_mem_subsc_f90.inc', {
-      /^\s*EXTERNAL\s*FERRET_EF_MEM_SUBSC\s*$/ => ''
-    }
-    PACKMAN.replace 'external_functions/ef_utility/ferret_cmn/EF_mem_subsc.cmn', {
-      /^\s*EXTERNAL\s*FERRET_EF_MEM_SUBSC\s*$/ => ''
-    }
-    PACKMAN.replace 'fer/common/EF_mem_subsc.cmn', {
-      /^\s*EXTERNAL\s*FERRET_EF_MEM_SUBSC\s*$/ => ''
-    }
     if PACKMAN::OS.mac_gang?
       PACKMAN.replace 'bin/make_executable_tar', {
         /^set mycp =.*$/ => 'set mycp = "/bin/cp -v -r -p"'
@@ -190,7 +186,8 @@ class Ferret < PACKMAN::Package
       }
     end
     # Make.
-    PACKMAN.run 'make'
+    # Bad Ferret developers! The BUILDTYPE is not cascaded into subdirectories.
+    PACKMAN.run "make BUILDTYPE=#{build_type}"
     PACKMAN.run 'make install'
     PACKMAN.cd ferret, :norecord
     PACKMAN.decompress 'fer_environment.tar.gz'
