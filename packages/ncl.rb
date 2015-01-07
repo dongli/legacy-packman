@@ -32,7 +32,7 @@ class Ncl < PACKMAN::Package
     filename 'ncl_ncarg-6.2.0.MacOS_10.9_64bit_gcc481.tar.gz'
   end
 
-  history_binary_version '6.2.0', :Ubuntu, '>= 12.04' do
+  history_binary_version '6.2.0', [:Debian, :Ubuntu], ['>= 7.4', '>= 12.04'] do
     url 'https://www.earthsystemgrid.org/download/fileDownload.htm?logicalFileId=5c76fcc2-ba18-11e3-b322-00c0f03d5b7c'
     sha1 'c0b7252c6fd74cc0c5d415f68f37106ce520c7c2'
     filename 'ncl_ncarg-6.2.0.Linux_Debian7.4_x86_64_gcc472.tar.gz'
@@ -57,7 +57,7 @@ class Ncl < PACKMAN::Package
     filename 'ncl_ncarg-6.2.1.MacOS_10.9_64bit_gcc481.tar.gz'
   end
 
-  binary :Ubuntu, '>= 12.04' do
+  binary [:Debian, :Ubuntu], ['>= 7.6', '>= 12.04'] do
     if PACKMAN::OS.x86_64?
       url 'https://www.earthsystemgrid.org/download/fileDownload.htm?logicalFileId=38263864-351d-11e4-a4b4-00c0f03d5b7c'
       sha1 'b7c885391891cb5709c44df3314391787c3ed9c3'
