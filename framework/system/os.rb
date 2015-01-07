@@ -51,6 +51,9 @@ module PACKMAN
         when /CentOS/
           @@distro = :CentOS
           @@version = VersionSpec.new res.match(/release (\d+\.\d+)/)[1]
+        when /Debian GNU\/Linux/
+          @@distro = :Debian
+          @@version = VersionSpec.new res.match(/VERSION_ID="(\d+)"/)[1]
         else
           CLI.report_error "Unknown distro \"#{res}\"!"
         end
@@ -76,7 +79,7 @@ module PACKMAN
     end
 
     def self.debian_gang?
-      if distro == :Ubuntu
+      if distro == :Debian or distro == :Ubuntu
         return true
       else
         return false
