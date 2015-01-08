@@ -3,11 +3,11 @@ module PACKMAN
     def self.wrap_flags language, flags, cmd_args
       case language
       when 'c'
-        "CFLAGS=\"$CFLAGS #{flags}\""
+        "export CFLAGS=\"$CFLAGS #{flags}\" &&"
       when 'c++'
-        "CXXFLAGS=\"$CXXFLAGS #{flags}\""
+        "export CXXFLAGS=\"$CXXFLAGS #{flags}\" &&"
       when 'fortran'
-        "FCFLAGS=\"$FCFLAGS #{flags}\""
+        "export FCFLAGS=\"$FCFLAGS #{flags}\" &&"
       else
         CLI.report_error "Unknown language #{CLI.red language}!"
       end

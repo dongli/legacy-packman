@@ -64,35 +64,35 @@ module PACKMAN
           rpath << tmp[1] if tmp
         end
       end
-      cmd_str << "LD_RUN_PATH='#{rpath.join(':')}' " if not rpath.empty?
+      cmd_str << "export LD_RUN_PATH='#{rpath.join(':')}' && " if not rpath.empty?
       # Handle customized LD_LIBRARY_PATH.
       if not @@ld_library_pathes.empty?
         case OS.type
         when :Darwin
-          cmd_str << 'DYLD_LIBRARY_PATH=$DYLD_LIBRARY_PATH:'
+          cmd_str << 'export DYLD_LIBRARY_PATH=$DYLD_LIBRARY_PATH:'
         when :Linux
-          cmd_str << 'LD_LIBRARY_PATH=$LD_LIBRARY_PATH:'
+          cmd_str << 'export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:'
         end
         cmd_str << @@ld_library_pathes.join(':')
-        cmd_str << ' '
+        cmd_str << ' && '
       end
       # Handle compilers. Check if the @@envs has already defined them.
       CompilerManager.active_compiler_set.info.each do |language, compiler_info|
         next if language == :installed_by_packman
         case language
         when 'c'
-          cmd_str << "CC=#{compiler_info[:command]} " if not @@envs.has_key? 'CC'
+          cmd_str << "export CC=#{compiler_info[:command]} && " if not @@envs.has_key? 'CC'
         when 'c++'
-          cmd_str << "CXX=#{compiler_info[:command]} " if not @@envs.has_key? 'CXX'
+          cmd_str << "export CXX=#{compiler_info[:command]} && " if not @@envs.has_key? 'CXX'
         when 'fortran'
-          cmd_str << "F77=#{compiler_info[:command]} " if not @@envs.has_key? 'F77'
-          cmd_str << "FC=#{compiler_info[:command]} " if not @@envs.has_key? 'FC'
+          cmd_str << "export F77=#{compiler_info[:command]} && " if not @@envs.has_key? 'F77'
+          cmd_str << "export FC=#{compiler_info[:command]} && " if not @@envs.has_key? 'FC'
         end
       end
       # Handle customized environment variables.
       if not @@envs.empty?
         @@envs.each do |key, value|
-          cmd_str << "#{key}=#{value} "
+          cmd_str << "export #{key}=#{value} && "
         end
       end
       return cmd_str
