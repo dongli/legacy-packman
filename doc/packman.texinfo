@@ -34,12 +34,14 @@ In summary, @code{PACKMAN} gathers the installation experiences of different pac
 
 @chapter Design of PACKMAN
 
-The major objects of @code{PACKMAN}:
+The major objects of @code{PACKMAN} are:
 @enumerate
 @item Operate without root privilege;
 @item Download packages even without internet connection through FTP mirror service;
 @item Support as many Linux-like platform as possible;
 @end enumerate
+
+@code{PACKMAN} is written in Ruby, and is object-oriented and modular. It can be divided into two parts: @code{framework} and @code{packages}. @code{framework} just as its name implies contains the basic bricks of @code{PACKMAN}, such as the @code{PACKMAN::Package} class. It determines the extensibility of @code{PACKMAN}, so it must be well designed. Advanced developers with proficiency in Ruby can dive into the @code{framework}, and add more features. On the other hand, @code{packages} contains many package installation rule files, such as @file{netcdf.rb}. The richness of packages magnetize users. Anyone who is familiar with package installation can write one package file following the template and examples. Because @code{PACKMAN} provides a convenient framework, many
 
 @chapter Usage of PACKMAN
 @section Installation
@@ -135,7 +137,7 @@ class <package_name> < PACKMAN::Package
 end
 @end example
 @end cartouche
-A Ruby class has been defined in the above, which is derived from @code{PACKMAN::Package} class. Developers need to provide several information about the package:
+A Ruby class has been defined in the above (note @code{<package_name>} should be capitalized), which is derived from @code{PACKMAN::Package} class. Developers need to provide several information about the package:
 @table @code
 @itemx @code{url}
 The URL of the package file.

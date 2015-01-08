@@ -8,15 +8,14 @@ module PACKMAN
       if collect_all
         package_names = Dir.glob("#{ENV['PACKMAN_ROOT']}/packages/*.rb").map { |f| File.basename(f).gsub('.rb', '').capitalize.to_sym }
       else
-        package_names = ConfigManager.package_options.keys | CommandLine.packages
+        package_names = CommandLine.packages.empty? ? ConfigManager.package_options.keys : CommandLine.packages.uniq
       end
       package_names.each do |package_name|
         if not collect_all
-          if ConfigManager.package_options.has_key? package_name
-            package = Package.instance package_name, ConfigManager.package_options[package_name]
-          else
-            package = Package.instance package_name
-          end
+          package = Package.instance package_name
+          ConfigManager.propagate_options_to package
+          CommandLine.propagate_options_to package
+          package = Package.instance package_name, package.options
           PACKMAN.download_package package
         else
           all_instances = Package.all_instances package_name
@@ -36,7 +35,9 @@ module PACKMAN
     options = [options] if not options or options.class != Array
     # Recursively download dependency packages.
     package.dependencies.each do |depend|
-      if not ConfigManager.package_options.keys.include? depend
+      if package.has_label? 'master_package'
+        download_package Package.instance(depend, package.options)
+      else
         download_package Package.instance(depend)
       end
     end

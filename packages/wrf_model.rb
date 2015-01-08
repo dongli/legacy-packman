@@ -3,6 +3,11 @@ class Wrf_model < PACKMAN::Package
   sha1 '21b398124041b9e459061605317c4870711634a0'
   version '3.6.1'
 
+  history_version '3.5.1' do
+    url 'http://www2.mmm.ucar.edu/wrf/src/WRFV3.5.1.TAR.gz'
+    sha1 '4a1ef9569afe02f588a5d4423a7f4a458803d9cc'
+  end
+
   label 'install_with_source'
 
   belongs_to 'wrf'
@@ -46,10 +51,12 @@ class Wrf_model < PACKMAN::Package
 
   def install
     # Prefix WRF due to some bugs.
-    if build_type == 'serial' or build_type == 'smpar'
-      PACKMAN.replace 'WRFV3/share/mediation_feedback_domain.F', {
-        /(USE module_dm), only: local_communicator/ => '\1'
-      }
+    if version == '3.6.1'
+      if build_type == 'serial' or build_type == 'smpar'
+        PACKMAN.replace 'WRFV3/share/mediation_feedback_domain.F', {
+          /(USE module_dm), only: local_communicator/ => '\1'
+        }
+      end
     end
     # Set compilation environment.
     PACKMAN.append_env "CURL_PATH='#{PACKMAN.prefix Curl}'"

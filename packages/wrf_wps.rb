@@ -3,6 +3,11 @@ class Wrf_wps < PACKMAN::Package
   sha1 'f6ef8b25593d4d5711e7d6853db4965e60969b88'
   version '3.6.1'
 
+  history_version '3.5.1' do
+    url 'http://www2.mmm.ucar.edu/wrf/src/WPSV3.5.1.TAR.gz'
+    sha1 '5f214825484571c9783b2ee691aa2c9d9cfc6076'
+  end
+
   label 'install_with_source'
 
   belongs_to 'wrf'

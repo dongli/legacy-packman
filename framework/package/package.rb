@@ -10,6 +10,9 @@ module PACKMAN
       hand_over_spec :history_versions
       hand_over_spec :history_binary_versions
 
+      inherit_spec :stable, :devel
+      inherit_spec :stable, :history_versions
+
       set_active_spec requested_spec
 
       if active_spec.has_label? 'install_with_source'
@@ -30,23 +33,38 @@ module PACKMAN
       instance_variable_set "@#{name}", spec
     end
 
+    def inherit_spec master_name, slave_name
+      return if not self.class.class_variable_defined? :"@@#{self.class}_#{master_name}"
+      return if not self.class.class_variable_defined? :"@@#{self.class}_#{slave_name}"
+      master_spec = self.class.class_variable_get :"@@#{self.class}_#{master_name}"
+      tmp = self.class.class_variable_get :"@@#{self.class}_#{slave_name}"
+      if tmp.class == Hash
+        slave_specs = tmp.values
+      elsif tmp.class = PACKMAN::PackageSpec
+        slave_specs = [tmp]
+      end
+      slave_specs.each do |slave_spec|
+        slave_spec.inherit master_spec
+      end
+    end
+
     def set_active_spec requested_spec
       @active_spec = nil
       if requested_spec
         if requested_spec.class == Hash
           case requested_spec[:in]
           when :history_versions
-            if not history_versions.has_key? requested_spec[:version]
-              CLI.report_error "There is no #{CLI.red requested_spec[:version]} in "+
+            if not history_versions.has_key? requested_spec[:use_version]
+              CLI.report_error "There is no #{CLI.red requested_spec[:use_version]} in "+
                 "#{CLI.red self.class}!"
             end
-            @active_spec = history_versions[requested_spec[:version]]
+            @active_spec = history_versions[requested_spec[:use_version]]
           when :binary
             @binary.each do |key, value|
               if requested_spec.has_key? :key
                 # TODO: Should we judge version here? Because there should be
                 # only one version in the binary.
-                if requested_spec[:key] == key and requested_spec[:version] == value.version
+                if requested_spec[:key] == key and requested_spec[:use_version] == value.version
                   @active_spec = value
                   break
                 end
@@ -77,10 +95,8 @@ module PACKMAN
                 key.to_s.split('|').each do |x|
                   tmp1 = x.split('@')
                   package_version = tmp1.first
-                  next if package_version != requested_spec[:version]
+                  next if package_version != requested_spec[:use_version]
                   tmp2 = tmp1.last.split(':')
-                  p OS.distro
-                  p tmp2.first
                   next if OS.distro != tmp2.first.to_sym
                   tmp3 = tmp2.last.match(/(>=|==|=~)?\s*(.*)/)
                   operator = tmp3[1] ? tmp3[1] : '=='
@@ -255,11 +271,11 @@ module PACKMAN
       begin
         requested_spec = {}
         if options['use_binary']
-          if options['version']
-            requested_spec[:version] = options['version']
+          if options['use_version']
+            requested_spec[:use_version] = options['use_version']
             if eval "defined? @@#{package_name}_binary"
               eval("@@#{package_name}_binary").each do |key, value|
-                if value.version == requested_spec[:version]
+                if value.version == requested_spec[:use_version]
                   requested_spec[:in] = :binary
                   break
                 end
@@ -271,10 +287,10 @@ module PACKMAN
           else
             requested_spec[:in] = :binary
           end
-        elsif options['version']
+        elsif options['use_version']
           if eval "defined? @@#{package_name}_history_versions"
             requested_spec[:in] = :history_versions
-            requested_spec[:version] = options['version']
+            requested_spec[:use_version] = options['use_version']
           end
         end
         requested_spec = nil if requested_spec.empty?
@@ -301,7 +317,7 @@ module PACKMAN
         if self.class_variable_defined? "@@#{package_name}_history_versions"
           requested_spec[:in] = :history_versions
           eval("@@#{package_name}_history_versions").each do |key, value|
-            requested_spec[:version] = value.version
+            requested_spec[:use_version] = value.version
             instances << eval("#{package_name}.new requested_spec")
           end
         end
@@ -309,7 +325,7 @@ module PACKMAN
           requested_spec[:in] = :binary
           eval("@@#{package_name}_binary").each do |key, value|
             # TODO: Check if we need to set version here.
-            requested_spec[:version] = value.version
+            requested_spec[:use_version] = value.version
             requested_spec[:key] = key
             instances << eval("#{package_name}.new requested_spec")
           end

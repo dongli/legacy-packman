@@ -9,7 +9,8 @@ module PACKMAN
     CommonOptions = {
       'skip_test' => :boolean,
       'compiler_set_indices' => :integer_array,
-      'use_binary' => :boolean
+      'use_binary' => :boolean,
+      'use_version' => :string
     }.freeze
 
     def initialize
@@ -27,6 +28,46 @@ module PACKMAN
 
       CommonOptions.each do |key, type|
         option key => type
+      end
+    end
+
+    def inherit val
+      # url, sha1, version, filename will not be inherited.
+      val.labels.each do |label|
+        @labels << label if not @labels.include? label
+      end
+      val.skip_distros.each do |distro|
+        @skip_distros << distro if not @skip_distros.include? distro
+      end
+      val.conflict_packages.each do |package|
+        @conflict_packages << package if not @conflict_packages.include? package
+      end
+      val.conflict_reasons.each do |reason|
+        @conflict_reasons << reason if not @conflict_reasons.include? reason
+      end
+      val.provided_stuffs.each do |key, value|
+        if not @provided_stuffs.has_key? key
+          @provided_stuffs[key] = value
+        elsif @provided_stuffs[key] != value
+          PACKMAN.report_error "PackageSpec already provides #{PACKMAN.red "#{key} => #{value}"}!"
+        end
+      end
+      val.option_valid_types.each do |key, value|
+        if not @option_valid_types.has_key? key
+          @option_valid_types[key] = value
+        elsif @option_valid_types[key] != value
+          PACKMAN.report_error "PackageSpec already define option type #{PACKMAN.red "#{key} => #{value}"}!"
+        end
+      end
+      val.options.each do |key, value|
+        if not @options.has_key? key
+          @options[key] = value
+        elsif not @options[key]
+          @options[key] = value
+        elsif value.class != Array and @options[key] != value
+          p @options[key]
+          PACKMAN.report_error "PackageSpec already has option #{PACKMAN.red "#{key} => #{value}"}!"
+        end
       end
     end
 
