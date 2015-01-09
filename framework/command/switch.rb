@@ -26,6 +26,7 @@ module PACKMAN
               bashrc_files << "#{subdir}/bashrc"
             elsif File.exist? "#{subdir}/#{compiler_set_index}/bashrc"
               package_name = File.basename(dir)
+              next if not PACKMAN::Package.all_package_names.include? package_name
               package = Package.instance package_name.capitalize
               if not package.conflict_packages.empty?
                 # Package conflicts with other packages, so we need to check what the default package is.
