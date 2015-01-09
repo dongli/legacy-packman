@@ -81,16 +81,16 @@ class Wrf_model < PACKMAN::Package
       # Configure WRF model.
       print "#{PACKMAN.blue '==>'} "
       if PACKMAN::CommandLine.has_option? '-debug'
-        print "#{PACKMAN::RunManager.default_command_prefix} ./configure\n"
+        print "#{PACKMAN::RunManager.default_command_prefix} ./configure with platform "
       else
-        print "./configure\n"
+        print "./configure with platform "
       end
       PTY.spawn("#{PACKMAN::RunManager.default_command_prefix} ./configure") do |reader, writer, pid|
         output = reader.expect(/Enter selection.*: /)
         writer.print("#{choose_platform output}\n")
         reader.expect(/Compile for nesting.*: /)
         writer.print("#{use_nest}\n")
-        reader.expect(/\*/)
+        reader.expect(/ /)
       end
       if not File.exist? 'configure.wrf'
         PACKMAN.report_error "#{PACKMAN.red 'configure.wrf'} is not generated!"
@@ -108,24 +108,25 @@ class Wrf_model < PACKMAN::Package
     c_compiler_info = PACKMAN.compiler_info 'c'
     fortran_compiler_info = PACKMAN.compiler_info 'fortran'
     build_type_ = build_type == 'dm+sm' ? 'dm\+sm' : build_type
+    matched_platform = nil
     if c_compiler_info[:spec].vendor == 'gnu' and fortran_compiler_info[:spec].vendor == 'gnu'
       if fortran_compiler_info[:spec].version <= '4.4.7'
         PACKMAN.report_error "#{PACKMAN.blue 'gfortran'} version "+
           "#{PACKMAN.red fortran_compiler_info[:spec].version} is too low to build WRF!"
       end
       output.each do |line|
-        tmp = line.match(/(\d+)\.\s+.*gfortran\s*\w*\s*with gcc\s+\(#{build_type_}\)/)
-        PACKMAN.report_error "Mess up with configure output of WRF!" if not tmp
-        return tmp[1]
+        matched_platform = line.match(/(\d+)\.\s+.*gfortran\s*\w*\s*with gcc\s+\(#{build_type_}\)/)
+        PACKMAN.report_error "Mess up with configure output of WRF!" if not matched_platform
       end
     elsif c_compiler_info[:spec].vendor == 'intel' and fortran_compiler_info[:spec].vendor == 'intel'
       output.each do |line|
-        tmp = line.match(/(\d+)\.\s+.*ifort \w* with icc\s+\(#{build_type_}\)/)
-        PACKMAN.report_error "Mess up with configure output of WRF!" if not tmp
-        return tmp[1]
+        matched_platform = line.match(/(\d+)\.\s+.*ifort \w* with icc\s+\(#{build_type_}\)/)
+        PACKMAN.report_error "Mess up with configure output of WRF!" if not matched_platform
       end
     else
       PACKMAN.report_error 'Unsupported compiler set!'
     end
+    print "\"#{PACKMAN.green matched_platform}\"\n"
+    return matched_platform[1]
   end
 end
