@@ -55,10 +55,17 @@ module PACKMAN
           case requested_spec[:in]
           when :history_versions
             if not history_versions.has_key? requested_spec[:use_version]
-              CLI.report_error "There is no #{CLI.red requested_spec[:use_version]} in "+
-                "#{CLI.red self.class}!"
+              if @stable and stable.version == requested_spec[:use_version]
+                @active_spec = stable
+              elsif @devel and devel.version == requested_spec[:use_version]
+                @active_spec = devel
+              else
+                CLI.report_error "There is no #{CLI.red requested_spec[:use_version]} in "+
+                  "#{CLI.red self.class}!"
+              end
+            else
+              @active_spec = history_versions[requested_spec[:use_version]]
             end
-            @active_spec = history_versions[requested_spec[:use_version]]
           when :binary
             @binary.each do |key, value|
               if requested_spec.has_key? :key
