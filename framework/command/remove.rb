@@ -60,11 +60,12 @@ module PACKMAN
                   PACKMAN.delete_from_file "#{ConfigManager.install_root}/packman.bashrc",
                     "source #{sets[i]}/bashrc", :no_error
                   PACKMAN.rm sets[i]
-                  ConfigManager.package_options[package_name]['compiler_set_indices'].delete i
+                  ConfigManager.package_options[package_name]['compiler_set_indices'].delete i if ConfigManager.package_options.has_key? package_name
                 end
               end
               # When all compiler sets compiled versions are removed, remove the package item from config file.
-              if ConfigManager.package_options[package_name]['compiler_set_indices'].empty?
+              if ConfigManager.package_options.has_key?(package_name) and
+                 ConfigManager.package_options[package_name]['compiler_set_indices'].empty?
                 ConfigManager.package_options.delete package_name
               end
             else
