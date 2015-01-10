@@ -122,15 +122,15 @@ module PACKMAN
           cmd_str << "#{build_helper.wrap_flags language, flags, cmd_args} "
         end
       end
-      cmd_str << "#{cmd_args} "
-      if not CommandLine.has_option? '-verbose'
-        cmd_str << "1> #{ConfigManager.package_root}/stdout 2> #{ConfigManager.package_root}/stderr"
-      end
       print "#{CLI.blue '==>'} "
+      cmd_str << "#{cmd_args} "
       if CommandLine.has_option? '-debug'
         print "#{cmd_str}\n"
       else
-        print "#{CLI.truncate("#{cmd} #{args.join(' ')}")}\n"
+        print "#{CLI.truncate("#{cmd} #{cmd_args}")}\n"
+      end
+      if not CommandLine.has_option? '-verbose'
+        cmd_str << "1> #{ConfigManager.package_root}/stdout 2> #{ConfigManager.package_root}/stderr"
       end
       system cmd_str
       if not $?.success?
