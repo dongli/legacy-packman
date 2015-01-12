@@ -1,0 +1,22 @@
+class Little_cms < PACKMAN::Package
+  url 'https://downloads.sourceforge.net/project/lcms/lcms/2.6/lcms2-2.6.tar.gz'
+  sha1 'b0ecee5cb8391338e6c281d1c11dcae2bc22a5d2'
+  version '2.6'
+
+  depends_on 'jpeg'
+  depends_on 'libtiff'
+  depends_on 'zlib'
+
+  def install
+    args = %W[
+      --prefix=#{PACKMAN.prefix self}
+      --disable-dependency-tracking
+      --with-jpeg=#{PACKMAN.prefix Jpeg}
+      --with-tiff=#{PACKMAN.prefix Libtiff}
+      --with-zlib=#{PACKMAN.prefix Zlib}
+    ]
+    PACKMAN.run './configure', *args
+    PACKMAN.run 'make -j2'
+    PACKMAN.run 'make install'
+  end
+end
