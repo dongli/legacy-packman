@@ -3,6 +3,14 @@ class Libtiff < PACKMAN::Package
   sha1 '652e97b78f1444237a82cbcfe014310e776eb6f0'
   version '4.0.3'
 
+  skip_on :Mac_OS_X
+
+  if PACKMAN::OS.distro == :Mac_OS_X
+    def prefix
+      '/System/Library/Frameworks/ImageIO.framework/Versions/A/Resources'
+    end
+  end
+
   depends_on 'jpeg'
 
   def install
@@ -17,5 +25,9 @@ class Libtiff < PACKMAN::Package
     PACKMAN.run './configure', *args
     PACKMAN.run 'make -j2'
     PACKMAN.run 'make install'
+  end
+
+  def installed?
+    File.exist? '/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/ImageIO.framework/Versions/A/Resources/libTIFF.dylib'
   end
 end
