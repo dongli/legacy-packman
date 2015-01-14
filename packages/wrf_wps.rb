@@ -13,7 +13,7 @@ class Wrf_wps < PACKMAN::Package
   belongs_to 'wrf'
 
   option 'build_type' => 'serial'
-  option 'use_mpi' => :package_name
+  option 'use_mpi' => [:package_name, :boolean]
 
   depends_on 'netcdf'
   depends_on 'libpng'

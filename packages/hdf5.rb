@@ -3,11 +3,11 @@ class Hdf5 < PACKMAN::Package
   sha1 '712955025f03db808f000d8f4976b8df0c0d37b5'
   version '1.8.13'
 
-  option 'use_mpi' => :package_name
+  option 'use_mpi' => [:package_name, :boolean]
 
   depends_on 'zlib'
   depends_on 'szip'
-  depends_on mpi, use_mpi?
+  depends_on mpi if use_mpi? and option_type('use_mpi') == :package_name
 
   if PACKMAN::OS.distro == :Mac_OS_X and use_mpi?
     PACKMAN.caveat <<-EOT.gsub(/^\s+/, '')

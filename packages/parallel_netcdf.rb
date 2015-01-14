@@ -3,10 +3,10 @@ class Parallel_netcdf < PACKMAN::Package
   sha1 '41ec358878a97132b3bb1d1f67dcef96c492376c'
   version '1.5.0'
 
-  option 'use_mpi' => :package_name
+  option 'use_mpi' => [:package_name, :boolean]
 
   depends_on 'm4'
-  depends_on mpi, use_mpi?
+  depends_on mpi if use_mpi? and option_type('use_mpi') == :package_name
 
   def install
     if not use_mpi?

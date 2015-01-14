@@ -29,9 +29,16 @@ module PACKMAN
           @info[:installed_by_packman] = Package.instance compiler_command.capitalize.to_sym
           next
         end
-        @info[language] = {}
-        @info[language][:command] = `which #{compiler_command}`.chomp
-        @info[language][:spec] = CompilerManager.compiler_spec language, compiler_command
+        if language =~ /^mpi_(c|c\+\+|fortran)/
+          # Let users choose the MPI wrapper.
+          actual_language = language.gsub 'mpi_', ''
+          @info[actual_language] ||= {}
+          @info[actual_language][:mpi_wrapper] = `which #{compiler_command}`.chomp
+        else
+          @info[language] ||= {}
+          @info[language][:command] = `which #{compiler_command}`.chomp
+          @info[language][:spec] = CompilerManager.compiler_spec language, compiler_command
+        end
       end
     end
   end

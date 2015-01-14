@@ -173,22 +173,33 @@ module PACKMAN
       return true
     end
 
-    def self.use_mpi mpi_vendor
-      # Check if the MPI library is installed by PACKMAN or not.
-      if File.directory? "#{ConfigManager.install_root}/#{mpi_vendor}"
-        mpi = Package.instance mpi_vendor.to_s.capitalize
-        prefix = PACKMAN.prefix mpi
-        # Override the CC, CXX, F77, FC if they are set.
-        PACKMAN.change_env "CC=#{prefix}/bin/#{mpi.provided_stuffs['c']}"
-        PACKMAN.change_env "MPICC=#{prefix}/bin/#{mpi.provided_stuffs['c']}"
-        PACKMAN.change_env "CXX=#{prefix}/bin/#{mpi.provided_stuffs['c++']}"
-        PACKMAN.change_env "MPICXX=#{prefix}/bin/#{mpi.provided_stuffs['c++']}"
-        PACKMAN.change_env "F77=#{prefix}/bin/#{mpi.provided_stuffs['fortran:77']}" if PACKMAN.compiler_command 'fortran'
-        PACKMAN.change_env "MPIF77=#{prefix}/bin/#{mpi.provided_stuffs['fortran:77']}" if PACKMAN.compiler_command 'fortran'
-        PACKMAN.change_env "FC=#{prefix}/bin/#{mpi.provided_stuffs['fortran:90']}" if PACKMAN.compiler_command 'fortran'
-        PACKMAN.change_env "MPIF90=#{prefix}/bin/#{mpi.provided_stuffs['fortran:90']}" if PACKMAN.compiler_command 'fortran'
+    def self.use_mpi mpi_vendor = nil
+      if mpi_vendor
+        # Check if the MPI library is installed by PACKMAN or not.
+        if File.directory? "#{ConfigManager.install_root}/#{mpi_vendor}"
+          mpi = Package.instance mpi_vendor.to_s.capitalize
+          prefix = PACKMAN.prefix mpi
+          # Override the CC, CXX, F77, FC if they are set.
+          PACKMAN.change_env "CC=#{prefix}/bin/#{mpi.provided_stuffs['c']}"
+          PACKMAN.change_env "MPICC=#{prefix}/bin/#{mpi.provided_stuffs['c']}"
+          PACKMAN.change_env "CXX=#{prefix}/bin/#{mpi.provided_stuffs['c++']}"
+          PACKMAN.change_env "MPICXX=#{prefix}/bin/#{mpi.provided_stuffs['c++']}"
+          PACKMAN.change_env "F77=#{prefix}/bin/#{mpi.provided_stuffs['fortran:77']}" if PACKMAN.compiler_command 'fortran'
+          PACKMAN.change_env "MPIF77=#{prefix}/bin/#{mpi.provided_stuffs['fortran:77']}" if PACKMAN.compiler_command 'fortran'
+          PACKMAN.change_env "FC=#{prefix}/bin/#{mpi.provided_stuffs['fortran:90']}" if PACKMAN.compiler_command 'fortran'
+          PACKMAN.change_env "MPIF90=#{prefix}/bin/#{mpi.provided_stuffs['fortran:90']}" if PACKMAN.compiler_command 'fortran'
+        else
+          CLI.report_error "#{CLI.red mpi_vendor} MPI library is not installed by PACKMAN!"
+        end
       else
-        CLI.report_error "#{CLI.red mpi_vendor} MPI library is not installed by PACKMAN!"
+        PACKMAN.change_env "CC=#{compiler_info('c')[:mpi_wrapper]}"
+        PACKMAN.change_env "MPICC=#{compiler_info('c')[:mpi_wrapper]}"
+        PACKMAN.change_env "CXX=#{compiler_info('c++')[:mpi_wrapper]}"
+        PACKMAN.change_env "MPICXX=#{compiler_info('c++')[:mpi_wrapper]}"
+        PACKMAN.change_env "F77=#{compiler_info('fortran')[:mpi_wrapper]}" if PACKMAN.compiler_command 'fortran'
+        PACKMAN.change_env "MPIF77=#{compiler_info('fortran')[:mpi_wrapper]}" if PACKMAN.compiler_command 'fortran'
+        PACKMAN.change_env "FC=#{compiler_info('fortran')[:mpi_wrapper]}" if PACKMAN.compiler_command 'fortran'
+        PACKMAN.change_env "MPIF90=#{compiler_info('fortran')[:mpi_wrapper]}" if PACKMAN.compiler_command 'fortran'
       end
     end
   end

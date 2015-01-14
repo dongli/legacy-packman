@@ -5,7 +5,7 @@ class Netcdf_fortran < PACKMAN::Package
 
   belongs_to 'netcdf'
 
-  option 'use_mpi' => :package_name
+  option 'use_mpi' => [:package_name, :boolean]
 
   # This old version may be cleaned in near future.
   history_version '4.2' do

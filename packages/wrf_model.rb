@@ -13,7 +13,7 @@ class Wrf_model < PACKMAN::Package
   belongs_to 'wrf'
 
   option 'build_type' => 'serial'
-  option 'use_mpi' => :package_name
+  option 'use_mpi' => [:package_name, :boolean]
   option 'use_nest' => 0
   option 'run_case' => 'em_real'
   option 'with_chem' => false

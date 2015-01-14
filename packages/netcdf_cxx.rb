@@ -5,7 +5,7 @@ class Netcdf_cxx < PACKMAN::Package
 
   belongs_to 'netcdf'
 
-  option 'use_mpi' => :package_name
+  option 'use_mpi' => [:package_name, :boolean]
 
   depends_on 'netcdf_c'
 

@@ -5,7 +5,7 @@ class Regcm < PACKMAN::Package
 
   label 'install_with_source'
 
-  option 'use_mpi' => :package_name
+  option 'use_mpi' => [:package_name, :boolean]
   option 'use_clm' => false
   option 'use_clm45' => false
   option 'use_megan' => false

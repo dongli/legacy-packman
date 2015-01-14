@@ -203,9 +203,13 @@ module PACKMAN
           msg = "Install package #{CLI.green package.class} with compiler set"
           msg << " #{CLI.green CompilerManager.active_compiler_set_index}"
           if package.has_option? 'use_mpi' and package.use_mpi?
-            msg << " and #{CLI.red package.mpi.capitalize} library"
-            # Set the MPI compiler wrappers.
-            PACKMAN.use_mpi package.mpi
+            if package.option_type('use_mpi') == :package_name
+              msg << " and #{CLI.red package.mpi.capitalize} library"
+              # Set the MPI compiler wrappers.
+              PACKMAN.use_mpi package.mpi
+            else
+              PACKMAN.use_mpi
+            end
           end
           CLI.report_notice msg+'.'
           package.install

@@ -4,7 +4,8 @@ module PACKMAN
     attr_reader :conflict_packages, :conflict_reasons
     attr_reader :provided_stuffs, :master_package
     attr_reader :patches, :embeded_patches, :attachments
-    attr_accessor :option_valid_types, :options
+    attr_reader :option_valid_types, :options
+    attr_reader :option_actual_types
 
     CommonOptions = {
       'skip_test' => :boolean,
@@ -25,6 +26,7 @@ module PACKMAN
       @attachments = []
       @option_valid_types = {}
       @options = {}
+      @option_actual_types = {}
 
       CommonOptions.each do |key, type|
         option key => type
@@ -65,8 +67,7 @@ module PACKMAN
         elsif not @options[key]
           @options[key] = value
         elsif value.class != Array and @options[key] != value
-          p @options[key]
-          PACKMAN.report_error "PackageSpec already has option #{PACKMAN.red "#{key} => #{value}"}!"
+          PACKMAN.report_warning "PackageSpec already has option #{PACKMAN.red "#{key} => #{value}"}!"
         end
       end
     end
@@ -209,6 +210,10 @@ module PACKMAN
           return if is_option_added
           @options[key] = value
           @option_valid_types[key] = :string
+        elsif value.class == Array
+          return if is_option_added and @option_valid_types[key] == value
+          @options[key] = nil
+          @option_valid_types[key] = value
         else
           CLI.report_error "Unexpected package option #{CLI.red option_hash}!"
         end
@@ -256,10 +261,38 @@ module PACKMAN
           CLI.report_error "A package name is needed for option #{CLI.red key}!" if not ignore_error
         end
         options[key] = value
+      when :integer
+        if value.class == Fixnum
+          options[key] = value
+        elsif value.class == String
+          options[key] = eval value
+        else
+          CLI.report_error "An integer is needed for option #{CLI.red key}!" if not ignore_error
+        end
       when :string
         options[key] = value
       when :directory
         options[key] = File.expand_path value if value
+      else
+        if option_valid_types[key].class != Array
+          CLI.report_error "Unknown valid type #{CLI.red option_valid_types[key]} for option #{CLI.blue key}!"
+        end
+        if option_valid_types[key].size == 2 and
+           option_valid_types[key].include? :package_name and
+           option_valid_types[key].include? :boolean
+          if value.class == TrueClass or value.class == FalseClass
+            options[key] = value
+            option_actual_types[key] = :boolean
+          elsif value == 'true' or value == 'false'
+            options[key] = eval value
+            option_actual_types[key] = :boolean
+          else
+            options[key] = value
+            option_actual_types[key] = :package_name
+          end
+        else
+          CLI.under_construction!
+        end
       end
     end
 
