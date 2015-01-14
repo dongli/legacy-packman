@@ -12,6 +12,16 @@ class Parallel_netcdf < PACKMAN::Package
     if not use_mpi?
       PACKMAN.report_error "Option #{PACKMAN.red 'use_mpi'} must be set to build #{PACKMAN.green 'Parallel_netcdf'}!"
     end
+    if not skip_test? and PACKMAN.compiler_vendor('c++') == 'intel'
+      # Fix C++ test code bug when using Intel MPI library:
+      #   SEEK_SET is #defined but must not be for the C++ binding of MPI. Include mpi.h before stdio.h
+      ['test/CXX/nctst.cpp', 'test/CXX/test_classic.cpp'].each do |bug_file|
+        PACKMAN.replace bug_file, {
+          '#include <pnetcdf>' => '',
+          '#include <stdio.h>' => "#include <pnetcdf>\n#include <stdio.h>"
+        }
+      end
+    end
     if PACKMAN::OS.type == :Linux
       PACKMAN.append_customized_flags :pic
     end

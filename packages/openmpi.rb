@@ -10,7 +10,6 @@ class Openmpi < PACKMAN::Package
     because_they_both_provide 'mpi'
   end
 
-  provide 'mpi'
   provide 'c' => 'mpicc'
   provide 'c++' => 'mpic++'
   provide 'fortran:77' => 'mpif77'

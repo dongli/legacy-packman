@@ -297,17 +297,11 @@ module PACKMAN
     end
 
     def self.default_option_value type
-      case type
-      when :boolean
-        nil
-      when :integer_array
+      if type == :boolean or type == :integer or type == :string or
+         type == :package_name or type == :directory or type.class == Array
+         nil
+      elsif type == :integer_array
         []
-      when :package_name
-        nil
-      when :string
-        nil
-      when :directory
-        nil
       else
         CLI.report_error "Invalid option type #{CLI.red type}!"
       end
