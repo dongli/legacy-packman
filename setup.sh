@@ -115,7 +115,11 @@ function install_ruby
     tar -xjf $RUBY_PACKAGE
     cd $RUBY_PACKAGE_DIR
     echo "[Notice]: Building Ruby, please wait for a moment! If anything is wrong, please see $PACKMAN_ROOT/ruby/out!"
-    ./configure --prefix=$PACKMAN_ROOT/ruby --disable-install-doc 1> $PACKMAN_ROOT/ruby/out 2>&1
+    if ! which gcc 1> /dev/null; then
+        echo '[Error]: There is no GCC compiler!'
+        exit
+    fi
+    CC=gcc ./configure --prefix=$PACKMAN_ROOT/ruby --disable-install-doc 1> $PACKMAN_ROOT/ruby/out 2>&1
     make install 1>> $PACKMAN_ROOT/ruby/out 2>&1
     cd $PACKMAN_ROOT/ruby
     rm -rf $RUBY_PACKAGE_DIR
