@@ -60,7 +60,7 @@ module PACKMAN
       when :Cygwin
         res = `uname`
         @@distro = :Cygwin
-        @@version = VersionSpec.new res.match(/-(\d+\.\d+)-/)[1]
+        @@version = VersionSpec.new res.match(/(\d+\.\d+)/)[1]
       end
     end
 
