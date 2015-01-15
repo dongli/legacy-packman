@@ -10,10 +10,13 @@ class Grib_api < PACKMAN::Package
 
   def install
     args = %W[
-      --prefix=#{PACKMAN.prefix(self)}
-      --with-netcdf=#{PACKMAN.prefix(Netcdf_c)}
-      --with-jasper=#{PACKMAN.prefix(Jasper)}
+      --prefix=#{PACKMAN.prefix self}
+      --with-netcdf=#{PACKMAN.prefix Netcdf_c}
+      --with-jasper=#{PACKMAN.prefix Jasper}
     ]
+    if PACKMAN::OS.cygwin_gang?
+      args << "LIBS='-L#{PACKMAN.prefix Curl}/lib -lcurl -L#{PACKMAN.prefix Hdf5}/lib -lhdf5 -lhdf5_hl'"
+    end
     PACKMAN.run './configure', *args
     PACKMAN.run 'make install'
   end
