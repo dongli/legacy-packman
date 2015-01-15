@@ -101,9 +101,6 @@ module PACKMAN
         print line
       end
       repeat '#', times, 'red', "\n"
-      pid_file = "#{ENV['PACKMAN_ROOT']}/.pid"
-      PACKMAN.rm pid_file if File.exist? pid_file and CommandLine.process_exclusive?
-      exit
     end
 
     def self.under_construction!

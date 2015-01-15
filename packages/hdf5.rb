@@ -14,6 +14,7 @@ class Hdf5 < PACKMAN::Package
       Parallel HDF5 can not be built succesfully in Mac OS X!
       PACKMAN developer tried hard to solve this problem, but without success!
     EOT
+    exit
   end
 
   def install
