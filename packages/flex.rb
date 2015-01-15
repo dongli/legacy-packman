@@ -2,7 +2,7 @@ class Flex < PACKMAN::Package
   label 'should_provided_by_system'
 
   def installed?
-    if PACKMAN::OS.mac_gang?
+    if PACKMAN::OS.mac_gang? or PACKMAN::OS.cygwin_gang?
       return File.exist? '/usr/bin/flex'
     else
       return PACKMAN::OS.installed? 'flex'

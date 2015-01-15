@@ -3,6 +3,7 @@ class Nco < PACKMAN::Package
   sha1 'e210fe735b6a746a08631c23654dabd45547f6c5'
   version '4.4.5'
 
+  depends_on 'flex'
   depends_on 'curl'
   depends_on 'antlr2'
   depends_on 'netcdf_c'
@@ -27,6 +28,9 @@ class Nco < PACKMAN::Package
       CFLAGS='-I#{PACKMAN.prefix(Curl)}/include -I#{PACKMAN.prefix(Hdf5)}/include'
       LDFLAGS='-L#{PACKMAN.prefix(Curl)}/lib -L#{PACKMAN.prefix(Hdf5)}/lib'
     ]
+    if PACKMAN::OS.cygwin_gang?
+      args << "LIBS='-L#{PACKMAN.prefix Curl}/lib -lcurl -L#{PACKMAN.prefix Hdf5}/lib -lhdf5 -lhdf5_hl'"
+    end
     PACKMAN.run './configure', *args
     PACKMAN.run 'make -j2'
     PACKMAN.run 'make check' if not skip_test?
