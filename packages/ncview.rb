@@ -31,6 +31,13 @@ class Ncview < PACKMAN::Package
       args << "--with-png_incdir=#{PACKMAN.prefix(Libpng)}/include"
       args << "--with-png_libdir=#{PACKMAN.prefix(Libpng)}/lib"
     end
+    if PACKMAN::OS.cygwin_gang?
+      args << "LIBS='-L#{PACKMAN.prefix Curl}/lib -lcurl -L#{PACKMAN.prefix Hdf5}/lib -lhdf5 -lhdf5_hl'"
+      PACKMAN.replace 'configure', {
+        'libpng.so' => 'libpng.a',
+        ' sed s/\.so//' => ' sed s/\.a//'
+      }
+    end
     PACKMAN.run './configure', *args
     PACKMAN.run 'make install'
   end

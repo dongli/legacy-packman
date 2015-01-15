@@ -13,6 +13,11 @@ class X11 < PACKMAN::Package
         'libX11-devel',
         'libXaw', 'libXaw-devel'
       ]
+    elsif PACKMAN::OS.cygwin_gang?
+      return PACKMAN::OS.installed? [
+        'libX11-devel',
+        'libXaw-devel', 'libXaw7'
+      ]
     end
   end
 
@@ -25,6 +30,11 @@ class X11 < PACKMAN::Package
       return PACKMAN::OS.how_to_install [
         'libX11-devel',
         'libXaw', 'libXaw-devel'
+      ]
+    elsif PACKMAN::OS.cygwin_gang?
+      return PACKMAN::OS.how_to_install [
+        'libX11-devel',
+        'libXaw-devel', 'libXaw7'
       ]
     end
   end

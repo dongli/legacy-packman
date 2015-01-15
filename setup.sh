@@ -3,41 +3,51 @@
 export PACKMAN_ROOT=$(cd $(dirname $BASH_ARGV) && pwd)
 export PATH=$PACKMAN_ROOT:$PATH
 
+OS=$(uname -o 2> /dev/null || uname -s 2> /dev/null)
+
 # Set command line completion for packman command
-subcommands=$(awk '
-    /PermittedSubcommands = {/ { start = 1 };
-    { if (start == 1 && match($1, ":")) { print substr($1, 2, length($1)-1) } };
-    /}.freeze/ { exit }' "$PACKMAN_ROOT/framework/command_line.rb")
-for subcommand in $subcommands; do
-    eval "${subcommand}_options=\$(awk -v subcommand=$subcommand '
-        /PermittedCommonOptions = {/ { start = 1 };
-        { if (start == 1 && match(\$1, \"-\")) { print substr(\$1, 2, length(\$1)-2) } };
-        /}.freeze/ { if (start == 1) start = 0 };
-        /PermittedOptions = {/ { start = 2 };
-        { if (start == 2 && match(\$1, subcommand)) start = 3 };
-        { if (start == 3 && match(\$1, \"-\")) { print substr(\$1, 2, length(\$1)-2) } };
-        /}/ { if (start == 3) exit }' \"$PACKMAN_ROOT/framework/command_line.rb\")"
-done
-
-available_package_names=""
-for file in $(ls "$PACKMAN_ROOT/packages"); do
-    available_package_names="$available_package_names $(basename "$file" .rb)"
-done
-
-if [[ -f "$PACKMAN_ROOT/packman.config" ]]; then
-    install_root=$(awk '/install_root/ { print substr($3, 2, length($3)-2) }' "$PACKMAN_ROOT/packman.config")
-fi
-installed_package_names=""
-if [[ -d "$install_root" ]]; then
-    for dir in $(ls "$install_root"); do
-        if [[ ! -d "$install_root/$dir" ]]; then
-            continue
-        fi
-        if [[ ! $available_package_names =~ $dir ]]; then
-            continue
-        fi
-        installed_package_names="$installed_package_names $dir"
+if [[ $OS =~ 'Cygwin' ]]; then
+    # Cygwin is very slow when dynamically get the subcommands from codes, so I
+    # just fix subcommands.
+    # In addition, available_package_names and installed_package_names are also
+    # not available anymore.
+    subcommands="config collect install remove switch mirror update help report start stop status"
+else
+    subcommands=$(awk '
+        /PermittedSubcommands = {/ { start = 1 };
+        { if (start == 1 && match($1, ":")) { print substr($1, 2, length($1)-1) } };
+        /}.freeze/ { exit }' "$PACKMAN_ROOT/framework/command_line.rb")
+    for subcommand in $subcommands; do
+        eval "${subcommand}_options=\$(awk -v subcommand=$subcommand '
+            /PermittedCommonOptions = {/ { start = 1 };
+            { if (start == 1 && match(\$1, \"-\")) { print substr(\$1, 2, length(\$1)-2) } };
+            /}.freeze/ { if (start == 1) start = 0 };
+            /PermittedOptions = {/ { start = 2 };
+            { if (start == 2 && match(\$1, subcommand)) start = 3 };
+            { if (start == 3 && match(\$1, \"-\")) { print substr(\$1, 2, length(\$1)-2) } };
+            /}/ { if (start == 3) exit }' \"$PACKMAN_ROOT/framework/command_line.rb\")"
     done
+
+    available_package_names=""
+    for file in $(ls "$PACKMAN_ROOT/packages"); do
+        available_package_names="$available_package_names $(basename "$file" .rb)"
+    done
+
+    if [[ -f "$PACKMAN_ROOT/packman.config" ]]; then
+        install_root=$(awk '/install_root/ { print substr($3, 2, length($3)-2) }' "$PACKMAN_ROOT/packman.config")
+    fi
+    installed_package_names=""
+    if [[ -d "$install_root" ]]; then
+        for dir in $(ls "$install_root"); do
+            if [[ ! -d "$install_root/$dir" ]]; then
+                continue
+            fi
+            if [[ ! $available_package_names =~ $dir ]]; then
+                continue
+            fi
+            installed_package_names="$installed_package_names $dir"
+        done
+    fi
 fi
 
 function find_subcommand()
