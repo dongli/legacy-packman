@@ -53,10 +53,6 @@ module PACKMAN
         /^Port.*$/ => "Port #{port}",
         /^<Anonymous\s*.*>$/ => "<Anonymous #{ConfigManager.package_root}>"
       }
-      PACKMAN.work_in "#{ENV['PACKMAN_ROOT']}/.." do
-        system "tar czf packman.tar.gz --exclude='packman.config' #{File.basename ENV['PACKMAN_ROOT']}"
-        PACKMAN.mv 'packman.tar.gz', ConfigManager.package_root
-      end
     end
 
     def self.start_mirror_service
@@ -138,6 +134,11 @@ module PACKMAN
         PackageLoader.load_package package_name
       end
       Commands.collect :all
+      CLI.report_notice "Packing #{CLI.green 'PACKMAN'} itself."
+      PACKMAN.work_in "#{ENV['PACKMAN_ROOT']}/.." do
+        system "tar czf packman.tar.gz --exclude='packman.config' #{File.basename ENV['PACKMAN_ROOT']}"
+        PACKMAN.mv 'packman.tar.gz', ConfigManager.package_root
+      end
     end
   end
 end
