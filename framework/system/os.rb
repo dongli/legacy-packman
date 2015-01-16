@@ -41,7 +41,7 @@ module PACKMAN
         case res
         when /Red Hat Enterprise Linux Server/
           @@distro = :RedHat_Enterprise
-          @@version = VersionSpec.new res.match(/\d+\.\d+/)[0]
+          @@version = VersionSpec.new res.match(/release (\d+\.\d+)/)[1]
         when /Ubuntu/
           @@distro = :Ubuntu
           @@version = VersionSpec.new res.match(/DISTRIB_RELEASE=(\d+\.\d+)/)[1]
