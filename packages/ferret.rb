@@ -1,6 +1,6 @@
 class Ferret < PACKMAN::Package
   url 'ftp://ftp.pmel.noaa.gov/ferret/pub/source/fer_source.tar.gz'
-  sha1 '1b63fa4c6577db871f705cabe05ebbee6f3811cd'
+  sha1 '0ce8cba41b1273f8919f8af98bf92bab64ec7499'
   version '6.9'
 
   label 'compiler_insensitive'
