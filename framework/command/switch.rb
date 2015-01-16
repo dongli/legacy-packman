@@ -74,7 +74,7 @@ module PACKMAN
         file_path = "#{ConfigManager.install_root}/packman.bashrc"
       else
         file_path = CommandLine.options['-output']
-        file_path << "/packman.config" if File.directory? file_path
+        file_path << "/packman.bashrc" if File.directory? file_path
       end
       File.open(file_path, 'w').write content
       if not File.open("#{ENV['HOME']}/.bashrc", 'r').read.include? "source #{file_path}"
