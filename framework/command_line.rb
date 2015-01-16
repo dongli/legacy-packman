@@ -30,7 +30,8 @@ module PACKMAN
         '-purge' => 'Also remove unneeded dependencies.'
       },
       :switch => {
-        '-compiler_set_index' => 'Choose which compiler set will be used.'
+        '-compiler_set_index' => 'Choose which compiler set will be used.',
+        '-output' => 'Set the output BASH configure file path (Default is <package_root>/packman.bashrc).'
       },
       :mirror => {
         '-init' => 'Initialize FTP mirror service.',
