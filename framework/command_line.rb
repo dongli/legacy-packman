@@ -44,7 +44,8 @@ module PACKMAN
       :help => {},
       :report => {
         '-package_root' => 'Print the download root of all packages.',
-        '-install_root' => 'Print the installation root of all packages.'
+        '-install_root' => 'Print the installation root of all packages.',
+        '-installed_packages' => 'Print the installed packages.'
       },
       :start => {},
       :stop => {},

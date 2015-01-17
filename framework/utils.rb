@@ -98,4 +98,13 @@ module PACKMAN
     end
     return dir
   end
+
+  def self.integer? x
+    begin
+      Integer x
+      return true
+    rescue
+      return false
+    end
+  end
 end
