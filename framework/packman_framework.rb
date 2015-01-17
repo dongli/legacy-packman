@@ -43,13 +43,22 @@ PACKMAN.constants.each do |module_name|
   next if not module_object.respond_to? :delegated_methods
   module_object.delegated_methods.each do |method_name|
     args = []
-    module_object.method(method_name).parameters.each do |p|
-      case p.first
-      when :req
-        args << p.last
-      when :opt
-        args << "#{p.last} = nil"
-      end          
+    # TODO: This 'rescue' can be dismissed when 'NoMethodError' is solved.
+    begin
+      module_object.method(method_name).parameters.each do |p|
+        case p.first
+        when :req
+          args << p.last
+        when :opt
+          args << "#{p.last} = nil"
+        end          
+      end
+    rescue NoMethodError => e
+      PACKMAN::CLI.report_error "Encounter #{PACKMAN::CLI.red 'NoMethodError'}, please report to Li Dong <dongli@lasg.iap.ac.cn>:\n"+
+        "module_object: #{module_object}\n"+
+        "method_name: #{method_name}\n"+
+        "module_object.method(method_name): #{module_object.method(method_name)}\n"+
+        "module_object.method(method_name).methods: #{module_object.method(method_name).methods}"
     end
     args = args.join(', ')
     PACKMAN.class_eval <<-EOT
