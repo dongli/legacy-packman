@@ -89,8 +89,9 @@ module PACKMAN
     end
   end
 
-  def self.decompress file_path
-    CLI.report_notice "Decompress #{CLI.blue File.basename(file_path)}."
+  def self.decompress file_path, options = []
+    options = [options] if not options.class == Array
+    CLI.report_notice "Decompress #{CLI.blue File.basename(file_path)}." if not options.include? :silent
     case PACKMAN.compression_type file_path
     when :tar_Z
       system "tar xzf #{file_path}"

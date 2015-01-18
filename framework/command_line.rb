@@ -83,7 +83,7 @@ module PACKMAN
         end
       end
       if [:config, :collect, :install, :remove, :switch, :mirror,
-          :start,   :stop, :status, :report].include? @@subcommand and
+          :start,   :stop, :status, :report, :update].include? @@subcommand and
          not @@config_file
         # Check if there is a configuration file in PACKMAN_ROOT.
         @@config_file = "#{ENV['PACKMAN_ROOT']}/packman.config"

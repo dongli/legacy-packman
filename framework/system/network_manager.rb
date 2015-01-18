@@ -15,6 +15,7 @@ module PACKMAN
     def self.is_connect_internet?
       if not defined? @@is_connect_internet
         dns_resolver = Resolv::DNS.new()
+        dns_resolver.timeouts = 3
         begin
           dns_resolver.getaddress("symbolics.com")
           @@is_connect_internet = true

@@ -1,34 +1,31 @@
 module PACKMAN
   class Commands
     def self.update
-      PACKMAN.cd ENV['PACKMAN_ROOT']
-      begin
-        if Dir.exist? '.git'
-          update_by_using_git
-        else
-          update_by_direct_download
-        end
-      rescue => e
-        if not NetworkManager.is_connect_internet?
-          if ConfigManager.use_ftp_mirror == 'no'
-            CLI.report_error "This machine can not connect internet! "+
-              "You may use a FTP mirror in your location.\n"+
-              "#{CLI.red '==>'} #{e}"
+      PACKMAN.work_in ENV['PACKMAN_ROOT'] do
+        if NetworkManager.is_connect_internet?
+          if Dir.exist? '.git'
+            update_by_using_git
           else
-            CLI.report_error "This machine can not connect internet, "+
-              "but FTP mirror is used. I am working on it!\n"+
-              "#{CLI.red '==>'} #{e}"
+            update_by_direct_download
+          end
+        else
+          if ConfigManager.use_ftp_mirror != 'no'
+            update_by_using_ftp
+          else
+            CLI.report_error "This machine can not connect internet! "+
+              "You may use a FTP mirror in your location."
           end
         end
       end
-      PACKMAN.cd_back
     end
 
     def self.update_by_using_git
+      CLI.report_notice 'Update from PACKMAN GIT repository.'
       system 'git pull'
     end
 
     def self.update_by_direct_download
+      CLI.report_notice 'Update from PACKMAN repository package.'
       # Read the current version tag.
       version_file = "#{ENV['PACKMAN_ROOT']}/.version"
       if File.exist? version_file
@@ -66,6 +63,41 @@ module PACKMAN
       else
         CLI.report_notice "PACKMAN #{CLI.blue current_version} is up-to-date."
       end
+    end
+
+    def self.update_by_using_ftp
+      ftp_mirror = ConfigManager.use_ftp_mirror
+      CLI.report_notice "Update from PACKMAN FTP mirror #{CLI.green ftp_mirror}."
+      if Dir.exist? '.git'
+        local_git_sha1 = `git rev-parse HEAD`
+        # Check if there is any modification.
+        changes = `git status -s`
+        if not changes.empty?
+          CLI.report_error "You have local changes, which are not allowed when update from FTP mirror!"
+        end
+      else
+        local_version = File.open('.version', 'r').read
+      end
+      PACKMAN.mkdir '.tmp', :silent
+      PACKMAN.work_in '.tmp' do
+        CLI.report_notice "Download #{CLI.green 'packman.tar.gz'} from #{ftp_mirror}."
+        PACKMAN.download '.', "#{ftp_mirror}/packman.tar.gz", "packman.tar.gz"
+        PACKMAN.decompress 'packman.tar.gz', :silent
+        PACKMAN.work_in 'packman' do
+          if Dir.exist? '.git'
+            mirror_git_sha1 = `git rev-parse HEAD`
+            if local_git_sha1 != mirror_git_sha1
+              CLI.report_notice "Local version is different from mirror version, update local one."
+              PACKMAN.cp '.', ENV['PACKMAN_ROOT']
+            else
+              CLI.report_notice "Everything is up-to-date."
+            end
+          else
+            mirror_version = File.open('.version', 'r').read
+          end
+        end
+      end
+      PACKMAN.rm '.tmp'
     end
   end
 end
