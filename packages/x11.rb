@@ -1,5 +1,11 @@
 class X11 < PACKMAN::Package
   label 'should_provided_by_system'
+  
+  if PACKMAN::OS.distro == :Mac_OS_X
+    def prefix
+      '/usr/X11'
+    end
+  end
 
   def installed?
     if PACKMAN::OS.mac_gang?

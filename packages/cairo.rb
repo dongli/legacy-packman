@@ -1,13 +1,17 @@
 class Cairo < PACKMAN::Package
-  url 'http://cairographics.org/releases/cairo-1.12.16.tar.xz'
-  sha1 '4f6e337d5d3edd7ea79d1426f575331552b003ec'
-  version '1.12.16'
+  url 'http://cairographics.org/releases/cairo-1.14.0.tar.xz'
+  sha1 '53cf589b983412ea7f78feee2e1ba9cea6e3ebae'
+  version '1.14.0'
 
   depends_on 'fontconfig'
   depends_on 'pixman'
   depends_on 'libpng'
   depends_on 'glib'
   depends_on 'x11'
+
+  if PACKMAN::OS.distro != :Mac_OS_X
+    label 'should_provided_by_system'
+  end
 
   def install
     # https://www.libreoffice.org/bugzilla/show_bug.cgi?id=77060

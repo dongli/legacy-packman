@@ -47,11 +47,12 @@ module PACKMAN
     File.open(file_path, "a") { |file|  file << lines }
   end
 
-  def self.replace file_path, replaces
+  def self.replace file_path, replaces, options = []
+    options = [options] if not options.class == Array
     content = File.open(file_path, 'r').read
     replaces.each do |pattern, replacement|
       if content.gsub!(pattern, replacement) == nil
-        CLI.report_error "Pattern \"#{pattern}\" is not found in \"#{file_path}\"!"
+        CLI.report_error "Pattern \"#{pattern}\" is not found in \"#{file_path}\"!" if not options.include? :not_exit
       end
     end
     file = File.open file_path, 'w'

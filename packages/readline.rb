@@ -5,8 +5,6 @@ class Readline < PACKMAN::Package
 
   depends_on 'ncurses'
 
-  skip_on :Mac_OS_X
-
   def install
     args = %W[
       --prefix=#{PACKMAN.prefix(self)}
