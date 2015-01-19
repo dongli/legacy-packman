@@ -134,6 +134,16 @@ module PACKMAN
         PackageLoader.load_package package_name
       end
       Commands.collect :all
+      # Download Ruby.
+      ruby_file_name = 'ruby-2.1.3.tar.bz2'
+      ruby_url = "http://cache.ruby-lang.org/pub/ruby/2.1/#{ruby_file_name}"
+      ruby_sha1 = 'befbc7b31b0e19c2abe8fa89f08de5d4d7509d19'
+      ruby_file = "#{ConfigManager.package_root}/#{ruby_file_name}"
+      if not File.exist? ruby_file or not PACKMAN.sha1_same? ruby_file, ruby_sha1
+        CLI.report_notice "Download #{CLI.blue ruby_file}."
+        PACKMAN.download ConfigManager.package_root, ruby_url, ruby_file_name
+      end
+      # Pack PACKMAN itself.
       CLI.report_notice "Packing #{CLI.green 'PACKMAN'} itself."
       PACKMAN.work_in "#{ENV['PACKMAN_ROOT']}/.." do
         system "tar czf packman.tar.gz --exclude='packman.config' #{File.basename ENV['PACKMAN_ROOT']}"
