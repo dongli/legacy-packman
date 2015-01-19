@@ -148,5 +148,10 @@ module PACKMAN
         end
       end
     end
+
+    def self.pause
+      print "[Press ANY key]"
+      STDIN.gets
+    end
   end
 end

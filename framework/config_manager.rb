@@ -122,20 +122,27 @@ EOT
       end
       File.open(file_path, 'w') do |file|
         file << <<-EOT
-package_root = "<CHANGE ME>"
-install_root = "<CHANGE ME>"
+package_root = "~/.packman/packages"
+install_root = "~/.packman"
 use_ftp_mirror = "no"
 defaults = {
   "compiler_set_index" => 0,
   "mpi" => "mpich"
 }
 compiler_set_0 = {
-  "c" => "<CHANGE ME>",
-  "c++" => "<CHANGE ME>",
-  "fortran" => "<CHANGE ME>"
+  "c" => "gcc",
+  "c++" => "g++",
+  "fortran" => "gfortran"
 }
         EOT
       end
+      CLI.report_notice "#{CLI.green file_path} is generated. Please revise the following settings:\n"+
+        "#{CLI.blue 'package_root'}     = #{CLI.red '~/.packman/packages'}\n"+
+        "#{CLI.blue 'install_root'}     = #{CLI.red '~/.packman'}\n"+
+        "#{CLI.blue 'C compiler'}       = #{CLI.red 'gcc'}\n"+
+        "#{CLI.blue 'C++ compiler'}     = #{CLI.red 'g++'}\n"+
+        "#{CLI.blue 'Fortran compiler'} = #{CLI.red 'gfortran'}"
+      CLI.pause
     end
 
     def self.write file_path = nil
