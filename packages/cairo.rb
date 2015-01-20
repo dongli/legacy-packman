@@ -11,6 +11,10 @@ class Cairo < PACKMAN::Package
 
   if PACKMAN::OS.distro != :Mac_OS_X
     label 'should_provided_by_system'
+
+    def prefix
+      '/usr'
+    end
   end
 
   def install

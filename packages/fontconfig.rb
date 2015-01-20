@@ -8,6 +8,10 @@ class Fontconfig < PACKMAN::Package
 
   label 'use_system_first'
 
+  def prefix
+    installed? ? '/usr' : false
+  end
+
   patch :embed
 
   def install

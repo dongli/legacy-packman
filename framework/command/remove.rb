@@ -47,15 +47,16 @@ module PACKMAN
                 tmp << 'all'
                 CLI.ask 'Which set do you want to remove?', tmp
                 removed_sets = CLI.get_answer tmp
+                if removed_sets.include? tmp.size-1
+                  removed_sets = Array.new(sets.size) { |i| i }
+                end
               elsif sets.size == 1
                 removed_sets << 0
               elsif CommandLine.has_option? '-all'
-                for i in 0..sets.size-1
-                  removed_sets << i
-                end
+                removed_sets = Array.new(sets.size) { |i| i }
               end
-              for i in 0..CompilerManager.compiler_sets.size-1
-                if removed_sets.include? i or removed_sets.include? CompilerManager.compiler_sets.size
+              for i in 0..sets.size-1
+                if removed_sets.include? i
                   CLI.report_notice "Remove #{CLI.red sets[i]}."
                   PACKMAN.delete_from_file "#{ConfigManager.install_root}/packman.bashrc",
                     "source #{sets[i]}/bashrc", :no_error

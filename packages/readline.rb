@@ -12,9 +12,8 @@ class Readline < PACKMAN::Package
     ]
     if PACKMAN::OS.distro != :Mac_OS_X
       args << '--with-curses'
-      ncurses = PACKMAN.prefix(Ncurses)
-      PACKMAN.append_env "CFLAGS='-I#{ncurses}/include'"
-      PACKMAN.append_env "LDFLAGS='-L#{ncurses}/lib'"
+      PACKMAN.append_env "CFLAGS='-I#{PACKMAN.prefix Ncurses}/include'"
+      PACKMAN.append_env "LDFLAGS='-L#{PACKMAN.prefix Ncurses}/lib'"
     end
     PACKMAN.run './configure', *args
     PACKMAN.run 'make -j2'

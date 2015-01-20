@@ -570,7 +570,7 @@ module PACKMAN
         CLI.report_error "Use #{CLI.red '-target_dir'} to specify where to install #{CLI.green package.class}!"
       end
       prefix = package_.target_dir
-    elsif package_.methods.include? :prefix
+    elsif package_.methods.include? :prefix and package_.prefix
       # Package is already installed somewhere else, use it.
       prefix = package_.prefix
     else

@@ -1,9 +1,11 @@
 class X11 < PACKMAN::Package
   label 'should_provided_by_system'
   
-  if PACKMAN::OS.distro == :Mac_OS_X
-    def prefix
+  def prefix
+    if PACKMAN::OS.mac_gang?
       '/usr/X11'
+    elsif PACKMAN::OS.debian_gang? or PACKMAN::OS.redhat_gang?
+      '/usr'
     end
   end
 

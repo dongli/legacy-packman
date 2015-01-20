@@ -10,6 +10,8 @@ class Hdf4 < PACKMAN::Package
   depends_on 'jpeg'
 
   def install
+    # Note: We can not enable shared and fortran simultaneously.
+    # => configure:5994: error: Cannot build shared fortran libraries. Please configure with --disable-fortran flag.
     args = %W[
       --prefix=#{PACKMAN.prefix(self)}
       --with-zlib=#{PACKMAN.prefix(Zlib)}
@@ -17,6 +19,7 @@ class Hdf4 < PACKMAN::Package
       --with-szlib=#{PACKMAN.prefix(Szip)}
       --disable-netcdf
       --enable-fortran
+      --enable-static
     ]
     PACKMAN.run './configure', *args
     PACKMAN.run 'make install'

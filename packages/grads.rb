@@ -7,6 +7,7 @@ class Grads < PACKMAN::Package
 
   depends_on 'zlib'
   depends_on 'szip'
+  depends_on 'libiconv'
   depends_on 'readline'
   depends_on 'cairo'
   depends_on 'grib2_c'
@@ -31,8 +32,8 @@ class Grads < PACKMAN::Package
     cppflags = []
     ldflags = []
     [X11, Fontconfig, Freetype, Pixman, Cairo, Zlib, Szip,
-     Zlib, Jasper, Libpng, Shapelib, Grib2_c,
-      Udunits, Libgd, Curl, Libxml2, Opendap].each do |lib|
+     Zlib, Jasper, Libpng, Shapelib, Grib2_c, Libiconv,
+     Udunits, Libgd, Curl, Libxml2, Opendap].each do |lib|
       if lib == Cairo
         cppflags << "-I#{PACKMAN.prefix lib}/include/cairo"
       elsif lib == Fontconfig
@@ -48,20 +49,23 @@ class Grads < PACKMAN::Package
     end
     PACKMAN.replace 'configure', {
       /NC_CONFIG=.*$/ => "NC_CONFIG='#{PACKMAN.prefix Netcdf}/bin/nc-config'",
+      'png12' => 'png',
+      'png15' => 'png',
       '-ludunits' => '-ludunits2',
       /(if test "\$with_shp" != "no" ; then)/ => "\\1\nga_supplib_dir=#{PACKMAN.prefix Shapelib}\n",
       /shapelib shp/ => "'/'",
       /(echo "- OPeNDAP for station data disabled"\n\s*else)/ => "\\1\nga_supplib_dir=#{PACKMAN.prefix Gadap}\n",
       /for ga_inc_name in gadap ; do/ => 'for ga_inc_name in "/" ; do',
       /(CPPFLAGS="\$CPPFLAGS )/ => "\\1#{cppflags.join(' ')} ",
-      /(LDFLAGS="-L\${ga_supplib_dir}\/lib )/ => "\\1#{ldflags.join(' ')} "
+      /(LDFLAGS="-L\${ga_supplib_dir}\/lib )/ => "\\1#{ldflags.join(' ')} ",
+      /(HDF4_LDFLAGS="-L\$HDF4_PATH_LIBDIR)/ => "\\1 -L#{PACKMAN.prefix Szip}/lib"
     }
     args = %W[
       --prefix=#{PACKMAN.prefix self}
       --with-readline=#{PACKMAN.prefix Readline}
       --with-printim
       --with-cairo=#{PACKMAN.prefix Cairo}
-      --with-sdf=HDF4,HDF5,NetCDF,OPeNDAP
+      --with-sdf
       --with-shp=#{PACKMAN.prefix Shapelib}
       --with-geotiff=#{PACKMAN.prefix Libgeotiff}
       --with-hdf4=#{PACKMAN.prefix Hdf4}
@@ -81,14 +85,14 @@ class Grads < PACKMAN::Package
         /^shp_inc =.*$/ => "shp_inc = -I#{PACKMAN.prefix Shapelib}/include",
         /^shp_libs =.*$/ => "shp_libs = -L#{PACKMAN.prefix Shapelib}/lib -lshp",
         /^gadap_inc =.*$/ => "gadap_inc = -I#{PACKMAN.prefix Gadap}/include",
-        /^dap_libs =.*$/ => "dap_libs = -L#{PACKMAN.prefix Gadap}/lib -lgadap -L#{PACKMAN.prefix Opendap}/lib -ldapclient -ldap -L#{PACKMAN.prefix Curl}/lib -lcurl -L#{PACKMAN.prefix Libxml2}/lib -lxml2 -L#{PACKMAN.prefix Zlib}/lib -lz -lpthread -lm -liconv",
+        /^dap_libs =.*$/ => "dap_libs = -L#{PACKMAN.prefix Gadap}/lib -lgadap -L#{PACKMAN.prefix Opendap}/lib -ldapclient -ldap -L#{PACKMAN.prefix Curl}/lib -lcurl -L#{PACKMAN.prefix Libxml2}/lib -lxml2 -L#{PACKMAN.prefix Zlib}/lib -lz -lpthread -lm -L#{PACKMAN.prefix Libiconv}/lib -liconv",
         /^hdf_inc =.*$/ => "hdf_inc = -I#{PACKMAN.prefix Udunits}/include -I#{PACKMAN.prefix Hdf4}/include",
         /^hdf_libs =.*$/ => "hdf_libs = -L#{PACKMAN.prefix Hdf4}/lib -lmfhdf -ldf -L#{PACKMAN.prefix Jpeg}/lib -ljpeg -L#{PACKMAN.prefix Zlib}/lib -lz -L#{PACKMAN.prefix Szip}/lib -lsz -L#{PACKMAN.prefix Udunits}/lib -ludunits2",
         /^nc_inc =.*$/ => "nc_inc = -I#{PACKMAN.prefix Netcdf}/include",
         /^nc_libs =.*$/ => "nc_libs = -L#{PACKMAN.prefix Netcdf}/lib -lnetcdf -L#{PACKMAN.prefix Udunits}/lib -ludunits2",
         /^readline_inc =.*$/ => "readline_inc = -I#{PACKMAN.prefix Readline}/include/readline",
-        /^readline_libs =.*$/ => "readline_libs = -L#{PACKMAN.prefix Readline}/lib -lreadline",
-        /^LIBS = -lm  -lreadline/ => "LIBS = -lm -L#{PACKMAN.prefix Readline}/lib -lreadline"
+        /^readline_libs =.*$/ => "readline_libs = -L#{PACKMAN.prefix Readline}/lib -lreadline -L#{PACKMAN.prefix Ncurses}/lib -lncurses",
+        /^LIBS = -lm  -lreadline/ => "LIBS = -lm -L#{PACKMAN.prefix Readline}/lib -lreadline -L#{PACKMAN.prefix Ncurses}/lib -lncurses"
       }
     end
     PACKMAN.run 'make -j2'
