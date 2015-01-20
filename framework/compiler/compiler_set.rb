@@ -33,6 +33,9 @@ module PACKMAN
           # Let users choose the MPI wrapper.
           actual_language = language.gsub 'mpi_', ''
           @info[actual_language] ||= {}
+          if not PACKMAN.does_command_exist? compiler_command
+            CLI.report_error "MPI wrapper #{CLI.red compiler_command} does not exist!"
+          end
           @info[actual_language][:mpi_wrapper] = `which #{compiler_command}`.chomp
         else
           @info[language] ||= {}
