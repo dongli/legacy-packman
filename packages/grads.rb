@@ -86,6 +86,8 @@ class Grads < PACKMAN::Package
         /^shp_libs =.*$/ => "shp_libs = -L#{PACKMAN.prefix Shapelib}/lib -lshp",
         /^gadap_inc =.*$/ => "gadap_inc = -I#{PACKMAN.prefix Gadap}/include",
         /^dap_libs =.*$/ => "dap_libs = -L#{PACKMAN.prefix Gadap}/lib -lgadap -L#{PACKMAN.prefix Opendap}/lib -ldapclient -ldap -L#{PACKMAN.prefix Curl}/lib -lcurl -L#{PACKMAN.prefix Libxml2}/lib -lxml2 -L#{PACKMAN.prefix Zlib}/lib -lz -lpthread -lm -L#{PACKMAN.prefix Libiconv}/lib -liconv",
+        /^hdf5_inc =.*$/ => "hdf5_inc = -I#{PACKMAN.prefix Hdf5}/include",
+        /^hdf5_libs =.*$/ => "hdf5_libs = -L#{PACKMAN.prefix Hdf5}/lib -lhdf5 -L#{PACKMAN.prefix Jpeg}/lib -ljpeg -L#{PACKMAN.prefix Zlib}/lib -lz -L#{PACKMAN.prefix Szip}/lib -lsz",
         /^hdf_inc =.*$/ => "hdf_inc = -I#{PACKMAN.prefix Udunits}/include -I#{PACKMAN.prefix Hdf4}/include",
         /^hdf_libs =.*$/ => "hdf_libs = -L#{PACKMAN.prefix Hdf4}/lib -lmfhdf -ldf -L#{PACKMAN.prefix Jpeg}/lib -ljpeg -L#{PACKMAN.prefix Zlib}/lib -lz -L#{PACKMAN.prefix Szip}/lib -lsz -L#{PACKMAN.prefix Udunits}/lib -ludunits2",
         /^nc_inc =.*$/ => "nc_inc = -I#{PACKMAN.prefix Netcdf}/include",
