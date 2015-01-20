@@ -90,7 +90,12 @@ class Wrf_model < PACKMAN::Package
         writer.print("#{choose_platform output}\n")
         reader.expect(/Compile for nesting.*: /)
         writer.print("#{use_nest}\n")
-        reader.readlines
+        begin
+          reader.readlines
+        rescue Errno::EIO
+        ensure
+          Process.wait pid
+        end
       end
       if not File.exist? 'configure.wrf'
         PACKMAN.report_error "#{PACKMAN.red 'configure.wrf'} is not generated!"
