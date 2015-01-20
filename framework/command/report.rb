@@ -1,7 +1,9 @@
 module PACKMAN
   class Commands
     def self.report
-      if CommandLine.has_option? '-package_root'
+      if CommandLine.has_option? '-compiler_sets'
+        ConfigManager.print_compiler_sets
+      elsif CommandLine.has_option? '-package_root'
         print "#{ConfigManager.package_root}\n"
       elsif CommandLine.has_option? '-install_root'
         print "#{ConfigManager.install_root}\n"

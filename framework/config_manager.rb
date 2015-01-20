@@ -103,16 +103,18 @@ EOT
         end
       end
       # - Compilers and their flags.
-      if [:install].include? CommandLine.subcommand
-        for i in 0..CompilerManager.compiler_sets.size-1
-          CLI.report_notice "Compiler set #{CLI.green i}:"
-          CompilerManager.compiler_sets[i].info.each do |language, compiler_info|
-            next if language == :installed_by_packman
-            print "#{CLI.blue '==>'} #{language}: #{compiler_info[:command]} #{compiler_info[:spec].default_flags[language]}\n"
-          end
+      print_compiler_sets if [:install].include? CommandLine.subcommand
+      ConfigManagerLegacy.check
+    end
+
+    def self.print_compiler_sets
+      for i in 0..CompilerManager.compiler_sets.size-1
+        CLI.report_notice "Compiler set #{CLI.green i}:"
+        CompilerManager.compiler_sets[i].info.each do |language, compiler_info|
+          next if language == :installed_by_packman
+          print "#{CLI.blue '==>'} #{language}: #{compiler_info[:command]} #{compiler_info[:spec].default_flags[language]}\n"
         end
       end
-      ConfigManagerLegacy.check
     end
 
     def self.template file_path

@@ -43,6 +43,7 @@ module PACKMAN
       :update => {},
       :help => {},
       :report => {
+        '-compiler_sets' => 'Print the compiler sets (e.g., compiler commands).',
         '-package_root' => 'Print the download root of all packages.',
         '-install_root' => 'Print the installation root of all packages.',
         '-installed_packages' => 'Print the installed packages.'
