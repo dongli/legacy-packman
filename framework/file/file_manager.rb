@@ -22,6 +22,8 @@ module PACKMAN
     if Dir.exist? dir
       if options.include? :force
         FileUtils.rm_rf dir
+      elsif options.include? :skip_if_exist
+        return
       elsif not options.include? :silent
         CLI.report_error "Directory #{CLI.red dir} already exists!"
       end

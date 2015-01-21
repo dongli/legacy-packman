@@ -51,7 +51,7 @@ class Wrf_wps < PACKMAN::Package
       PTY.spawn("#{PACKMAN::RunManager.default_command_prefix} ./configure") do |reader, writer, pid|
         output = reader.expect(/Enter selection.*: /)
         writer.print("#{choose_platform output}\n")
-        reader.expect(/./)
+        PACKMAN.read_eof reader, pid
       end
       sleep 1
       if not File.exist? './configure.wps'

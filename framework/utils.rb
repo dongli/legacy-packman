@@ -107,4 +107,13 @@ module PACKMAN
       return false
     end
   end
+
+  def self.read_eof reader, pid
+    begin
+      reader.readlines
+    rescue Errno::EIO
+    ensure
+      Process.wait pid
+    end
+  end
 end
