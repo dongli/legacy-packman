@@ -16,7 +16,7 @@ class Opendap < PACKMAN::Package
       --with-xml2=#{PACKMAN.prefix(Libxml2)}
       --with-included-regex
       CPPFLAGS='-I#{PACKMAN.prefix(Uuid)}/include'
-      LDFLAGS='-L#{PACKMAN.prefix(Uuid)}/lib'
+      LIBS='-L#{PACKMAN.prefix(Uuid)}/lib'
     ]
     PACKMAN.run './configure', *args
     PACKMAN.run 'make -j2'
