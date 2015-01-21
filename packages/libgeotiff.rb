@@ -16,6 +16,7 @@ class Libgeotiff < PACKMAN::Package
       --with-libtiff=#{PACKMAN.prefix Libtiff}
       --with-proj=#{PACKMAN.prefix Proj}
       --with-zlib=#{PACKMAN.prefix Zlib}
+      LIBS='-L#{PACKMAN.prefix Jpeg}/lib'
     ]
     PACKMAN.run './configure', *args
     PACKMAN.run 'make -j2'
