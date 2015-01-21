@@ -30,7 +30,6 @@ module PACKMAN
         load @@package_files[depend_name]
         load_package depend_name
         depend_package = Package.instance depend_name
-        package.propagate_options_to depend_package
       end
     end
 
