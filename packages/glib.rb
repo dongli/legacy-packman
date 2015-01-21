@@ -3,6 +3,12 @@ class Glib < PACKMAN::Package
   sha1 '44e1442ed4d1bf3fa89138965deb35afc1335a65'
   version '2.40.0'
 
+  label 'use_system_first'
+
+  def prefix
+    installed? ? '/usr' : false
+  end
+
   depends_on 'gettext'
   depends_on 'libffi'
 
@@ -13,10 +19,6 @@ class Glib < PACKMAN::Package
   patch do
     url 'https://gist.githubusercontent.com/jacknagel/9835034/raw/b0388e86f74286f4271f9b0dca8219fdecafd5e3/gio.patch'
     sha1 '32158fffbfb305296f7665ede6185a47d6f6b389'
-  end
-
-  if PACKMAN::OS.distro != :Mac_OS_X
-    label 'should_provided_by_system'
   end
 
   def install

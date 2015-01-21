@@ -19,7 +19,8 @@ class X11 < PACKMAN::Package
     elsif PACKMAN::OS.redhat_gang?
       return PACKMAN::OS.installed? [
         'libX11-devel',
-        'libXaw', 'libXaw-devel'
+        'libXaw', 'libXaw-devel',
+        'libXrender', 'libXrender-devel'
       ]
     elsif PACKMAN::OS.cygwin_gang?
       return PACKMAN::OS.installed? [
@@ -37,7 +38,8 @@ class X11 < PACKMAN::Package
     elsif PACKMAN::OS.redhat_gang?
       return PACKMAN::OS.how_to_install [
         'libX11-devel',
-        'libXaw', 'libXaw-devel'
+        'libXaw', 'libXaw-devel',
+        'libXrender', 'libXrender-devel'
       ]
     elsif PACKMAN::OS.cygwin_gang?
       return PACKMAN::OS.how_to_install [

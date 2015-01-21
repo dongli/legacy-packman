@@ -9,12 +9,10 @@ class Cairo < PACKMAN::Package
   depends_on 'glib'
   depends_on 'x11'
 
-  if PACKMAN::OS.distro != :Mac_OS_X
-    label 'should_provided_by_system'
+  label 'use_system_first'
 
-    def prefix
-      '/usr'
-    end
+  def prefix
+    installed? ? '/usr' : false
   end
 
   def install
@@ -26,7 +24,6 @@ class Cairo < PACKMAN::Package
       --prefix=#{PACKMAN.prefix(self)}
       --disable-dependency-tracking
       --with-x
-      CFLAGS=-fno-lto
     ]
     PACKMAN.run './configure', *args
     PACKMAN.run 'make -j2'
