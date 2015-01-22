@@ -22,6 +22,7 @@ require "compiler/compiler_set"
 require "compiler/compiler_manager"
 require "command/config"
 require "command/collect"
+require "command/fix"
 require "command/install"
 require "command/remove"
 require "command/switch"
@@ -37,6 +38,7 @@ require "package/package_dsl_helper"
 require "package/package"
 require "package/package_loader"
 require "legacy/config_manager_legacy"
+require "legacy/package_legacy"
 
 PACKMAN.constants.each do |module_name|
   module_object = PACKMAN.const_get module_name

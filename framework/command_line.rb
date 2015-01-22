@@ -3,6 +3,7 @@ module PACKMAN
     PermittedSubcommands = {
       :config => 'Edit the config file in the default location.',
       :collect => 'Collect packages from internet.',
+      :fix => 'Fix the potential legacy errors.',
       :install => 'Install packages and their dependencies.',
       :remove => 'Remove packages.',
       :switch => 'Switch different compiler set (new bashrc will be generated).',
@@ -22,6 +23,7 @@ module PACKMAN
       :collect => {
         '-all' => 'Collect all packages.'
       },
+      :fix => {},
       :install => {
         '-verbose' => 'Show verbose information.'
       },
@@ -83,7 +85,7 @@ module PACKMAN
           @@options[key] = nil
         end
       end
-      if [:config, :collect, :install, :remove, :switch, :mirror,
+      if [:config, :collect, :fix, :install, :remove, :switch, :mirror,
           :start,   :stop, :status, :report, :update].include? @@subcommand and
          not @@config_file
         # Check if there is a configuration file in PACKMAN_ROOT.

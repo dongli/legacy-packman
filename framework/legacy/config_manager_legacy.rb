@@ -1,12 +1,6 @@
 module PACKMAN
   class ConfigManagerLegacy
-    def self.check
-      check_compiler_set
-    end
-
-    private
-
-    def self.check_compiler_set
+    def fix_compiler_set_index
       if ConfigManager.defaults
         if not ConfigManager.defaults.has_key? 'compiler_set_index' and
            ConfigManager.defaults.has_key? 'compiler_set'

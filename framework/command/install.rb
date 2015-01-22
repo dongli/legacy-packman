@@ -56,6 +56,7 @@ module PACKMAN
     end
 
     def self.is_package_installed? package, options = []
+      options = [options] if not options.class == Array
       if options.include? :binary
         CLI.report_error "#{CLI.red package.class} does not have precompiled binary!" if not package.use_binary?
         bashrc = "#{PACKMAN.prefix package, :compiler_insensitive}/bashrc"
@@ -72,7 +73,7 @@ module PACKMAN
               if not package.use_binary? and not package.has_label? 'compiler_insensitive'
                 msg << " by using compiler set #{CLI.green CompilerManager.active_compiler_set_index}"
               end
-              CLI.report_notice msg+'.'
+              CLI.report_notice msg+'.' if not options.include? :silent
             end
             return true
           end

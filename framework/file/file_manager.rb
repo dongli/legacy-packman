@@ -54,7 +54,11 @@ module PACKMAN
     content = File.open(file_path, 'r').read
     replaces.each do |pattern, replacement|
       if content.gsub!(pattern, replacement) == nil
-        CLI.report_error "Pattern \"#{pattern}\" is not found in \"#{file_path}\"!" if not options.include? :not_exit
+        if options.include? :silent
+          exit
+        else
+          CLI.report_error "Pattern \"#{pattern}\" is not found in \"#{file_path}\"!" if not options.include? :not_exit
+        end
       end
     end
     file = File.open file_path, 'w'

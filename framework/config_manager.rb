@@ -104,7 +104,6 @@ EOT
       end
       # - Compilers and their flags.
       print_compiler_sets if [:install].include? CommandLine.subcommand
-      ConfigManagerLegacy.check
     end
 
     def self.print_compiler_sets
