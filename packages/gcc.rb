@@ -45,9 +45,15 @@ class Gcc < PACKMAN::Package
   end
 
   def postfix
+    # NOTE: It seems that GCC_ROOT environment variable must not be set.
+    # Otherwise, the system GCC will be disturbed!
+    PACKMAN.replace "#{PACKMAN.prefix self}/bashrc", {
+      /export GCC_ROOT=.*$/ => '',
+      /\$\{GCC_ROOT\}/ => "#{PACKMAN.prefix self}"
+    }
     # Source the dependent packages in the Gcc bashrc so that Gcc can find
     # those package when doing dynamic loading.
-    PACKMAN.append "#{PACKMAN.prefix(self)}/bashrc",
+    PACKMAN.append "#{PACKMAN.prefix self}/bashrc",
       ". #{PACKMAN.prefix(Gmp)}/bashrc\n"+
       ". #{PACKMAN.prefix(Mpfr)}/bashrc\n"+
       ". #{PACKMAN.prefix(Mpc)}/bashrc\n"+
