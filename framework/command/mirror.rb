@@ -2,20 +2,25 @@ require "net/ftp"
 
 module PACKMAN
   class Commands
+    ListenPort = 30000
+    ResponsePort = 30001
+
     def self.mirror
       PackageLoader.load_package :Proftpd
       if CommandLine.has_option? '-init'
         init_mirror_service
       elsif CommandLine.has_option? '-start'
         start_mirror_service
+        start_mirror_discovery_service
       elsif CommandLine.has_option? '-stop'
         stop_mirror_service
+        stop_mirror_discovery_service
       elsif CommandLine.has_option? '-status'
         status_mirror_service
       elsif CommandLine.has_option? '-sync'
         sync_mirror_service
-      else
-        CLI.report_error "An option must be given!"
+      elsif CommandLine.has_option? '-scan'
+        scan_mirror_server_discovery_service
       end
     end
 
@@ -149,6 +154,49 @@ module PACKMAN
         system "tar czf packman.tar.gz --exclude='packman.config' #{File.basename ENV['PACKMAN_ROOT']}"
         PACKMAN.mv 'packman.tar.gz', ConfigManager.package_root
       end
+    end
+
+    def self.start_mirror_discovery_service
+      pid_file = "#{ENV['PACKMAN_ROOT']}/.mirror_discovery_service_pid"
+      return if File.exist? pid_file
+      pid = fork do
+        BasicSocket.do_not_reverse_lookup = true
+        listen_sock = UDPSocket.new
+        listen_sock.bind '0.0.0.0', ListenPort
+        response_sock = UDPSocket.new
+        while true
+          msg, addr = listen_sock.recvfrom 1024
+          response_sock.send '', 0, addr[2], ResponsePort
+        end
+        listen_sock.close
+        response_sock.close
+      end
+      Process.detach pid
+      File.open(pid_file, 'w').write pid
+    end
+
+    def self.stop_mirror_discovery_service
+      pid_file = "#{ENV['PACKMAN_ROOT']}/.mirror_discovery_service_pid"
+      if not File.exist? pid_file
+        CLI.report_warning "Mirror discovery service seems be off."
+        exit
+      end
+      pid = File.open(pid_file, 'r').read
+      CLI.report_notice "Stop FTP mirror discovery service."
+      system "kill -TERM #{pid}"
+      PACKMAN.rm pid_file
+    end
+
+    def self.scan_mirror_server_discovery_service
+      request_sock = UDPSocket.new
+      request_sock.setsockopt Socket::SOL_SOCKET, Socket::SO_BROADCAST, true
+      request_sock.send '', 0, '255.255.255.255', ListenPort
+      request_sock.close
+      listen_sock = UDPSocket.new
+      listen_sock.bind '0.0.0.0', ResponsePort
+      msg, addr = listen_sock.recvfrom 1024
+      listen_sock.close
+      p "Mirror server IP: #{addr[2]}"
     end
   end
 end

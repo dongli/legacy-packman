@@ -40,7 +40,8 @@ module PACKMAN
         '-start' => 'Start FTP mirror service.',
         '-stop' => 'Stop FTP mirror service.',
         '-status' => 'Check if FTP mirror service is on or off.',
-        '-sync' => 'Synchronize the packages.'
+        '-sync' => 'Synchronize the packages.',
+        '-scan' => 'Scan for FTP mirrors.'
       },
       :update => {},
       :help => {},
