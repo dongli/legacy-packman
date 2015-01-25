@@ -4,6 +4,8 @@ module PACKMAN
   class Commands
     ListenPort = 30000
     ResponsePort = 30001
+    RequestTotalTimeout = 10
+    RequestRecvTimeout = 1
 
     def self.mirror
       PackageLoader.load_package :Proftpd
@@ -158,15 +160,25 @@ module PACKMAN
 
     def self.start_mirror_discovery_service
       pid_file = "#{ENV['PACKMAN_ROOT']}/.mirror_discovery_service_pid"
-      return if File.exist? pid_file
+      if File.exist? pid_file
+        CLI.report_notice "FTP mirror discovery service seems to be on."
+        return
+      end
+      CLI.report_notice "Start FTP mirror discovery service."
       pid = fork do
+        requests = {}
         BasicSocket.do_not_reverse_lookup = true
         listen_sock = UDPSocket.new
         listen_sock.bind '0.0.0.0', ListenPort
         response_sock = UDPSocket.new
         while true
           msg, addr = listen_sock.recvfrom 1024
-          response_sock.send '', 0, addr[2], ResponsePort
+          if requests[addr[2]] == msg
+            next
+          else
+            requests[addr[2]] = msg
+          end
+          response_sock.send get_ftp_port, 0, addr[2], ResponsePort
         end
         listen_sock.close
         response_sock.close
@@ -178,7 +190,7 @@ module PACKMAN
     def self.stop_mirror_discovery_service
       pid_file = "#{ENV['PACKMAN_ROOT']}/.mirror_discovery_service_pid"
       if not File.exist? pid_file
-        CLI.report_warning "Mirror discovery service seems be off."
+        CLI.report_warning "FTP mirror discovery service seems to be off."
         exit
       end
       pid = File.open(pid_file, 'r').read
@@ -190,13 +202,22 @@ module PACKMAN
     def self.scan_mirror_server_discovery_service
       request_sock = UDPSocket.new
       request_sock.setsockopt Socket::SOL_SOCKET, Socket::SO_BROADCAST, true
-      request_sock.send '', 0, '255.255.255.255', ListenPort
-      request_sock.close
       listen_sock = UDPSocket.new
       listen_sock.bind '0.0.0.0', ResponsePort
-      msg, addr = listen_sock.recvfrom 1024
+      start_time = Time.now
+      CLI.report_notice "Available FTP mirror server:"
+      while (Time.now-start_time) < RequestTotalTimeout
+        request_sock.send Process.pid.to_s, 0, '255.255.255.255', ListenPort
+        begin
+          Timeout::timeout RequestRecvTimeout do
+            msg, addr = listen_sock.recvfrom 1024
+            print "#{CLI.blue '==>'} ftp://#{addr[2]}:#{msg}\n"
+          end
+        rescue Timeout::Error
+        end
+      end
+      request_sock.close
       listen_sock.close
-      p "Mirror server IP: #{addr[2]}"
     end
   end
 end
