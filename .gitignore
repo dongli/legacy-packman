@@ -1,5 +1,6 @@
 .idea
 .pid
+.mirror_discovery_service_pid
 ruby
 .DS_Store
 *.tar.bz2

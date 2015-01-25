@@ -35,11 +35,6 @@ module PACKMAN
       proftpd = Proftpd.new
       proftpd.compiler_set_indices << 0
       install_package proftpd
-      if status_mirror_service :silent
-        CLI.report_notice 'FTP mirror service is already on.'
-        return
-      end
-      sync_mirror_service
       # Check available port for FTP service.
       port = 2121
       while port <= 10000
@@ -60,6 +55,12 @@ module PACKMAN
         /^Port.*$/ => "Port #{port}",
         /^<Anonymous\s*.*>$/ => "<Anonymous #{ConfigManager.package_root}>"
       }
+      # Check proftpd session.
+      if status_mirror_service :silent
+        CLI.report_notice 'FTP mirror service is already on.'
+        return
+      end
+      sync_mirror_service
     end
 
     def self.start_mirror_service
