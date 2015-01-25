@@ -161,7 +161,7 @@ module PACKMAN
     def self.start_mirror_discovery_service
       pid_file = "#{ENV['PACKMAN_ROOT']}/.mirror_discovery_service_pid"
       if File.exist? pid_file
-        CLI.report_notice "FTP mirror discovery service seems to be on."
+        CLI.report_warning "FTP mirror discovery service seems to be on."
         return
       end
       CLI.report_notice "Start FTP mirror discovery service."
