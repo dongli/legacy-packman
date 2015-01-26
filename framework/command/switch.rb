@@ -17,6 +17,7 @@ module PACKMAN
         dir = "#{ConfigManager.install_root}/#{dir}"
         next if not File.directory? dir
         bashrc_files = []
+        compiler_insensitive = false
         Dir.foreach(dir) do |subdir|
           next if subdir =~ /^\.{1,2}$/
           subdir = "#{dir}/#{subdir}"
@@ -24,6 +25,7 @@ module PACKMAN
           if File.exist? "#{subdir}/bashrc"
             # The package is compiler insensitive.
             bashrc_files << "#{subdir}/bashrc"
+            compiler_insensitive = true
           elsif File.exist? "#{subdir}/#{compiler_set_index}/bashrc"
             package_name = File.basename(dir)
             next if not PACKMAN::Package.all_package_names.include? package_name
@@ -48,7 +50,8 @@ module PACKMAN
         if bashrc_files.size == 1
           content << "source #{bashrc_files.first}\n"
         elsif bashrc_files.size > 1
-          available_versions = bashrc_files.map { |p| File.basename(PACKMAN.strip_dir(p, 2)) }
+          strip_level = compiler_insensitive ? 1 : 2
+          available_versions = bashrc_files.map { |p| File.basename(PACKMAN.strip_dir(p, strip_level)) }
           package_name = File.basename(dir).capitalize.to_sym
           if not ConfigManager.package_options.has_key? package_name or
             not ConfigManager.package_options[package_name].has_key? 'version'
