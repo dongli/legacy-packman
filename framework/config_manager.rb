@@ -113,7 +113,7 @@ EOT
           next if language == :installed_by_packman
           print "#{CLI.blue '==>'} #{language}: #{compiler_info[:command]} #{compiler_info[:spec].default_flags[language]}\n"
           if compiler_info.has_key? :mpi_wrapper
-            print "#{CLI.blue '=>'} #{language} MPI wrapper: #{compiler_info[:mpi_wrapper]}\n"
+            print "#{CLI.blue '==>'} #{language} MPI wrapper: #{compiler_info[:mpi_wrapper]}\n"
           end
         end
       end
