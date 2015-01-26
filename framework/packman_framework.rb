@@ -102,6 +102,7 @@ end
 
 at_exit {
   if $!
+    # Delete pid_file if exception is thrown.
     pid_file = "#{ENV['PACKMAN_ROOT']}/.pid"
     PACKMAN.rm pid_file if File.exist? pid_file and PACKMAN::CommandLine.process_exclusive?  
   end

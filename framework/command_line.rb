@@ -87,7 +87,7 @@ module PACKMAN
         end
       end
       if [:config, :collect, :fix, :install, :remove, :switch, :mirror,
-          :start,   :stop, :status, :report, :update].include? @@subcommand and
+          :start, :stop, :status, :report, :update].include? @@subcommand and
          not @@config_file
         # Check if there is a configuration file in PACKMAN_ROOT.
         @@config_file = "#{ENV['PACKMAN_ROOT']}/packman.config"
@@ -100,9 +100,9 @@ module PACKMAN
           end
         end
       end
-      @@process_exclusive = false
-      if [:install, :remove, :mirror].include? @@subcommand
-        @@process_exclusive = true
+      @@process_exclusive = true
+      if [:switch, :report, :status].include? @@subcommand
+        @@process_exclusive = false
       end
     end
 
