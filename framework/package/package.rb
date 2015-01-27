@@ -458,7 +458,7 @@ module PACKMAN
           file << "export MANPATH=\"${#{root}}/share/man:${MANPATH}\"\n"
         end
         if Dir.exist?("#{prefix}/include")
-          file << "export #{class_name}_INCLUDE=\"-I${#{root}}/include\"\n"
+          file << "export PACKMAN_#{class_name}_INCLUDE=\"-I${#{root}}/include\"\n"
         end
         libs = []
         if Dir.exist?("#{prefix}/lib")
@@ -468,9 +468,9 @@ module PACKMAN
           libs << "#{prefix}/lib64"
         end
         if not libs.empty?
-          file << "export #{class_name}_LIBRARY=\"-L#{libs.join(' -L')}\"\n"
+          file << "export PACKMAN_#{class_name}_LIBRARY=\"-L#{libs.join(' -L')}\"\n"
           file << "export #{OS.ld_library_path_name}=\"#{libs.join(':')}:${#{OS.ld_library_path_name}}\"\n"
-          file << "export #{class_name}_RPATH=\"#{libs.join(':')}\"\n"
+          file << "export PACKMAN_#{class_name}_RPATH=\"#{libs.join(':')}\"\n"
         end
         if Dir.exist?("#{prefix}/lib/pkgconfig")
           file << "export PKG_CONFIG_PATH=\"${#{root}}/lib/pkgconfig:${PKG_CONFIG_PATH}\"\n"
