@@ -1,7 +1,7 @@
 class Perl < PACKMAN::Package
   url 'http://www.cpan.org/src/5.0/perl-5.20.1.tar.bz2'
   sha1 'cd424d1520ba2686fe5d4422565aaf880e9467f6'
-  version '5.20.2'
+  version '5.20.1'
 
   label 'compiler_insensitive'
 
