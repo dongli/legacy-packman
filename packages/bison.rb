@@ -3,6 +3,8 @@ class Bison < PACKMAN::Package
   sha1 '8270497aad88c7dd4f2c317298c50513fb0c3c8e'
   version '3.0.4'
 
+  label 'compiler_insensitive'
+
   depends_on 'libiconv'
   depends_on 'gettext'
 

@@ -1,19 +1,21 @@
 class Flex < PACKMAN::Package
-  label 'should_provided_by_system'
+  url 'https://downloads.sourceforge.net/flex/flex-2.5.37.tar.bz2'
+  sha1 'db4b140f2aff34c6197cab919828cc4146aae218'
+  version '2.5.37'
+  # NOTE: Failed to build 2.5.39.
 
-  def installed?
-    if PACKMAN::OS.mac_gang? or PACKMAN::OS.cygwin_gang?
-      return File.exist? '/usr/bin/flex'
-    else
-      return PACKMAN::OS.installed? 'flex'
-    end
-  end
+  label 'compiler_insensitive'
 
-  def install_method
-    if PACKMAN::OS.mac_gang?
-      return 'You should install Xcode and command line tools.'
-    else
-      return PACKMAN::OS.how_to_install 'flex'
-    end
+  depends_on 'libiconv'
+  depends_on 'gettext'
+
+  def install
+    args = %W[
+      --prefix=#{PACKMAN.prefix self}
+      --with-libiconv-prefix=#{PACKMAN.prefix Libiconv}
+      --with-libintl-prefix=#{PACKMAN.prefix Gettext}
+    ]
+    PACKMAN.run './configure', *args
+    PACKMAN.run 'make install'
   end
 end
