@@ -1,6 +1,10 @@
 require "fileutils"
 
 module PACKMAN
+  def self.mkexe file
+    FileUtils.chmod 0755, file
+  end
+
   def self.cp src, dest
     FileUtils.cp_r src, dest
   end
@@ -80,7 +84,8 @@ module PACKMAN
     file.close
   end
 
-  def self.compression_type file_path
+  def self.compression_type file_path, options = []
+    options = [options] if not options.class == Array
     if file_path =~ /\.tar.Z$/i
       return :tar_Z
     elsif file_path =~ /\.(tar(\..*)?|tgz|tbz2)$/i
@@ -92,7 +97,11 @@ module PACKMAN
     elsif file_path =~ /\.(zip)$/i
       return :zip
     else
-      CLI.report_error "Unknown compression type of \"#{file_path}\"!"
+      if not options.include? :not_exit
+        CLI.report_error "Unknown compression type of \"#{file_path}\"!"
+      else
+        return nil
+      end
     end
   end
 

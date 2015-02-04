@@ -390,6 +390,11 @@ module PACKMAN
       ( labels.include? 'use_system_first' and installed? )
     end
 
+    def is_compressed?
+      return false if respond_to? :dirname
+      PACKMAN.compression_type filename, :not_exit
+    end
+
     def decompress_to root
       if not File.exist? "#{ConfigManager.package_root}/#{filename}"
         CLI.report_error "Package #{CLI.red self.class} has not been downloaded!"
@@ -406,13 +411,18 @@ module PACKMAN
     end
 
     def copy_to root
-      CLI.report_notice "Copy #{dirname}."
-      if not Dir.exist? "#{ConfigManager.package_root}/#{dirname}"
+      if self.respond_to? :filename
+        file = filename
+      elsif self.respond_to? :dirname
+        file = dirname
+      end
+      CLI.report_notice "Copy #{file}."
+      if not File.exist? "#{ConfigManager.package_root}/#{file}"
         CLI.report_error "Package #{CLI.red self.class} has not been downloaded!"
       end
       copy_dir = "#{root}/#{self.class}"
-      PACKMAN.mkdir copy_dir, :force
-      PACKMAN.cp "#{root}/#{dirname}", copy_dir
+      PACKMAN.mkdir copy_dir, [:force, :silent]
+      PACKMAN.cp "#{root}/#{file}", copy_dir
     end
 
     def self.bashrc package, options = []

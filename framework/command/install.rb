@@ -187,9 +187,9 @@ module PACKMAN
           # Append bashrc file.
           append_bashrc package
           # Decompress package file.
-          if package.respond_to? :filename
+          if package.is_compressed?
             package.decompress_to ConfigManager.package_root
-          elsif package.respond_to? :dirname
+          else
             package.copy_to ConfigManager.package_root
           end
           tmp = Dir.glob("#{build_upper_dir}/*")
