@@ -113,7 +113,7 @@ module PACKMAN
         end
       end
       # Check if the package is a master.
-      if package.has_label? 'master_package' and not options.include? :depend
+      if package.has_label? 'master_package' and not options.include? :depend and not package.respond_to? :install
         CLI.report_notice "Package master #{CLI.green package.class} has been installed."
         return
       end

@@ -15,5 +15,16 @@ module PACKMAN
 
     def self.should_insert_before_command?; true; end
     def self.should_insert_after_command?; false; end
+
+    def self.set_cppflags_and_ldflags args, libs
+      cppflags = []
+      ldflags = []
+      libs.each do |lib|
+        cppflags << "-I#{PACKMAN.prefix lib}/include"
+        ldflags << "-L#{PACKMAN.prefix lib}/lib"
+      end
+      args << "CPPFLAGS='#{cppflags.join(' ')}'"
+      args << "LDFLAGS='#{ldflags.join(' ')}'"
+    end
   end
 end

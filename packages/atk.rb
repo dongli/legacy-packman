@@ -1,23 +1,16 @@
-class Pango < PACKMAN::Package
-  url 'http://ftp.gnome.org/pub/GNOME/sources/pango/1.36/pango-1.36.8.tar.xz'
-  sha1 'c6ba02ee8f9d8b22b7cfd74c4b6ae170bebc8d2b'
-  version '1.36.8'
+class Atk < PACKMAN::Package
+  url 'http://ftp.gnome.org/pub/gnome/sources/atk/2.14/atk-2.14.0.tar.xz'
+  sha1 'b803d055c8e2f786782803b7d21e413718321db7'
+  version '2.14.0'
 
   depends_on 'glib'
-  depends_on 'cairo'
-  depends_on 'harfbuzz'
-  depends_on 'fontconfig'
-  depends_on 'x11'
   depends_on 'gobject_introspection'
 
   def install
     args = %W[
       --prefix=#{PACKMAN.prefix self}
       --disable-dependency-tracking
-      --disable-silent-rules
-      --enable-man
       --enable-introspection=yes
-      --with-xft
     ]
     PACKMAN.run './configure', *args
     PACKMAN.run 'make'

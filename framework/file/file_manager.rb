@@ -6,7 +6,9 @@ module PACKMAN
   end
 
   def self.cp src, dest
-    FileUtils.cp_r src, dest
+    Dir.glob(src).each do |file|
+      FileUtils.cp_r file, dest
+    end
   end
 
   def self.mv src, dest
