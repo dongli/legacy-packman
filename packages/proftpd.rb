@@ -28,11 +28,11 @@ class Proftpd < PACKMAN::Package
 
   def postfix
     PACKMAN.replace "#{PACKMAN.prefix(self)}/../config/proftpd.conf", {
-      /^(ServerType\s*.*)$/ => "\\1\nServerLog #{PACKMAN.prefix(self)}/var/proftpd.log"
+      /^(ServerType\s*.*)$/ => "\\1\nServerLog #{PACKMAN.prefix(self)}/var/proftpd.log",
+      /^(DefaultServer.*$)/ => "\\1\nRequireValidShell no\nWtmpLog off",  
     }
     if PACKMAN::OS.cygwin_gang?
       PACKMAN.replace "#{PACKMAN.prefix(self)}/../config/proftpd.conf", {
-        /^(DefaultServer.*$)/ => "\\1\nRequireValidShell no",
         /^User\s*\w+$/ => "User SYSTEM",
         /^Group\s*\w+$/ => "Group Administrators"
       }

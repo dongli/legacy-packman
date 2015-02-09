@@ -119,8 +119,8 @@ module PACKMAN
       end
       begin
         proftpd.login
-      rescue Net::FTPPermError
-        CLI.report_error "There is another FTP server on this computer and it does not belong to PACKMAN!"
+      rescue => e
+        CLI.report_error "Failed to login FTP server with the following error:\n"+e
       end
       begin
         if proftpd.status =~ /PACKMAN FTP Mirror Service/
