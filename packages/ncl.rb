@@ -38,13 +38,13 @@ class Ncl < PACKMAN::Package
     filename 'ncl_ncarg-6.2.0.Linux_Debian7.4_x86_64_gcc472.tar.gz'
   end
 
-  history_binary_version '6.2.0', :RedHat_Enterprise, '=~ 5' do
+  history_binary_version '6.2.0', :RHEL, '=~ 5' do
     url 'https://www.earthsystemgrid.org/download/fileDownload.htm?logicalFileId=5c732c30-ba18-11e3-b322-00c0f03d5b7c'
     sha1 '2f9644c4ce8744cb75fb908ac9715b621ca6b476'
     filename 'ncl_ncarg-6.2.0.Linux_RHEL5.10_x86_64_gcc412.tar.gz'
   end
 
-  history_binary_version '6.2.0', [:RedHat_Enterprise, :Fedora, :CentOS], ['=~ 6', '=~ 14', '=~ 6'] do
+  history_binary_version '6.2.0', [:RHEL, :Fedora, :CentOS], ['=~ 6', '=~ 14', '=~ 6'] do
     url 'https://www.earthsystemgrid.org/download/fileDownload.htm?logicalFileId=24b0690a-ba14-11e3-b322-00c0f03d5b7c'
     sha1 '4737c15e454f912e7f677f15cd261ebd324b10ab'
     filename 'ncl_ncarg-6.2.0.Linux_RHEL6.2_x86_64_gcc446.tar.gz'
@@ -70,14 +70,14 @@ class Ncl < PACKMAN::Package
     version '6.2.1'
   end
 
-  binary :RedHat_Enterprise, '=~ 5' do
+  binary :RHEL, '=~ 5' do
     url 'https://www.earthsystemgrid.org/download/fileDownload.htm?logicalFileId=38280d25-351d-11e4-a4b4-00c0f03d5b7c'
     sha1 'd7e4a56c94b884801b7ee29af166c574636a9e94'
     version '6.2.1'
     filename 'ncl_ncarg-6.2.1.Linux_RHEL5.10_x86_64_gcc412.tar.gz'
   end
 
-  binary [:RedHat_Enterprise, :Fedora, :CentOS], ['=~ 6', '>= 14', '>= 6'] do
+  binary [:RHEL, :Fedora, :CentOS], ['=~ 6', '>= 14', '>= 6'] do
     url 'https://www.earthsystemgrid.org/download/fileDownload.htm?logicalFileId=38232b22-351d-11e4-a4b4-00c0f03d5b7c'
     sha1 '7f7980f944bd39192482d9260b9cbb619ce33a44'
     version '6.2.1'

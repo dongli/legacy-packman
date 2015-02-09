@@ -1,6 +1,6 @@
 module PACKMAN
   class RedHatSpec < OsSpec
-    vendor :Red_Hat
+    vendor :RedHat
     type :Linux
     version {
       `cat /etc/*-release`.match(/release (\d+\.\d+)/)[1]

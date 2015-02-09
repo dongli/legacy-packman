@@ -45,7 +45,7 @@ module PACKMAN
     def self.package_managers; @@spec.package_managers; end
     
     def self.redhat_gang?
-      if distro == :Red_Hat_Enterprise_Linux or distro == :Fedora or
+      if distro == :RHEL or distro == :Fedora or
          distro == :CentOS or distro == :SUSE
         return true
       else
