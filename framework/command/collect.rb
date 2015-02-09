@@ -44,7 +44,7 @@ module PACKMAN
     # Skip the package that should be provided by system.
     return if package.has_label? 'should_provided_by_system'
     # Skip the package that is a master.
-    return if package.has_label? 'master_package'
+    return if package.has_label? 'master_package' and not package.respond_to? :url
     # Check if there is any patch to download.
     patch_counter = -1
     package.patches.each do |patch|

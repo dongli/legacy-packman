@@ -6,12 +6,6 @@ class Fontconfig < PACKMAN::Package
   depends_on 'freetype'
   depends_on 'expat'
 
-  label 'use_system_first'
-
-  def prefix
-    installed? ? '/usr' : false
-  end
-
   patch :embed
 
   def install
@@ -26,26 +20,6 @@ class Fontconfig < PACKMAN::Package
     end
     PACKMAN.run './configure', *args
     PACKMAN.run 'make install RUN_FC_CACHE_TEST=false'
-  end
-
-  def installed?
-    if PACKMAN::OS.debian_gang?
-      PACKMAN::OS.installed? ['libfontconfig', 'libfontconfig-dev']
-    elsif PACKMAN::OS.redhat_gang?
-      PACKMAN::OS.installed? ['fontconfig', 'fontconfig-devel']
-    elsif PACKMAN::OS.mac_gang?
-      return false
-    end
-  end
-
-  def install_method
-    if PACKMAN::OS.debian_gang?
-      PACKMAN::OS.how_to_install ['libfontconfig', 'libfontconfig-dev']
-    elsif PACKMAN::OS.redhat_gang?
-      PACKMAN::OS.how_to_install ['fontconfig', 'fontconfig-devel']
-    elsif PACKMAN::OS.mac_gang?
-      'PACKMAN will install it.'
-    end
   end
 end
 

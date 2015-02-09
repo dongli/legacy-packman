@@ -3,6 +3,9 @@ class Imagemagick < PACKMAN::Package
   sha1 '5304855f3504994ff8bbf380e9a89a9e1dfe8834'
   version '6.8.9-8'
 
+  label 'compiler_insensitive'
+
+  depends_on 'libtool'
   depends_on 'zlib'
   depends_on 'fontconfig'
   depends_on 'freetype'
@@ -49,6 +52,7 @@ class Imagemagick < PACKMAN::Package
       --with-djvu=#{PACKMAN.prefix Djvulibre}
       --with-openjp2=#{PACKMAN.prefix Openjpeg}
     ]
+    PACKMAN::AutotoolHelper.set_cppflags_and_ldflags args, [Libtool]
     PACKMAN.run './configure', *args
     PACKMAN.run 'make install'
   end
