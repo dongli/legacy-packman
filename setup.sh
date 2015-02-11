@@ -109,7 +109,7 @@ function install_ruby
     fi
     cd $PACKMAN_ROOT/ruby
     if [[ ! -f $RUBY_PACKAGE ]]; then
-        wget $RUBY_URL
+        wget $RUBY_URL -O $RUBY_PACKAGE
     fi
     rm -rf $RUBY_PACKAGE_DIR
     tar -xjf $RUBY_PACKAGE
