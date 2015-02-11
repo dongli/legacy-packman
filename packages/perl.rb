@@ -4,6 +4,7 @@ class Perl < PACKMAN::Package
   version '5.20.1'
 
   label 'compiler_insensitive'
+  label 'master_package'
 
   def install
     args = %W[
