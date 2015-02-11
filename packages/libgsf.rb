@@ -3,16 +3,18 @@ class Libgsf < PACKMAN::Package
   sha1 '5eb15d574c6b9e9c5e63bbcdff8f866b3544485a'
   version '1.14.30'
 
+  depends_on 'perl_xml_parser'
   depends_on 'intltool'
   depends_on 'gettext'
   depends_on 'glib'
+  depends_on 'gdk_pixbuf'
 
   def install
     args = %W[
       --prefix=#{PACKMAN.prefix self}
       --disable-dependency-tracking
     ]
-    PACKMAN::AutotoolHelper.set_cppflags_and_ldflags args, [Gettext, Glib]
+    PACKMAN::AutotoolHelper.set_cppflags_and_ldflags args, [Gettext, Glib, Gdk_pixbuf]
     PACKMAN.run './configure', *args
     PACKMAN.run 'make install'
   end
