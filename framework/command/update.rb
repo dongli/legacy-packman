@@ -20,8 +20,14 @@ module PACKMAN
     end
 
     def self.update_by_using_git
-      CLI.report_notice 'Update from PACKMAN GIT repository.'
-      system 'git pull'
+      repos = `git remote`
+      if repos.include? 'gitcafe'
+        CLI.report_notice 'Update from PACKMAN GitCafe repository.'
+        system 'git pull gitcafe master'
+      else
+        CLI.report_notice 'Update from PACKMAN GitHub repository.'
+        system 'git pull'
+      end
     end
 
     def self.update_by_direct_download
