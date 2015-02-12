@@ -19,8 +19,10 @@ module PACKMAN
     FileUtils.rm_rf Dir.glob(file_path), :secure => true
   end
 
-  def self.ln src, dst
-    FileUtils.ln_s src, dst
+  def self.ln src, dest
+    Dir.glob(src).each do |file|
+      FileUtils.ln_sf file, dest
+    end
   end
 
   def self.mkdir dir, options = []
