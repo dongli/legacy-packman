@@ -5,6 +5,7 @@ class Cdo < PACKMAN::Package
 
   depends_on 'hdf5'
   depends_on 'netcdf'
+  depends_on 'zlib'
   depends_on 'szip'
   depends_on 'jasper'
   depends_on 'grib_api'
@@ -19,6 +20,7 @@ class Cdo < PACKMAN::Package
       --prefix=#{PACKMAN.prefix self}
       --with-hdf5=#{PACKMAN.prefix Hdf5}
       --with-netcdf=#{PACKMAN.prefix Netcdf}
+      --with-zlib=#{PACKMAN.prefix Zlib}
       --with-szlib=#{PACKMAN.prefix Szip}
       --with-jasper=#{PACKMAN.prefix Jasper}
       --with-grib_api=#{PACKMAN.prefix Grib_api}
