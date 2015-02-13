@@ -17,4 +17,16 @@ class Libtool < PACKMAN::Package
     PACKMAN.run './configure', *args
     PACKMAN.run 'make install'
   end
+
+  def installed?
+    if PACKMAN::OS.distro == :Mac_OS_X
+      PACKMAN.does_command_exist? 'libtool'
+    end
+  end
+
+  def install_method
+    if PACKMAN::OS.distro == :Mac_OS_X
+      'Install Command Line Tools to get Libtool!'
+    end
+  end
 end

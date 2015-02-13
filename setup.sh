@@ -98,9 +98,9 @@ complete -o bashdefault -F complete_packman packman
 
 
 # Check if Ruby is available or not, and it must be >= 1.9.
-RUBY_URL=http://cache.ruby-lang.org/pub/ruby/2.1/ruby-2.1.3.tar.bz2
-RUBY_PACKAGE=ruby-2.1.3.tar.bz2
-RUBY_PACKAGE_DIR=$(basename $RUBY_PACKAGE .tar.bz2)
+RUBY_URL=http://cache.ruby-lang.org/pub/ruby/2.2/ruby-2.2.0.tar.gz
+RUBY_PACKAGE=ruby-2.2.0.tar.gz
+RUBY_PACKAGE_DIR=$(basename $RUBY_PACKAGE .tar.gz)
 
 function install_ruby
 {
