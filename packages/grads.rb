@@ -35,77 +35,77 @@ class Grads < PACKMAN::Package
      Zlib, Jpeg, Jasper, Libpng, Shapelib, Grib2_c, Libiconv, Ncurses,
      Udunits, Libgd, Curl, Libxml2, Opendap, Readline].each do |lib|
       if lib == Cairo
-        cppflags << "-I#{PACKMAN.prefix lib}/include/cairo"
+        cppflags << "-I#{lib.include}/cairo"
       elsif lib == Freetype
-        cppflags << "-I#{PACKMAN.prefix lib}/include/freetype2"
+        cppflags << "-I#{lib.include}/freetype2"
       elsif lib == Pixman
-        cppflags << "-I#{PACKMAN.prefix lib}/include/pixman-1"
+        cppflags << "-I#{lib.include}/pixman-1"
       else
-        cppflags << "-I#{PACKMAN.prefix lib}/include"
+        cppflags << "-I#{lib.include}"
       end
-      ldflags << "-L#{PACKMAN.prefix lib}/lib"
+      ldflags << "-L#{lib.lib}"
     end
     PACKMAN.replace 'configure', {
-      /NC_CONFIG=.*$/ => "NC_CONFIG='#{PACKMAN.prefix Netcdf}/bin/nc-config'",
+      /NC_CONFIG=.*$/ => "NC_CONFIG='#{Netcdf.bin}/nc-config'",
       'png12' => 'png',
       'png15' => 'png',
       '-ludunits' => '-ludunits2 -lexpat',
       '<fontconfig.h>' => '<fontconfig/fontconfig.h>',
-      /(if test "\$with_shp" != "no" ; then)/ => "\\1\nga_supplib_dir=#{PACKMAN.prefix Shapelib}\n",
+      /(if test "\$with_shp" != "no" ; then)/ => "\\1\nga_supplib_dir=#{Shapelib.prefix}\n",
       /shapelib shp/ => "'/'",
-      /(echo "- OPeNDAP for station data disabled"\n\s*else)/ => "\\1\nga_supplib_dir=#{PACKMAN.prefix Gadap}\n",
+      /(echo "- OPeNDAP for station data disabled"\n\s*else)/ => "\\1\nga_supplib_dir=#{Gadap.prefix}\n",
       /for ga_inc_name in gadap ; do/ => 'for ga_inc_name in "/" ; do',
       /(CPPFLAGS="\$CPPFLAGS )/ => "\\1#{cppflags.join(' ')} ",
       /(LDFLAGS="-L\${ga_supplib_dir}\/lib )/ => "\\1#{ldflags.join(' ')} ",
       /LDFLAGS=\$ga_saved_ldflags/ => "LDFLAGS=\"$ga_saved_ldflags #{ldflags.join(' ')}\"",
-      /(HDF4_LDFLAGS="-L\$HDF4_PATH_LIBDIR)/ => "\\1 -L#{PACKMAN.prefix Szip}/lib"
+      /(HDF4_LDFLAGS="-L\$HDF4_PATH_LIBDIR)/ => "\\1 -L#{Szip.lib}"
     }
     PACKMAN.replace 'src/gxC.c', '<fontconfig.h>' => '<fontconfig/fontconfig.h>'
     PACKMAN.replace 'src/gacfg.c', '<fontconfig.h>' => '<fontconfig/fontconfig.h>'
     args = %W[
-      --prefix=#{PACKMAN.prefix self}
-      --with-readline=#{PACKMAN.prefix Readline}
+      --prefix=#{prefix}
+      --with-readline=#{Readline.prefix}
       --with-printim
-      --with-cairo=#{PACKMAN.prefix Cairo}
+      --with-cairo=#{Cairo.prefix}
       --with-sdf
-      --with-shp=#{PACKMAN.prefix Shapelib}
-      --with-geotiff=#{PACKMAN.prefix Libgeotiff}
-      --with-hdf4=#{PACKMAN.prefix Hdf4}
-      --with-hdf5=#{PACKMAN.prefix Hdf5}
-      --with-netcdf=#{PACKMAN.prefix Netcdf}
-      --with-gadap=#{PACKMAN.prefix Gadap}
+      --with-shp=#{Shapelib.prefix}
+      --with-geotiff=#{Libgeotiff.prefix}
+      --with-hdf4=#{Hdf4.prefix}
+      --with-hdf5=#{Hdf5.prefix}
+      --with-netcdf=#{Netcdf.prefix}
+      --with-gadap=#{Gadap.prefix}
     ]
     PACKMAN.run './configure', *args
     ['Makefile', 'src/Makefile'].each do |makefile|
       PACKMAN.replace makefile, {
         /^LDFLAGS =.*$/ => "LDFLAGS = #{ldflags.join(' ')}",
-        /^cairo_inc =.*$/ => "cairo_inc = -I#{PACKMAN.prefix Cairo}/include/cairo -I#{PACKMAN.prefix Freetype}/include/freetype2 -I#{PACKMAN.prefix Fontconfig}/include -I#{PACKMAN.prefix Libpng}/include -I#{PACKMAN.prefix Pixman}/include/pixman-1",
-        /^cairo_libs =.*$/ => "cairo_libs = -L#{PACKMAN.prefix Cairo}/lib -lcairo -L#{PACKMAN.prefix X11}/lib -lXrender -L#{PACKMAN.prefix Freetype}/lib -lfreetype -L#{PACKMAN.prefix Fontconfig}/lib -lfontconfig -L#{PACKMAN.prefix Pixman}/lib -lpixman-1 -L#{PACKMAN.prefix Libpng}/lib -lpng -L#{PACKMAN.prefix Libxml2}/lib -lxml2 -L#{PACKMAN.prefix Zlib}/lib -lz",
-        /^grib2_inc =.*$/ => "grib2_inc = -I#{PACKMAN.prefix Grib2_c}/include",
-        /^grib2_libs =.*$/ => "grib2_libs = -L#{PACKMAN.prefix Grib2_c}/lib -lgrib2c -L#{PACKMAN.prefix Jasper}/lib -ljasper -L#{PACKMAN.prefix Libpng}/lib -lpng -L#{PACKMAN.prefix Zlib}/lib -lz",
-        /^geotiff_inc =.*$/ => "geotiff_inc = -I#{PACKMAN.prefix Libtiff}/include -I#{PACKMAN.prefix Libgeotiff}/include",
-        /^geotiff_libs =.*$/ => "geotiff_libs = -L#{PACKMAN.prefix Libtiff}/lib -ltiff -L#{PACKMAN.prefix Libgeotiff}/lib -lgeotiff",
-        /^printim_inc =.*$/ => "printim_inc = -I#{PACKMAN.prefix Libgd}/include",
-        /^printim_libs =.*$/ => "printim_libs = -L#{PACKMAN.prefix Libgd}/lib -lgd -L#{PACKMAN.prefix Libpng}/lib -lpng -L#{PACKMAN.prefix Zlib}/lib -lz -L#{PACKMAN.prefix Jpeg}/lib -ljpeg",
-        /^shp_inc =.*$/ => "shp_inc = -I#{PACKMAN.prefix Shapelib}/include",
-        /^shp_libs =.*$/ => "shp_libs = -L#{PACKMAN.prefix Shapelib}/lib -lshp",
-        /^gadap_inc =.*$/ => "gadap_inc = -I#{PACKMAN.prefix Gadap}/include",
-        /^dap_libs =.*$/ => "dap_libs = -L#{PACKMAN.prefix Gadap}/lib -lgadap -L#{PACKMAN.prefix Opendap}/lib -ldapclient -ldap -L#{PACKMAN.prefix Curl}/lib -lcurl -L#{PACKMAN.prefix Libxml2}/lib -lxml2 -L#{PACKMAN.prefix Zlib}/lib -lz -lpthread -lm -L#{PACKMAN.prefix Libiconv}/lib -liconv",
-        /^hdf5_inc =.*$/ => "hdf5_inc = -I#{PACKMAN.prefix Hdf5}/include",
-        /^hdf5_libs =.*$/ => "hdf5_libs = -L#{PACKMAN.prefix Hdf5}/lib -lhdf5 -L#{PACKMAN.prefix Jpeg}/lib -ljpeg -L#{PACKMAN.prefix Zlib}/lib -lz -L#{PACKMAN.prefix Szip}/lib -lsz",
-        /^hdf_inc =.*$/ => "hdf_inc = -I#{PACKMAN.prefix Udunits}/include -I#{PACKMAN.prefix Hdf4}/include",
-        /^hdf_libs =.*$/ => "hdf_libs = -L#{PACKMAN.prefix Hdf4}/lib -lmfhdf -ldf -L#{PACKMAN.prefix Jpeg}/lib -ljpeg -L#{PACKMAN.prefix Zlib}/lib -lz -L#{PACKMAN.prefix Szip}/lib -lsz -L#{PACKMAN.prefix Udunits}/lib -ludunits2",
-        /^nc_inc =.*$/ => "nc_inc = -I#{PACKMAN.prefix Netcdf}/include",
-        /^nc_libs =.*$/ => "nc_libs = -L#{PACKMAN.prefix Netcdf}/lib -lnetcdf -L#{PACKMAN.prefix Udunits}/lib -ludunits2",
-        /^readline_inc =.*$/ => "readline_inc = -I#{PACKMAN.prefix Readline}/include",
-        /^readline_libs =.*$/ => "readline_libs = -L#{PACKMAN.prefix Readline}/lib -lreadline -L#{PACKMAN.prefix Ncurses}/lib -lncurses",
-        /^LIBS = -lm  -lreadline/ => "LIBS = -lm -L#{PACKMAN.prefix Readline}/lib -lreadline -L#{PACKMAN.prefix Ncurses}/lib -lncurses"
+        /^cairo_inc =.*$/ => "cairo_inc = -I#{Cairo.include}/cairo -I#{Freetype.include}/freetype2 -I#{Fontconfig.include} -I#{Libpng.include} -I#{Pixman.include}/pixman-1",
+        /^cairo_libs =.*$/ => "cairo_libs = -L#{Cairo.lib} -lcairo -L#{X11.lib} -lXrender -L#{Freetype.lib} -lfreetype -L#{Fontconfig.lib} -lfontconfig -L#{Pixman.lib} -lpixman-1 -L#{Libpng.lib} -lpng -L#{Libxml2.lib} -lxml2 -L#{Zlib.lib} -lz",
+        /^grib2_inc =.*$/ => "grib2_inc = -I#{Grib2_c.include}",
+        /^grib2_libs =.*$/ => "grib2_libs = -L#{Grib2_c.lib} -lgrib2c -L#{Jasper.lib} -ljasper -L#{Libpng.lib} -lpng -L#{Zlib.lib} -lz",
+        /^geotiff_inc =.*$/ => "geotiff_inc = -I#{Libtiff.include} -I#{Libgeotiff.include}",
+        /^geotiff_libs =.*$/ => "geotiff_libs = -L#{Libtiff.lib} -ltiff -L#{Libgeotiff.lib} -lgeotiff",
+        /^printim_inc =.*$/ => "printim_inc = -I#{Libgd.include}",
+        /^printim_libs =.*$/ => "printim_libs = -L#{Libgd.lib} -lgd -L#{Libpng.lib} -lpng -L#{Zlib.lib} -lz -L#{Jpeg.lib} -ljpeg",
+        /^shp_inc =.*$/ => "shp_inc = -I#{Shapelib.include}",
+        /^shp_libs =.*$/ => "shp_libs = -L#{Shapelib.lib} -lshp",
+        /^gadap_inc =.*$/ => "gadap_inc = -I#{Gadap.include}",
+        /^dap_libs =.*$/ => "dap_libs = -L#{Gadap.lib} -lgadap -L#{Opendap.lib} -ldapclient -ldap -L#{Curl.lib} -lcurl -L#{Libxml2.lib} -lxml2 -L#{Zlib.lib} -lz -lpthread -lm -L#{Libiconv.lib} -liconv",
+        /^hdf5_inc =.*$/ => "hdf5_inc = -I#{Hdf5.include}",
+        /^hdf5_libs =.*$/ => "hdf5_libs = -L#{Hdf5.lib} -lhdf5 -L#{Jpeg.lib} -ljpeg -L#{Zlib.lib} -lz -L#{Szip.lib} -lsz",
+        /^hdf_inc =.*$/ => "hdf_inc = -I#{Udunits.include} -I#{Hdf4.include}",
+        /^hdf_libs =.*$/ => "hdf_libs = -L#{Hdf4.lib} -lmfhdf -ldf -L#{Jpeg.lib} -ljpeg -L#{Zlib.lib} -lz -L#{Szip.lib} -lsz -L#{Udunits.lib} -ludunits2",
+        /^nc_inc =.*$/ => "nc_inc = -I#{Netcdf.include}",
+        /^nc_libs =.*$/ => "nc_libs = -L#{Netcdf.lib} -lnetcdf -L#{Udunits.lib} -ludunits2",
+        /^readline_inc =.*$/ => "readline_inc = -I#{Readline.include}",
+        /^readline_libs =.*$/ => "readline_libs = -L#{Readline.lib} -lreadline -L#{Ncurses.lib} -lncurses",
+        /^LIBS = -lm  -lreadline/ => "LIBS = -lm -L#{Readline.lib} -lreadline -L#{Ncurses.lib} -lncurses"
       }
     end
     PACKMAN.run 'make -j2'
     PACKMAN.run 'make install'
-    PACKMAN.mkdir "#{PACKMAN.prefix self}/lib"
-    PACKMAN.work_in "#{PACKMAN.prefix self}/lib" do
+    PACKMAN.mkdir "#{lib}"
+    PACKMAN.work_in "#{lib}" do
       PACKMAN.decompress "#{PACKMAN::ConfigManager.package_root}/data2.tar.gz"
     end
   end

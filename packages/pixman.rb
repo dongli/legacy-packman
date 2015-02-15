@@ -5,7 +5,7 @@ class Pixman < PACKMAN::Package
 
   def install
     args = %W[
-      --prefix=#{PACKMAN.prefix(self)}
+      --prefix=#{prefix}
       --disable-dependency-tracking
       --disable-silent-rules
       --disable-gtk

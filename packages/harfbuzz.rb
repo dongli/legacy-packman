@@ -10,9 +10,9 @@ class Harfbuzz < PACKMAN::Package
 
   def install
     args = %W[
-      --prefix=#{PACKMAN.prefix self}
+      --prefix=#{prefix}
       --disable-dependency-tracking
-      --with-icu=#{PACKMAN.prefix Icu4c}
+      --with-icu=#{Icu4c.prefix}
     ]
     PACKMAN.run './configure', *args
     PACKMAN.run 'make install'

@@ -11,10 +11,10 @@ class Freetype < PACKMAN::Package
     PACKMAN.replace 'include/config/ftoption.h',
       /\/\* (#define FT_CONFIG_OPTION_SUBPIXEL_RENDERING) \*\// => '\1'
     args = %W[
-      --prefix=#{PACKMAN.prefix self}
-      --with-png=#{PACKMAN.prefix Libpng}
-      --with-zlib=#{PACKMAN.prefix Zlib}
-      --with-bzip2=#{PACKMAN.prefix Bzip2}
+      --prefix=#{prefix}
+      --with-png=#{Libpng.prefix}
+      --with-zlib=#{Zlib.prefix}
+      --with-bzip2=#{Bzip2.prefix}
       --without-harfbuzz
     ]
     PACKMAN.run './configure', *args

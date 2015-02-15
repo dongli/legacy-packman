@@ -14,7 +14,7 @@ class Hyrax_xml_handler < PACKMAN::Package
       ' XMLWriter *writer' => ' libdap::XMLWriter *writer'
     }
     args = %W[
-      --prefix=#{PACKMAN.prefix(self)}
+      --prefix=#{prefix}
       --disable-dependency-tracking
     ]
     PACKMAN.run './configure', *args

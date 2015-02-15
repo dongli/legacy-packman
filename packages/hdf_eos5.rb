@@ -7,19 +7,19 @@ class Hdf_eos5 < PACKMAN::Package
 
   def install
     args = %W[
-      --prefix=#{PACKMAN.prefix(self)}
-      --with-hdf5=#{PACKMAN.prefix(Hdf5)}
-      --with-zlib=#{PACKMAN.prefix(Zlib)}
-      --with-szlib=#{PACKMAN.prefix(Szip)}
-      CC='#{PACKMAN.prefix(Hdf5)}/bin/h5cc -Df2cFortran'
+      --prefix=#{prefix}
+      --with-hdf5=#{Hdf5.prefix}
+      --with-zlib=#{Zlib.prefix}
+      --with-szlib=#{Szip.prefix}
+      CC='#{Hdf5.bin}/h5cc -Df2cFortran'
     ]
     PACKMAN.run './configure', *args
     PACKMAN.run 'make all'
     PACKMAN.run 'make install'
-    PACKMAN.mkdir "#{PACKMAN.prefix(self)}/include"
-    PACKMAN.cp 'include/HE5_GctpFunc.h', "#{PACKMAN.prefix(self)}/include"
-    PACKMAN.cp 'include/HE5_HdfEosDef.h', "#{PACKMAN.prefix(self)}/include"
-    PACKMAN.cp 'include/cfortHdf.h', "#{PACKMAN.prefix(self)}/include"
+    PACKMAN.mkdir include
+    PACKMAN.cp 'include/HE5_GctpFunc.h', include
+    PACKMAN.cp 'include/HE5_HdfEosDef.h', include
+    PACKMAN.cp 'include/cfortHdf.h', include
     # TODO: Should we copy HE5_HdfEosDef.h to HdfEosDef.h?
   end
 end

@@ -10,15 +10,16 @@ class Cairo < PACKMAN::Package
   depends_on 'x11'
 
   def install
-    # https://www.libreoffice.org/bugzilla/show_bug.cgi?id=77060
-    # http://gcc.gnu.org/onlinedocs/gccint/LTO.html
-    # Disable LTO from GCC to avoid compilation failure. If use LTO,
-    # then add 'ac_cv_prog_RANLIB=gcc-ranlib RANLIB="gcc-ranlib" AR="gcc-ar"' to args.
     args = %W[
-      --prefix=#{PACKMAN.prefix(self)}
+      --prefix=#{prefix}
       --disable-dependency-tracking
       --with-x
     ]
+    if PACKMAN::OS.mac_gang?
+      PACKMAN.replace 'configure', /^\s*use_png=no$/ => 'use_png=yes'
+      args << "CPPFLAGS='-I#{Libpng.include}'"
+      args << "LDFLAGS='-L#{Libpng.lib} -lpng'"
+    end
     PACKMAN.run './configure', *args
     PACKMAN.run 'make -j2'
     PACKMAN.run 'make install'

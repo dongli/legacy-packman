@@ -9,11 +9,11 @@ class Little_cms < PACKMAN::Package
 
   def install
     args = %W[
-      --prefix=#{PACKMAN.prefix self}
+      --prefix=#{prefix}
       --disable-dependency-tracking
-      --with-jpeg=#{PACKMAN.prefix Jpeg}
-      --with-tiff=#{PACKMAN.prefix Libtiff}
-      --with-zlib=#{PACKMAN.prefix Zlib}
+      --with-jpeg=#{Jpeg.prefix}
+      --with-tiff=#{Libtiff.prefix}
+      --with-zlib=#{Zlib.prefix}
     ]
     PACKMAN.run './configure', *args
     PACKMAN.run 'make -j2'

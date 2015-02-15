@@ -39,26 +39,19 @@ class Ghostscript < PACKMAN::Package
     ['expat', 'freetype', 'lcms', 'tiff', 'tiff-config', 'lcms2', 'jpeg',
      'jpegxr', 'openjpeg', 'jbig2dec', 'libpng', 'zlib'].each { |x| PACKMAN.rm x }
     args = %W[
-      --prefix=#{PACKMAN.prefix self}
+      --prefix=#{prefix}
       --disable-cups
       --disable-compile-inits
       --disable-gtk
     ]
-    cflags = "CFLAGS='"
-    ldflags = "LDFLAGS='"
-    [Expat, Jpeg, Jbig2dec, Libtiff, Libpng, Little_cms, Freetype].each do |x|
-      cflags << "-I#{PACKMAN.prefix x}/include "
-      ldflags << "-L#{PACKMAN.prefix x}/lib "
-    end
-    args << cflags+"'"
-    args << ldflags+"'"
+    PACKMAN::AutotoolHelper.set_cppflags_and_ldflags args, [Expat, Jpeg, Jbig2dec, Libtiff, Libpng, Little_cms, Freetype]
     PACKMAN.run './configure', *args
     PACKMAN.replace 'Makefile', {
       /^DEVICE_DEVS17=/ => 'DEVICE_DEVS17=$(DD)djvumask.dev $(DD)djvusep.dev'
     }
     PACKMAN.run 'make install'
     PACKMAN.run 'make install-so'
-    PACKMAN.work_in "#{PACKMAN.prefix self}/share/ghostscript" do
+    PACKMAN.work_in "#{share}/ghostscript" do
       PACKMAN.decompress "#{PACKMAN::ConfigManager.package_root}/ghostscript-fonts-std-8.11.tar.gz"
     end
   end

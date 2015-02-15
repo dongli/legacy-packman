@@ -11,7 +11,7 @@ class Hyrax_csv_handler < PACKMAN::Package
 
   def install
     args = %W[
-      --prefix=#{PACKMAN.prefix(self)}
+      --prefix=#{prefix}
       --disable-dependency-tracking
     ]
     PACKMAN.run './configure', *args

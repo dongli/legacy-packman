@@ -6,11 +6,11 @@ class Ack < PACKMAN::Package
   label 'compiler_insensitive'
 
   def install
-    PACKMAN.mkdir PACKMAN.prefix(self), :force
-    PACKMAN.mkdir "#{PACKMAN.prefix self}/bin", :force
-    PACKMAN.mkdir "#{PACKMAN.prefix self}/share/man/man1", :force
-    PACKMAN.cp "ack-#{version}-single-file", "#{PACKMAN.prefix self}/bin/ack"
-    PACKMAN.mkexe "#{PACKMAN.prefix self}/bin/ack"
-    PACKMAN.run "pod2man #{PACKMAN.prefix self}/bin/ack #{PACKMAN.prefix self}/share/man/man1/ack.1"
+    PACKMAN.mkdir prefix, :force
+    PACKMAN.mkdir bin, :force
+    PACKMAN.mkdir man+'/man1', :force
+    PACKMAN.cp "ack-#{version}-single-file", "#{prefix}/bin/ack"
+    PACKMAN.mkexe "#{bin}/ack"
+    PACKMAN.run "pod2man #{bin}/ack #{man}/man1/ack.1"
   end
 end

@@ -9,7 +9,7 @@ class Antlr2 < PACKMAN::Package
       /^(#include <map>)$/ => "\\1\n#include <strings.h>\n#include <cstdio>\n"
     }
     args = %W[
-      --prefix=#{PACKMAN.prefix(self)}
+      --prefix=#{prefix}
       --disable-debug
       --disable-csharp
       --disable-java

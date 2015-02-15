@@ -18,18 +18,18 @@ class Armadillo < PACKMAN::Package
     # they can not find the dependent libraries just installed.
     if PACKMAN::OS.type == :Linux and not use_mkl?
       PACKMAN.replace 'build_aux/cmake/Modules/ARMA_FindLAPACK.cmake',
-        /^  PATHS / => "  PATHS #{PACKMAN.prefix(Lapack)}/lib "
+        /^  PATHS / => "  PATHS #{Lapack.lib} "
       PACKMAN.replace 'build_aux/cmake/Modules/ARMA_FindOpenBLAS.cmake',
-        /^  PATHS / => "  PATHS #{PACKMAN.prefix(Openblas)}/lib "
+        /^  PATHS / => "  PATHS #{Openblas.lib} "
     end
     PACKMAN.replace 'build_aux/cmake/Modules/ARMA_FindARPACK.cmake',
-      /^  PATHS / => "  PATHS #{PACKMAN.prefix(Arpack)}/lib "
+      /^  PATHS / => "  PATHS #{Arpack.lib} "
     # In some cases, the MKL does not work as expected.
     if not use_mkl?
       PACKMAN.replace 'CMakeLists.txt', /(include\(ARMA_FindMKL\))/ => '#\1'
     end
     args = %W[
-      -DCMAKE_INSTALL_PREFIX=#{PACKMAN.prefix(self)}
+      -DCMAKE_INSTALL_PREFIX=#{prefix}
       -DCMAKE_BUILD_TYPE="Release"
     ]
     PACKMAN.run 'cmake', *args

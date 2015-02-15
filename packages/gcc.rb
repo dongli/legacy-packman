@@ -28,13 +28,13 @@ class Gcc < PACKMAN::Package
       languages = %W[c c++ fortran]
     end
     args = %W[
-      --prefix=#{PACKMAN.prefix(self)}
+      --prefix=#{prefix}
       --enable-languages=#{languages.join(',')}
-      --with-gmp=#{PACKMAN.prefix(Gmp)}
-      --with-mpfr=#{PACKMAN.prefix(Mpfr)}
-      --with-mpc=#{PACKMAN.prefix(Mpc)}
-      --with-cloog=#{PACKMAN.prefix(Cloog)}
-      --with-isl=#{PACKMAN.prefix(Isl)}
+      --with-gmp=#{Gmp.prefix}
+      --with-mpfr=#{Mpfr.prefix}
+      --with-mpc=#{Mpc.prefix}
+      --with-cloog=#{Cloog.prefix}
+      --with-isl=#{Isl.prefix}
       --disable-multilib
     ]
     PACKMAN.mkdir 'build', :force do

@@ -11,10 +11,10 @@ class Hyrax_fileout_netcdf < PACKMAN::Package
 
   def install
     args = %W[
-      --prefix=#{PACKMAN.prefix(self)}
+      --prefix=#{prefix}
       --disable-dependency-tracking
-      --with-netcdf=#{PACKMAN.prefix(Netcdf_c)}
-      DAP_CFLAGS='#{`#{PACKMAN.prefix(Opendap)}/bin/dap-config --cflags`.strip}'
+      --with-netcdf=#{Netcdf_c.prefix}
+      DAP_CFLAGS='#{`#{Opendap.bin}/dap-config --cflags`.strip}'
     ]
     PACKMAN.run './configure', *args
     PACKMAN.run 'make'

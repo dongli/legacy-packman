@@ -16,9 +16,9 @@ class Openmpi < PACKMAN::Package
   provide 'fortran:90' => 'mpif90'
 
   def install
-    # --with-libevent=#{PACKMAN.prefix(Libevent)}
+    # --with-libevent=#{Libevent.prefix}
     args = %W[
-      --prefix=#{PACKMAN.prefix(self)}
+      --prefix=#{prefix}
       --disable-dependency-tracking
       --disable-silent-rules
       --enable-ipv6

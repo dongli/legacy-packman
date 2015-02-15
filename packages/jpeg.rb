@@ -1,23 +1,17 @@
 class Jpeg < PACKMAN::Package
-  url 'http://www.ijg.org/files/jpegsrc.v6b.tar.gz'
-  sha1 '7079f0d6c42fad0cfba382cf6ad322add1ace8f9'
-  version '6b'
+  url 'http://www.ijg.org/files/jpegsrc.v8d.tar.gz'
+  sha1 'f080b2fffc7581f7d19b968092ba9ebc234556ff'
+  version '8d'
+
+  label 'do_not_set_ld_library_path' if PACKMAN::OS.mac_gang?
 
   def install
     args = %W[
-      --prefix=#{PACKMAN.prefix(self)}
+      --prefix=#{prefix}
       --disable-dependency-tracking
     ]
     PACKMAN.run './configure', *args
-    PACKMAN.run 'make'
-    # Silly Jpeg does not mkdir necessary install directories!
-    PACKMAN.mkdir "#{PACKMAN.prefix(self)}/bin", [:force, :silent]
-    PACKMAN.mkdir "#{PACKMAN.prefix(self)}/include", [:force, :silent]
-    PACKMAN.mkdir "#{PACKMAN.prefix(self)}/lib", [:force, :silent]
-    PACKMAN.mkdir "#{PACKMAN.prefix(self)}/man/man1", [:force, :silent]
     PACKMAN.run 'make install'
-    PACKMAN.run 'make install-lib'
-    PACKMAN.run 'make install-headers'
 
     create_cmake_config 'JPEG', 'include', 'lib/libjpeg.a'
   end

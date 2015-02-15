@@ -25,9 +25,9 @@ class Regcm < PACKMAN::Package
         PACKMAN.append_env 'FCFLAGS="$FCFLAGS -fno-range-check -std=legacy"'
       end
       args = %W[
-        --with-netcdf=#{PACKMAN.prefix(Netcdf)}
-        --with-hdf5=#{PACKMAN.prefix(Hdf5)}
-        --with-szip=#{PACKMAN.prefix(Szip)}
+        --with-netcdf=#{Netcdf.prefix}
+        --with-hdf5=#{Hdf5.prefix}
+        --with-szip=#{Szip.prefix}
       ]
       args << '--enable-clm' if use_clm?
       args << '--enable-clm45' if use_clm45?

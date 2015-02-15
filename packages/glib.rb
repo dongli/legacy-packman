@@ -3,6 +3,7 @@ class Glib < PACKMAN::Package
   sha1 '44e1442ed4d1bf3fa89138965deb35afc1335a65'
   version '2.40.0'
 
+  depends_on 'pkgconfig'
   depends_on 'gettext'
   depends_on 'libffi'
 
@@ -19,7 +20,7 @@ class Glib < PACKMAN::Package
   def install
     # Disable dtrace; see https://trac.macports.org/ticket/30413
     args = %W[
-      --prefix=#{PACKMAN.prefix self}
+      --prefix=#{prefix}
       --disable-maintainer-mode
       --disable-dependency-tracking
       --disable-silent-rules
@@ -32,9 +33,9 @@ class Glib < PACKMAN::Package
     # PACKMAN.run 'ulimit -n 1024; make check'
     PACKMAN.run 'make install'
 
-    PACKMAN.replace "#{PACKMAN.prefix(self)}/lib/pkgconfig/glib-2.0.pc", {
-      /(Libs: -L\$\{libdir\} -lglib-2.0) (-lintl)/ => "\\1 -L#{PACKMAN.prefix(Gettext)}/lib \\2",
-      /(Cflags: -I\$\{includedir\}\/glib-2.0 -I\$\{libdir\}\/glib-2.0\/include)/ => "\\1 -I#{PACKMAN.prefix(Gettext)}/include"
+    PACKMAN.replace "#{lib}/pkgconfig/glib-2.0.pc", {
+      /(Libs: -L\$\{libdir\} -lglib-2.0) (-lintl)/ => "\\1 -L#{Gettext.lib} \\2",
+      /(Cflags: -I\$\{includedir\}\/glib-2.0 -I\$\{libdir\}\/glib-2.0\/include)/ => "\\1 -I#{Gettext.include}"
     }
   end
 end

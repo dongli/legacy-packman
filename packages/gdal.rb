@@ -10,14 +10,14 @@ class Gdal < PACKMAN::Package
 
   def install
     args = %W[
-      --prefix=#{PACKMAN.prefix(self)}
-      --with-static-proj4=#{PACKMAN.prefix(Proj)}
+      --prefix=#{prefix}
+      --with-static-proj4=#{Proj.prefix}
       --without-pam 
       --with-gif=internal
       --with-libtiff=internal 
       --with-geotiff=internal
-      --with-jpeg=#{PACKMAN.prefix(Jpeg)}
-      --with-libz=#{PACKMAN.prefix(Zlib)}
+      --with-jpeg=#{Jpeg.prefix}
+      --with-libz=#{Zlib.prefix}
       --with-sqlite3=no
       --with-expat=no
       --with-curl=no
@@ -39,7 +39,7 @@ class Gdal < PACKMAN::Package
     if PACKMAN::OS.distro == :Mac_OS_X
       args << '--with-png=internal'
     else
-      args << "--with-png=#{PACKMAN.prefix(Libpng)}"
+      args << "--with-png=#{Libpng.prefix}"
     end
     PACKMAN.run './configure', *args
     PACKMAN.run 'make all'

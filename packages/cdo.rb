@@ -17,29 +17,30 @@ class Cdo < PACKMAN::Package
 
   def install
     args = %W[
-      --prefix=#{PACKMAN.prefix self}
-      --with-hdf5=#{PACKMAN.prefix Hdf5}
-      --with-netcdf=#{PACKMAN.prefix Netcdf}
-      --with-zlib=#{PACKMAN.prefix Zlib}
-      --with-szlib=#{PACKMAN.prefix Szip}
-      --with-jasper=#{PACKMAN.prefix Jasper}
-      --with-grib_api=#{PACKMAN.prefix Grib_api}
-      --with-udunits2=#{PACKMAN.prefix Udunits}
-      --with-proj=#{PACKMAN.prefix Proj}
-      --with-libxml2=#{PACKMAN.prefix Libxml2}
+      --prefix=#{prefix}
+      --with-hdf5=#{Hdf5.prefix}
+      --with-netcdf=#{Netcdf.prefix}
+      --with-zlib=#{Zlib.prefix}
+      --with-szlib=#{Szip.prefix}
+      --with-jasper=#{Jasper.prefix}
+      --with-grib_api=#{Grib_api.prefix}
+      --with-udunits2=#{Udunits.prefix}
+      --with-proj=#{Proj.prefix}
+      --with-libxml2=#{Libxml2.prefix}
       --disable-dependency-tracking
       --disable-debug
     ]
     if PACKMAN::OS.cygwin_gang?
-      args << "LIBS='-L#{PACKMAN.prefix(Udunits)}/lib -lexpat -L#{PACKMAN.prefix Curl}/lib -lcurl -ludunits2'"
+      args << "LIBS='-L#{Udunits.lib} -lexpat -L#{Curl.lib} -lcurl -ludunits2'"
       # Replace 'sqrtl' to 'sqrt'.
       PACKMAN.replace 'src/clipping/intersection.c', 'sqrtl' => 'sqrt'
     else
-      args << "LIBS='-L#{PACKMAN.prefix(Udunits)}/lib -lexpat'"
+      args << "LIBS='-L#{Udunits.lib} -lexpat'"
     end
+    args << "CFLAGS='-fp-model source'" if PACKMAN.compiler_vendor('c') == 'intel'
     PACKMAN.run './configure', *args
     if PACKMAN::OS.cygwin_gang?
-      PACKMAN.run "make LIBS='-L#{PACKMAN.prefix Udunits}/lib -ludunits2 -lexpat -L#{PACKMAN.prefix Proj}/lib -lproj -L#{PACKMAN.prefix Grib_api}/lib -lgrib_api -L#{PACKMAN.prefix Netcdf}/lib -lnetcdf'"
+      PACKMAN.run "make LIBS='-L#{Udunits.lib} -ludunits2 -lexpat -L#{Proj.lib} -lproj -L#{Grib_api.lib} -lgrib_api -L#{Netcdf.lib} -lnetcdf'"
       PACKMAN.caveat <<-EOT.gsub(/^\s+/, '')
         The checking codes for remapping with nearest neighbor method will fail
         in Cygwin, so 'make check' is skipped.

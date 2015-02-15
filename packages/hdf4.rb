@@ -13,10 +13,10 @@ class Hdf4 < PACKMAN::Package
     # Note: We can not enable shared and fortran simultaneously.
     # => configure:5994: error: Cannot build shared fortran libraries. Please configure with --disable-fortran flag.
     args = %W[
-      --prefix=#{PACKMAN.prefix(self)}
-      --with-zlib=#{PACKMAN.prefix(Zlib)}
-      --with-jpeg=#{PACKMAN.prefix(Jpeg)}
-      --with-szlib=#{PACKMAN.prefix(Szip)}
+      --prefix=#{prefix}
+      --with-zlib=#{Zlib.prefix}
+      --with-jpeg=#{Jpeg.prefix}
+      --with-szlib=#{Szip.prefix}
       --disable-netcdf
       --enable-fortran
       --enable-static

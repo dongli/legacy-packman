@@ -4,8 +4,8 @@ class Bzip2 < PACKMAN::Package
   version '1.0.6'
 
   def install
-    PACKMAN.run "make install PREFIX=#{PACKMAN.prefix self}"
-    PACKMAN.mkdir "#{PACKMAN.prefix self}/share"
-    PACKMAN.mv "#{PACKMAN.prefix self}/man", "#{PACKMAN.prefix self}/share"
+    PACKMAN.run "make install PREFIX=#{prefix}"
+    PACKMAN.mkdir share
+    PACKMAN.mv "#{prefix}/man", share
   end
 end

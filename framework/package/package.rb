@@ -157,6 +157,30 @@ module PACKMAN
     end
     def has_binary?; defined? @binary; end
 
+    # Shortcuts.
+    def prefix; PACKMAN.prefix self; end
+    def bin; prefix+'/bin'; end
+    def sbin; prefix+'/sbin'; end
+    def etc; prefix+'/etc'; end
+    def include; prefix+'/include'; end
+    def lib; prefix+'/lib'; end
+    def share; prefix+'/share'; end
+    def man; share+'/man'; end
+    def var; prefix+'/var'; end
+    def frameworks; prefix+'/Frameworks'; end
+    def bashrc; prefix+'/bashrc'; end
+    def self.prefix; PACKMAN.prefix self; end
+    def self.bin; prefix+'/bin'; end
+    def self.sbin; prefix+'/sbin'; end
+    def self.etc; prefix+'/etc'; end
+    def self.include; prefix+'/include'; end
+    def self.lib; prefix+'/lib'; end
+    def self.share; prefix+'/share'; end
+    def self.man; share+'/man'; end
+    def self.frameworks; prefix+'/Frameworks'; end
+    def self.bashrc; prefix+'/bashrc'; end
+    def self.var; prefix+'/var'; end
+
     # Package DSL.
     class << self
       def url val; stable.url val; end
@@ -479,7 +503,9 @@ module PACKMAN
         end
         if not libs.empty?
           file << "export PACKMAN_#{class_name}_LIBRARY=\"-L#{libs.join(' -L')}\"\n"
-          file << "export #{OS.ld_library_path_name}=\"#{libs.join(':')}:${#{OS.ld_library_path_name}}\"\n"
+          if not package.has_label? 'do_not_set_ld_library_path'
+            file << "export #{OS.ld_library_path_name}=\"#{libs.join(':')}:${#{OS.ld_library_path_name}}\"\n"
+          end
           file << "export PACKMAN_#{class_name}_RPATH=\"#{libs.join(':')}\"\n"
         end
         if Dir.exist?("#{prefix}/lib/pkgconfig")
@@ -580,9 +606,9 @@ module PACKMAN
         CLI.report_error "Use #{CLI.red '-target_dir'} to specify where to install #{CLI.green package.class}!"
       end
       prefix = package_.target_dir
-    elsif package_.methods.include? :prefix and package_.prefix
+    elsif package_.methods.include? :system_prefix and package_.system_prefix
       # Package is already installed somewhere else, use it.
-      prefix = package_.prefix
+      prefix = package_.system_prefix
     else
       prefix = "#{ConfigManager.install_root}/#{package_.class.to_s.downcase}/#{package_.version}"
       if not package_.has_label? 'compiler_insensitive' and

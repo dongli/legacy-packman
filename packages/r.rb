@@ -20,14 +20,14 @@ class R < PACKMAN::Package
 
   def install
     args = %W[
-      --prefix=#{PACKMAN.prefix self}
-      --with-readline=#{PACKMAN.prefix Readline}
-      --with-libintl-prefix=#{PACKMAN.prefix Gettext}
-      --with-libtiff=#{PACKMAN.prefix Libtiff}
-      --with-jpeglib=#{PACKMAN.prefix Jpeg}
-      --with-libpng=#{PACKMAN.prefix Libpng}
-      --with-cairo=#{PACKMAN.prefix Cairo}
-      --with-blas=#{PACKMAN.prefix Openblas}
+      --prefix=#{prefix}
+      --with-readline=#{Readline.prefix}
+      --with-libintl-prefix=#{Gettext.prefix}
+      --with-libtiff=#{Libtiff.prefix}
+      --with-jpeglib=#{Jpeg.prefix}
+      --with-libpng=#{Libpng.prefix}
+      --with-cairo=#{Cairo.prefix}
+      --with-blas=#{Openblas.prefix}
       --without-tcltk
     ]
     if PACKMAN::OS.type == :Darwin
@@ -41,13 +41,18 @@ class R < PACKMAN::Package
     PACKMAN.run 'make check 2>&1 | tee make-check.log' if not skip_test?
     PACKMAN.run 'make install'
     if PACKMAN::OS.type == :Darwin
-      prefix = PACKMAN.prefix self
-      PACKMAN.ln "#{prefix}/R.framework/Resources/bin", prefix
-      PACKMAN.ln "#{prefix}/R.framework/Resources/include", prefix
-      PACKMAN.ln "#{prefix}/R.framework/Resources/lib/*", prefix+'/lib'
+      PACKMAN.mkdir bin, :silent
+      ['R', 'Rscript'].each do |cmd|
+        PACKMAN.ln "#{prefix}/R.framework/Resources/bin/#{cmd}", bin
+      end
+      PACKMAN.mkdir include, :silent
+      PACKMAN.ln "#{prefix}/R.framework/Resources/include/R.h", include
+      PACKMAN.ln "#{prefix}/R.framework/Resources/lib/libR.dylib", lib
       PACKMAN.ln "#{prefix}/R.framework", prefix+'/Frameworks'
-      PACKMAN.mkdir prefix+'/share/man', :silent
-      PACKMAN.ln "#{prefix}/R.framework/Resources/man1", prefix+'/share/man'
+      PACKMAN.mkdir man, :silent
+      ['R.1', 'Rscript.1'].each do |mpg|
+        PACKMAN.ln "#{prefix}/R.framework/Resources/man1/#{mpg}", man
+      end
     end
   end
 end

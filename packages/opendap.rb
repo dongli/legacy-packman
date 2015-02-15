@@ -9,14 +9,14 @@ class Opendap < PACKMAN::Package
 
   def install
     args = %W[
-      --prefix=#{PACKMAN.prefix(self)}
+      --prefix=#{prefix}
       --disable-debug
       --disable-dependency-tracking
-      --with-curl=#{PACKMAN.prefix(Curl)}
-      --with-xml2=#{PACKMAN.prefix(Libxml2)}
+      --with-curl=#{Curl.prefix}
+      --with-xml2=#{Libxml2.prefix}
       --with-included-regex
-      CPPFLAGS='-I#{PACKMAN.prefix(Uuid)}/include'
-      LIBS='-L#{PACKMAN.prefix(Uuid)}/lib'
+      CPPFLAGS='-I#{Uuid.prefix}/include'
+      LIBS='-L#{Uuid.prefix}/lib'
     ]
     PACKMAN.run './configure', *args
     PACKMAN.run 'make -j2'

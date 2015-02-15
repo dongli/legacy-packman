@@ -5,7 +5,7 @@ class Fftw < PACKMAN::Package
 
   def install
     args = %W[
-      --prefix=#{PACKMAN.prefix self}
+      --prefix=#{prefix}
       --enable-shared
       --disable-debug
       --enable-threads

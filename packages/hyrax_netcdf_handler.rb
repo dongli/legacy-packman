@@ -11,9 +11,9 @@ class Hyrax_netcdf_handler < PACKMAN::Package
 
   def install
     args = %W[
-      --prefix=#{PACKMAN.prefix(self)}
+      --prefix=#{prefix}
       --disable-dependency-tracking
-      --with-netcdf=#{PACKMAN.prefix(Netcdf_c)}
+      --with-netcdf=#{Netcdf_c.prefix}
     ]
     PACKMAN.run './configure', *args
     PACKMAN.run 'make'

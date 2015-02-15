@@ -27,16 +27,16 @@ class Wrf_wps < PACKMAN::Package
   end
 
   def install
-    PACKMAN.append_env "NETCDF='#{PACKMAN.prefix Netcdf}'", :ignore
+    PACKMAN.append_env "NETCDF='#{Netcdf.prefix}'", :ignore
     includes = []
     libs = []
-    includes << "#{PACKMAN.prefix Jasper}/include" # NOTE: There is no '-I' ahead!
-    libs << "#{PACKMAN.prefix Jasper}/lib" # NOTE: There is no '-L' ahead!
-    includes << "-I#{PACKMAN.prefix Zlib}/include"
-    libs << "-L#{PACKMAN.prefix Zlib}/lib"
+    includes << "#{Jasper.include}" # NOTE: There is no '-I' ahead!
+    libs << "#{Jasper.lib}" # NOTE: There is no '-L' ahead!
+    includes << "-I#{Zlib.include}"
+    libs << "-L#{Zlib.lib}"
     if not PACKMAN::OS.mac_gang?
-      includes << "-I#{PACKMAN.prefix Libpng}/include"
-      libs << "-L#{PACKMAN.prefix Libpng}/lib"
+      includes << "-I#{Libpng.include}"
+      libs << "-L#{Libpng.lib}"
     end
     PACKMAN.append_env "JASPERINC='#{includes.join(' ')}'"
     PACKMAN.append_env "JASPERLIB='#{libs.join(' ')}'"

@@ -33,6 +33,11 @@ module PACKMAN
             end
           end
         end
+        if not CommandLine.has_option? '-compiler_set_indices' and
+           not package.compiler_set_indices.include? ConfigManager.defaults['compiler_set_index']
+          package.compiler_set_indices << ConfigManager.defaults['compiler_set_index']
+        end
+        package.compiler_set_indices.sort!
         # Check if the package is still under construction.
         if package.has_label? 'under_construction'
           msg = "Sorry, #{CLI.red package.class} is still under construction"
@@ -83,11 +88,17 @@ module PACKMAN
       return false
     end
 
-    def self.append_bashrc package
+    def self.append_bashrc package, is_depend = false
+      if package.has_label? 'compiler_insensitive' and is_depend
+        # NOTE: Some 'compiler_insensitive' package may use other compiler set to build, and it is normally just binary,
+        #       so we skip its dependent packages to avoid problems.
+        RunManager.append_bashrc_path(package.bashrc) if not package.skip?
+        return
+      end
       package.dependencies.each do |depend|
         depend_package = Package.instance depend
-        append_bashrc depend_package
-        RunManager.append_bashrc_path("#{PACKMAN.prefix(depend_package)}/bashrc") if not depend_package.skip?
+        append_bashrc depend_package, true
+        RunManager.append_bashrc_path(depend_package.bashrc) if not depend_package.skip?
       end
     end
 

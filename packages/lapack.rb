@@ -7,7 +7,7 @@ class Lapack < PACKMAN::Package
 
   def install
     args = %W[
-      -DCMAKE_INSTALL_PREFIX=#{PACKMAN.prefix(self)}
+      -DCMAKE_INSTALL_PREFIX=#{prefix}
       -DCMAKE_BUILD_TYPE="Release"
     ]
     PACKMAN.run 'cmake', *args

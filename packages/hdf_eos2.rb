@@ -9,12 +9,12 @@ class Hdf_eos2 < PACKMAN::Package
 
   def install
     args = %W[
-      --prefix=#{PACKMAN.prefix(self)}
-      --with-hdf4=#{PACKMAN.prefix(Hdf4)}
-      --with-zlib=#{PACKMAN.prefix(Zlib)}
-      --with-szlib=#{PACKMAN.prefix(Szip)}
-      --with-jpeg=#{PACKMAN.prefix(Jpeg)}
-      CC='#{PACKMAN.prefix(Hdf4)}/bin/h4cc -Df2cFortran'
+      --prefix=#{prefix}
+      --with-hdf4=#{Hdf4.prefix}
+      --with-zlib=#{Zlib.prefix}
+      --with-szlib=#{Szip.prefix}
+      --with-jpeg=#{Jpeg.prefix}
+      CC='#{Hdf4.bin}/h4cc -Df2cFortran'
     ]
     PACKMAN.run './configure', *args
     PACKMAN.run 'make -j2'

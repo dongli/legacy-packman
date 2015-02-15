@@ -5,14 +5,14 @@ class Shapelib < PACKMAN::Package
 
   def install
     PACKMAN.replace 'Makefile', {
-      /^PREFIX\s*=.*$/ => "PREFIX = #{PACKMAN.prefix self}",
+      /^PREFIX\s*=.*$/ => "PREFIX = #{prefix}",
       /^#CC\s*=.*$/ => "CC = #{PACKMAN.compiler_command 'c'}"
     }
     PACKMAN.run 'make'
     PACKMAN.run 'make test' if not skip_test?
-    PACKMAN.mkdir "#{PACKMAN.prefix self}/lib", :silent
-    PACKMAN.mkdir "#{PACKMAN.prefix self}/include", :silent
-    PACKMAN.mkdir "#{PACKMAN.prefix self}/bin", :silent
+    PACKMAN.mkdir "#{lib}", :silent
+    PACKMAN.mkdir "#{include}", :silent
+    PACKMAN.mkdir "#{bin}", :silent
     PACKMAN.run 'make install'
   end
 end

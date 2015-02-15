@@ -11,7 +11,7 @@ class Perl_xml_parser < PACKMAN::Package
 
   def install
     args = %W[
-      PREFIX=#{PACKMAN.prefix self}
+      PREFIX=#{prefix}
     ]
     PACKMAN.run 'perl Makefile.PL', *args
     PACKMAN.run 'make'

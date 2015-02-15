@@ -7,10 +7,10 @@ class Isl < PACKMAN::Package
 
   def install
     args = %W[
-      --prefix=#{PACKMAN.prefix(self)}
+      --prefix=#{prefix}
       --disable-dependency-tracking
       --disable-silent-rules
-      --with-gmp-prefix=#{PACKMAN.prefix(Gmp)}
+      --with-gmp-prefix=#{Gmp.prefix}
     ]
     PACKMAN.run './configure', *args
     PACKMAN.run 'make -j2'

@@ -6,7 +6,7 @@ class Icu4c < PACKMAN::Package
   def install
     # TODO: Figure out how the shared libraries do not work with Hyrax_ncml_module.
     args = %W[
-      --prefix=#{PACKMAN.prefix(self)}
+      --prefix=#{prefix}
       --disable-samples
       --disable-tests
       --enable-static

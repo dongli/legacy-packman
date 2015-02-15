@@ -10,18 +10,17 @@ class Netcdf_cxx < PACKMAN::Package
   depends_on 'netcdf_c'
 
   def install
-    PACKMAN.append_env "PATH=#{PACKMAN.prefix Netcdf_c}/bin:$PATH"
-    PACKMAN.append_env "CPPFLAGS='-I#{PACKMAN.prefix Netcdf_c}/include'"
-    PACKMAN.append_env "LDFLAGS='-L#{PACKMAN.prefix Netcdf_c}/lib'"
+    PACKMAN.append_env "CPPFLAGS='-I#{Netcdf.include}'"
+    PACKMAN.append_env "LDFLAGS='-L#{Netcdf.lib}'"
     args = %W[
-      --prefix=#{PACKMAN.prefix self}
+      --prefix=#{prefix}
       --disable-dependency-tracking
       --disable-dap-remote-tests
       --enable-static
       --enable-shared
     ]
     if PACKMAN::OS.cygwin_gang?
-      args << "LIBS='-L#{PACKMAN.prefix Curl}/lib -lcurl -L#{PACKMAN.prefix Hdf5}/lib -lhdf5 -lhdf5_hl'"
+      args << "LIBS='-L#{Curl.lib} -lcurl -L#{Hdf5.lib} -lhdf5 -lhdf5_hl'"
     end
     PACKMAN.run './configure', *args
     PACKMAN.run 'make'

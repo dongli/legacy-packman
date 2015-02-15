@@ -13,16 +13,16 @@ class Libwmf < PACKMAN::Package
 
   def install
     args = %W[
-      --prefix=#{PACKMAN.prefix self}
+      --prefix=#{prefix}
       --disable-debug
       --disable-dependency-tracking
-      --with-expat=#{PACKMAN.prefix Expat}
-      --with-zlib=#{PACKMAN.prefix Zlib}
-      --with-sys-gd=#{PACKMAN.prefix Libgd}
-      --with-png=#{PACKMAN.prefix Libpng}
-      --with-freetype=#{PACKMAN.prefix Freetype}
-      --with-jpeg=#{PACKMAN.prefix Jpeg}
-      --with-gsfontdir=#{PACKMAN.prefix Ghostscript}/share/ghostscript/fonts
+      --with-expat=#{Expat.prefix}
+      --with-zlib=#{Zlib.prefix}
+      --with-sys-gd=#{Libgd.prefix}
+      --with-png=#{Libpng.prefix}
+      --with-freetype=#{Freetype.prefix}
+      --with-jpeg=#{Jpeg.prefix}
+      --with-gsfontdir=#{Ghostscript.share}/ghostscript/fonts
     ]
     PACKMAN.run './configure', *args
     PACKMAN.run 'make install'

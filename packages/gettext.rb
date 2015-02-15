@@ -9,7 +9,7 @@ class Gettext < PACKMAN::Package
       PACKMAN.report_error "#{PACKMAN.red 'Gettext'} cannot be built by GCC on Mac OS X!"
     end
     args = %W[
-      --prefix=#{PACKMAN.prefix self}
+      --prefix=#{prefix}
       --disable-dependency-tracking
       --disable-silent-rules
       --disable-debug

@@ -7,10 +7,10 @@ class Curl < PACKMAN::Package
 
   def install
     args = %W[
-      --prefix=#{PACKMAN.prefix(self)}
+      --prefix=#{prefix}
     ]
     if PACKMAN::OS.cygwin_gang?
-      args << "--with-ssl=#{PACKMAN.prefix(Openssl)}"
+      args << "--with-ssl=#{Openssl.prefix}"
     end
     PACKMAN.run './configure', *args
     PACKMAN.run 'make -j2'

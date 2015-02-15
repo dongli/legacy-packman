@@ -4,7 +4,7 @@ class Cfitsio < PACKMAN::Package
   version '3.370'
 
   def install
-    PACKMAN.run "./configure --prefix=#{PACKMAN.prefix(self)}"
+    PACKMAN.run "./configure --prefix=#{prefix}"
     PACKMAN.run 'make'
     PACKMAN.run 'make install'
   end

@@ -7,10 +7,10 @@ class Libxml2 < PACKMAN::Package
 
   def install
     args = %W[
-      --prefix=#{PACKMAN.prefix self}
+      --prefix=#{prefix}
       --disable-dependency-tracking
       --without-python
-      --with-zlib=#{PACKMAN.prefix Zlib}
+      --with-zlib=#{Zlib.prefix}
       --without-lzma
     ]
     PACKMAN.run './configure', *args

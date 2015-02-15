@@ -10,11 +10,10 @@ class Proftpd < PACKMAN::Package
     PACKMAN.replace 'sample-configurations/basic.conf', {
       /^Group\s*nogroup/ => 'Group nobody'
     }
-    proftpd = PACKMAN.prefix(self)
     args = %W[
-      --prefix=#{proftpd}
-      --sysconfdir=#{proftpd}/../config
-      --localstatedir=#{proftpd}/var
+      --prefix=#{prefix}
+      --sysconfdir=#{prefix}/../config
+      --localstatedir=#{prefix.var}
     ]
     PACKMAN.run './configure', *args
     if PACKMAN::OS.mac_gang?
@@ -27,23 +26,23 @@ class Proftpd < PACKMAN::Package
   end
 
   def postfix
-    PACKMAN.replace "#{PACKMAN.prefix(self)}/../config/proftpd.conf", {
-      /^(ServerType\s*.*)$/ => "\\1\nServerLog #{PACKMAN.prefix(self)}/var/proftpd.log",
+    PACKMAN.replace "#{prefix}/../config/proftpd.conf", {
+      /^(ServerType\s*.*)$/ => "\\1\nServerLog #{prefix}/var/proftpd.log",
       /^(DefaultServer.*$)/ => "\\1\nRequireValidShell no\nWtmpLog off",  
     }
     if PACKMAN::OS.cygwin_gang?
-      PACKMAN.replace "#{PACKMAN.prefix(self)}/../config/proftpd.conf", {
+      PACKMAN.replace "#{prefix}/../config/proftpd.conf", {
         /^User\s*\w+$/ => "User SYSTEM",
         /^Group\s*\w+$/ => "Group Administrators"
       }
-      File.open("#{PACKMAN.prefix(self)}/../register_proftpd_service_on_cygwin.sh", 'w') do |file|
+      File.open("#{prefix}/../register_proftpd_service_on_cygwin.sh", 'w') do |file|
         file << <<-EOT
 #!/bin/sh
 # File: proftpd-config.sh
 # Purpose: Installs proftpd daemon as a Windows service
 
 cygrunsrv --install proftpd \
-          --path #{PACKMAN.prefx(self)}/sbin/proftpd.exe \
+          --path #{sbin}/proftpd.exe \
           --args "--nodaemon" \
           --type manual \
           --disp "Cygwin proftpd" \

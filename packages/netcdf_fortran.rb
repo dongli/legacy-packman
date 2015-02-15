@@ -20,12 +20,8 @@ class Netcdf_fortran < PACKMAN::Package
       PACKMAN.report_warning "Fortran compiler is not available in this compiler set, skip #{PACKMAN.red 'Netcdf_fortran'}."
       return
     end
-    curl = PACKMAN.prefix(Curl)
-    zlib = PACKMAN.prefix(Zlib)
-    hdf5 = PACKMAN.prefix(Hdf5)
-    netcdf_c = PACKMAN.prefix(Netcdf_c)
     # TODO: Turn 'version' from String to VersionSpec.
-    cppflags = "-I#{curl}/include -I#{zlib}/include -I#{hdf5}/include -I#{netcdf_c}/include"
+    cppflags = "-I#{Curl.include} -I#{Zlib.include} -I#{Hdf5.include} -I#{Netcdf.include}"
     if version != '4.4.1'
       # Refer http://www.unidata.ucar.edu/support/help/MailArchives/netcdf/msg11622.html.
       # Version '4.4.1' does not need the following kludge.
@@ -40,7 +36,7 @@ class Netcdf_fortran < PACKMAN::Package
       end
     end
     PACKMAN.append_env "CPPFLAGS='#{cppflags}'"
-    PACKMAN.append_env "LDFLAGS='-L#{curl}/lib -L#{zlib}/lib -L#{hdf5}/lib -L#{netcdf_c}/lib -lcurl -lz -lhdf5 -lhdf5_hl -lnetcdf'"
+    PACKMAN.append_env "LDFLAGS='-L#{Curl.lib} -L#{Zlib.lib} -L#{Hdf5.lib} -L#{Netcdf.lib} -lcurl -lz -lhdf5 -lhdf5_hl -lnetcdf'"
     if PACKMAN::OS.mac_gang? and PACKMAN.compiler_vendor('fortran') == 'intel'
       PACKMAN.append_env "FCFLAGS='-xHost -ip -no-prec-div -mdynamic-no-pic'"
       PACKMAN.append_env "FFLAGS='-xHost -ip -no-prec-div -mdynamic-no-pic'"
@@ -48,7 +44,7 @@ class Netcdf_fortran < PACKMAN::Package
       PACKMAN.append_env "lt_cv_ld_force_load=no"
     end
     args = %W[
-      --prefix=#{PACKMAN.prefix(self)}
+      --prefix=#{prefix}
       --disable-dependency-tracking
       --disable-dap-remote-tests
       --enable-static
@@ -64,7 +60,7 @@ class Netcdf_fortran < PACKMAN::Package
   end
 
   def check_consistency
-    res = `#{PACKMAN.prefix(Netcdf_c)}/bin/nc-config --has-pnetcdf`
+    res = `#{Netcdf.bin}/nc-config --has-pnetcdf`
     if res == 'no' and use_mpi?
       return false
     end

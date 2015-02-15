@@ -11,6 +11,6 @@ class Openblas < PACKMAN::Package
     end
     args << 'USE_OPENMP=1' if PACKMAN.all_compiler_support_openmp?
     PACKMAN.run 'make', *args
-    PACKMAN.run "make install PREFIX=#{PACKMAN.prefix(self)}"
+    PACKMAN.run "make install PREFIX=#{prefix}"
   end
 end

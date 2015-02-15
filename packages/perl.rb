@@ -9,7 +9,7 @@ class Perl < PACKMAN::Package
   def install
     args = %W[
       -des
-      -Dprefix=#{PACKMAN.prefix self}
+      -Dprefix=#{prefix}
       -Dcc=#{PACKMAN.compiler_command 'c'}
       -Dusethreads
       -Duselargefiles

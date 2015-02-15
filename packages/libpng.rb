@@ -6,14 +6,14 @@ class Libpng < PACKMAN::Package
   skip_on :Mac_OS_X
 
   if PACKMAN::OS.distro == :Mac_OS_X
-    def prefix
+    def system_prefix
       '/usr/X11'
     end
   end
 
   def install
     args = %W[
-      --prefix=#{PACKMAN.prefix(self)}
+      --prefix=#{prefix}
       --disable-dependency-tracking
       --disable-silent-rules
     ]

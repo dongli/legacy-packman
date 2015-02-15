@@ -9,7 +9,7 @@ class Ncurses < PACKMAN::Package
 
   def install
     args = %W[
-      --prefix=#{PACKMAN.prefix(self)}
+      --prefix=#{prefix}
       --disable-debug
     ]
     args << '--without-ada' if PACKMAN.compiler_vendor('c') == 'intel'

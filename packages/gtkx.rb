@@ -21,7 +21,7 @@ class Gtkx < PACKMAN::Package
 
   def install
     args = %W[
-      --prefix=#{PACKMAN.prefix self}
+      --prefix=#{prefix}
       --disable-dependency-tracking
       --disable-silent-rules
       --disable-glibtest
@@ -32,6 +32,7 @@ class Gtkx < PACKMAN::Package
       [Glib, Libiconv, Gettext, Jpeg, Libpng, Libtiff, Fontconfig, Freetype,
        Gdk_pixbuf, Pango, Jasper, Atk, Cairo, X11, Gobject_introspection]
     PACKMAN.run './configure', *args
+    PACKMAN.replace 'gdk/Makefile', /^(GDK_DEP_CFLAGS.*)$/ => "\\1 -I#{X11.include}"
     PACKMAN.run 'make install'
   end
 end

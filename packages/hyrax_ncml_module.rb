@@ -13,9 +13,9 @@ class Hyrax_ncml_module < PACKMAN::Package
 
   def install
     args = %W[
-      --prefix=#{PACKMAN.prefix(self)}
+      --prefix=#{prefix}
       --disable-dependency-tracking
-      --with-icu-prefix=#{PACKMAN.prefix(Icu4c)}
+      --with-icu-prefix=#{Icu4c.prefix}
     ]
     PACKMAN.run './configure', *args
     PACKMAN.run 'make'

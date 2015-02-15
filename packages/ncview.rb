@@ -18,21 +18,21 @@ class Ncview < PACKMAN::Package
       'if test x$CC_TEST_SAME != x$NETCDF_CC_TEST_SAME; then' => 'if false; then'
     }
     args = %W[
-      --prefix=#{PACKMAN.prefix(self)}
-      --with-nc-config=#{PACKMAN.prefix(Netcdf_c)}/bin/nc-config
-      --with-udunits2_incdir=#{PACKMAN.prefix(Udunits)}/include
-      --with-udunits2_libdir=#{PACKMAN.prefix(Udunits)}/lib
+      --prefix=#{prefix}
+      --with-nc-config=#{Netcdf_c.bin}/nc-config
+      --with-udunits2_incdir=#{Udunits.include}
+      --with-udunits2_libdir=#{Udunits.lib}
       --disable-dependency-tracking
     ]
     if PACKMAN::OS.mac_gang?
       args << '--x-includes=/usr/X11/include'
       args << '--x-libraries=/usr/X11/lib'
     else
-      args << "--with-png_incdir=#{PACKMAN.prefix(Libpng)}/include"
-      args << "--with-png_libdir=#{PACKMAN.prefix(Libpng)}/lib"
+      args << "--with-png_incdir=#{Libpng.include}"
+      args << "--with-png_libdir=#{Libpng.lib}"
     end
     if PACKMAN::OS.cygwin_gang?
-      args << "LIBS='-L#{PACKMAN.prefix Curl}/lib -lcurl -L#{PACKMAN.prefix Hdf5}/lib -lhdf5 -lhdf5_hl'"
+      args << "LIBS='-L#{Curl.lib} -lcurl -L#{Hdf5.lib} -lhdf5 -lhdf5_hl'"
       PACKMAN.replace 'configure', {
         'libpng.so' => 'libpng.a',
         ' sed s/\.so//' => ' sed s/\.a//'

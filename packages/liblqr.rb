@@ -7,7 +7,7 @@ class Liblqr < PACKMAN::Package
 
   def install
     args = %W[
-      --prefix=#{PACKMAN.prefix self}
+      --prefix=#{prefix}
       --disable-dependency-tracking
     ]
     PACKMAN::AutotoolHelper.set_cppflags_and_ldflags args, [Glib]

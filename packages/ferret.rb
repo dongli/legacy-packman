@@ -24,21 +24,9 @@ class Ferret < PACKMAN::Package
   end
 
   def install
+    PACKMAN.check_compiler 'fortran'
     # Ferret's tar file contains two extra plain files which messes up PACKMAN.
     PACKMAN.cd 'FERRET', :norecord
-    ferret = PACKMAN.prefix(self)
-    ncurses = PACKMAN.prefix(Ncurses)
-    readline = PACKMAN.prefix(Readline)
-    lesstif = PACKMAN.prefix(Lesstif)
-    jpeg = PACKMAN.prefix(Jpeg)
-    hdf4 = PACKMAN.prefix(Hdf4)
-    hdf5 = PACKMAN.prefix(Hdf5)
-    netcdf_c = PACKMAN.prefix(Netcdf_c)
-    netcdf_fortran = PACKMAN.prefix(Netcdf_fortran)
-    zlib = PACKMAN.prefix(Zlib)
-    szip = PACKMAN.prefix(Szip)
-    curl = PACKMAN.prefix(Curl)
-    opendap = PACKMAN.prefix(Opendap)
     # Check build type since Ferret does not check it for us.
     build_type = ''
     if PACKMAN::OS.x86_64?
@@ -59,14 +47,14 @@ class Ferret < PACKMAN::Package
     # Change configuration.
     PACKMAN.replace 'site_specific.mk', {
       /^BUILDTYPE\s*=.*$/ => "BUILDTYPE = #{build_type}",
-      /^INSTALL_FER_DIR\s*=.*$/ => "INSTALL_FER_DIR = #{PACKMAN.prefix Ferret}",
-      /^HDF5_DIR\s*=.*$/ => "HDF5_DIR = #{PACKMAN.prefix Hdf5}",
-      /^NETCDF4_DIR\s*=.*$/ => "NETCDF4_DIR = #{PACKMAN.prefix Netcdf}",
-      /^LIBZ_DIR\s*=.*$/ => "LIBZ_DIR = #{PACKMAN.prefix Zlib}"
+      /^INSTALL_FER_DIR\s*=.*$/ => "INSTALL_FER_DIR = #{prefix}",
+      /^HDF5_DIR\s*=.*$/ => "HDF5_DIR = #{Hdf5.prefix}",
+      /^NETCDF4_DIR\s*=.*$/ => "NETCDF4_DIR = #{Netcdf.prefix}",
+      /^LIBZ_DIR\s*=.*$/ => "LIBZ_DIR = #{Zlib.prefix}"
     }
     PACKMAN.replace "platform_specific.mk.#{build_type}", {
-      /^(\s*INCLUDES\s*=.*)$/ => "\\1\n-I#{PACKMAN.prefix Netcdf}/include -I#{PACKMAN.prefix Curl}/include \\",
-      /^(\s*LDFLAGS\s*=.*)$/ => "\\1 -L#{PACKMAN.prefix Netcdf}/lib -L#{PACKMAN.prefix Curl}/lib ",
+      /^(\s*INCLUDES\s*=.*)$/ => "\\1\n-I#{Netcdf.include} -I#{Curl.include} \\",
+      /^(\s*LDFLAGS\s*=.*)$/ => "\\1 -L#{Netcdf.lib} -L#{Curl.lib} ",
     }
     if PACKMAN::OS.mac_gang?
       PACKMAN.replace "platform_specific.mk.#{build_type}", {
@@ -75,12 +63,12 @@ class Ferret < PACKMAN::Package
         /^CPP\s*=.*$/ => 'CPP = /usr/bin/cpp',
         /^LD\s*=.*$/ => 'LD = gcc',
         /^READLINELIB\s*=.*$/ => 'READLINELIB = -lreadline -ltermcap',
-        /^HDFLIB\s*=.*$/ => "HDFLIB = -L#{PACKMAN.prefix Hdf4}/lib -ldf -L#{PACKMAN.prefix Jpeg}/lib -ljpeg -L#{PACKMAN.prefix Zlib}/lib -lz",
-        /^CDFLIB\s*=.*$/ => "CDFLIB = -L#{PACKMAN.prefix Netcdf}/lib -lnetcdf -lnetcdff "+
-        "-L#{PACKMAN.prefix Hdf5}/lib -lhdf5_hl -lhdf5 "+
-        "-L#{PACKMAN.prefix Zlib}/lib -lz -lm -L#{PACKMAN.prefix Szip}/lib -lsz -L#{PACKMAN.prefix Opendap}/lib -ldap -ldapclient "+
-        "-L#{PACKMAN.prefix Curl}/lib -lcurl -L#{PACKMAN.prefix Libxml2} -lxml2 -lpthread -licucore -lstdc++",
-        /\/usr\/local\/lib\/libXm.a/ => "#{PACKMAN.prefix Lesstif}/lib/libXm.a",
+        /^HDFLIB\s*=.*$/ => "HDFLIB = -L#{Hdf4.lib} -ldf -L#{Jpeg.lib} -ljpeg -L#{Zlib.lib} -lz",
+        /^CDFLIB\s*=.*$/ => "CDFLIB = -L#{Netcdf.lib} -lnetcdf -lnetcdff "+
+        "-L#{Hdf5.lib} -lhdf5_hl -lhdf5 "+
+        "-L#{Zlib.lib} -lz -lm -L#{Szip.lib} -lsz -L#{Opendap.lib} -ldap -ldapclient "+
+        "-L#{Curl.lib} -lcurl -L#{Libxml2.prefix} -lxml2 -lpthread -licucore -lstdc++",
+        /\/usr\/local\/lib\/libXm.a/ => "#{Lesstif.lib}/libXm.a",
         # Why Ferret developers put fixed intel library into the configuration file??
         /\/opt\/intel\/Compiler\/11\.1\/058\/lib\/lib\{ifcore,ifport,irc,imf,svml\}\.a/ => '',
         # Why Ferret developers write a wrong library path??
@@ -113,10 +101,10 @@ class Ferret < PACKMAN::Package
       end
     else
       PACKMAN.replace 'site_specific.mk', {
-        /^READLINE_DIR\s*=.*$/ => "READLINE_DIR = #{PACKMAN.prefix Readline}"
+        /^READLINE_DIR\s*=.*$/ => "READLINE_DIR = #{Readline.prefix}"
       }
       PACKMAN.replace "platform_specific.mk.#{build_type}", {
-        /^(\s*TERMCAPLIB\s*=).*$/ => "\\1 -L#{PACKMAN.prefix Ncurses}/lib -lncurses"
+        /^(\s*TERMCAPLIB\s*=).*$/ => "\\1 -L#{Ncurses.lib} -lncurses"
       }
     end
     # Check if Xmu library is installed by system or not.
@@ -175,8 +163,8 @@ class Ferret < PACKMAN::Package
       # Since PACKMAN install different language APIs of Netcdf separately, we
       # need to specify the Fortran API explicitly.
       PACKMAN.replace "platform_specific.mk.#{build_type}", {
-        /\$\(NETCDF4_DIR\)\/lib\/libnetcdff\.a/ => "#{PACKMAN.prefix Netcdf}/lib/libnetcdff.a",
-        /^(\s*\$\(LIBZ_DIR\)\/lib\/libz.a)$/ => "\\1 \\\n#{PACKMAN.prefix Szip}/lib/libsz.a"
+        /\$\(NETCDF4_DIR\)\/lib\/libnetcdff\.a/ => "#{Netcdf.lib}/libnetcdff.a",
+        /^(\s*\$\(LIBZ_DIR\)\/lib\/libz.a)$/ => "\\1 \\\n#{Szip.lib}/libsz.a"
       }
     end
     # BUILDTYPE is not propagated into external_functions directory
@@ -189,9 +177,9 @@ class Ferret < PACKMAN::Package
     # Bad Ferret developers! The BUILDTYPE is not cascaded into subdirectories.
     PACKMAN.run "make BUILDTYPE=#{build_type}"
     PACKMAN.run 'make install'
-    PACKMAN.cd ferret, :norecord
+    PACKMAN.cd prefix, :norecord
     PACKMAN.decompress 'fer_environment.tar.gz'
-    PACKMAN.cd File.dirname(ferret), :norecord
+    PACKMAN.cd File.dirname(prefix), :norecord
     PACKMAN.mkdir 'datasets', :force
     PACKMAN.work_in 'datasets' do
       datasets = "#{PACKMAN::ConfigManager.package_root}/fer_dsets.tar.gz"
@@ -205,11 +193,11 @@ class Ferret < PACKMAN::Package
         reader.expect(/\(1, 2, 3, q, x\) --> /)
         writer.print("2\n")
         reader.expect(/FER_DIR --> /)
-        writer.print("#{PACKMAN.prefix Ferret}\n")
+        writer.print("#{prefix}\n")
         reader.expect(/FER_DSETS --> /)
-        writer.print("#{File.dirname(PACKMAN.prefix Ferret)}/datasets\n")
+        writer.print("#{File.dirname(prefix)}/datasets\n")
         reader.expect(/desired ferret_paths location --> /)
-        writer.print("#{PACKMAN.prefix Ferret}\n")
+        writer.print("#{prefix}\n")
         reader.expect(/ferret_paths link to create\? \(c\/s\/n\) \[n\] --> /)
         writer.print("n\n")
         reader.expect(/\(1, 2, 3, q, x\) --> /)
@@ -221,7 +209,7 @@ class Ferret < PACKMAN::Package
   def postfix
     # Ferret has put its shell configuration into 'ferret_paths.sh', so we
     # respect it.
-    bashrc = "#{PACKMAN.prefix self}/bashrc"
+    bashrc = "#{prefix}/bashrc"
     PACKMAN.rm bashrc
     File.open(bashrc, 'w') do |file|
       file << "# #{sha1}\n"

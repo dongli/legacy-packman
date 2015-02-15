@@ -13,9 +13,9 @@ class Hyrax_ugrid < PACKMAN::Package
 
   def install
     args = %W[
-      --prefix=#{PACKMAN.prefix(self)}
+      --prefix=#{prefix}
       --disable-dependency-tracking
-      --with-gridfields=#{PACKMAN.prefix(Gridfields)}
+      --with-gridfields=#{Gridfields.prefix}
     ]
     PACKMAN.run './configure', *args
     PACKMAN.run 'make'

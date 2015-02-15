@@ -23,12 +23,12 @@ class Hyrax < PACKMAN::Package
   def start
     # Start Hyrax server.
     # - Start Tomcat server with OLFS app.
-    PACKMAN.run "#{PACKMAN.prefix(Tomcat)}/bin/startup.sh"
+    PACKMAN.run "#{Tomcat.bin}/startup.sh"
     # - Start BES server.
     if ENV['USER'] != 'root'
-      PACKMAN.run "sudo #{PACKMAN.prefix(Hyrax)}/bin/besctl start"
+      PACKMAN.run "sudo #{Hyrax.bin}/besctl start"
     else
-      PACKMAN.run "#{PACKMAN.prefix(Hyrax)}/bin/besctl start"
+      PACKMAN.run "#{Hyrax.bin}/besctl start"
     end
   end
 
@@ -36,24 +36,24 @@ class Hyrax < PACKMAN::Package
     # Stop Hyrax server.
     # - Stop BES server.
     if ENV['USER'] != 'root'
-      PACKMAN.run "sudo #{PACKMAN.prefix(Hyrax)}/bin/besctl stop"
+      PACKMAN.run "sudo #{Hyrax.bin}/besctl stop"
     else
-      PACKMAN.run "#{PACKMAN.prefix(Hyrax)}/bin/besctl stop"
+      PACKMAN.run "#{Hyrax.bin}/besctl stop"
     end
     # - Stop Tomcat server with OLFS app.
-    PACKMAN.run "#{PACKMAN.prefix(Tomcat)}/bin/shutdown.sh"
+    PACKMAN.run "#{Tomcat.bin}/shutdown.sh"
   end
 
   def status
     # Check Hyrax server status.
     # - Check Tomcat server.
-    port = File.open("#{PACKMAN.prefix(Tomcat)}/conf/server.xml", 'r').read.match(/<Connector port="(\d+)"/)[1].to_i
+    port = File.open("#{Tomcat.prefix}/conf/server.xml", 'r').read.match(/<Connector port="(\d+)"/)[1].to_i
     if not PACKMAN::NetworkManager.is_port_open? 'localhost', port
       PACKMAN.report_warning "#{PACKMAN.red 'Tomcat'} is not listening on port #{PACKMAN.red port}."
       return :off
     end
     # - Check BES server.
-    res = `#{PACKMAN.prefix(Hyrax)}/bin/besctl status`
+    res = `#{Hyrax.bin}/besctl status`
     if res =~ /Could not find the BES PID file/
       PACKMAN.report_warning "#{PACKMAN.red 'Hyrax BES'} is not working."
       return :off

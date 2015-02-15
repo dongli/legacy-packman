@@ -11,9 +11,9 @@ class Hyrax_hdf5_handler < PACKMAN::Package
 
   def install
     args = %W[
-      --prefix=#{PACKMAN.prefix(self)}
+      --prefix=#{prefix}
       --disable-dependency-tracking
-      --with-hdf5=#{PACKMAN.prefix(Hdf5)}
+      --with-hdf5=#{Hdf5.prefix}
     ]
     PACKMAN.run './configure', *args
     PACKMAN.run 'make'

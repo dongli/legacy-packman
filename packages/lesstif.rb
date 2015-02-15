@@ -8,11 +8,11 @@ class Lesstif < PACKMAN::Package
 
   def install
     PACKMAN.replace 'configure', {
-      '`aclocal --print-ac-dir`' => "#{PACKMAN.prefix(self)}/share/aclocal"
+      '`aclocal --print-ac-dir`' => "#{share}/aclocal"
     }
     PACKMAN.append_env 'LANG=C'
     args = %W[
-      --prefix=#{PACKMAN.prefix(self)}
+      --prefix=#{prefix}
       --disable-debug
       --enable-production
       --disable-dependency-tracking

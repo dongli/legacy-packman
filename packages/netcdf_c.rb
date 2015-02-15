@@ -27,23 +27,18 @@ class Netcdf_c < PACKMAN::Package
   end
 
   def install
-    curl = PACKMAN.prefix(Curl)
-    zlib = PACKMAN.prefix(Zlib)
-    szip = PACKMAN.prefix(Szip)
-    hdf5 = PACKMAN.prefix(Hdf5)
     if use_mpi?
-      pnetcdf = PACKMAN.prefix(Parallel_netcdf)
-      PACKMAN.append_env "CFLAGS='-I#{curl}/include -I#{zlib}/include -I#{szip}/include -I#{hdf5}/include -I#{pnetcdf}/include'"
-      PACKMAN.append_env "LDFLAGS='-L#{curl}/lib -L#{zlib}/lib -L#{szip}/lib -L#{hdf5}/lib -L#{pnetcdf}/lib'"
+      PACKMAN.append_env "CFLAGS='-I#{Curl.include} -I#{Zlib.include} -I#{Szip.include} -I#{Hdf5.include} -I#{Parallel_netcdf.include}'"
+      PACKMAN.append_env "LDFLAGS='-L#{Curl.lib} -L#{Zlib.lib} -L#{Szip.lib} -L#{Hdf5.lib} -L#{Parallel_netcdf.lib}'"
     else
-      PACKMAN.append_env "CFLAGS='-I#{curl}/include -I#{zlib}/include -I#{szip}/include -I#{hdf5}/include'"
-      PACKMAN.append_env "LDFLAGS='-L#{curl}/lib -L#{zlib}/lib -L#{szip}/lib -L#{hdf5}/lib'"
+      PACKMAN.append_env "CFLAGS='-I#{Curl.include} -I#{Zlib.include} -I#{Szip.include} -I#{Hdf5.include}'"
+      PACKMAN.append_env "LDFLAGS='-L#{Curl.lib} -L#{Zlib.lib} -L#{Szip.lib} -L#{Hdf5.lib}'"
     end
     # NOTE: OpenDAP support should be supported in default, but I still add
     #       '--enable-dap' explicitly for reminding.
     # Build netcdf in parallel: http://www.unidata.ucar.edu/software/netcdf/docs/getting_and_building_netcdf.html#build_parallel
     args = %W[
-      --prefix=#{PACKMAN.prefix(self)}
+      --prefix=#{prefix}
       --disable-dependency-tracking
       --disable-dap-remote-tests
       --enable-static
@@ -65,7 +60,7 @@ class Netcdf_c < PACKMAN::Package
   end
 
   def check_consistency
-    res = `#{PACKMAN.prefix(self)}/bin/nc-config --has-pnetcdf`.strip
+    res = `#{prefix}/bin/nc-config --has-pnetcdf`.strip
     if res == 'no' and use_mpi?
       return false
     end

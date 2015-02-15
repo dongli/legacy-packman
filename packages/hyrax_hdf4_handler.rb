@@ -14,11 +14,11 @@ class Hyrax_hdf4_handler < PACKMAN::Package
     # NOTE: The Hdfeos2 support is not compiled successfuly due to:
     # => HDFEOS2ArrayGridGeoField.cc:20:10: fatal error: 'proj.h' file not found
     # => #include <proj.h>
-    # --with-hdfeos2=#{PACKMAN.prefix(Hdf_eos2)}
+    # --with-hdfeos2=#{Hdf_eos2.prefix}
     args = %W[
-      --prefix=#{PACKMAN.prefix(self)}
+      --prefix=#{prefix}
       --disable-dependency-tracking
-      --with-hdf4=#{PACKMAN.prefix(Hdf4)}
+      --with-hdf4=#{Hdf4.prefix}
     ]
     PACKMAN.run './configure', *args
     PACKMAN.run 'make'

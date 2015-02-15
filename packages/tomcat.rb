@@ -21,9 +21,8 @@ class Tomcat < PACKMAN::Package
 </tomcat-users>
       EOT
     }
-    tomcat = PACKMAN.prefix(self)
-    PACKMAN.mkdir tomcat, :force
-    PACKMAN.cp '.', tomcat
+    PACKMAN.mkdir prefix, :force
+    PACKMAN.cp '.', prefix
     # Check if 8080 port is occupied, if so we should choose another one.
     PACKMAN.report_notice "Search an available port for #{PACKMAN.green Tomcat}."
     is_found_aval_port = false
@@ -38,7 +37,7 @@ class Tomcat < PACKMAN::Package
       PACKMAN.report_error "Can not find an available port!"
     else
       PACKMAN.report_notice "Use port #{port}."
-      PACKMAN.replace "#{tomcat}/conf/server.xml", {
+      PACKMAN.replace "#{prefix}/conf/server.xml", {
         '<Connector port="8080"' => "<Connector port=\"#{port}\""
       }
     end

@@ -9,7 +9,7 @@ class Proj < PACKMAN::Package
     # Fix the wrong file name, shame on Proj developers.
     PACKMAN.replace 'src/jniproj.c', 'org_proj4_PJ.h' => 'org_proj4_Projections.h'
     args = %W[
-      --prefix=#{PACKMAN.prefix(self)}
+      --prefix=#{prefix}
       --enable-static=yes
       --enable-shared=yes
     ]

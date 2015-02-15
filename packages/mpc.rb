@@ -5,10 +5,10 @@ class Mpc < PACKMAN::Package
 
   def install
     args = %W[
-      --prefix=#{PACKMAN.prefix(self)}
+      --prefix=#{prefix}
       --disable-dependency-tracking
-      --with-gmp=#{PACKMAN.prefix(Gmp)}
-      --with-mpfr=#{PACKMAN.prefix(Mpfr)}
+      --with-gmp=#{Gmp.prefix}
+      --with-mpfr=#{Mpfr.prefix}
     ]
     PACKMAN.run './configure', *args
     PACKMAN.run 'make'

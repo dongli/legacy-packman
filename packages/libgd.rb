@@ -12,13 +12,13 @@ class Libgd < PACKMAN::Package
 
   def install
     args = %W[
-      --prefix=#{PACKMAN.prefix self}
+      --prefix=#{prefix}
       --disable-dependency-tracking
-      --with-jpeg=#{PACKMAN.prefix Jpeg}
-      --with-png=#{PACKMAN.prefix Libpng}
-      --with-tiff=#{PACKMAN.prefix Libtiff}
-      --with-fontconfig=#{PACKMAN.prefix Fontconfig}
-      --with-freetype=#{PACKMAN.prefix Freetype}
+      --with-jpeg=#{Jpeg.prefix}
+      --with-png=#{Libpng.prefix}
+      --with-tiff=#{Libtiff.prefix}
+      --with-fontconfig=#{Fontconfig.prefix}
+      --with-freetype=#{Freetype.prefix}
     ]
     PACKMAN.run './configure', *args
     PACKMAN.run 'make install'

@@ -4,9 +4,8 @@ class Uuid < PACKMAN::Package
   version '1.6.2'
 
   def install
-    uuid = PACKMAN.prefix(self)
     args = %W[
-      --prefix=#{uuid}
+      --prefix=#{prefix}
       --without-perl
       --without-php
       --without-pgsql

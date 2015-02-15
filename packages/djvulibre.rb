@@ -12,7 +12,7 @@ class Djvulibre < PACKMAN::Package
 
   def install
     args = %W[
-      --prefix=#{PACKMAN.prefix self}
+      --prefix=#{prefix}
       --disable-desktopfiles
     ]
     PACKMAN.run './configure', *args

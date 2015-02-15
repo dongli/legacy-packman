@@ -27,30 +27,30 @@ class Imagemagick < PACKMAN::Package
   
   def install
     args = %W[
-      --prefix=#{PACKMAN.prefix self}
+      --prefix=#{prefix}
       --disable-dependency-tracking
       --enable-shared
       --disable-static
       --with-modules
       --disable-openmp
-      --with-zlib=#{PACKMAN.prefix Zlib}
-      --with-fontconfig=#{PACKMAN.prefix Fontconfig}
-      --with-freetype=#{PACKMAN.prefix Freetype}
-      --with-jpeg=#{PACKMAN.prefix Jpeg}
-      --with-tiff=#{PACKMAN.prefix Libtiff}
-      --with-png=#{PACKMAN.prefix Libpng}
-      --with-lcms2=#{PACKMAN.prefix Little_cms}
-      --with-gslib=#{PACKMAN.prefix Ghostscript}
-      --with-gs-font-dir=#{PACKMAN.prefix Ghostscript}/share/ghostscript/fonts
-      --with-wmf=#{PACKMAN.prefix Libwmf}
-      --with-rsvg=#{PACKMAN.prefix Librsvg}
-      --with-lqr=#{PACKMAN.prefix Liblqr}
-      --with-openexr=#{PACKMAN.prefix Openexr}
-      --with-webp=#{PACKMAN.prefix Webp}
-      --with-fftw=#{PACKMAN.prefix Fftw}
-      --with-pango=#{PACKMAN.prefix Pango}
-      --with-djvu=#{PACKMAN.prefix Djvulibre}
-      --with-openjp2=#{PACKMAN.prefix Openjpeg}
+      --with-zlib=#{Zlib.prefix}
+      --with-fontconfig=#{Fontconfig.prefix}
+      --with-freetype=#{Freetype.prefix}
+      --with-jpeg=#{Jpeg.prefix}
+      --with-tiff=#{Libtiff.prefix}
+      --with-png=#{Libpng.prefix}
+      --with-lcms2=#{Little_cms.prefix}
+      --with-gslib=#{Ghostscript.prefix}
+      --with-gs-font-dir=#{Ghostscript.share}/ghostscript/fonts
+      --with-wmf=#{Libwmf.prefix}
+      --with-rsvg=#{Librsvg.prefix}
+      --with-lqr=#{Liblqr.prefix}
+      --with-openexr=#{Openexr.prefix}
+      --with-webp=#{Webp.prefix}
+      --with-fftw=#{Fftw.prefix}
+      --with-pango=#{Pango.prefix}
+      --with-djvu=#{Djvulibre.prefix}
+      --with-openjp2=#{Openjpeg.prefix}
     ]
     PACKMAN::AutotoolHelper.set_cppflags_and_ldflags args, [Libtool]
     PACKMAN.run './configure', *args

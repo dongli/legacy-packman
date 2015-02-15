@@ -10,7 +10,7 @@ class Libiconv < PACKMAN::Package
       /(_GL_WARN_ON_USE \(gets, "gets is a security hole - use fgets instead"\);)/ => "#if defined(__GLIBC__) && !defined(__UCLIBC__) && !__GLIBC_PREREQ(2, 16)\n\\1\n#endif\n"
     }
     args = %W[
-      --prefix=#{PACKMAN.prefix self}
+      --prefix=#{prefix}
       --disable-debug
       --disable-dependency-tracking
       --enable-extra-encodings

@@ -5,7 +5,7 @@ class Intltool < PACKMAN::Package
 
   def install
     args = %W[
-      --prefix=#{PACKMAN.prefix self}
+      --prefix=#{prefix}
     ]
     PACKMAN.run './configure', *args
     PACKMAN.run 'make install'

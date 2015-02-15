@@ -5,7 +5,7 @@ class Giflib < PACKMAN::Package
 
   def install
     args = %W[
-      --prefix=#{PACKMAN.prefix self}
+      --prefix=#{prefix}
       --disable-debug
       --disable-dependency-tracking
     ]

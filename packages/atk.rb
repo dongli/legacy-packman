@@ -8,7 +8,7 @@ class Atk < PACKMAN::Package
 
   def install
     args = %W[
-      --prefix=#{PACKMAN.prefix self}
+      --prefix=#{prefix}
       --disable-dependency-tracking
       --enable-introspection=yes
     ]
@@ -19,6 +19,6 @@ class Atk < PACKMAN::Package
 
   def postfix
     # Copy DIR file into Gobject_introspection.
-    PACKMAN.cp "#{PACKMAN.prefix self}/share/gir-1.0/*.gir", "#{PACKMAN.prefix Gobject_introspection}/share/gir-1.0"
+    PACKMAN.cp "#{share}/gir-1.0/*.gir", "#{Gobject_introspection.share}/gir-1.0"
   end
 end

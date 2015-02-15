@@ -10,9 +10,9 @@ class Mpfr < PACKMAN::Package
 
   def install
     args = %W[
-      --prefix=#{PACKMAN.prefix(self)}
+      --prefix=#{prefix}
       --disable-dependency-tracking
-      --with-gmp=#{PACKMAN.prefix(Gmp)}
+      --with-gmp=#{Gmp.prefix}
     ]
     PACKMAN.run './configure', *args
     PACKMAN.run 'make'

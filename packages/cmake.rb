@@ -7,7 +7,7 @@ class Cmake < PACKMAN::Package
 
   def install
     args = %W[
-      --prefix=#{PACKMAN.prefix(self)}
+      --prefix=#{prefix}
     ]
     PACKMAN.run "./bootstrap", *args
     PACKMAN.run "make"

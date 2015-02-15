@@ -16,19 +16,12 @@ class Gobject_introspection < PACKMAN::Package
 
   def install
     PACKMAN.append_env 'GI_SCANNER_DISABLE_CACHE=true'
-    cppflags = []
-    ldflags = []
-    [Glib, Libffi, Cairo].each do |lib|
-      cppflags << "-I#{PACKMAN.prefix lib}/include"
-      ldflags << "-L#{PACKMAN.prefix lib}/lib"
-    end
     args = %W[
-      --prefix=#{PACKMAN.prefix self}
+      --prefix=#{prefix}
       --disable-dependency-tracking
       --with-cairo
     ]
-    args << "CPPFLAGS='#{cppflags.join(' ')}'"
-    args << "LDFLAGS='#{ldflags.join(' ')}'"
+    PACKMAN::AutotoolHelper.set_cppflags_and_ldflags args, [Glib, Libffi, Cairo]
     PACKMAN.run './configure', *args
     PACKMAN.run 'make'
     # PACKMAN.run 'make check' if not skip_test?

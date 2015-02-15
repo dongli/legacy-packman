@@ -10,7 +10,7 @@ class Autoconf < PACKMAN::Package
   def install
     ENV['PERL'] = '/usr/bin/perl'
 
-    PACKMAN.run "./configure --prefix=#{PACKMAN.prefix(self)}"
+    PACKMAN.run "./configure --prefix=#{prefix}"
     PACKMAN.run 'make install'
   end
 

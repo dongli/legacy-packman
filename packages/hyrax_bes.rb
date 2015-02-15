@@ -24,19 +24,19 @@ class Hyrax_bes < PACKMAN::Package
     # Why set DAP_CFLAGS? Because 'pkg-config --cflags libdap' does not give the
     # include directory of Libxml2!
     args = %W[
-      --prefix=#{PACKMAN.prefix(self)}
-      DAP_CFLAGS='#{`#{PACKMAN.prefix(Opendap)}/bin/dap-config --cflags`.strip}'
+      --prefix=#{prefix}
+      DAP_CFLAGS='#{`#{Opendap.bin}/dap-config --cflags`.strip}'
     ]
     if not PACKMAN::OS.mac_gang?
-      args << "CPPFLAGS='-I#{PACKMAN.prefix(Uuid)}/include -I#{PACKMAN.prefix(Readline)}/include'"
-      args << "LDFLAGS='-L#{PACKMAN.prefix(Ncurses)}/lib -L#{PACKMAN.prefix(Readline)}/lib'"
+      args << "CPPFLAGS='-I#{Uuid.prefix}/include -I#{Readline.prefix}/include'"
+      args << "LDFLAGS='-L#{Ncurses.prefix}/lib -L#{Readline.prefix}/lib'"
     end
     PACKMAN.run './configure', *args
     PACKMAN.run 'make'
     PACKMAN.run 'make check' if not skip_test?
     PACKMAN.run 'make install'
     PACKMAN.caveat <<-EOT.gsub(/^\s+/, '')
-      Set "BES.Catalog.catalog.RootDirectory" in #{PACKMAN.prefix(self)}/etc/bes/bes.conf to the directory where your data reside.
+      Set "BES.Catalog.catalog.RootDirectory" in #{etc}/bes/bes.conf to the directory where your data reside.
     EOT
   end
 
@@ -48,7 +48,7 @@ class Hyrax_bes < PACKMAN::Package
     else
       group_name = user_name
     end
-    PACKMAN.replace "#{PACKMAN.prefix(self)}/etc/bes/bes.conf", {
+    PACKMAN.replace "#{etc}/bes/bes.conf", {
       'BES.User=user_name' => "BES.User=#{user_name}",
       'BES.Group=group_name' => "BES.Group=#{group_name}"
     }

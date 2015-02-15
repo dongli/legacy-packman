@@ -11,13 +11,12 @@ class Cmor < PACKMAN::Package
   def install
     PACKMAN.replace 'configure', /(RTAG="none")/ => "\\1\ntarget_os=none\n"
     args = %W[
-      --prefix=#{PACKMAN.prefix self}
-      --with-uuid=#{PACKMAN.prefix Uuid}
-      --with-udunits2=#{PACKMAN.prefix Udunits}
-      --with-netcdf=#{PACKMAN.prefix Netcdf}
-      CPPFLAGS='-I#{PACKMAN.prefix Zlib}/include'
-      LDFLAGS='-L#{PACKMAN.prefix Zlib}/lib'
+      --prefix=#{prefix}
+      --with-uuid=#{Uuid.prefix}
+      --with-udunits2=#{Udunits.prefix}
+      --with-netcdf=#{Netcdf.prefix}
     ]
+    PACKMAN::AutotoolHelper.set_cppflags_and_ldflags args, Zlib
     PACKMAN.run './configure', *args
     PACKMAN.run 'make install'
   end

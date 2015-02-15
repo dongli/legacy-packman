@@ -7,7 +7,7 @@ class Libtool < PACKMAN::Package
 
   def install
     args = %W[
-      --prefix=#{PACKMAN.prefix self}
+      --prefix=#{prefix}
       --disable-dependency-tracking
       --enable-ltdl-install
     ]

@@ -10,9 +10,9 @@ class Bison < PACKMAN::Package
 
   def install
     args = %W[
-      --prefix=#{PACKMAN.prefix self}
-      --with-libiconv-prefix=#{PACKMAN.prefix Libiconv}
-      --with-libintl-prefix=#{PACKMAN.prefix Gettext}
+      --prefix=#{prefix}
+      --with-libiconv-prefix=#{Libiconv.prefix}
+      --with-libintl-prefix=#{Gettext.prefix}
     ]
     PACKMAN.run './configure', *args
     PACKMAN.run 'make -j2'

@@ -10,8 +10,8 @@ class Hyrax_olfs < PACKMAN::Package
   label 'compiler_insensitive'
 
   def install
-    PACKMAN.mkdir PACKMAN.prefix(self), :force
-    PACKMAN.cp '.', PACKMAN.prefix(self)
-    PACKMAN.cp "#{PACKMAN.prefix(self)}/opendap.war", "#{PACKMAN.prefix(Tomcat)}/webapps"
+    PACKMAN.mkdir prefix, :force
+    PACKMAN.cp '.', prefix
+    PACKMAN.cp "#{prefix}/opendap.war", "#{Tomcat.prefix}/webapps"
   end
 end

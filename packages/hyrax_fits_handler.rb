@@ -11,9 +11,9 @@ class Hyrax_fits_handler < PACKMAN::Package
 
   def install
     args = %W[
-      --prefix=#{PACKMAN.prefix(self)}
+      --prefix=#{prefix}
       --disable-dependency-tracking
-      --with-cfits=#{PACKMAN.prefix(Cfitsio)}
+      --with-cfits=#{Cfitsio.prefix}
       LDFLAGS='-lm'
     ]
     PACKMAN.run './configure', *args
