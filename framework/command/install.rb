@@ -33,7 +33,7 @@ module PACKMAN
             end
           end
         end
-        if not CommandLine.has_option? '-compiler_set_indices' and
+        if not package.use_binary? and not CommandLine.has_option? '-compiler_set_indices' and
            not package.compiler_set_indices.include? ConfigManager.defaults['compiler_set_index']
           package.compiler_set_indices << ConfigManager.defaults['compiler_set_index']
         end
