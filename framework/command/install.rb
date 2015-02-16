@@ -69,10 +69,9 @@ module PACKMAN
         bashrc = "#{PACKMAN.prefix package}/bashrc"
       end
       if File.exist? bashrc
-        content = File.open("#{bashrc}", 'r').readlines
-        if not content.grep(/#{package.sha1}/).empty?
-          if (package.respond_to? :check_consistency and package.check_consistency) or
-            not package.respond_to? :check_consistency
+        match = File.open("#{bashrc}", 'r').read.match(/(#{package.sha1})( (\d+))?/)
+        if match and match[3] == package.revision
+          if package.check_consistency
             if not options.include? :depend
               msg = "Package #{CLI.green package.class} has been installed"
               if not package.use_binary? and not package.has_label? 'compiler_insensitive'

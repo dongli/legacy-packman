@@ -134,6 +134,7 @@ module PACKMAN
     def url; @active_spec.url; end
     def sha1; @active_spec.sha1; end
     def version; @active_spec.version; end
+    def revision; @active_spec.revision; end
     def filename; @active_spec.filename; end
     def labels; @active_spec.labels; end
     def has_label? val; @active_spec.has_label? val; end
@@ -199,6 +200,7 @@ module PACKMAN
         option_type = stable.option_valid_types[option_name]
         PackageDslHelper.create_option_shortcut option_name, option_type, self, :"@@#{self}_stable", true
       end
+      def revision val; stable.revision val; end
 
       def patch option = nil, &block
         if option == :embed
@@ -406,6 +408,7 @@ module PACKMAN
     end
 
     def postfix; end
+    def check_consistency; true; end
 
     def skip?
       skip_distros.include? OS.distro or
@@ -471,15 +474,15 @@ module PACKMAN
           tmp = package.class.name.upcase.to_sym
           slave_package_tags.each do |tag|
             if tag.first.to_sym == tmp
-              file << "# #{package.class.name.upcase} #{package.sha1}\n"
+              file << "# #{package.class.name.upcase} #{package.sha1} #{package.revision}\n"
               updated = true
             else
-              file << "# #{tag.first} #{tag.last}\n"
+              file << "# #{tag.first} #{tag.last} #{package.revision}\n"
             end
           end
         end
         if not defined? updated
-          file << "# #{package.class.name.upcase} #{package.sha1}\n"
+          file << "# #{package.class.name.upcase} #{package.sha1} #{package.revision}\n"
         end
         file << "export #{root}=#{prefix}\n"
         if Dir.exist?("#{prefix}/bin")

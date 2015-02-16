@@ -90,6 +90,11 @@ module PACKMAN
       return @version
     end
 
+    def revision val = nil
+      @revision = val.to_s if val
+      return @revision
+    end
+
     def filename val = nil
       @filename = val if val
       return @filename
