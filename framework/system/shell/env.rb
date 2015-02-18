@@ -11,7 +11,8 @@ module PACKMAN
         @@customized_source = []
       end
 
-      def self.append_env keys, value, separator = ' '
+      def self.append_env keys, value, separator = nil
+        separator ||= ' '
         value = value.to_s
         Array(keys).each do |key|
           old = @@customized_env[key]
