@@ -69,8 +69,8 @@ module PACKMAN
         bashrc = "#{PACKMAN.prefix package}/bashrc"
       end
       if File.exist? bashrc
-        match = File.open("#{bashrc}", 'r').read.match(/(#{package.sha1})( (\d+))?/)
-        if match and match[3] == package.revision
+        match = File.open("#{bashrc}", 'r').read.match(/(#{package.sha1}) (\d+)?$/)
+        if match and match[2] == package.revision
           if package.check_consistency
             if not options.include? :depend
               msg = "Package #{CLI.green package.class} has been installed"
@@ -97,7 +97,7 @@ module PACKMAN
       package.dependencies.each do |depend|
         depend_package = Package.instance depend
         append_bashrc depend_package, true
-        RunManager.append_bashrc_path(depend_package.bashrc) if not depend_package.skip?
+        Shell::Env.append_source depend_package.bashrc if not depend_package.skip?
       end
     end
 
@@ -234,12 +234,10 @@ module PACKMAN
           # Clean build files.
           FileUtils.rm_rf build_upper_dir if Dir.exist? build_upper_dir
           # Clean the bashrc pathes.
-          RunManager.clean_bashrc_path if not options.include? :depend
+          Shell::Env.clear_source if not options.include? :depend
         end
       end
-      if not options.include? :depend
-        RunManager.clean_env
-      end
+      Shell::Env.clear_env if not options.include? :depend
     end
   end
 end

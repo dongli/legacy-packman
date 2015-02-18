@@ -1,99 +1,37 @@
 module PACKMAN
   class RunManager
-    def self.delegated_methods
-      [:append_env, :change_env, :clean_env]
-    end
-
-    @@ld_library_pathes = []
-    @@bashrc_pathes = []
-    @@envs = {}
-
-    def self.append_ld_library_path path
-      @@ld_library_pathes << path if not @@ld_library_pathes.include? path
-    end
-
-    def self.clean_ld_library_path
-      @@ld_library_pathes.clear
-    end
-
-    def self.append_env env, options = nil
-      options = [options] if not options or options.class != Array
-      idx = env.index('=')
-      key = env[0, idx]
-      value = env[idx+1..-1]
-      if @@envs.has_key? key and not options.include? :ignore
-        CLI.report_error "Environment #{CLI.red key} has been set!"
-      else
-        @@envs[key] = value
-      end
-    end
-
-    def self.change_env env
-      idx = env.index('=')
-      key = env[0, idx]
-      value = env[idx+1..-1]
-      @@envs[key] = value
-    end
-
-    def self.append_bashrc_path path
-      @@bashrc_pathes << path if not @@bashrc_pathes.include? path
-    end
-
-    def self.clean_bashrc_path
-      @@bashrc_pathes.clear
-    end
-
-    def self.clean_env
-      @@envs.clear
-    end
-
     def self.default_command_prefix
       cmd_str = ''
       # Handle PACKMAN installed compiler.
       if CompilerManager.active_compiler_set.info.has_key? :installed_by_packman
         compiler_prefix = PACKMAN.prefix CompilerManager.active_compiler_set.info[:installed_by_packman]
-        append_bashrc_path("#{compiler_prefix}/bashrc")
+        Shell::Env.append_source "#{compiler_prefix}/bashrc"
       end
       # Handle customized bashrc.
-      rpath = []
-      if not @@bashrc_pathes.empty?
-        @@bashrc_pathes.each do |bashrc_path|
+      if not Shell::Env.sources.empty?
+        Shell::Env.sources.each do |source|
           # Note: Use '.' instead of 'source', since Ruby system seems invoke a dash not fully bash!
-          cmd_str << ". #{bashrc_path} && "
-          tmp = File.open(bashrc_path).read.match(/export \w+_RPATH="(.*)"/)
-          rpath << tmp[1] if tmp
+          cmd_str << ". #{source} && "
+          tmp = File.open(source).read.match(/\w+_RPATH="(.*)"/)
+          Shell::Env.append_env 'LD_RUN_PATH', tmp[1], ':'
         end
       end
-      cmd_str << "export LD_RUN_PATH='#{rpath.join(':')}' && " if not rpath.empty?
-      # Handle customized LD_LIBRARY_PATH.
-      if not @@ld_library_pathes.empty?
-        case OS.type
-        when :Darwin
-          cmd_str << 'export DYLD_LIBRARY_PATH=$DYLD_LIBRARY_PATH:'
-        when :Linux
-          cmd_str << 'export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:'
-        end
-        cmd_str << @@ld_library_pathes.join(':')
-        cmd_str << ' && '
-      end
-      # Handle compilers. Check if the @@envs has already defined them.
+      # Handle compilers. Check if customized environment variables have already defined them.
       CompilerManager.active_compiler_set.info.each do |language, compiler_info|
         next if language == :installed_by_packman
         case language
         when 'c'
-          cmd_str << "export CC=#{compiler_info[:command]} && " if not @@envs.has_key? 'CC'
+          Shell::Env.append_env 'CC', compiler_info[:command] if not Shell::Env.has_variable? 'CC'
         when 'c++'
-          cmd_str << "export CXX=#{compiler_info[:command]} && " if not @@envs.has_key? 'CXX'
+          Shell::Env.append_env 'CXX', compiler_info[:command] if not Shell::Env.has_variable? 'CXX'
         when 'fortran'
-          cmd_str << "export F77=#{compiler_info[:command]} && " if not @@envs.has_key? 'F77'
-          cmd_str << "export FC=#{compiler_info[:command]} && " if not @@envs.has_key? 'FC'
+          Shell::Env.append_env 'F77', compiler_info[:command] if not Shell::Env.has_variable? 'F77'
+          Shell::Env.append_env 'FC', compiler_info[:command] if not Shell::Env.has_variable? 'FC'
         end
       end
       # Handle customized environment variables.
-      if not @@envs.empty?
-        @@envs.each do |key, value|
-          cmd_str << "export #{key}=#{value} && "
-        end
+      Shell::Env.variables.each do |variable|
+        cmd_str << "#{Shell::Env.export_env variable} && "
       end
       return cmd_str
     end

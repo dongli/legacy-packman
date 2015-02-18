@@ -18,7 +18,6 @@ class Readline < PACKMAN::Package
     PACKMAN.run './configure', *args
     PACKMAN.run 'make -j2'
     PACKMAN.run 'make install'
-    PACKMAN.clean_env
   end
 
   def installed?

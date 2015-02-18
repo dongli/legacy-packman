@@ -107,7 +107,7 @@ class Ncl < PACKMAN::Package
           "#{PACKMAN.yellow '==>'} #{PACKMAN::OS.how_to_install xaw_package}"
       end
     end
-    PACKMAN::RunManager.append_env "NCARG=#{prefix}"
+    PACKMAN.append_env 'NCARG', prefix
     # Copy Triangle codes into necessary place.
     PACKMAN.mkdir 'triangle'
     PACKMAN.cd 'triangle'
@@ -226,7 +226,6 @@ class Ncl < PACKMAN::Package
     PACKMAN.run "ls #{bin}/ncl"
     # Create 'tmp' directory.
     PACKMAN.mkdir "#{prefix}/tmp"
-    PACKMAN::RunManager.clean_env
   end
 
   def postfix

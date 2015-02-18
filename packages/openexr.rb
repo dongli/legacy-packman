@@ -4,6 +4,7 @@ class Openexr < PACKMAN::Package
   version '2.1.0'
 
   label 'master_package'
+  belongs_to 'openexr'
 
   depends_on 'openexr_ilmbase'
 

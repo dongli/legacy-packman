@@ -10,6 +10,7 @@ class Ghostscript < PACKMAN::Package
   depends_on 'libpng'
   depends_on 'little_cms'
   depends_on 'djvulibre' # TODO: Does ghostscript need it?
+  depends_on 'fontconfig'
   depends_on 'freetype'
   depends_on 'x11'
 
@@ -44,7 +45,7 @@ class Ghostscript < PACKMAN::Package
       --disable-compile-inits
       --disable-gtk
     ]
-    PACKMAN::AutotoolHelper.set_cppflags_and_ldflags args, [Expat, Jpeg, Jbig2dec, Libtiff, Libpng, Little_cms, Freetype]
+    PACKMAN::AutotoolHelper.set_cppflags_and_ldflags args, [Expat, Jpeg, Jbig2dec, Libtiff, Libpng, Little_cms, Fontconfig, Freetype]
     PACKMAN.run './configure', *args
     PACKMAN.replace 'Makefile', {
       /^DEVICE_DEVS17=/ => 'DEVICE_DEVS17=$(DD)djvumask.dev $(DD)djvusep.dev'

@@ -1,5 +1,5 @@
 $LOAD_PATH << "#{ENV['PACKMAN_ROOT']}/framework"
-require "system/os"
+require "system/os/os"
 require "version_spec"
 require "package/package"
 require "package/package_spec"

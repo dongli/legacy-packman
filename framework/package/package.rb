@@ -465,7 +465,7 @@ module PACKMAN
       end
       if File.exist? "#{prefix}/bashrc"
         content = File.open("#{prefix}/bashrc", 'r').read
-        slave_package_tags = content.scan(/^# (\w+) (\w{40})$/)
+        slave_package_tags = content.scan(/^# (\w+) (\w{40}) (\d+)?$/)
       end
       root = "#{class_name}_ROOT"
       File.open("#{prefix}/bashrc", 'w') do |file|
@@ -477,7 +477,7 @@ module PACKMAN
               file << "# #{package.class.name.upcase} #{package.sha1} #{package.revision}\n"
               updated = true
             else
-              file << "# #{tag.first} #{tag.last} #{package.revision}\n"
+              file << "# #{tag[0]} #{tag[1]} #{tag[2]}\n"
             end
           end
         end

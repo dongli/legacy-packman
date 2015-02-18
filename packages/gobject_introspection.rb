@@ -15,7 +15,7 @@ class Gobject_introspection < PACKMAN::Package
   end
 
   def install
-    PACKMAN.append_env 'GI_SCANNER_DISABLE_CACHE=true'
+    PACKMAN.append_env 'GI_SCANNER_DISABLE_CACHE', 'true'
     args = %W[
       --prefix=#{prefix}
       --disable-dependency-tracking

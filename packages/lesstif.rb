@@ -10,7 +10,7 @@ class Lesstif < PACKMAN::Package
     PACKMAN.replace 'configure', {
       '`aclocal --print-ac-dir`' => "#{share}/aclocal"
     }
-    PACKMAN.append_env 'LANG=C'
+    PACKMAN.append_env 'LANG', 'C'
     args = %W[
       --prefix=#{prefix}
       --disable-debug
@@ -23,5 +23,4 @@ class Lesstif < PACKMAN::Package
     PACKMAN.run 'make -j2'
     PACKMAN.run 'make install'
   end
-  PACKMAN.clean_env
 end

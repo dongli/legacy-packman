@@ -10,8 +10,6 @@ class Netcdf_cxx < PACKMAN::Package
   depends_on 'netcdf_c'
 
   def install
-    PACKMAN.append_env "CPPFLAGS='-I#{Netcdf.include}'"
-    PACKMAN.append_env "LDFLAGS='-L#{Netcdf.lib}'"
     args = %W[
       --prefix=#{prefix}
       --disable-dependency-tracking
@@ -19,6 +17,7 @@ class Netcdf_cxx < PACKMAN::Package
       --enable-static
       --enable-shared
     ]
+    PACKMAN::AutotoolHelper.set_cppflags_and_ldflags args, [Netcdf]
     if PACKMAN::OS.cygwin_gang?
       args << "LIBS='-L#{Curl.lib} -lcurl -L#{Hdf5.lib} -lhdf5 -lhdf5_hl'"
     end
@@ -26,6 +25,5 @@ class Netcdf_cxx < PACKMAN::Package
     PACKMAN.run 'make'
     PACKMAN.run 'make check' if not skip_test?
     PACKMAN.run 'make install'
-    PACKMAN.clean_env
   end
 end

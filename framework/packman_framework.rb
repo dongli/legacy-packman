@@ -20,6 +20,7 @@ require "system/os/debian_spec"
 require "system/os/ubuntu_spec"
 require "system/os/cygwin_spec"
 require "system/os/mac_spec"
+require "system/shell/env"
 require "system/network_manager"
 require "file/file_manager"
 require "compiler/compiler_spec_spec"
@@ -50,36 +51,39 @@ require "package/package_loader"
 require "legacy/config_manager_legacy"
 require "legacy/package_legacy"
 
-PACKMAN.constants.each do |module_name|
-  module_object = PACKMAN.const_get module_name
-  next if not module_object.respond_to? :delegated_methods
-  module_object.delegated_methods.each do |method_name|
-    args = []
-    # TODO: This 'rescue' can be dismissed when 'NoMethodError' is solved.
-    begin
-      module_object.method(method_name).parameters.each do |p|
-        case p.first
-        when :req
-          args << p.last
-        when :opt
-          args << "#{p.last} = nil"
-        end          
+# Handover delegated methods to hide the modules and classes that contain the methods from users.
+def handover_delegated_methods root, father = nil
+  father ||= root
+  return if not (father.class == Class or father.class == Module)
+  father.constants.each do |child_name|
+    child = father.const_get child_name
+    handover_delegated_methods root, child
+    next if not child.respond_to? :delegated_methods
+    child.delegated_methods.each do |method_name|
+      args = []
+      # TODO: This 'rescue' can be dismissed when 'NoMethodError' is solved.
+      begin
+        child.method(method_name).parameters.each do |p|
+          case p.first
+          when :req
+            args << p.last
+          when :opt
+            args << "#{p.last} = nil"
+          end          
+        end
+      rescue NoMethodError => e
+        PACKMAN.report_error "Failed to handover delegated method #{PACKMAN.red method_name} in #{PACKMAN.red child_name}!"
       end
-    rescue NoMethodError => e
-      PACKMAN::CLI.report_error "Encounter #{PACKMAN::CLI.red 'NoMethodError'}, please report to Li Dong <dongli@lasg.iap.ac.cn>:\n"+
-        "module_object: #{module_object}\n"+
-        "method_name: #{method_name}\n"+
-        "module_object.method(method_name): #{module_object.method(method_name)}\n"+
-        "module_object.method(method_name).methods: #{module_object.method(method_name).methods}"
+      args = args.join(', ')
+      root.class_eval <<-EOT
+        def self.#{method_name} #{args}
+          #{father}::#{child_name}.#{method_name} #{args.gsub(/ = nil/, '')}
+        end
+      EOT
     end
-    args = args.join(', ')
-    PACKMAN.class_eval <<-EOT
-      def self.#{method_name} #{args}
-        #{module_name}.#{method_name} #{args.gsub(/ = nil/, '')}
-      end
-    EOT
   end
 end
+handover_delegated_methods PACKMAN
 
 # Until this moment, we can add packages directory to $LOAD_PATH. Because there
 # may be occasions that the name of some package class is the same with the
@@ -87,6 +91,7 @@ end
 $LOAD_PATH << "#{ENV['PACKMAN_ROOT']}/packages"
 
 PACKMAN::OS.init
+PACKMAN::Shell::Env.init
 PACKMAN::CommandLine.init
 PACKMAN::ConfigManager.init
 PACKMAN::CompilerManager.init

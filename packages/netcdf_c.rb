@@ -27,13 +27,6 @@ class Netcdf_c < PACKMAN::Package
   end
 
   def install
-    if use_mpi?
-      PACKMAN.append_env "CFLAGS='-I#{Curl.include} -I#{Zlib.include} -I#{Szip.include} -I#{Hdf5.include} -I#{Parallel_netcdf.include}'"
-      PACKMAN.append_env "LDFLAGS='-L#{Curl.lib} -L#{Zlib.lib} -L#{Szip.lib} -L#{Hdf5.lib} -L#{Parallel_netcdf.lib}'"
-    else
-      PACKMAN.append_env "CFLAGS='-I#{Curl.include} -I#{Zlib.include} -I#{Szip.include} -I#{Hdf5.include}'"
-      PACKMAN.append_env "LDFLAGS='-L#{Curl.lib} -L#{Zlib.lib} -L#{Szip.lib} -L#{Hdf5.lib}'"
-    end
     # NOTE: OpenDAP support should be supported in default, but I still add
     #       '--enable-dap' explicitly for reminding.
     # Build netcdf in parallel: http://www.unidata.ucar.edu/software/netcdf/docs/getting_and_building_netcdf.html#build_parallel
@@ -49,14 +42,16 @@ class Netcdf_c < PACKMAN::Package
     ]
     if use_mpi?
       args << '--enable-pnetcdf'
+      PACKMAN::AutotoolHelper.set_cppflags_and_ldflags args, [Curl, Zlib, Szip, Hdf5, Parallel_netcdf]
       # PnetCDF test has bug as discussed in http://www.unidata.ucar.edu/support/help/MailArchives/netcdf/msg12561.html
       PACKMAN.replace 'nc_test/run_pnetcdf_test.sh', { 'mpiexec -n 4' => 'mpiexec -n 2' }
+    else
+      PACKMAN::AutotoolHelper.set_cppflags_and_ldflags args, [Curl, Zlib, Szip, Hdf5]
     end
     PACKMAN.run './configure', *args
     PACKMAN.run 'make -j2'
     PACKMAN.run 'make check' if not skip_test?
     PACKMAN.run 'make install'
-    PACKMAN.clean_env
   end
 
   def check_consistency
