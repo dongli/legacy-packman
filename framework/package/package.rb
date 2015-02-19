@@ -166,6 +166,7 @@ module PACKMAN
     def include; prefix+'/include'; end
     def lib; prefix+'/lib'; end
     def share; prefix+'/share'; end
+    def doc; share+'/doc/'+self.class.to_s.downcase; end
     def man; share+'/man'; end
     def var; prefix+'/var'; end
     def frameworks; prefix+'/Frameworks'; end
@@ -177,6 +178,7 @@ module PACKMAN
     def self.include; prefix+'/include'; end
     def self.lib; prefix+'/lib'; end
     def self.share; prefix+'/share'; end
+    def self.doc; share+'/doc/'+self.class.to_s.downcase; end
     def self.man; share+'/man'; end
     def self.frameworks; prefix+'/Frameworks'; end
     def self.bashrc; prefix+'/bashrc'; end

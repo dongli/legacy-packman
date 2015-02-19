@@ -12,7 +12,9 @@ module PACKMAN
   end
 
   def self.mv src, dest
-    FileUtils.mv src, dest
+    Dir.glob(src).each do |file|
+      FileUtils.mv file, dest
+    end
   end
 
   def self.rm file_path
