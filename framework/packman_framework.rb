@@ -50,6 +50,7 @@ require "package/package"
 require "package/package_loader"
 require "legacy/config_manager_legacy"
 require "legacy/package_legacy"
+require "ruby/ruby_helper"
 
 # Handover delegated methods to hide the modules and classes that contain the methods from users.
 def handover_delegated_methods root, father = nil

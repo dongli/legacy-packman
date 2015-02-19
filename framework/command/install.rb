@@ -82,6 +82,8 @@ module PACKMAN
             return true
           end
         end
+      elsif package.respond_to? :installed? and package.installed?
+        return true
       end
       @@is_any_package_installed = true
       return false
@@ -227,7 +229,7 @@ module PACKMAN
           PACKMAN.cd_back
           FileUtils.rm_rf build_dir
           # Write bashrc file for the package.
-          Package.bashrc package
+          Package.bashrc package if not package.has_label? 'no_bashrc'
           package.postfix
           # Clean the customized flags if there is any.
           CompilerManager.clean_customized_flags

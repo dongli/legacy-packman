@@ -8,7 +8,11 @@ module PACKMAN
         package = Package.instance package_name
         package_root = "#{ConfigManager.install_root}/#{package_name.to_s.downcase}"
         if not File.directory? package_root
-          CLI.report_error "Package #{CLI.red package_name} is not installed!"
+          if package.respond_to? :remove
+            package.remove
+          else
+            CLI.report_error "Package #{CLI.red package_name} is not installed!"
+          end
         end
         versions = Dir.glob("#{package_root}/*").sort
         if versions.size > 1 and not CommandLine.has_option? '-all'

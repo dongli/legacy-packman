@@ -188,7 +188,7 @@ module PACKMAN
     class << self
       def url val; stable.url val; end
       def sha1 val; stable.sha1 val; end
-      def version val; stable.version val; end
+      def version val = nil; stable.version val; end
       def filename val; stable.filename val; end
       def label val; stable.label val; end
       def conflicts_with val, &block; stable.conflicts_with val, &block; end
