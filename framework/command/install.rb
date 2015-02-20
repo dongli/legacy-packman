@@ -93,7 +93,7 @@ module PACKMAN
       if package.has_label? 'compiler_insensitive' and is_depend
         # NOTE: Some 'compiler_insensitive' package may use other compiler set to build, and it is normally just binary,
         #       so we skip its dependent packages to avoid problems.
-        RunManager.append_bashrc_path(package.bashrc) if not package.skip?
+        Shell::Env.append_source package.bashrc if not package.skip?
         return
       end
       package.dependencies.each do |depend|

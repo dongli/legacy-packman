@@ -6,8 +6,10 @@ class Ruby_sqlite3 < PACKMAN::Package
   label 'use_system_first'
   label 'no_bashrc'
 
+  depends_on 'sqlite'
+
   def install
-    PACKMAN.gem 'install sqlite3-*.gem'
+    PACKMAN.gem "install sqlite3-*.gem -- --with-sqlite3-dir=#{Sqlite.prefix}"
   end
 
   def remove
