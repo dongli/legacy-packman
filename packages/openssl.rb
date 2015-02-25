@@ -8,7 +8,7 @@ class Openssl < PACKMAN::Package
   depends_on 'zlib'
 
   def arch_args; {
-      :Mac_OS_X => {
+      :Darwin => {
         :x86_64 => %w[darwin64-x86_64-cc enable-ec_nistp_64_gcc_128],
         :i386   => %w[darwin-i386-cc]
       }
@@ -22,7 +22,13 @@ class Openssl < PACKMAN::Package
       shared
       enable-cms
     ]
-    PACKMAN.run './Configure', *(args+arch_args[PACKMAN::OS.distro][PACKMAN::OS.x86_64? ? :x86_64 : :i386])
+    if arch_args.has_key? PACKMAN::OS.type
+      PACKMAN.run './Configure', *(args+arch_args[PACKMAN::OS.type][PACKMAN::OS.x86_64? ? :x86_64 : :i386])
+    else
+      res = `./config`
+      args << res.lines.last.match(/^Configured for (.+)\./)[1]
+      PACKMAN.run './Configure', *args
+    end
     PACKMAN.replace 'Makefile', {
       /^ZLIB_INCLUDE=\s*$/ => "ZLIB_INCLUDE=-I#{Zlib.include}",
       /^LIBZLIB=\s*$/ => "LIBZLIB=-L#{Zlib.lib}"
