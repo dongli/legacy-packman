@@ -27,6 +27,7 @@ module PACKMAN
       @option_valid_types = {}
       @options = {}
       @option_actual_types = {}
+      @option_updated = {}
 
       CommonOptions.each do |key, type|
         option key => type
@@ -193,6 +194,7 @@ module PACKMAN
         key = option_hash.keys.first
         value = option_hash.values.first
         is_option_added = true if @options.has_key? key
+        return if @option_updated[key] # NOTE: When option is updated by other sources, ignore the setting in the package class.
         if value.class == Symbol
           return if is_option_added and @option_valid_types[key] == value
           @options[key] = PackageSpec.default_option_value value
@@ -236,6 +238,7 @@ module PACKMAN
 
     def update_option key, value, ignore_error = false
       return if not options.has_key? key
+      @option_updated[key] = true
       case option_valid_types[key]
       when :boolean
         if value.class == TrueClass or value.class == FalseClass
