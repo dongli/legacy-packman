@@ -70,7 +70,7 @@ module PACKMAN
         bashrc = "#{PACKMAN.prefix package}/bashrc"
       end
       if File.exist? bashrc
-        match = File.open("#{bashrc}", 'r').read.match(/(#{package.sha1}) (\d+)?$/)
+        match = File.open("#{bashrc}", 'r').read.match(/#{package.sha1}( (\d+)?)?$/)
         if match and match[2] == package.revision
           if package.check_consistency
             if not options.include? :depend
