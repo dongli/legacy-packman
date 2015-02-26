@@ -17,7 +17,11 @@ module PACKMAN
           # Note: Use '.' instead of 'source', since Ruby system seems invoke a dash not fully bash!
           cmd_str << ". #{source} && "
           tmp = File.open(source).read.match(/\w+_RPATH="(.*)"/)
-          Shell::Env.append_env 'LD_RUN_PATH', tmp[1], ':'
+          # Add RPATH options to ensure the correct libraries are linked.
+          next if not tmp
+          tmp[1].split(':').each do |rpath|
+            PACKMAN.append_env 'LDFLAGS', "-Wl,-rpath=#{rpath}"
+          end
         end
       end
       # Handle compilers. Check if customized environment variables have already defined them.
@@ -28,15 +32,16 @@ module PACKMAN
         case language
         when 'c'
           PACKMAN.append_env 'CC', compiler_info[:command] if not PACKMAN.has_env? 'CC'
-          PACKMAN.append_env 'CFLAGS', flags
+          flag_name = 'CFLAGS'
         when 'c++'
           PACKMAN.append_env 'CXX', compiler_info[:command] if not PACKMAN.has_env? 'CXX'
-          PACKMAN.append_env 'CXXFLAGS', flags
+          flag_name = 'CXXFLAGS'
         when 'fortran'
           PACKMAN.append_env 'F77', compiler_info[:command] if not PACKMAN.has_env? 'F77'
           PACKMAN.append_env 'FC', compiler_info[:command] if not PACKMAN.has_env? 'FC'
-          PACKMAN.append_env 'FCFLAGS', flags
+          flag_name = 'FCFLAGS'
         end
+        PACKMAN.append_env flag_name, flags
       end
       # Handle customized environment variables.
       PACKMAN.env_keys.each do |key|
