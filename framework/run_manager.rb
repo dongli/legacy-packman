@@ -1,5 +1,9 @@
 module PACKMAN
   class RunManager
+    def self.delegated_methods
+      [:run]
+    end
+
     def self.default_command_prefix
       cmd_str = ''
       # Handle PACKMAN installed compiler.
@@ -19,47 +23,32 @@ module PACKMAN
       # Handle compilers. Check if customized environment variables have already defined them.
       CompilerManager.active_compiler_set.info.each do |language, compiler_info|
         next if language == :installed_by_packman
+        flags = PACKMAN.default_compiler_flags language
+        flags << "#{PACKMAN.customized_compiler_flags language}"
         case language
         when 'c'
-          Shell::Env.append_env 'CC', compiler_info[:command] if not Shell::Env.has_variable? 'CC'
+          PACKMAN.append_env 'CC', compiler_info[:command] if not PACKMAN.has_env? 'CC'
+          PACKMAN.append_env 'CFLAGS', flags
         when 'c++'
-          Shell::Env.append_env 'CXX', compiler_info[:command] if not Shell::Env.has_variable? 'CXX'
+          PACKMAN.append_env 'CXX', compiler_info[:command] if not PACKMAN.has_env? 'CXX'
+          PACKMAN.append_env 'CXXFLAGS', flags
         when 'fortran'
-          Shell::Env.append_env 'F77', compiler_info[:command] if not Shell::Env.has_variable? 'F77'
-          Shell::Env.append_env 'FC', compiler_info[:command] if not Shell::Env.has_variable? 'FC'
+          PACKMAN.append_env 'F77', compiler_info[:command] if not PACKMAN.has_env? 'F77'
+          PACKMAN.append_env 'FC', compiler_info[:command] if not PACKMAN.has_env? 'FC'
+          PACKMAN.append_env 'FCFLAGS', flags
         end
       end
       # Handle customized environment variables.
-      Shell::Env.variables.each do |variable|
-        cmd_str << "#{Shell::Env.export_env variable} && "
+      PACKMAN.env_keys.each do |key|
+        cmd_str << "#{Shell::Env.export_env key} && "
       end
       return cmd_str
     end
 
-    def self.run build_helper, cmd, *args
+    def self.run cmd, *args
       cmd_str = default_command_prefix
       cmd_args = args.join(' ')
-      if build_helper and build_helper.should_insert_before_command?
-        # Handle compiler default flags.
-        CompilerManager.active_compiler_set.info.each_key do |language|
-          next if language == :installed_by_packman
-          flags = PACKMAN.default_compiler_flags language
-          tmp = PACKMAN.customized_compiler_flags language
-          flags << tmp if tmp
-          cmd_str << "#{build_helper.wrap_flags language, flags, cmd_args} "
-        end
-      end
       cmd_str << " #{cmd} "
-      if build_helper and build_helper.should_insert_after_command?
-        # Handle compiler default flags.
-        CompilerManager.active_compiler_set.info.each_key do |language|
-          next if language == :installed_by_packman
-          flags = PACKMAN.default_compiler_flags language
-          tmp = PACKMAN.customized_compiler_flags language
-          flags << tmp if tmp
-          cmd_str << "#{build_helper.wrap_flags language, flags, cmd_args} "
-        end
-      end
       print "#{CLI.blue '==>'} "
       cmd_str << "#{cmd_args} "
       if CommandLine.has_option? '-debug'
@@ -85,17 +74,6 @@ module PACKMAN
         FileUtils.rm("#{ConfigManager.package_root}/stdout")
         FileUtils.rm("#{ConfigManager.package_root}/stderr")
       end
-    end
-  end
-
-  def self.run cmd, *args
-    case cmd
-    when /configure/
-      RunManager.run AutotoolHelper, cmd, *args
-    when /cmake/
-      RunManager.run CmakeHelper, cmd, *args
-    else
-      RunManager.run nil, cmd, *args
     end
   end
 end

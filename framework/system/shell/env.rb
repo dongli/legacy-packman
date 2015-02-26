@@ -2,8 +2,8 @@ module PACKMAN
   module Shell
     class Env
       def self.delegated_methods
-        [:append_env, :prepend_env, :reset_env, :clear_env,
-         :append_source, :prepend_source, :clear_source]
+        [:append_env, :prepend_env, :reset_env, :clear_env, :has_env?,
+         :export_env, :env_keys, :append_source, :prepend_source, :clear_source]
       end
 
       def self.init
@@ -64,7 +64,7 @@ module PACKMAN
         @@customized_env[key]
       end
 
-      def self.variables
+      def self.env_keys
         @@customized_env.keys
       end
 
@@ -72,7 +72,7 @@ module PACKMAN
         @@customized_source
       end
 
-      def self.has_variable? key
+      def self.has_env? key
         @@customized_env.has_key? key
       end
 

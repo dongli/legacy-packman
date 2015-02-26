@@ -68,6 +68,8 @@ def handover_delegated_methods root, father = nil
           case p.first
           when :req
             args << p.last
+          when :rest
+            args << "*#{p.last}"
           when :opt
             args << "#{p.last} = nil"
           end          
