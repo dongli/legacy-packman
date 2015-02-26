@@ -22,7 +22,7 @@ class Regcm < PACKMAN::Package
     # end
     PACKMAN.work_in 'RegCM-4.4.5' do
       if PACKMAN.compiler_vendor('fortran') == 'gnu'
-        PACKMAN.append_env 'FCFLAGS="$FCFLAGS -fno-range-check -std=legacy"'
+        PACKMAN.append_env 'FCFLAGS', '-fno-range-check -std=legacy'
       end
       args = %W[
         --with-netcdf=#{Netcdf.prefix}

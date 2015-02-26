@@ -17,7 +17,7 @@ class Wrf_arwpost < PACKMAN::Package
   end
 
   def install
-    PACKMAN.append_env "NETCDF='#{Netcdf.prefix}'"
+    PACKMAN.append_env 'NETCDF', Netcdf.prefix
     PACKMAN.work_in 'ARWpost' do
       PACKMAN.replace 'arch/configure.defaults', {
         '/lib/cpp' => 'cpp',

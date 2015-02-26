@@ -27,7 +27,7 @@ class Wrf_wps < PACKMAN::Package
   end
 
   def install
-    PACKMAN.append_env "NETCDF='#{Netcdf.prefix}'", :ignore
+    PACKMAN.append_env 'NETCDF', Netcdf.prefix
     includes = []
     libs = []
     includes << "#{Jasper.include}" # NOTE: There is no '-I' ahead!
@@ -38,8 +38,8 @@ class Wrf_wps < PACKMAN::Package
       includes << "-I#{Libpng.include}"
       libs << "-L#{Libpng.lib}"
     end
-    PACKMAN.append_env "JASPERINC='#{includes.join(' ')}'"
-    PACKMAN.append_env "JASPERLIB='#{libs.join(' ')}'"
+    PACKMAN.append_env 'JASPERINC', includes.join(' ')
+    PACKMAN.append_env 'JASPERLIB', libs.join(' ')
     PACKMAN.work_in 'WPS' do
       # Configure WPS.
       print "#{PACKMAN.blue '==>'} "
