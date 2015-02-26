@@ -42,11 +42,11 @@ class Netcdf_c < PACKMAN::Package
     ]
     if use_mpi?
       args << '--enable-pnetcdf'
-      PACKMAN::AutotoolHelper.set_cppflags_and_ldflags args, [Curl, Zlib, Szip, Hdf5, Parallel_netcdf]
+      PACKMAN.set_cppflags_and_ldflags [Curl, Zlib, Szip, Hdf5, Parallel_netcdf]
       # PnetCDF test has bug as discussed in http://www.unidata.ucar.edu/support/help/MailArchives/netcdf/msg12561.html
       PACKMAN.replace 'nc_test/run_pnetcdf_test.sh', { 'mpiexec -n 4' => 'mpiexec -n 2' }
     else
-      PACKMAN::AutotoolHelper.set_cppflags_and_ldflags args, [Curl, Zlib, Szip, Hdf5]
+      PACKMAN.set_cppflags_and_ldflags [Curl, Zlib, Szip, Hdf5]
     end
     PACKMAN.run './configure', *args
     PACKMAN.run 'make -j2'

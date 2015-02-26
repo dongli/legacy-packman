@@ -13,7 +13,7 @@ class Libcroco < PACKMAN::Package
       --disable-dependency-tracking
       --disable-Bsymbolic
     ]
-    PACKMAN::AutotoolHelper.set_cppflags_and_ldflags args, [Glib, Libxml2]
+    PACKMAN.set_cppflags_and_ldflags [Glib, Libxml2]
     PACKMAN.run './configure', *args
     PACKMAN.run 'make install'
   end

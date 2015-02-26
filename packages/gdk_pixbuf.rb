@@ -21,7 +21,7 @@ class Gdk_pixbuf < PACKMAN::Package
       --without-gdiplus
       --with-jasper
     ]
-    PACKMAN::AutotoolHelper.set_cppflags_and_ldflags args,
+    PACKMAN.set_cppflags_and_ldflags
       [Glib, Jpeg, Libpng, Libtiff, Jasper, Gobject_introspection]
     PACKMAN.run './configure', *args
     PACKMAN.run 'make'

@@ -21,7 +21,7 @@ class Gobject_introspection < PACKMAN::Package
       --disable-dependency-tracking
       --with-cairo
     ]
-    PACKMAN::AutotoolHelper.set_cppflags_and_ldflags args, [Glib, Libffi, Cairo]
+    PACKMAN.set_cppflags_and_ldflags [Glib, Libffi, Cairo]
     PACKMAN.run './configure', *args
     PACKMAN.run 'make'
     # PACKMAN.run 'make check' if not skip_test?

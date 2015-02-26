@@ -35,7 +35,7 @@ class R < PACKMAN::Package
     elsif PACKMAN::OS.type == :Linux
       args << '--enable-R-shlib'
     end
-    PACKMAN::AutotoolHelper.set_cppflags_and_ldflags args, [Readline, Gettext]
+    PACKMAN.set_cppflags_and_ldflags [Readline, Gettext]
     PACKMAN.run './configure', *args
     PACKMAN.run 'make'
     PACKMAN.run 'make check 2>&1 | tee make-check.log' if not skip_test?

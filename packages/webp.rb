@@ -16,7 +16,7 @@ class Webp < PACKMAN::Package
       --enable-libwebpdemux
       --enable-libwebpdecoder
     ]
-    PACKMAN::AutotoolHelper.set_cppflags_and_ldflags args, [Libpng, Jpeg, Libtiff, Giflib]
+    PACKMAN.set_cppflags_and_ldflags [Libpng, Jpeg, Libtiff, Giflib]
     PACKMAN.run './configure', *args
     PACKMAN.run 'make install'
   end

@@ -14,7 +14,7 @@ class Libgsf < PACKMAN::Package
       --prefix=#{prefix}
       --disable-dependency-tracking
     ]
-    PACKMAN::AutotoolHelper.set_cppflags_and_ldflags args, [Gettext, Glib, Gdk_pixbuf]
+    PACKMAN.set_cppflags_and_ldflags [Gettext, Glib, Gdk_pixbuf]
     PACKMAN.run './configure', *args
     PACKMAN.run 'make install'
   end

@@ -52,7 +52,7 @@ class Imagemagick < PACKMAN::Package
       --with-djvu=#{Djvulibre.prefix}
       --with-openjp2=#{Openjpeg.prefix}
     ]
-    PACKMAN::AutotoolHelper.set_cppflags_and_ldflags args, [Libtool]
+    PACKMAN.set_cppflags_and_ldflags [Libtool]
     PACKMAN.run './configure', *args
     PACKMAN.run 'make install'
   end

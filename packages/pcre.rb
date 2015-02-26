@@ -21,7 +21,7 @@ class Pcre < PACKMAN::Package
       --enable-pcregrep-libbz2
       --enable-jit
     ]
-    PACKMAN::AutotoolHelper.set_cppflags_and_ldflags args, [Zlib, Bzip2]
+    PACKMAN.set_cppflags_and_ldflags [Zlib, Bzip2]
     PACKMAN.run './configure', *args
     PACKMAN.run 'make'
     PACKMAN.run 'make test' if not skip_test?

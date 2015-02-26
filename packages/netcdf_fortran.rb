@@ -30,7 +30,7 @@ class Netcdf_fortran < PACKMAN::Package
     if use_mpi?
       args << '--enable-parallel-tests'
     end
-    PACKMAN::AutotoolHelper.set_cppflags_and_ldflags args, [Curl, Zlib, Hdf5, Netcdf]
+    PACKMAN.set_cppflags_and_ldflags [Curl, Zlib, Hdf5, Netcdf]
     PACKMAN.run './configure', *args
     PACKMAN.run 'make -j2'
     PACKMAN.run 'make check' if not skip_test?

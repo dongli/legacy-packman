@@ -16,7 +16,7 @@ class Cmor < PACKMAN::Package
       --with-udunits2=#{Udunits.prefix}
       --with-netcdf=#{Netcdf.prefix}
     ]
-    PACKMAN::AutotoolHelper.set_cppflags_and_ldflags args, Zlib
+    PACKMAN.set_cppflags_and_ldflags [Zlib]
     PACKMAN.run './configure', *args
     PACKMAN.run 'make install'
   end

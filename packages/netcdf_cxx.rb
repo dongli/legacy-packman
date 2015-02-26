@@ -17,7 +17,7 @@ class Netcdf_cxx < PACKMAN::Package
       --enable-static
       --enable-shared
     ]
-    PACKMAN::AutotoolHelper.set_cppflags_and_ldflags args, [Netcdf]
+    PACKMAN.set_cppflags_and_ldflags [Netcdf]
     if PACKMAN::OS.cygwin_gang?
       args << "LIBS='-L#{Curl.lib} -lcurl -L#{Hdf5.lib} -lhdf5 -lhdf5_hl'"
     end

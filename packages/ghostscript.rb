@@ -45,7 +45,7 @@ class Ghostscript < PACKMAN::Package
       --disable-compile-inits
       --disable-gtk
     ]
-    PACKMAN::AutotoolHelper.set_cppflags_and_ldflags args, [Expat, Jpeg, Jbig2dec, Libtiff, Libpng, Little_cms, Fontconfig, Freetype]
+    PACKMAN.set_cppflags_and_ldflags [Expat, Jpeg, Jbig2dec, Libtiff, Libpng, Little_cms, Fontconfig, Freetype]
     PACKMAN.run './configure', *args
     PACKMAN.replace 'Makefile', {
       /^DEVICE_DEVS17=/ => 'DEVICE_DEVS17=$(DD)djvumask.dev $(DD)djvusep.dev'

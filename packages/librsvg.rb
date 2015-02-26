@@ -19,7 +19,7 @@ class Librsvg < PACKMAN::Package
       --enable-introspection=no
       --enable-svgz
     ]
-    PACKMAN::AutotoolHelper.set_cppflags_and_ldflags args, [Gtkx, Libcroco, Libgsf]
+    PACKMAN.set_cppflags_and_ldflags [Gtkx, Libcroco, Libgsf]
     PACKMAN.run './configure', *args
     args = %W[
       gdk_pixbuf_binarydir=#{Gdk_pixbuf.lib}/gdk-pixbuf-2.0/2.10.0/loaders

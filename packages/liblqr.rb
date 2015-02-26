@@ -10,7 +10,7 @@ class Liblqr < PACKMAN::Package
       --prefix=#{prefix}
       --disable-dependency-tracking
     ]
-    PACKMAN::AutotoolHelper.set_cppflags_and_ldflags args, [Glib]
+    PACKMAN.set_cppflags_and_ldflags [Glib]
     PACKMAN.run './configure', *args
     PACKMAN.run 'make install'
   end

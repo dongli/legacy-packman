@@ -14,7 +14,7 @@ class Openexr < PACKMAN::Package
       --disable-debug
       --disable-dependency-tracking
     ]
-    PACKMAN::AutotoolHelper.set_cppflags_and_ldflags args, [Openexr]
+    PACKMAN.set_cppflags_and_ldflags [Openexr]
     PACKMAN.run './configure', *args
     PACKMAN.run 'make install'
   end
