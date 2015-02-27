@@ -4,6 +4,10 @@ require "digest"
 require "fileutils"
 
 module PACKMAN
+  def self.contact_developer
+    'Send email to Li Dong <dongli@lasg.iap.ac.cn>.'
+  end
+
   def self.does_command_exist? cmd
     `which #{cmd} 2>&1`
     return $?.success?

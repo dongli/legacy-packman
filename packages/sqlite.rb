@@ -32,17 +32,24 @@ class Sqlite < PACKMAN::Package
       --prefix=#{prefix}
       --disable-dependency-tracking
       --enable-dynamic-extensions
-      LIBS='-lstdc++'
+      LIBS=#{PACKMAN.compiler_flag 'c', :cxxlib}
     ]
     PACKMAN.run './configure', *args
     PACKMAN.run 'make install'
     args = %W[
       -fno-common
-      -dynamiclib
       #{PACKMAN::ConfigManager.package_root}/extension-functions.c
       -o libsqlitefunctions.#{PACKMAN::OS.shared_library_suffix}
       #{ENV['CFLAGS']}
+      -I.
+      -lm
     ]
+    # TODO: Figure out how to do this elegantly.
+    if PACKMAN::OS.type == :Darwin
+      args << '-dynamiclib'
+    elsif PACKMAN::OS.type == :Linux
+      args << '-shared'
+    end
     PACKMAN.run PACKMAN.compiler_command('c'), *args
     PACKMAN.mv "libsqlitefunctions.#{PACKMAN::OS.shared_library_suffix}", lib
     PACKMAN.mkdir doc, :silent

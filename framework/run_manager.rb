@@ -20,7 +20,7 @@ module PACKMAN
           # Add RPATH options to ensure the correct libraries are linked.
           next if not tmp
           tmp[1].split(':').each do |rpath|
-            PACKMAN.append_env 'LDFLAGS', "-Wl,-rpath=#{rpath}"
+            PACKMAN.append_env 'LDFLAGS', PACKMAN.compiler_flag('c', :rpath).(rpath)
           end
         end
       end

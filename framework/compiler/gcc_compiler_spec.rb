@@ -6,6 +6,8 @@ module PACKMAN
     compiler_command 'fortran' => ['gfortran', '-O2 -fPIC']
     flag :openmp => '-fopenmp'
     flag :pic => '-fPIC'
+    flag :rpath => -> rpath { "-Wl,-rpath=#{rpath}" }
+    flag :cxxlib => '-lstdc++'
     version_pattern /^gcc [^ ]+ (\d+\.\d+\.\d+)/
   end
 end

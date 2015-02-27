@@ -5,7 +5,7 @@ module PACKMAN
        :default_compiler_flags, :append_customized_flags,
        :clean_customized_flags, :customized_compiler_flags,
        :use_openmp, :compiler_support_openmp?, :all_compiler_support_openmp?,
-       :use_mpi, :check_compiler]
+       :use_mpi, :check_compiler, :compiler_flag]
     end
 
     def self.init
@@ -149,6 +149,13 @@ module PACKMAN
 
     def self.compiler_version language
       @@active_compiler_set.info[language][:spec].version
+    end
+
+    def self.compiler_flag language, flag
+      if not @@active_compiler_set.info[language][:spec].flags.has_key? flag
+        CLI.report_error "Compiler #{compiler_vendor language} does not provide flag #{CLI.red flag}! #{PACKMAN.contact_developer}"
+      end
+      @@active_compiler_set.info[language][:spec].flags[flag]
     end
 
     def self.use_openmp language = nil
