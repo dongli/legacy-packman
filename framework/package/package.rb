@@ -616,8 +616,7 @@ module PACKMAN
       prefix = package_.system_prefix
     else
       prefix = "#{ConfigManager.install_root}/#{package_.class.to_s.downcase}/#{package_.version}"
-      if not package_.has_label? 'compiler_insensitive' and
-        not options.include? :compiler_insensitive
+      if not package_.has_label? 'compiler_insensitive' and not package_.use_binary?
         compiler_set_index = CompilerManager.active_compiler_set_index
         prefix << "/#{compiler_set_index}"
       end

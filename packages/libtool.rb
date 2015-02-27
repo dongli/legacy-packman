@@ -5,6 +5,8 @@ class Libtool < PACKMAN::Package
 
   skip_on :Mac_OS_X
 
+  depends_on 'm4'
+
   def install
     args = %W[
       --prefix=#{prefix}

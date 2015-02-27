@@ -1,6 +1,7 @@
 module PACKMAN
   class Commands
     def self.install
+      @@installed_packages = []
       @@is_any_package_installed = false
       # Install packages.
       packages = CommandLine.packages.empty? ? ConfigManager.package_options.keys : CommandLine.packages.uniq
@@ -63,12 +64,7 @@ module PACKMAN
 
     def self.is_package_installed? package, options = []
       options = [options] if not options.class == Array
-      if options.include? :binary
-        CLI.report_error "#{CLI.red package.class} does not have precompiled binary!" if not package.use_binary?
-        bashrc = "#{PACKMAN.prefix package, :compiler_insensitive}/bashrc"
-      else
-        bashrc = "#{PACKMAN.prefix package}/bashrc"
-      end
+      bashrc = package.bashrc
       if File.exist? bashrc
         match = File.open("#{bashrc}", 'r').read.match(/#{package.sha1}( (\d+)?)?$/)
         if match and match[2] == package.revision
@@ -94,19 +90,36 @@ module PACKMAN
       if package.has_label? 'compiler_insensitive' and is_depend
         # NOTE: Some 'compiler_insensitive' package may use other compiler set to build, and it is normally just binary,
         #       so we skip its dependent packages to avoid problems.
-        Shell::Env.append_source package.bashrc if not package.skip?
+        PACKMAN.append_source package.bashrc if not package.skip?
         return
       end
       package.dependencies.each do |depend|
         depend_package = Package.instance depend
         append_bashrc depend_package, true
-        Shell::Env.append_source depend_package.bashrc if not depend_package.skip?
+        PACKMAN.append_source depend_package.bashrc if not depend_package.skip?
       end
     end
 
     def self.install_package package, options = []
       options = [options] if not options.class == Array
-      # Set compiler sets.
+      # Check if the package should be skipped.
+      if package.skip?
+        if not package.methods.include? :installed?
+          CLI.report_error "Package #{CLI.red package.class} does not have #{CLI.blue 'installed?'} method!"
+        end
+        if not package.skip_distros.include? :all and not package.installed?
+          CLI.report_error "Package #{CLI.red package.class} "+
+            "should be provided by system!\n#{CLI.blue '==>'} "+
+            "The possible installation method is:\n#{package.install_method}"
+        end
+        return
+      end
+      # Check if the package has been installed.
+      if @@installed_packages.include? package.class
+        return
+      else
+        @@installed_packages << package.class
+      end
       # NOTE: To avoid GCC build itself!
       return if package.has_label? 'compiler_insensitive' and is_package_installed? package, options
       # Check dependencies.
@@ -130,18 +143,6 @@ module PACKMAN
         CLI.report_notice "Package master #{CLI.green package.class} has been installed."
         return
       end
-      # Check if the package should be skipped.
-      if package.skip?
-        if not package.methods.include? :installed?
-          CLI.report_error "Package #{CLI.red package.class} does not have #{CLI.blue 'installed?'} method!"
-        end
-        if not package.skip_distros.include? :all and not package.installed?
-          CLI.report_error "Package #{CLI.red package.class} "+
-            "should be provided by system!\n#{CLI.blue '==>'} "+
-            "The possible installation method is:\n#{package.install_method}"
-        end
-        return
-      end
       # Check if the package has been downloaded or not. If not, download it when
       # the OS is connected with internet.
       begin
@@ -157,7 +158,7 @@ module PACKMAN
         # Install precompiled package.
         prefix = PACKMAN.prefix package, :compiler_insensitive
         # Check if the package has already installed.
-        return if is_package_installed? package, options << :binary
+        return if is_package_installed? package, options
         # Use precompiled binary file.
         CLI.report_notice "Use precompiled binary files for #{CLI.green package.class}."
         PACKMAN.mkdir prefix, :force
@@ -237,10 +238,10 @@ module PACKMAN
           # Clean build files.
           FileUtils.rm_rf build_upper_dir if Dir.exist? build_upper_dir
           # Clean the bashrc pathes.
-          Shell::Env.clear_source if not options.include? :depend
+          PACKMAN.clear_source if not options.include? :depend
         end
       end
-      Shell::Env.clear_env if not options.include? :depend
+      PACKMAN.clear_env if not options.include? :depend
     end
   end
 end

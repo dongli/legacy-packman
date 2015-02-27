@@ -112,17 +112,21 @@ function install_ruby
         wget $RUBY_URL -O $RUBY_PACKAGE
     fi
     rm -rf $RUBY_PACKAGE_DIR
-    tar -xjf $RUBY_PACKAGE
+    tar -xzf $RUBY_PACKAGE
     cd $RUBY_PACKAGE_DIR
     echo "[Notice]: Building Ruby, please wait for a moment! If anything is wrong, please see $PACKMAN_ROOT/ruby/out!"
     if ! which gcc 1> /dev/null; then
         echo '[Error]: There is no GCC compiler!'
         exit
     fi
-    CC=gcc ./configure --prefix=$PACKMAN_ROOT/ruby --disable-install-doc 1> $PACKMAN_ROOT/ruby/out 2>&1
+    CC=gcc CFLAGS=-fPIC ./configure --prefix=$PACKMAN_ROOT/ruby --disable-install-rdoc 1> $PACKMAN_ROOT/ruby/out 2>&1
     make install 1>> $PACKMAN_ROOT/ruby/out 2>&1
     cd $PACKMAN_ROOT/ruby
     rm -rf $RUBY_PACKAGE_DIR
+
+    if [[ -d "$PACKMAN_ROOT/ruby/bin" ]]; then
+        export PATH=$PACKMAN_ROOT/ruby/bin:$PATH
+    fi
 }
 
 if [[ -d "$PACKMAN_ROOT/ruby/bin" ]]; then
@@ -134,6 +138,7 @@ if ! which ruby 1> /dev/null; then
     echo '[Warning]: System does not provide a Ruby! PACKMAN will install one for you!'
     install_ruby
 fi
+
 RUBY_VERSION=$(ruby -v | cut -d ' ' -f 2)
 if [[ $RUBY_VERSION =~ $(echo '^1\.8') || $RUBY_VERSION =~ $(echo '^1\.9') ]]; then
     echo "[Warning]: Ruby version is too old, PACKMAN will install a newer one for you!"

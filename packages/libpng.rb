@@ -5,6 +5,8 @@ class Libpng < PACKMAN::Package
 
   skip_on :Mac_OS_X
 
+  depends_on 'zlib'
+
   if PACKMAN::OS.distro == :Mac_OS_X
     def system_prefix
       '/usr/X11'
@@ -17,6 +19,7 @@ class Libpng < PACKMAN::Package
       --disable-dependency-tracking
       --disable-silent-rules
     ]
+    PACKMAN.set_cppflags_and_ldflags [Zlib]
     PACKMAN.run './configure', *args
     PACKMAN.run 'make install'
   end

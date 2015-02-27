@@ -19,7 +19,7 @@ class Imagemagick < PACKMAN::Package
   depends_on 'librsvg'
   depends_on 'liblqr'
   depends_on 'openexr'
-  depends_on 'webp'
+  # depends_on 'webp' # WebP is hosted by Google, so we cannot access it within our great China!
   depends_on 'fftw'
   depends_on 'pango'
   depends_on 'djvulibre'
@@ -46,12 +46,12 @@ class Imagemagick < PACKMAN::Package
       --with-rsvg=#{Librsvg.prefix}
       --with-lqr=#{Liblqr.prefix}
       --with-openexr=#{Openexr.prefix}
-      --with-webp=#{Webp.prefix}
       --with-fftw=#{Fftw.prefix}
       --with-pango=#{Pango.prefix}
       --with-djvu=#{Djvulibre.prefix}
       --with-openjp2=#{Openjpeg.prefix}
     ]
+    # --with-webp=#{Webp.prefix}
     PACKMAN.set_cppflags_and_ldflags [Libtool]
     PACKMAN.run './configure', *args
     PACKMAN.run 'make install'
