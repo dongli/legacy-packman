@@ -12,6 +12,7 @@ module PACKMAN
       :update => 'Update PACKMAN.',
       :help => 'Print help message.',
       :report => 'Report version of PACKMAN an other information.',
+      :show => 'Show information of a package',
       :start => 'Start a package if it provides a start method.',
       :stop => 'Stop a package if it provides a stop method.',
       :status => 'Check the status of a package if it provides a status method.'
@@ -52,6 +53,9 @@ module PACKMAN
         '-package_root' => 'Print the download root of all packages.',
         '-install_root' => 'Print the installation root of all packages.',
         '-installed_packages' => 'Print the installed packages.'
+      },
+      :show => {
+        '-options' => 'Print the available options of the package.'
       },
       :start => {},
       :stop => {},

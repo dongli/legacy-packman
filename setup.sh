@@ -50,6 +50,8 @@ else
     fi
 fi
 
+unset subcommand
+
 function find_subcommand()
 {
     if [[ $subcommand ]]; then
@@ -75,7 +77,7 @@ function complete_packman()
     "config" | "switch" | "mirror" | "update" | "help" | "report")
         completed_words=$(eval "echo \$${prev_word##*/}_options")
         ;;
-    "collect" | "install")
+    "collect" | "edit" | "install" | "show")
         completed_words="$(eval "echo \$${prev_word##*/}_options") $available_package_names"
         ;;
     "remove" | "start" | "stop" | "status")
@@ -83,7 +85,7 @@ function complete_packman()
         ;;
     *)
         if [[ $subcommand ]]; then
-            if [[ "remove start stop status" =~ $subcommand ]]; then
+            if [[ "edit remove show start stop status" =~ $subcommand ]]; then
                 completed_words="$(eval "echo \$${subcommand}_options") $available_package_names"
             elif [[ "install" =~ $subcommand ]]; then
                 completed_words="$(eval "echo \$${subcommand}_options") $installed_package_names"

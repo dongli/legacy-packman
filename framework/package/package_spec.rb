@@ -8,9 +8,9 @@ module PACKMAN
     attr_reader :option_actual_types
 
     CommonOptions = {
-      'skip_test' => :boolean,
+      'skip_test' => false,
       'compiler_set_indices' => :integer_array,
-      'use_binary' => :boolean,
+      'use_binary' => false,
       'use_version' => :string
     }.freeze
 
