@@ -50,7 +50,7 @@ class Python3 < PACKMAN::Package
     PACKMAN.run './configure', *args
     PACKMAN.run 'make'
     PACKMAN.run "make install PYTHONAPPSDIR=#{prefix}"
-    PACKMAN.run 'make quicktest' if not skip_test?
+    #PACKMAN.run 'make quicktest' if not skip_test?
     # Install setuptools and pip.
     PACKMAN.append_env 'PYTHONPATH', site_packages, ':'
     [setuptools, pip].each do |x|

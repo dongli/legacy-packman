@@ -38,6 +38,7 @@ class Sqlite < PACKMAN::Package
     PACKMAN.run 'make install'
     args = %W[
       -fno-common
+      $CFLAGS
       #{extension_functions.package_path}
       -o libsqlitefunctions.#{PACKMAN::OS.shared_library_suffix}
       #{ENV['CFLAGS']}
