@@ -23,7 +23,7 @@ module PACKMAN
       @provided_stuffs = {}
       @patches = []
       @embeded_patches = []
-      @attachments = []
+      @attachments = {}
       @option_valid_types = {}
       @options = {}
       @option_actual_types = {}
@@ -32,6 +32,10 @@ module PACKMAN
       CommonOptions.each do |key, type|
         option key => type
       end
+    end
+
+    def package_path
+      PACKMAN.package_root+'/'+filename
     end
 
     def inherit val
@@ -172,17 +176,11 @@ module PACKMAN
       @embeded_patches << val if not @embeded_patches.include? val
     end
 
-    def attach &block
+    def attach name, &block
       if block_given?
         attachment = PackageSpec.new
         attachment.instance_eval &block
-        is_already_added = false
-        @attachments.each do |a|
-          if a.sha1 == attachment.sha1
-            is_already_added = true
-          end
-        end
-        @attachments << attachment if not is_already_added
+        @attachments[name] = attachment
       end
     end
 

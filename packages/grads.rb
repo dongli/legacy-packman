@@ -23,7 +23,7 @@ class Grads < PACKMAN::Package
   depends_on 'libxml2'
   depends_on 'gadap'
 
-  attach do
+  attach 'data' do
     url 'ftp://cola.gmu.edu/grads/data2.tar.gz'
     sha1 'e1cd5f9c4fe8d6ed344a29ee00413aeb6323b7cd'
   end
@@ -106,7 +106,7 @@ class Grads < PACKMAN::Package
     PACKMAN.run 'make install'
     PACKMAN.mkdir "#{lib}"
     PACKMAN.work_in "#{lib}" do
-      PACKMAN.decompress "#{PACKMAN::ConfigManager.package_root}/data2.tar.gz"
+      PACKMAN.decompress data.package_path
     end
   end
 end

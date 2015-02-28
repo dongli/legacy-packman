@@ -28,7 +28,7 @@ class Wrf_model < PACKMAN::Package
     end
   end
 
-  attach do
+  attach 'chem' do
     url 'http://www2.mmm.ucar.edu/wrf/src/WRFV3-Chem-3.6.1.TAR.gz'
     sha1 '72b56c7e76e8251f9bbbd1d2b95b367ad7d4434b'
     version '3.6.1'
@@ -39,11 +39,10 @@ class Wrf_model < PACKMAN::Package
   def decompress_to target_dir
     PACKMAN.mkdir target_dir
     PACKMAN.work_in target_dir do
-      PACKMAN.decompress "#{PACKMAN::ConfigManager.package_root}/#{filename}"
+      PACKMAN.decompress package_path
       PACKMAN.work_in 'WRFV3' do
         if with_chem?
-          chem = attachments.first
-          PACKMAN.decompress "#{PACKMAN::ConfigManager.package_root}/#{chem.filename}"
+          PACKMAN.decompress chem.package_path
         end
       end
     end

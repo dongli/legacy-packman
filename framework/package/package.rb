@@ -25,6 +25,10 @@ module PACKMAN
         option_type = active_spec.option_valid_types[active_spec.options.keys[i]]
         PackageDslHelper.create_option_shortcut option_name, option_type, self, :active_spec
       end
+
+      active_spec.attachments.each_key do |attach_name|
+        PackageDslHelper.create_attachment_shortcut attach_name, self, :active_spec
+      end
     end
 
     def hand_over_spec name
@@ -136,6 +140,7 @@ module PACKMAN
     def version; @active_spec.version; end
     def revision; @active_spec.revision; end
     def filename; @active_spec.filename; end
+    def package_path; @active_spec.package_path; end
     def labels; @active_spec.labels; end
     def has_label? val; @active_spec.has_label? val; end
     def conflict_packages; @active_spec.conflict_packages; end
@@ -223,13 +228,13 @@ module PACKMAN
         end
       end
 
-      def attach option = nil, &block
-        stable.attach &block
+      def attach name, option = nil, &block
+        stable.attach name, &block
         if option == :for_all
-          devel.attach &block if devel
+          devel.attach name, &block if devel
           if binary
             binary.each_value do |b|
-              b.attach &block
+              b.attach name, &block
             end
           end
         end

@@ -50,6 +50,8 @@ require "legacy/config_manager_legacy"
 require "legacy/package_legacy"
 require "ruby/ruby_helper"
 
+PACKMAN::ConfigManager.init
+
 # Handover delegated methods to hide the modules and classes that contain the methods from users.
 def handover_delegated_methods root, father = nil
   father ||= root
@@ -94,7 +96,6 @@ $LOAD_PATH << "#{ENV['PACKMAN_ROOT']}/packages"
 PACKMAN::OS.init
 PACKMAN::Shell::Env.init
 PACKMAN::CommandLine.init
-PACKMAN::ConfigManager.init
 PACKMAN::CompilerManager.init
 
 begin

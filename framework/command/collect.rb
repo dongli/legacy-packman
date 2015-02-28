@@ -62,7 +62,7 @@ module PACKMAN
       PACKMAN.download ConfigManager.package_root, url, patch_file_name
     end
     # Check if there is any attachment to download.
-    package.attachments.each do |attach|
+    package.attachments.each_value do |attach|
       url = attach.url
       attach_file_name = "#{File.basename(URI.parse(url).path)}"
       attach_file_path = "#{ConfigManager.package_root}/#{attach_file_name}"

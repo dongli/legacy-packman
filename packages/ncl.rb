@@ -229,12 +229,7 @@ class Ncl < PACKMAN::Package
   end
 
   def postfix
-    if has_label? 'binary'
-      ncl = PACKMAN.prefix self, :compiler_insensitive
-    else
-      ncl = PACKMAN.prefix self
-    end
-    PACKMAN.replace "#{ncl}/bashrc", {
+    PACKMAN.replace bashrc, {
       /NCL_ROOT/ => 'NCARG_ROOT'
     }
   end

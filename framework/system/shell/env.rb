@@ -49,7 +49,7 @@ module PACKMAN
         end
       end
 
-      def self.reset_env key, value
+      def self.reset_env key, value = nil
         @@customized_env[key] = value
       end
 

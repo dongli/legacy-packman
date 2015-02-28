@@ -13,7 +13,7 @@ class R < PACKMAN::Package
   depends_on 'openblas'
 
   # NOTE: We cannot access Google sites within our great LAN!!
-  # attach do
+  # attach 'bash_completion' do
   #   url 'https://rcompletion.googlecode.com/svn-history/r31/trunk/bash_completion/R'
   #   sha1 'ee39aa2de6319f41025cf8f618197d7efc16097c'
   # end

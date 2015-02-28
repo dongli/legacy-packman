@@ -18,7 +18,7 @@ class Ferret < PACKMAN::Package
   depends_on 'opendap'
   depends_on 'tcsh'
 
-  attach do
+  attach 'dsets' do
     url 'ftp://ftp.pmel.noaa.gov/ferret/pub/data/fer_dsets.tar.gz'
     sha1 '4a1e3dfdad94f93a70f0359f3a88f65c342d8d39'
   end
@@ -182,8 +182,7 @@ class Ferret < PACKMAN::Package
     PACKMAN.cd File.dirname(prefix), :norecord
     PACKMAN.mkdir 'datasets', :force
     PACKMAN.work_in 'datasets' do
-      datasets = "#{PACKMAN::ConfigManager.package_root}/fer_dsets.tar.gz"
-      PACKMAN.decompress datasets
+      PACKMAN.decompress dsets.package_path
     end
     # Do the final installation step.
     PACKMAN.work_in PACKMAN.prefix(self) do

@@ -124,6 +124,12 @@ module PACKMAN
       return res
     end
 
+    def major_minor
+      res = "#{major}" if major
+      res << ".#{minor}" if minor
+      return res
+    end
+
     def self.validate version_string
       tmp = version_string.match(/(>=|==|=~)?(.*)/)
       VersionSpec.new tmp[2]

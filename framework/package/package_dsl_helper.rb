@@ -57,5 +57,12 @@ module PACKMAN
         end
       end
     end
+
+    def self.create_attachment_shortcut attach_name, object, spec
+      object.instance_eval "@#{attach_name} = stable.attachments[attach_name]"
+      object.instance_eval <<-EOT
+        def #{attach_name}; @#{attach_name}; end
+      EOT
+    end
   end
 end

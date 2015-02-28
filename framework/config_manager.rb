@@ -1,5 +1,9 @@
 module PACKMAN
   class ConfigManager
+    def self.delegated_methods
+      [:package_root, :install_root, :download_command]
+    end
+
     PermittedKeys = %W[
       package_root
       install_root

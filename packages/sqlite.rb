@@ -9,12 +9,12 @@ class Sqlite < PACKMAN::Package
   depends_on 'readline'
   depends_on 'icu4c'
 
-  attach do
+  attach 'extension_functions' do
     url 'https://www.sqlite.org/contrib/download/extension-functions.c/download/extension-functions.c?get=25'
     sha1 'c68fa706d6d9ff98608044c00212473f9c14892f'
   end
 
-  attach do
+  attach 'sqlite_doc' do
     url 'https://sqlite.org/2015/sqlite-doc-3080802.zip'
     sha1 'a11a6ea95d3d4a88b8d7d4e0cb6fcc3e5f4bf887'
   end
@@ -38,7 +38,7 @@ class Sqlite < PACKMAN::Package
     PACKMAN.run 'make install'
     args = %W[
       -fno-common
-      #{PACKMAN::ConfigManager.package_root}/extension-functions.c
+      #{extension_functions.package_path}
       -o libsqlitefunctions.#{PACKMAN::OS.shared_library_suffix}
       #{ENV['CFLAGS']}
       -I.
@@ -54,8 +54,8 @@ class Sqlite < PACKMAN::Package
     PACKMAN.mv "libsqlitefunctions.#{PACKMAN::OS.shared_library_suffix}", lib
     PACKMAN.mkdir doc, :silent
     PACKMAN.work_in doc do
-      PACKMAN.decompress "#{PACKMAN::ConfigManager.package_root}/sqlite-doc-3080802.zip"
-      PACKMAN.mv doc+'/sqlite-doc-3080802/*', doc
+      PACKMAN.decompress sqlite_doc.package_path
+      PACKMAN.mv doc+"/#{File.basename sqlite_doc.filename, '.zip'}/*", doc
     end
   end
 end

@@ -18,18 +18,18 @@ class Ghostscript < PACKMAN::Package
     patch :embed
   end
 
-  attach do
+  attach 'fonts' do
     url 'https://downloads.sourceforge.net/project/gs-fonts/gs-fonts/8.11%20%28base%2035%2C%20GPL%29/ghostscript-fonts-std-8.11.tar.gz'
     sha1 '2a7198e8178b2e7dba87cb5794da515200b568f5'
   end
 
-  attach do
+  attach 'gsdjvu' do
     url 'https://downloads.sourceforge.net/project/djvu/GSDjVu/1.6/gsdjvu-1.6.tar.gz'
     sha1 'a8c5520d698d8be558a1957b4e5108cba68822ef'
   end
 
   def install
-    PACKMAN.decompress "#{PACKMAN::ConfigManager.package_root}/gsdjvu-1.6.tar.gz"
+    PACKMAN.decompress gsdjvu.package_path
     PACKMAN.work_in './gsdjvu-1.6' do
       PACKMAN.cp 'gdevdjvu.c', '../base'
       PACKMAN.cp 'ps2utf8.ps', '../lib'
@@ -53,7 +53,7 @@ class Ghostscript < PACKMAN::Package
     PACKMAN.run 'make install'
     PACKMAN.run 'make install-so'
     PACKMAN.work_in "#{share}/ghostscript" do
-      PACKMAN.decompress "#{PACKMAN::ConfigManager.package_root}/ghostscript-fonts-std-8.11.tar.gz"
+      PACKMAN.decompress fonts.package_path
     end
   end
 end
