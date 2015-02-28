@@ -4,6 +4,7 @@ module PACKMAN
       :config => 'Edit the config file in the default location.',
       :collect => 'Collect packages from internet.',
       :fix => 'Fix the potential legacy errors.',
+      :edit => 'Open the class file for the given package',
       :install => 'Install packages and their dependencies.',
       :remove => 'Remove packages.',
       :switch => 'Switch different compiler set (new bashrc will be generated).',
@@ -24,6 +25,7 @@ module PACKMAN
         '-all' => 'Collect all packages.'
       },
       :fix => {},
+      :edit => {},
       :install => {
         '-verbose' => 'Show verbose information.'
       },
@@ -101,7 +103,7 @@ module PACKMAN
         end
       end
       @@process_exclusive = true
-      if [:switch, :report, :status].include? @@subcommand
+      if [:edit, :switch, :report, :status].include? @@subcommand
         @@process_exclusive = false
       end
     end
