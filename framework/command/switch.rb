@@ -54,19 +54,19 @@ module PACKMAN
           available_versions = bashrc_files.map { |p| File.basename(PACKMAN.strip_dir(p, strip_level)) }
           package_name = File.basename(dir).capitalize.to_sym
           if not ConfigManager.package_options.has_key? package_name or
-            not ConfigManager.package_options[package_name].has_key? 'version'
+            not ConfigManager.package_options[package_name].has_key? 'use_version'
             msg = "Package #{CLI.red package_name} has multiple versions:\n"
             available_versions.each do |v|
               msg << "#{CLI.yellow '==>'} #{v}\n"
             end
-            msg << "PACKMAN will use #{CLI.green PACKMAN.strip_dir bashrc_files.last, 2}!\n"
+            msg << "PACKMAN will use #{CLI.green PACKMAN.strip_dir bashrc_files.last, strip_level}!\n"
             msg << "If this is not what you want, you can specify the version in #{CLI.red CommandLine.config_file}."
             CLI.report_warning msg
             content << "source #{bashrc_files.last}\n"
             next
           end
           bashrc_files.each do |f|
-            if f =~ /#{ConfigManager.package_options[package_name]['version']}/
+            if f =~ /#{ConfigManager.package_options[package_name]['use_version']}/
               content << "source #{f}\n"
               break
             end
