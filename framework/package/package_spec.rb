@@ -43,6 +43,9 @@ module PACKMAN
       val.labels.each do |label|
         @labels << label if not @labels.include? label
       end
+      val.dependencies.each do |depend|
+        @dependencies << depend if not @dependencies.include? depend
+      end
       val.skip_distros.each do |distro|
         @skip_distros << distro if not @skip_distros.include? distro
       end
