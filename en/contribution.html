@@ -1,0 +1,75 @@
+---
+layout: en-page
+title: Be a contributor
+---
+
+<h1><a name="WriteInstallationFile">Write package installation file</a></h1>
+<p>
+    PACKMAN is an open platform, anyone who has ability and share spirit can contribute. One of the direct approach is to write a installation file for a new package. A domain specific language (DSL) is created in PACKMAN by using Ruby, which refers to Homebrew, so its developers are appreciated! The basic structure of install file is:
+<pre class="prettyprint">
+class &lt;Capitalized package name&gt; < PACKMAN::Package
+  url '&lt;package download address&gt;'
+  sha1 '&lt;package SHA1&gt;'
+  version '&lt;package version&gt;'
+
+  label '&lt;special label&gt;'
+  ...
+
+  option '&lt;option name&gt;' => &lt;default value&gt;
+  option '&lt;option name&gt;' => &lt;type，such as :boolean，:package_name，:directory&gt;
+
+  depends_on '&lt;other package in downcase&gt;'
+  ...
+
+  attach '&lt;attachment name&gt;' do
+    url '&lt;attachment download address&gt;'
+    sha1 '&lt;attachment SHA1&gt;'
+  end
+
+  patch do
+    url '&lt;patch download address&gt;'
+    sha1 '&lt;patch SHA1&gt;'
+  end
+
+  patch :embed # use embeded patch
+
+  def install
+    # write installation procedures here
+  end
+
+  def postfix
+    # write procedures after installation here
+  end
+end
+
+DATA
+&lt;embeded patch&gt;
+</pre>
+    You can refer the exist <a href="https://github.com/dongli/packman/tree/master/packages">examples</a> to write new ones.
+</p>
+
+<h2><a name="InstallationOptionUsage">Installation option usage</a></h2>
+<p>
+    There may be multiple options defined in the installation file so that users can control how a package is installed. For example:
+<pre class="prettyprint">
+option 'use_mpi' => false
+</pre>
+    After this definition, two methods <code>use_mpi?</code> and <code>mpi</code> can be used to judge whether use MPI or not, and what MPI is, such as:
+<pre class="prettyprint">
+if use_mpi?
+...
+end
+</pre>
+</p>
+
+<h2><a name="AttachmentUsage">Attachment usage</a></h2>
+<p>
+    Some package not only has source codes, but also attachments. This needs <code>attach</code> keyword to define as:
+<pre class="prettyprint">
+attach 'sqlite_doc' do
+  url 'https://sqlite.org/2015/sqlite-doc-3080802.zip'
+  sha1 'a11a6ea95d3d4a88b8d7d4e0cb6fcc3e5f4bf887'
+end
+</pre>
+    After definition, you can use the object instance <code>sqlite_doc</code> in other place (e.g., <code>install</code> method) to access information, such as <code>sqlite_doc.package_path</code>.
+</p>

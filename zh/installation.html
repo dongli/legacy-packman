@@ -1,0 +1,101 @@
+---
+layout: zh-page
+title: 安装
+---
+<h1><a name="获取PACKMAN">获取PACKMAN</a></h1>
+<p>
+    PACKMAN是用<a href="http://www.git-scm.com/">GIT</a>来管理版本的，并放置在开源网站<a href="https://github.com">GitHub</a>上（同时在国内的<a href="https://gitcafe.com">GitCafe</a>上做了镜像）。获取PACKMAN一共有三种途径，最为推荐的是通过GIT下载最新的版本。首先，进入到一个你希望放置PACKMAN的目录，运行如下名令：
+<pre>
+$ git clone https://github.com/dongli/packman
+Cloning into 'packman'...
+remote: Counting objects: 2594, done.
+remote: Compressing objects: 100% (44/44), done.
+remote: Total 2594 (delta 14), reused 0 (delta 0)
+Receiving objects: 100% (2594/2594), 460.58 KiB | 76.00 KiB/s, done.
+Resolving deltas: 100% (1859/1859), done.
+Checking connectivity... done.
+</pre>
+    这样你在当前目录下会有一个<code>packman</code>子目录:
+<pre>
+$ ls packman
+README.md <font color="lightblue">doc framework packages</font> <font color="green">packman</font> setup.sh
+</pre>
+    先在命令行下手动source一下<code>setup.sh</code>文件，它会检查系统的Ruby版本是否满足要求：
+<pre>
+$ source packman/setup.sh
+</pre>
+    如果一切正常，则什么都不会显示，而如果Ruby版本过旧，会显示在packman目录下安装一个新的Ruby，请耐心等待。之后可以在你的<code>~/.bashrc</code>文件里source该文件，以保证每次登陆PACKMAN能够使用。
+</p>
+<h1><a name="配置PACKMAN">配置PACKMAN</a></h1>
+<p>
+    为了满足多种使用要求，PACKMAN提供了多种选项供配置。当你第一次获取PACKMAN后，首先运行如下命令：
+<pre>
+$ packman config
+[<font color="green">Notice</font>]: <font color="green">/Users/dongli/Works/packman/packman.config</font> is generated. Please revise the following settings:
+<font color="lightblue">package_root</font>     = <font color="red">~/.packman/packages</font>
+<font color="lightblue">install_root</font>     = <font color="red">~/.packman</font>
+<font color="lightblue">download_command</font> = <font color="red">curl</font>
+<font color="lightblue">C compiler</font>       = <font color="red">gcc</font>
+<font color="lightblue">C++ compiler</font>     = <font color="red">g++</font>
+<font color="lightblue">Fortran compiler</font> = <font color="red">gfortran</font>
+[Press ANY key]
+</pre>
+    这里显示的是一些默认值。按回车键进入配置文件进行编辑：
+<pre class="prettyprint">
+package_root = "~/.packman/packages"
+install_root = "~/.packman"
+download_command = "curl"
+use_ftp_mirror = "no"
+defaults = {
+  "compiler_set_index" => 0,
+  "mpi" => "mpich"
+}
+compiler_set_0 = {
+  "c" => "gcc",
+  "c++" => "g++",
+  "fortran" => "gfortran"
+}
+</pre>
+    <table class="center">
+        <tr>
+            <th>关键字</th>
+            <th>意义</th>
+        </tr>
+        <tr>
+            <td>package_root</td>
+            <td>下载软件包存放位置</td>
+        </tr>
+        <tr>
+            <td>install_root</td>
+            <td>安装软件包的位置（一旦设置不宜改动）</td>
+        </tr>
+        <tr>
+            <td>download_command</td>
+            <td>下载命令，可以是curl或wget</td>
+        </tr>
+        <tr>
+            <td>use_ftp_mirror</td>
+            <td>使用FTP镜像，如果不用填"no"，如果用填"ftp://&lt;IP或域名&gt;:&lt;端口&gt;</td>
+        </tr>
+        <tr>
+            <td>defaults compiler_set_index</td>
+            <td>默认的编译器集合编号（从0开始）</td>
+        </tr>
+        <tr>
+            <td>defaults mpi</td>
+            <td>默认的MPI库（mpich或openmpi）</td>
+        </tr>
+        <tr>
+            <td>compiler_set_* c</td>
+            <td>第*个编译器集合的C编译器</td>
+        </tr>
+        <tr>
+            <td>compiler_set_* c++</td>
+            <td>第*个编译器集合的C++编译器</td>
+        </tr>
+        <tr>
+            <td>compiler_set_* fortran</td>
+            <td>第*个编译器集合的Fortran编译器</td>
+        </tr>
+    </table>
+</p>

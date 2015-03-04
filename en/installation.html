@@ -1,0 +1,101 @@
+---
+layout: en-page
+title: Install
+---
+<h1><a name="GetPACKMAN">Get PACKMAN</a></h1>
+<p>
+    PACKMAN is version controlled by <a href="http://www.git-scm.com/">GIT</a>, and hosted at <a href="https://github.com">GitHub</a>. There are three ways to get PACKMAN, and the most recommended one is through GIT to get the latest version of PACKMAN. Firstly, change to a directory where you want PACKMAN to reside, and type the following command:
+<pre>
+$ git clone https://github.com/dongli/packman
+Cloning into 'packman'...
+remote: Counting objects: 2594, done.
+remote: Compressing objects: 100% (44/44), done.
+remote: Total 2594 (delta 14), reused 0 (delta 0)
+Receiving objects: 100% (2594/2594), 460.58 KiB | 76.00 KiB/s, done.
+Resolving deltas: 100% (1859/1859), done.
+Checking connectivity... done.
+</pre>
+    After that, you will get a <code>packman</code> subdirectory:
+<pre>
+$ ls packman
+README.md <font color="lightblue">doc framework packages</font> <font color="green">packman</font> setup.sh
+</pre>
+    Secondly, you could source <code>setup.sh</code> manually to check if the version of system Ruby meets the demands:
+<pre>
+$ source packman/setup.sh
+</pre>
+    If everything is ok, nothing will be printed. Otherwise, a new version Ruby will be installed automatically. Please be patient during this process. Then you can source <code>setup.sh</code> in your <code>~/.bashrc</code> to ensure PACKMAN is effective each time you login.
+</p>
+<h1><a name="ConfigurePACKMAN">Configure PACKMAN</a></h1>
+<p>
+    To address varied needs, PACKMAN offers multiple configurations. When you first install PACKMAN, run the following command first:
+<pre>
+$ packman config
+[<font color="green">Notice</font>]: <font color="green">/Users/dongli/Works/packman/packman.config</font> is generated. Please revise the following settings:
+<font color="lightblue">package_root</font>     = <font color="red">~/.packman/packages</font>
+<font color="lightblue">install_root</font>     = <font color="red">~/.packman</font>
+<font color="lightblue">download_command</font> = <font color="red">curl</font>
+<font color="lightblue">C compiler</font>       = <font color="red">gcc</font>
+<font color="lightblue">C++ compiler</font>     = <font color="red">g++</font>
+<font color="lightblue">Fortran compiler</font> = <font color="red">gfortran</font>
+[Press ANY key]
+</pre>
+    which shows some default values. Press <code>ENTER</code> key to proceed and edit the following content:
+<pre class="prettyprint">
+package_root = "~/.packman/packages"
+install_root = "~/.packman"
+download_command = "curl"
+use_ftp_mirror = "no"
+defaults = {
+  "compiler_set_index" => 0,
+  "mpi" => "mpich"
+}
+compiler_set_0 = {
+  "c" => "gcc",
+  "c++" => "g++",
+  "fortran" => "gfortran"
+}
+</pre>
+  <table class="center">
+    <tr>
+      <th>Keyword</th>
+      <th>Meaning</th>
+    </tr>
+    <tr>
+      <td>package_root</td>
+      <td>directory to store downloaded packages</td>
+    </tr>
+    <tr>
+      <td>install_root</td>
+      <td>directory to store installed packages (better not changed after first set)</td>
+    </tr>
+    <tr>
+      <td>download_command</td>
+      <td>can be wget or curl</td>
+    </tr>
+    <tr>
+      <td>use_ftp_mirror</td>
+      <td>use FTP mirror, if not set "no", if yes fill "ftp://&lt;IP or domain name&gt;:&lt;port&gt;</td>
+    </tr>
+    <tr>
+      <td>defaults compiler_set_index</td>
+      <td>default compiler set index (start at 0)</td>
+    </tr>
+    <tr>
+      <td>defaults mpi</td>
+      <td>default MPI library (mpich or openmpi)</td>
+    </tr>
+    <tr>
+      <td>compiler_set_* c</td>
+      <td>C compiler for the *-th compiler set</td>
+    </tr>
+    <tr>
+      <td>compiler_set_* c++</td>
+      <td>C++ compiler for the *-th compiler set</td>
+    </tr>
+    <tr>
+      <td>compiler_set_* fortran</td>
+      <td>Fortran compiler for the *-th compiler set</td>
+    </tr>
+  </table>
+</p>

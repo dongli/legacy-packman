@@ -1,0 +1,18 @@
+<header class="site-header">
+    <div class="wrapper">
+        <a class="site-title" href="{{ site.baseurl }}/">{{ site.title }}</a>
+        <div class="site-language">
+            <a href="/zh/index.html"><img class="icon" src="/assets/china_flag.png"></a>
+            <a href="/en/index.html"><img class="icon" src="/assets/usa_flag.png"></a>
+        </div>
+        <nav class="site-nav">
+            <div class="trigger">
+                {% for page in site.pages %}
+                    {% if page.layout == 'en-section' %}
+                        <a class="page-link" href="{{ page.url | prepend: site.baseurl }}">{{ page.title }}</a>
+                    {% endif %}
+                {% endfor %}
+            </div>
+        </nav>
+    </div>
+</header>

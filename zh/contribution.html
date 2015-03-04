@@ -1,0 +1,75 @@
+---
+layout: zh-page
+title: 做一个自豪的贡献者
+---
+
+<h1><a name="编写包安装文件">编写包安装文件</a></h1>
+<p>
+    PACKMAN是一个开放的平台，任何有能力、有分享精神的人都能贡献一份力量。最为直接的途径就是编写一个软件包的安装文件。PACKMAN利用Ruby语言的语法构建了一个描述安装步骤的特定语言（DSL：Domain Specific Language），其实是借鉴了Homebrew，在此要非常感谢Homebrew创作者。包安装文件的基本结构如下：
+<pre class="prettyprint">
+class <大写开头的软件包名称> < PACKMAN::Package
+  url '<软件包下载地址>'
+  sha1 '<软件包的SHA1值>'
+  version '<软件包的版本>'
+
+  label '<特殊标签>'
+  ...
+
+  option '<选项名>' => <选项默认值>
+  option '<选项名>' => <选项类型，如:boolean，:package_name，:directory>
+
+  depends_on '<其它软件包>'
+  ...
+
+  attach '<附件名称>' do
+    url '<附件文件下载地址>'
+    sha1 '<附件文件SHA1值>'
+  end
+
+  patch do
+    url '<补丁文件下载地址>'
+    sha1 '<补丁文件SHA1值>'
+  end
+
+  patch :embed # 使用内嵌补丁
+
+  def install
+    # 安装步骤在此
+  end
+
+  def postfix
+    # 安装完成后的其它步骤
+  end
+end
+
+DATA
+<内嵌补丁>
+</pre>
+    可以参考<a href="https://github.com/dongli/packman/tree/master/packages">这里的例子</a>编写新软件包的安装文件。
+</p>
+
+<h2>安装选项的使用</h2>
+<p>
+    在安装文件中可以定义多个安装选项，使得用户可以控制安装过程，比如定义如下选项：
+<pre class="prettyprint">
+option 'use_mpi' => false
+</pre>
+    在此之后可以使用<code>use_mpi?</code>和<code>mpi</code>两个函数来判断是否使用了MPI，以及使用的MPI是什么，如下：
+<pre class="prettyprint">
+if use_mpi?
+...
+end
+</pre>
+</p>
+
+<h2>附件的使用</h2>
+<p>
+    有些软件包除了源代码，还需要一些附件文件，这需要通过<code>attach</code>关键字来定义，比如：
+<pre class="prettyprint">
+attach 'sqlite_doc' do
+  url 'https://sqlite.org/2015/sqlite-doc-3080802.zip'
+  sha1 'a11a6ea95d3d4a88b8d7d4e0cb6fcc3e5f4bf887'
+end
+</pre>
+    定义之后可以在其它地方（如<code>install</code>函数）中使用<code>sqlite_doc</code>对象实例来访问相关信息，如<code>sqlite_doc.package_path</code>等。
+</p>

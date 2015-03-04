@@ -1,0 +1,20 @@
+---
+layout: zh-page
+title: 阶段目标
+---
+<h1><a name="阶段目标">阶段目标</a></h1>
+<p>
+	<ul>
+		<li><strike>重新设计操作系统描述类（PACKMAN::OsSpec），然后重新加入各个具体的操作系统类（Ubuntu，CentOS等）</strike></li>
+		<li>加入对系统自带包管理器安装的包的版本判断，因为有时候安装的包的版本不符合要求</li>
+		<li><strike>为包安装类（PACKMAN::Package）加入修改版（revision）属性，方便更新安装过程后，用户可以重新安装包</strike></li>
+		<li><strike>简化包安装类中的一些常用函数，如prefix</strike></li>
+		<li>当更新了一个包后，之前安装的依赖该包的包也需要被更新！</li>
+		<li>增加提取包依赖关系的函数，包括向上向下</li>
+		<li>支持可移动的安装目录，即可以随意移动已经安装好的软件包（reallocatable），但是似乎Valgrind不支持。。</li>
+		<li>提供软件包在各个系统上的预编译包，避免重复编译</li>
+		<li>增加更多错误判断，因为系统环境变化多端</li>
+		<li>追踪每个包安装的文件</li>
+		<li>允许同时运行多个命令</li>
+	</ul>
+</p>

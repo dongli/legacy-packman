@@ -1,0 +1,50 @@
+---
+layout: en-page
+title: Basic usage
+---
+<h1><a name="InstallPackage">Install package</a></h1>
+<p>
+    After PACKMAN is installed and configured, you can install the packages you need, such as install NetCDF:
+<pre>
+$ packman install netcdf
+</pre>
+    This command will install NetCDF with three language interfaces (C, C++ and Fortran), and the depended packages (e.g., HDF5). After execution, NetCDF will be installed in the specified <code>install_root</code>, and the directory structure adheres some pattern as:
+<pre>
+$ ls <font color="red">&lt;install_root&gt;</font>/netcdf/c_4.3.2_cxx_4.2.1_fortran_4.4.1/0/
+bashrc <font color="lightblue">bin include lib share</font>
+</pre>
+    so that different versions of package compiled by different compiler sets are separated, and not mixed.
+</p>
+
+<h1><a name="CheckInstallationOptions">Check installation options</a></h1>
+<p>
+    Some packages contain some installation options to let users toggle. You can check the available options of a package (say NetCDF) by:
+<pre>
+$ packman show netcdf -options 
+[<font color="green">Notice</font>]: Options of package <font color="green">Netcdf</font>:
+<font color="blue">skip_test</font>: <font color="purple">false</font>
+<font color="blue">compiler_set_indices</font>: <font color="purple">[]</font>
+<font color="blue">use_binary</font>: <font color="purple">false</font>
+<font color="blue">use_version</font>: <font color="purple">string</font>
+<font color="blue">use_mpi</font>: <font color="purple">package_name or boolean</font>
+<font color="blue">with_cxx</font>: <font color="purple">true</font>
+<font color="blue">with_fortran</font>: <font color="purple">true</font>
+</pre>
+    Here you can see 7 options, and you can choose not to install C++ interface:
+<pre>
+$ packman install netcdf -with_cxx=false
+</pre>
+</p>
+
+<h1><a name="SwitchPackageVersion">Switch package version</a></h1>
+<p>
+    To make the newly installed package effective, you need to add one line in your <code>~/.bashrc</code>:
+<pre>
+source <font color="red">&lt;install_root&gt;</font>/packman.bashrc
+</pre>
+    which will setup some environment variables. It is noteworthy that &lt;install_root&gt;/packman.bashrc including the packages installed by the default compiler set. If other compiler set is desired, you could run the following command to generate a new <code>bashrc</code>:
+<pre>
+$ packman switch -compiler_set_index=<font color="red">&lt;compiler set index&gt;</font> -output=<font color="red">&lt;bashrc file name or directory&gt;</font>
+</pre>
+    Then source that file (if <code>-output</code> is assigned a directory, <code>packman.bashrc</code> will be created in that directory).
+</p>

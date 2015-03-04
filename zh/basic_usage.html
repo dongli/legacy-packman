@@ -1,0 +1,51 @@
+---
+layout: zh-page
+title: 基本用法
+---
+
+<h1><a name="安装软件">安装软件</a></h1>
+<p>
+  	安装并配置好PACKMAN后就可以安装需要的软件了，如安装NetCDF软件包：
+<pre>
+$ packman install netcdf
+</pre>
+  	该命令将安装NetCDF的三种语言接口（C、C++和Fortran），以及NetCDF的依赖包（如HDF5）。命令执行完后，NetCDF会被安装在之前所指定的<code>install_root</code>下，并按照一定规则存放，例如：
+<pre>
+$ ls <font color="red">&lt;install_root&gt;</font>/netcdf/c_4.3.2_cxx_4.2.1_fortran_4.4.1/0/
+bashrc <font color="lightblue">bin include lib share</font>
+</pre>
+  	不同版本、使用不同编译器集合编译的软件包会被分开存放，而不是混在一起。
+</p>
+
+<h1><a name="查看安装选项">查看安装选项</a></h1>
+<p>
+	软件包有时会包含一些安装选项供用户控制，可以通过如下命令查看：
+<pre>
+$ packman show netcdf -options 
+[<font color="green">Notice</font>]: Options of package <font color="green">Netcdf</font>:
+<font color="blue">skip_test</font>: <font color="purple">false</font>
+<font color="blue">compiler_set_indices</font>: <font color="purple">[]</font>
+<font color="blue">use_binary</font>: <font color="purple">false</font>
+<font color="blue">use_version</font>: <font color="purple">string</font>
+<font color="blue">use_mpi</font>: <font color="purple">package_name or boolean</font>
+<font color="blue">with_cxx</font>: <font color="purple">true</font>
+<font color="blue">with_fortran</font>: <font color="purple">true</font>
+</pre>
+	这里可以看到有7个选项可供设置。比如可以选择不安装C++接口：
+<pre>
+$ packman install netcdf -with_cxx=false
+</pre>
+</p>
+
+<h1><a name="切换软件版本">切换软件版本</a></h1>
+<p>
+  	为了使新安装的软件生效，你需要在你的<code>~/.bashrc</code>文件中添加一行：
+<pre>
+source <font color="red">&lt;install_root&gt;</font>/packman.bashrc
+</pre>
+  	使得环境变量生效。需要注意的是<code>&lt;install_root&gt;/packman.bashrc</code>中包含的是用默认编译器集合安装的软件，如果需要使用其它编译器集合编译的软件可以通过如下命令生成一个bashrc文件：
+<pre>
+$ packman switch -compiler_set_index=<font color="red">&lt;编译器集合编号&gt;</font> -output=<font color="red">&lt;bashrc文件名或目录&gt;</font>
+</pre>
+  	然后source该文件即可（如果<code>-output</code>给的是一个目录，那么会在该目录下生成一个<code>packman.bashrc</code>文件）。
+</p>
