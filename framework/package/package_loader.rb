@@ -8,6 +8,15 @@ module PACKMAN
       name = File.basename(file).split('.').first.capitalize.to_sym
       @@package_files[name] = file
     end
+    @@package_options = {}
+
+    def self.package_options package_name
+      if @@package_options.has_key? package_name
+        @@package_options[package_name]
+      else
+        {}
+      end
+    end
 
     # Define a recursive function to load package definition files.
     def self.load_package package_name
@@ -19,11 +28,11 @@ module PACKMAN
       ConfigManager.propagate_options_to package
       # Check possible package options from command line.
       CommandLine.propagate_options_to package
-      options = package.options.clone
+      @@package_options[package_name] = package.options.clone
       package.dependencies.clear
       # The package dependency may be changed by options.
       load @@package_files[package_name]
-      package = Package.instance package_name, options # NOTE: We need 'options' argument!
+      package = Package.instance package_name
       # Load dependent packages.
       package.dependencies.each do |depend_name|
         next if depend_name == :package_name # Skip the placeholder :package_name.
@@ -34,7 +43,7 @@ module PACKMAN
     end
 
     def self.init
-      packages = ( ConfigManager.package_options.keys | CommandLine.packages ).uniq
+      packages = CommandLine.packages.empty? ? ConfigManager.package_options.keys : CommandLine.packages.uniq
       packages.each do |package_name|
         load_package package_name
       end

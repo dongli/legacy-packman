@@ -307,7 +307,8 @@ module PACKMAN
       File.exist? "#{ENV['PACKMAN_ROOT']}/packages/#{package_name.downcase}.rb"
     end
 
-    def self.instance package_name, options = {}
+    def self.instance package_name, options = nil
+      options = PackageLoader.package_options package_name if options == nil
       begin
         requested_spec = {}
         if options['use_binary']

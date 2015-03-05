@@ -28,18 +28,8 @@ class Wrf_wps < PACKMAN::Package
 
   def install
     PACKMAN.append_env 'NETCDF', Netcdf.prefix
-    includes = []
-    libs = []
-    includes << "#{Jasper.include}" # NOTE: There is no '-I' ahead!
-    libs << "#{Jasper.lib}" # NOTE: There is no '-L' ahead!
-    includes << "-I#{Zlib.include}"
-    libs << "-L#{Zlib.lib}"
-    if not PACKMAN::OS.mac_gang?
-      includes << "-I#{Libpng.include}"
-      libs << "-L#{Libpng.lib}"
-    end
-    PACKMAN.append_env 'JASPERINC', includes.join(' ')
-    PACKMAN.append_env 'JASPERLIB', libs.join(' ')
+    PACKMAN.append_env 'JASPERINC', "#{Jasper.include} -I#{Zlib.include} -I#{Libpng.include}"
+    PACKMAN.append_env 'JASPERLIB', "#{Jasper.lib} -L#{Zlib.lib} -L#{Libpng.lib}"
     PACKMAN.work_in 'WPS' do
       # Configure WPS.
       print "#{PACKMAN.blue '==>'} "
@@ -73,7 +63,8 @@ class Wrf_wps < PACKMAN::Package
       PACKMAN.run './compile'
       # Check if the executables are generated.
       if not File.exist? 'geogrid/src/geogrid.exe' or
-         not File.exist? 'metgrid/src/metgrid.exe'
+         not File.exist? 'metgrid/src/metgrid.exe' or
+         not File.exist? 'ungrib/src/ungrib.exe'
         PACKMAN.report_error 'Failed to build WPS!'
       end
     end

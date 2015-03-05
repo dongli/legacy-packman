@@ -3,6 +3,11 @@ class Cdo < PACKMAN::Package
   sha1 'ef2176164bf166c8d5e7a3bfc5163b642312eeb2'
   version '1.6.6'
 
+  history_version '1.6.3' do
+    url 'https://code.zmaw.de/attachments/download/7220/cdo-1.6.3.tar.gz'
+    sha1 '9aa9f2227247eee6e5a0d949f5189f9a0ce4f2f1'
+  end
+
   depends_on 'hdf5'
   depends_on 'netcdf'
   depends_on 'zlib'
