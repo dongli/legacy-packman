@@ -3,7 +3,14 @@
         <div class="footer-col-wrapper">
             <div class="footer-col  footer-col-1">
                 <ul class="contact-list">
-                    <li>维护者：</li>
+                    <li>
+                        {% case page.category %}
+                        {% when 'zh' %}
+                            维护者：
+                        {% when 'en' %}
+                            Maintainer:
+                        {% endcase %}
+                    </li>
                     <li><a href="mailto:{{ site.email }}">{{ site.email }}</a></li>
                 </ul>
             </div>
@@ -25,7 +32,12 @@
             </div>
             <div class="footer-col  footer-col-3">
                 <p class="text">
-                    PACKMAN是用Ruby编写的新一代跨平台包管理！
+                    {% case page.category %}
+                    {% when 'zh' %}
+                        PACKMAN是用Ruby编写的新一代跨平台包管理！
+                    {% when 'en' %}
+                        This is the home site of PACKMAN. PACKMAN is a cross-platform package manager written in Ruby.
+                    {% endcase %}
                 </p>
             </div>
         </div>

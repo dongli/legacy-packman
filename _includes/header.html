@@ -14,8 +14,9 @@
                 </svg>
             </a>
             <div class="trigger">
+                {% capture language %}{{ page.url | truncate: 3, '' | remove: '/' }}{% endcapture %}
                 {% for page in site.pages %}
-                    {% if page.layout == 'en-section' %}
+                    {% if page.tags == 'nav' and page.category == language %}
                         <a class="page-link" href="{{ page.url | prepend: site.baseurl }}">{{ page.title }}</a>
                     {% endif %}
                 {% endfor %}
