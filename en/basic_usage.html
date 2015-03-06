@@ -34,6 +34,12 @@ $ packman show netcdf -options
 <pre>
 $ packman install netcdf -with_cxx=false
 </pre>
+	<div class="notice">
+		The options specified in the command line will apply to all the relevant packages (i.e., dependent packages). Sometimes, this may cause conflicts. For example use <code>use_version</code> option to choose the desired package version, but this version should not be imposed on the dependent packages. Therefore, PACKMAN introduce <code>+</code> option to limit the scope of options to the packages on the command line as:
+<pre>
+$ packman install cdo +use_version='1.6.3'
+</pre>
+	</div>
 </p>
 
 <h1><a name="SwitchPackageVersion">Switch package version</a></h1>

@@ -35,6 +35,12 @@ $ packman show netcdf -options
 <pre>
 $ packman install netcdf -with_cxx=false
 </pre>
+	<div class="notice">
+		命令行指定的选项默认会应用于所有涉及到的软件包（如依赖包），有时候这样做并不合适，如使用<code>use_version</code>来选定软件版本，对于依赖包肯定是不对的，所以PACKMAN引入<code>+</code>选项，使得该选项只作用于命令行指定的软件包，如：
+<pre>
+$ packman install cdo +use_version='1.6.3'
+</pre>
+	</div>
 </p>
 
 <h1><a name="切换软件版本">切换软件版本</a></h1>
