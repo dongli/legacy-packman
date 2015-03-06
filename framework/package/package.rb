@@ -332,6 +332,10 @@ module PACKMAN
           if eval "defined? @@#{package_name}_history_versions"
             requested_spec[:in] = :history_versions
             requested_spec[:use_version] = options['use_version']
+          else
+            PACKMAN.report_error "Package #{PACKMAN.red package_name} does not have history versions, "+
+              "so you cannot set #{PACKMAN.red '-use_version'} or should use "+
+              "#{PACKMAN.green '+use_version'} to limit the option scope!"
           end
         end
         requested_spec = nil if requested_spec.empty?
