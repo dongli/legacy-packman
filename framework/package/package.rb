@@ -131,7 +131,7 @@ module PACKMAN
         @active_spec = stable || devel
       end
       if not @active_spec
-        CLI.report_error "Unknown requested_spec #{CLI.red requested_spec}!"
+        CLI.report_error "Unknown requested_spec #{CLI.red requested_spec} for package #{PACKMAN.red self.class}!"
       end
     end
 

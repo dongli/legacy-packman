@@ -7,7 +7,7 @@ class Hdf5 < PACKMAN::Package
 
   depends_on 'zlib'
   depends_on 'szip'
-  depends_on mpi if use_mpi? and option_type('use_mpi') == :package_name
+  depends_on mpi if use_mpi?
 
   if PACKMAN::OS.distro == :Mac_OS_X and use_mpi?
     PACKMAN.caveat <<-EOT.gsub(/^\s+/, '')

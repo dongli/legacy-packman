@@ -28,19 +28,11 @@ module PACKMAN
     def vendor; active_spec.vendor; end
     def compiler_commands; active_spec.compiler_commands; end
     def default_flags; active_spec.default_flags; end
-    def customized_flags; active_spec.customized_flags; end
     def flags; active_spec.flags; end
     def version; active_spec.version; end
 
     def activate_compiler language, command
       active_spec.query_version command
-    end
-
-    def append_customized_flags flags, language
-      active_spec.append_customized_flags flags, language
-    end
-    def clean_customized_flags language = nil
-      active_spec.clean_customized_flags language
     end
 
     class << self

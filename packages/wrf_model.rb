@@ -35,6 +35,7 @@ class Wrf_model < PACKMAN::Package
   end
 
   depends_on 'netcdf'
+  depends_on mpi if use_mpi?
 
   def decompress_to target_dir
     PACKMAN.mkdir target_dir

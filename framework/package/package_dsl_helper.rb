@@ -32,8 +32,15 @@ module PACKMAN
           EOT
         when :package_name
           if option_name =~ /use_/
+            package_name = option_name.gsub('use_', '')
             method_bodies << <<-EOT
-              def #{option_name.gsub('use_', '')}
+              def #{package_name}
+                # When option is boolean, query option value from defaults in ConfigManager.
+                if respond_to? :option_type
+                  if option_type('#{option_name}') == :boolean
+                    return PACKMAN::ConfigManager.defaults['#{package_name}']
+                  end
+                end
                 #{spec}.options["#{option_name}"]
               end
             EOT

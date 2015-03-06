@@ -24,24 +24,20 @@ module PACKMAN
           end
         end
       end
-      # Handle compilers. Check if customized environment variables have already defined them.
+      # Handle compilers.
       CompilerManager.active_compiler_set.info.each do |language, compiler_info|
         next if language == :installed_by_packman
         flags = PACKMAN.default_compiler_flags language
-        flags << "#{PACKMAN.customized_compiler_flags language}"
+        PACKMAN.append_env PACKMAN.compiler_flags_env_name(language), flags
         case language
         when 'c'
-          PACKMAN.append_env 'CC', compiler_info[:command] if not PACKMAN.has_env? 'CC'
-          flag_name = 'CFLAGS'
+          PACKMAN.reset_env 'CC', compiler_info[:command]
         when 'c++'
-          PACKMAN.append_env 'CXX', compiler_info[:command] if not PACKMAN.has_env? 'CXX'
-          flag_name = 'CXXFLAGS'
+          PACKMAN.reset_env 'CXX', compiler_info[:command]
         when 'fortran'
-          PACKMAN.append_env 'F77', compiler_info[:command] if not PACKMAN.has_env? 'F77'
-          PACKMAN.append_env 'FC', compiler_info[:command] if not PACKMAN.has_env? 'FC'
-          flag_name = 'FCFLAGS'
+          PACKMAN.reset_env 'F77', compiler_info[:command]
+          PACKMAN.reset_env 'FC', compiler_info[:command]
         end
-        PACKMAN.append_env flag_name, flags
       end
       # Handle customized environment variables.
       PACKMAN.env_keys.each do |key|

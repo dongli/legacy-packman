@@ -1,13 +1,12 @@
 module PACKMAN
   class CompilerSpecSpec
     attr_accessor :vendor, :compiler_commands
-    attr_accessor :default_flags, :customized_flags
-    attr_accessor :flags, :version_pattern, :version
+    attr_accessor :default_flags, :flags
+    attr_accessor :version_pattern, :version
 
     def initialize
       @compiler_commands = {}
       @default_flags = {}
-      @customized_flags = {}
       @flags = {}
     end
 
@@ -22,15 +21,6 @@ module PACKMAN
       else
         CLI.report_error "Unable to parse the version of #{CLI.red command}!"
       end
-    end
-
-    def append_customized_flags flags, language
-      @customized_flags[language] ||= ''
-      @customized_flags[language] << ' '+flags
-    end
-
-    def clean_customized_flags language
-      @customized_flags[language] = nil
     end
   end
 end

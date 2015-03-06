@@ -1,5 +1,9 @@
 module PACKMAN
   class Commands
+    def self.delegated_methods
+      [:is_package_installed?, :install_package]
+    end
+
     def self.install
       @@installed_packages = []
       @@is_any_package_installed = false
@@ -182,15 +186,15 @@ module PACKMAN
           msg = "Build package #{CLI.green package.class} with compiler set"
           msg << " #{CLI.green CompilerManager.active_compiler_set_index}"
           if package.has_option? 'use_mpi' and package.use_mpi?
-            msg << " and #{CLI.red package.mpi.capitalize} library"
-            PACKMAN.use_mpi package.mpi
+            mpi = package.mpi == true ? ConfigManager.defaults['mpi'] : package.mpi
+            msg << " and #{CLI.red mpi.capitalize} library"
+            PACKMAN.use_mpi mpi
           end
           CLI.report_notice msg+'.'
           package.install
         end
         Package.bashrc package
         package.postfix
-        CompilerManager.clean_customized_flags
       else
         # Build package for each compiler set.
         build_upper_dir = "#{ConfigManager.package_root}/#{package.class}"
@@ -233,14 +237,12 @@ module PACKMAN
           # Write bashrc file for the package.
           Package.bashrc package if not package.has_label? 'no_bashrc'
           package.postfix
-          # Clean the customized flags if there is any.
-          CompilerManager.clean_customized_flags
           # Clean build files.
           FileUtils.rm_rf build_upper_dir if Dir.exist? build_upper_dir
-          # Clean the bashrc pathes.
-          PACKMAN.clear_source if not options.include? :depend
         end
       end
+      # Clean shell environment.
+      PACKMAN.clear_source if not options.include? :depend
       PACKMAN.clear_env if not options.include? :depend
     end
   end
