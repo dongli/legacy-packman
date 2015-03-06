@@ -1,0 +1,27 @@
+---
+layout: default
+title: HDF5
+category: zh
+tags: package
+---
+<h1>简介</h1>
+<p>
+    HDF5是一种自描述数据格式。
+</p>
+<h1>依赖包</h1>
+<p>
+    <div class="depend-package-list">
+        <a class="depend-package" href="#">Zlib</a>
+        <a class="depend-package" href="#">Szip</a>
+        <a class="depend-package" href="#">MPI</a>
+    </div>
+</p>
+<h1>安装范例</h1>
+<p>
+    <ul>
+        <li>编译并行IO接口</li>
+<pre>
+$ packman install hdf5 -use_mpi=&lt;mpich|openmpi|true&gt;
+</pre>
+    </ul>
+</p>

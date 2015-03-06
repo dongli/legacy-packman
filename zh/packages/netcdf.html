@@ -1,0 +1,38 @@
+---
+layout: default
+title: NetCDF
+category: zh
+tags: package
+---
+<h1>简介</h1>
+<p>
+    NetCDF是一种自描述数据格式。
+</p>
+<h1>依赖包</h1>
+<p>
+    <div class="depend-package-list">
+        <a class="depend-package" href="#">CURL</a>
+        <a class="depend-package" href="#">Zlib</a>
+        <a class="depend-package" href="#">Szip</a>
+        <a class="depend-package" href="#">HDF5</a>
+        <a class="depend-package" href="#">Parallel-NetCDF</a>
+    </div>
+</p>
+<h1>安装范例</h1>
+<p>
+    <ul>
+        <li>编译C、C++和Fortran接口</li>
+<pre>
+$ packman install netcdf
+</pre>
+        <li>仅编译C、Fortran接口</li>
+<pre>
+$ packman install netcdf -with_cxx=false
+</pre>
+        <li>编译并行IO接口</li>
+<pre>
+$ packman install netcdf -use_mpi=&lt;mpich|openmpi|true&gt;
+</pre>
+    </ul>
+</p>
+<h1>使用范例</h1>

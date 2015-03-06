@@ -107,6 +107,12 @@ a {
     }
 }
 
+a.depend-package {
+    border: 1px solid $grey-color-light;
+    padding: 0.5em;
+    background: #53F041;
+}
+
 /**
  * Blockquotes
  */

@@ -1,0 +1,23 @@
+---
+layout: default
+title: 软件包
+category: zh
+tags: nav
+---
+<p>
+    <table class="center">
+        <tr>
+            <th>名称</th>
+            <th>简介</th>
+        </tr>
+        {% capture language %}{{ page.url | truncate: 3, '' | remove: '/' }}{% endcapture %}
+        {% for page in site.pages %}
+            {% if page.tags == 'package' and language == 'zh' %}
+                <tr>
+                    <td><a class="page-link" href="{{ page.url | prepend: site.baseurl }}">{{ page.title }}</a></td>
+                    <td>{{ page.content | xml_escape | split: '&lt;/p' | first | split: 'p&gt;' | last }}</td>
+                </tr>
+            {% endif %}
+        {% endfor %}
+    </table>
+</p>
