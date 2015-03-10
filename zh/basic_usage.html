@@ -57,3 +57,30 @@ $ packman switch -compiler_set_index=<font color="red">&lt;编译器集合编号
 </pre>
   	然后source该文件即可（如果<code>-output</code>给的是一个目录，那么会在该目录下生成一个<code>packman.bashrc</code>文件）。
 </p>
+
+<h1><a name="搭建FTP镜像">搭建FTP镜像</a></h1>
+<p>
+    是的，没错！搭建FTP镜像是一个非常简单的操作，任何电脑都可以为其它电脑提供下载软件包的中转服务（即镜像），因为有些时候下载某些包十分耗时，或者其它电脑或服务器不方便连接互联网。首先，初始化镜像服务：
+<pre>
+$ packman mirror -init
+[<font color="green">Notice</font>]: Package <font color="green">Proftpd</font> has been installed.
+[<font color="green">Notice</font>]: Use port 2121 for FTP mirror service.
+[<font color="green">Notice</font>]: Download all defined packages.
+...
+</pre>
+    所有被定义的软件包及其附件都被下载到<code>&lt;package_root&gt;</code>目录下。然后可以打开镜像服务
+<pre>
+$ packman mirror -start
+</pre>
+    之后可以查看FTP服务是否开启
+<pre>
+$ packman mirror -status
+</pre>
+    当需要关闭FTP服务时，执行以下命令
+<pre>
+$ packman mirror -stop
+</pre>
+    <div class="notice">
+        开启和关闭镜像服务需要root权限，因为需要打开FTP服务。
+    </div>
+</p>
