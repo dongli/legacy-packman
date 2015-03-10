@@ -1,6 +1,6 @@
 class Cmake < PACKMAN::Package
-  url 'http://www.cmake.org/files/v3.0/cmake-3.0.1.tar.gz'
-  sha1 'b7e4acaa7fc7adf54c1b465c712e5ea473b8b74f'
+  url 'http://www.cmake.org/files/v3.1/cmake-3.1.2.tar.gz'
+  sha1 '66c7b73d460daf2e26dc17da1d7e7dfd14bc48fc'
   version '3.0.1'
 
   label 'compiler_insensitive'

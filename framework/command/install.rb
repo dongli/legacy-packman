@@ -4,9 +4,15 @@ module PACKMAN
       [:is_package_installed?, :install_package]
     end
 
+    def self.installed_packages
+      @@installed_packages ||= []
+    end
+
+    def self.is_any_package_installed
+      @@is_any_package_installed ||= false
+    end
+
     def self.install
-      @@installed_packages = []
-      @@is_any_package_installed = false
       # Install packages.
       packages = CommandLine.packages.empty? ? ConfigManager.package_options.keys : CommandLine.packages.uniq
       packages.each do |package_name|
@@ -63,7 +69,7 @@ module PACKMAN
       # Update config file.
       ConfigManager.write
       # Invoke switch subcommand.
-      Commands.switch if @@is_any_package_installed
+      Commands.switch if is_any_package_installed
     end
 
     def self.is_package_installed? package, options = []
@@ -86,7 +92,7 @@ module PACKMAN
       elsif package.respond_to? :installed? and package.installed?
         return true
       end
-      @@is_any_package_installed = true
+      is_any_package_installed = true
       return false
     end
 
@@ -119,10 +125,10 @@ module PACKMAN
         return
       end
       # Check if the package has been installed.
-      if @@installed_packages.include? package.class
+      if installed_packages.include? package.class
         return
       else
-        @@installed_packages << package.class
+        installed_packages << package.class
       end
       # NOTE: To avoid GCC build itself!
       return if package.has_label? 'compiler_insensitive' and is_package_installed? package, options
