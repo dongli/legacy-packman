@@ -134,11 +134,7 @@ module PACKMAN
       return if package.has_label? 'compiler_insensitive' and is_package_installed? package, options
       # Check dependencies.
       package.dependencies.each do |depend|
-        if package.has_label? 'master_package'
-          depend_package = Package.instance depend, package.options
-        else
-          depend_package = Package.instance depend
-        end
+        depend_package = Package.instance depend
         # Propagate compiler set indices.
         depend_package.update_option 'compiler_set_indices', package.compiler_set_indices
         install_package depend_package, :depend

@@ -75,7 +75,7 @@ module PACKMAN
         elsif not @options[key]
           @options[key] = value
         elsif value.class != Array and @options[key] != value
-          PACKMAN.report_warning "PackageSpec already has option #{PACKMAN.red "#{key} => #{value}"}!"
+          # PACKMAN.report_warning "PackageSpec already has option #{PACKMAN.red "#{key} => #{@options[key]}"}!"
         end
       end
     end
