@@ -13,7 +13,7 @@ class Proftpd < PACKMAN::Package
     args = %W[
       --prefix=#{prefix}
       --sysconfdir=#{prefix}/../config
-      --localstatedir=#{prefix.var}
+      --localstatedir=#{var}
     ]
     PACKMAN.run './configure', *args
     if PACKMAN::OS.mac_gang?
