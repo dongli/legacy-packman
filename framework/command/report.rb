@@ -28,6 +28,21 @@ module PACKMAN
           end
           print "#{version_set_pairs.join(" | ")}\n"
         end
+      elsif CommandLine.has_option? '-package_options'
+        CommandLine.packages.each do |package_name|
+          package = Package.instance package_name
+          CLI.report_notice "Options of package #{CLI.green package_name}:"
+          record_options package
+          if package.has_label? 'master_package'
+            package.dependencies.each do |depend_package_name|
+              depend_package = Package.instance depend_package_name
+              record_options depend_package
+            end
+          end
+          @@options.each do |option_name, option_type_or_default|
+            print "#{CLI.blue option_name}: #{CLI.yellow "#{option_type_or_default}"}\n"
+          end
+        end
       else
         if not File.exist? "#{ENV['PACKMAN_ROOT']}/.version"
           CLI.report_error "Version is missing!"
@@ -35,6 +50,22 @@ module PACKMAN
         current_version = File.open("#{ENV['PACKMAN_ROOT']}/.version", 'r').read.strip
         print "#{CLI.green 'packman'} #{CLI.bold current_version} "
         print "(Report BUG or ADVICE to #{CLI.bold 'https://github.com/dongli/packman/issues'})\n"
+      end
+    end
+
+    def self.record_options package
+      @@options ||= {}
+      package.options.each do |key, value|
+        next if @@options.has_key? key
+        if value != nil
+          @@options[key] = value
+        else
+          if package.option_valid_types[key].class == Array
+            @@options[key] = package.option_valid_types[key].join(' or ')
+          else
+            @@options[key] = package.option_valid_types[key]
+          end
+        end
       end
     end
   end
