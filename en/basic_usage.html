@@ -22,7 +22,7 @@ bashrc <font color="lightblue">bin include lib share</font>
 <p>
     Some packages contain some installation options to let users toggle. You can check the available options of a package (say NetCDF) by:
 <pre>
-$ packman show netcdf -options 
+$ packman report -package_options netcdf 
 [<font color="green">Notice</font>]: Options of package <font color="green">Netcdf</font>:
 <font color="blue">skip_test</font>: <font color="purple">false</font>
 <font color="blue">compiler_set_indices</font>: <font color="purple">[]</font>
@@ -55,4 +55,31 @@ source <font color="red">&lt;install_root&gt;</font>/packman.bashrc
 $ packman switch -compiler_set_index=<font color="red">&lt;compiler set index&gt;</font> -output=<font color="red">&lt;bashrc file name or directory&gt;</font>
 </pre>
     Then source that file (if <code>-output</code> is assigned a directory, <code>packman.bashrc</code> will be created in that directory).
+</p>
+
+<h1><a name="SetupFTPmirror">Setup FTP mirror</a></h1>
+<p>
+    Yes, that is correct! Setup a FTP mirror in PACKMAN is a super easy job. Any computer can provide the service of downloading packages for other computers, because downloading packages could be very time consuming, and some computers cannot even access the Internet! So let's setup the mirror! Firstly, initialize the mirror service:
+<pre>
+$ packman mirror -init
+[<font color="green">Notice</font>]: Package <font color="green">Proftpd</font> has been installed.
+[<font color="green">Notice</font>]: Use port 2121 for FTP mirror service.
+[<font color="green">Notice</font>]: Download all defined packages.
+...
+</pre>
+    all the packages defined in PACKMAN will be downloaded into <code>&lt;package_root&gt;</code>. After that, turn on the mirror service:
+<pre>
+$ packman mirror -start
+</pre>
+    You can check the service status by:
+<pre>
+$ packman mirror -status
+</pre>
+    When you need to shutdown the FTP mirror service, run:
+<pre>
+$ packman mirror -stop
+</pre>
+    <div class="notice">
+        Turning on or off the FTP mirror service needs the root priviledge.
+    </div>
 </p>
