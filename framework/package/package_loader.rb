@@ -37,25 +37,11 @@ module PACKMAN
       # Load dependent packages.
       package.dependencies.each do |depend_name|
         next if depend_name == :package_name # Skip the placeholder :package_name. TODO: Clean this out!
-        options = {}
         load @@package_files[depend_name]
         if package.has_label? 'master_package'
-          # Inherit options from master package.
-          options = package.options.clone
-          if package.options['use_version']
-            # First reset version.
-            options['use_version'] = nil
-            # Query the version to be used.
-            if package.options['use_version'].include? depend_name.to_s.downcase
-              blocks = package.options['use_version'].split('|')
-              blocks.each do |block|
-                next if not block.include? depend_name.to_s.downcase
-                versions = block.split(':')
-                options['use_version'] = versions.last
-                break
-              end
-            end
-          end
+          options = PackageGroupHelper.inherit_options package.options, depend_name
+        else
+          options = {}
         end
         load_package depend_name, options
         depend_package = Package.instance depend_name

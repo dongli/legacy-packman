@@ -92,7 +92,7 @@ module PACKMAN
       elsif package.respond_to? :installed? and package.installed?
         return true
       end
-      is_any_package_installed = true
+      @@is_any_package_installed = true
       return false
     end
 

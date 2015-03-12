@@ -200,7 +200,11 @@ compiler_set_0 = {
 
     def self.propagate_options_to package
       if package.master_package
-        options = package_options[package.master_package]
+        if package_options[package.master_package]
+          options = PackageGroupHelper.inherit_options package_options[package.master_package], package.class
+        else
+          options = nil
+        end
       else
         options = package_options[package.class.to_s.to_sym]
       end
