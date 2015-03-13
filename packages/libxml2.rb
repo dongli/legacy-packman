@@ -1,7 +1,7 @@
 class Libxml2 < PACKMAN::Package
-  url 'http://xmlsoft.org/sources/libxml2-2.9.1.tar.gz'
-  sha1 'eb3e2146c6d68aea5c2a4422ed76fe196f933c21'
-  version '2.9.1'
+  url 'http://xmlsoft.org/sources/libxml2-2.9.2.tar.gz'
+  sha1 'f46a37ea6d869f702e03f393c376760f3cbee673'
+  version '2.9.2'
 
   depends_on 'zlib'
 
@@ -14,6 +14,7 @@ class Libxml2 < PACKMAN::Package
       --without-lzma
     ]
     PACKMAN.run './configure', *args
+    PACKMAN.replace 'Makefile', '-no-undefined' => '' if PACKMAN.compiler_vendor('c') == 'llvm'
     PACKMAN.run 'make -j2'
     PACKMAN.run 'make install'
   end
