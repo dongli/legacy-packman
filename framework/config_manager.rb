@@ -89,14 +89,14 @@ module PACKMAN
       CompilerManager.set_compiler_sets command_hash_array
       # Check if defaults has been set.
       if defaults.empty?
-        msg = <<EOT
-Defaults section has not been set in #{CLI.red file_path}!
-Example:
-#{CLI.red '==>'} defaults = {
-#{CLI.red '==>'}   "compiler_set_index" => 0,
-#{CLI.red '==>'}   "mpi" => "mpich"
-#{CLI.red '==>'} }
-EOT
+        msg = <<-EOT.keep_indent
+          Defaults section has not been set in #{CLI.red file_path}!
+          Example:
+          #{CLI.red '==>'} defaults = {
+          #{CLI.red '==>'}   "compiler_set_index" => 0,
+          #{CLI.red '==>'}   "mpi" => "mpich"
+          #{CLI.red '==>'} }
+        EOT
         CLI.report_error msg.chomp
       end
       # Report configuation.
@@ -129,19 +129,20 @@ EOT
           "and #{CLI.red file_path} exists, consider to use it!"
       end
       File.open(file_path, 'w') do |file|
-        file << <<-EOT
-package_root = "~/.packman/packages"
-install_root = "~/.packman"
-use_ftp_mirror = "no"
-defaults = {
-  "compiler_set_index" => 0,
-  "mpi" => "mpich"
-}
-compiler_set_0 = {
-  "c" => "gcc",
-  "c++" => "g++",
-  "fortran" => "gfortran"
-}
+        file << <<-EOT.keep_indent
+          package_root = "~/.packman/packages"
+          install_root = "~/.packman"
+          use_ftp_mirror = "no"
+          download_command = "curl"
+          defaults = {
+            "compiler_set_index" => 0,
+            "mpi" => "mpich"
+          }
+          compiler_set_0 = {
+            "c" => "gcc",
+            "c++" => "g++",
+            "fortran" => "gfortran"
+          }
         EOT
       end
       CLI.report_notice "#{CLI.green file_path} is generated. Please revise the following settings:\n"+

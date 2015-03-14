@@ -1,5 +1,5 @@
 class Ruby_nokogiri < PACKMAN::Package
-  url 'https://ruby.taobao.org/gems/nokogiri-1.6.6.2.gem' # TODO: Let user choose RubyGem source.
+  url PACKMAN.gem_source+'nokogiri-1.6.6.2.gem'
   sha1 'd05f23c90be242d7e1bff447874e75207c36a207'
   version '1.6.6.2'
 

@@ -1,7 +1,28 @@
 module PACKMAN
   class RubyHelper
     def self.delegated_methods
-      [:is_gem_installed?, :gem]
+      [:gem_source, :is_gem_installed?, :gem]
+    end
+
+    GemSources = {
+      :default => 'https://rubygems.org/downloads/',
+      :rubygems => 'https://rubygems.org/downloads/',
+      :taobao => 'https://ruby.taobao.org/gems/',
+    }.freeze
+
+    def self.change_gem_source name
+      @@gem_source = GemSources[name]
+    end
+
+    def self.gem_source
+      if not defined? @@gem_source
+        if not ConfigManager.defaults['gem_source']
+          @@gem_source = GemSources[:default]
+        else
+          @@gem_source = GemSources[ConfigManager.defaults['gem_source'].to_sym]
+        end
+      end
+      @@gem_source
     end
 
     def self.is_gem_installed? name, version = nil
