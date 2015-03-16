@@ -9,16 +9,16 @@ class Tomcat < PACKMAN::Package
     PACKMAN.rm 'bin/*.bat'
     # Setup users.
     PACKMAN.replace 'conf/tomcat-users.xml', {
-      /<tomcat-users>.*<\/tomcat-users>/m => <<-EOT
-<tomcat-users>
-  <role rolename="tomcat"/>
-  <role rolename="role1"/>
-  <role rolename="manager"/>
-  <role rolename="admin"/>
-  <user username="tomcat" password="tomcat" roles="tomcat,admin,manager"/>
-  <user username="both" password="tomcat" roles="tomcat,role1"/>
-  <user username="role1" password="tomcat" roles="role1"/>
-</tomcat-users>
+      /<tomcat-users>.*<\/tomcat-users>/m => <<-EOT.keep_indent
+        <tomcat-users>
+          <role rolename="tomcat"/>
+          <role rolename="role1"/>
+          <role rolename="manager"/>
+          <role rolename="admin"/>
+          <user username="tomcat" password="tomcat" roles="tomcat,admin,manager"/>
+          <user username="both" password="tomcat" roles="tomcat,role1"/>
+          <user username="role1" password="tomcat" roles="role1"/>
+        </tomcat-users>
       EOT
     }
     PACKMAN.mkdir prefix, :force
