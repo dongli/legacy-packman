@@ -9,9 +9,10 @@ class Ruby_nokogiri < PACKMAN::Package
   # TODO: Should check if Ruby is above 2.0.0.
   depends_on 'libxml2'
   depends_on 'libxslt'
+  depends_on 'ruby_mini_portile'
 
   def install
-    PACKMAN.gem "install nokogiri-#{version}.gem -- --use-system-libraries "+
+    PACKMAN.gem 'install', "nokogiri-#{version}.gem -- --use-system-libraries "+
       "--with-xml2-include=#{Libxml2.include}/libxml2 --with-xml2-lib=#{Libxml2.lib} "+
       "--with-xslt-include=#{Libxslt.include} --with-xslt-lib=#{Libxslt.lib}"
   end

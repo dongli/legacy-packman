@@ -29,24 +29,49 @@ module PACKMAN
       Gem::Specification.each do |spec|
         if spec.name == name
           next if version and not spec.version.to_s == version
+          spec.dependencies.each do |depend|
+            next if depend.type == :development
+            if not is_gem_installed? depend.name
+              # Dependent gem is missing, so reinstall.
+              return false
+            end
+          end
           return true
         end
       end
       return false
     end
 
-    def self.gem command
-      res = `gem #{command} 2>&1`
+    def self.gem cmd, *args
+      cmd_str = 'gem '+cmd
+      cmd_str << ' --local' if cmd == 'install'
+      if cmd == 'uninstall'
+        cmd_str << ' --executables'
+        cmd_str << ' --ignore-dependencies'
+      end
+      cmd_str << ' --verbose' if CommandLine.has_option? '-verbose'
+      cmd_str << ' --debug' if CommandLine.has_option? '-debug'
+      cmd_str << ' '+args.join(' ')
+      CLI.report_notice "Execute #{CLI.blue cmd_str}." if CommandLine.has_option? '-debug'
+      if CommandLine.has_option? '-verbose'
+        system "#{cmd_str} 2>&1"
+      else
+        res = `#{cmd_str} 2>&1`
+      end
       if not $?.success?
-        if res =~ /Gem::FilePermissionError/
-          CLI.report_error "You do not have permission to do #{CLI.red command}!"
+        if CommandLine.has_option? '-verbose'
+          CLI.report_error "Failed to do #{CLI.red cmd_str}!\n#{res}"
         else
-          if command =~ /uninstall/
-            if res =~ /not installed/
-              CLI.report_error "Package #{CLI.red command.split.last} is not installed!"
-            end
+          if res =~ /Gem::FilePermissionError/
+            CLI.report_error "You do not have permission to do #{CLI.red command}!"
           else
-            CLI.report_error "Failed to do #{CLI.red command}!\n#{res}"
+            if cmd =~ /uninstall/
+              if res =~ /not installed/
+                CLI.report_error "Package #{CLI.red args.first} is not installed!"
+              end
+            else
+              CLI.report_error "Failed to do #{CLI.red cmd_str}!\n#{res}"
+            end
           end
         end
       end
