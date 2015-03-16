@@ -22,9 +22,9 @@ module PACKMAN
     filename = rename ? rename : File.basename(URI.parse(url).path)
     case cmd
     when :curl
-      system "curl -f#L -C - -o #{root}/#{filename} #{url}"
+      system "curl --insecure -f#L -C - -o #{root}/#{filename} #{url}"
     when :wget
-      system "wget -O #{root}/#{filename} -c #{url}"
+      system "wget --no-check-certificate -O #{root}/#{filename} -c #{url}"
     end
     if not $?.success?
       if cmd == :curl
