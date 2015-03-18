@@ -148,9 +148,9 @@ module PACKMAN
             default_compilers['c++'] = 'clang++'
           end
         else
-          default_compilers['c'] = 'gcc' if does_command_exist? 'gcc'
-          default_compilers['c++'] = 'g++' if does_command_exist? 'g++'
-          default_compilers['fortran'] = 'gfortran' if does_command_exist? 'gfortran'
+          default_compilers['c'] = 'gcc' if PACKMAN.does_command_exist? 'gcc'
+          default_compilers['c++'] = 'g++' if PACKMAN.does_command_exist? 'g++'
+          default_compilers['fortran'] = 'gfortran' if PACKMAN.does_command_exist? 'gfortran'
         end
         file << "  \"c\" => \"#{default_compilers['c']}\"" if default_compilers.has_key? 'c'
         file << ",\n  \"c++\" => \"#{default_compilers['c++']}\"" if default_compilers.has_key? 'c++'
