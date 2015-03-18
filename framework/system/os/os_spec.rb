@@ -7,7 +7,10 @@ module PACKMAN
 
       set_active_spec requested_spec
 
-      active_spec.version = VersionSpec.new active_spec.version_query_block.call.strip
+      active_spec.check_blocks.each do |name, block|
+        active_spec.checked_items[name] = block.call
+      end
+      active_spec.version ||= VersionSpec.new active_spec.checked_items[:version].strip
     end
 
     def hand_over_spec name
@@ -40,6 +43,12 @@ module PACKMAN
     def distro; active_spec.distro; end
     def version; active_spec.version; end
     def package_managers; active_spec.package_managers; end
+    def check item
+      if not active_spec.checked_items.has_key? item
+        PACKMAN.report_error "There is no #{PACKMAN.red item} to check!"
+      end
+      active_spec.checked_items[item]
+    end
     def x86_64?; active_spec.arch == 'x86_64' ? true : false; end
 
     class << self
@@ -57,8 +66,11 @@ module PACKMAN
           normal.package_managers[name] = detail
         end
       end
-      def version &block
-        normal.version_query_block = block
+      def version
+        normal.version ||= VersionSpec.new normal.check_blocks[:version].call.strip
+      end
+      def check item, &block
+        normal.check_blocks[item] = block
       end
     end
   end

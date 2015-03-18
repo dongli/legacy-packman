@@ -128,6 +128,7 @@ module PACKMAN
         CLI.report_error "A configure file is needed "+
           "and #{CLI.red file_path} exists, consider to use it!"
       end
+      default_compilers = {}
       File.open(file_path, 'w') do |file|
         file << <<-EOT.keep_indent
           package_root = "~/.packman/packages"
@@ -139,18 +140,29 @@ module PACKMAN
             "mpi" => "mpich"
           }
           compiler_set_0 = {
-            "c" => "gcc",
-            "c++" => "g++",
-            "fortran" => "gfortran"
-          }
         EOT
+        case OS.distro
+        when :Mac_OS_X
+          if OS.spec.check(:Xcode) and OS.spec.check(:CommandLineTools)
+            default_compilers['c'] = 'clang'
+            default_compilers['c++'] = 'clang++'
+          end
+        else
+          default_compilers['c'] = 'gcc' if does_command_exist? 'gcc'
+          default_compilers['c++'] = 'g++' if does_command_exist? 'g++'
+          default_compilers['fortran'] = 'gfortran' if does_command_exist? 'gfortran'
+        end
+        file << "  \"c\" => \"#{default_compilers['c']}\"" if default_compilers.has_key? 'c'
+        file << ",\n  \"c++\" => \"#{default_compilers['c++']}\"" if default_compilers.has_key? 'c++'
+        file << ",\n  \"fortran\" => \"#{default_compilers['fortran']}\"" if default_compilers.has_key? 'fortran'
+        file << "\n}"
       end
       CLI.report_notice "#{CLI.green file_path} is generated. Please revise the following settings:\n"+
         "#{CLI.blue 'package_root'}     = #{CLI.red '~/.packman/packages'}\n"+
         "#{CLI.blue 'install_root'}     = #{CLI.red '~/.packman'}\n"+
-        "#{CLI.blue 'C compiler'}       = #{CLI.red 'gcc'}\n"+
-        "#{CLI.blue 'C++ compiler'}     = #{CLI.red 'g++'}\n"+
-        "#{CLI.blue 'Fortran compiler'} = #{CLI.red 'gfortran'}"
+        "#{CLI.blue 'C compiler'}       = #{CLI.red default_compilers['c']}\n"+
+        "#{CLI.blue 'C++ compiler'}     = #{CLI.red default_compilers['c++']}\n"+
+        "#{CLI.blue 'Fortran compiler'} = #{CLI.red default_compilers['fortran'] ? default_compilers['fortran'] : 'NONE'}"
       CLI.pause
     end
 

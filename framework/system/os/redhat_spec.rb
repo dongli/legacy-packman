@@ -2,9 +2,9 @@ module PACKMAN
   class RedHatSpec < OsSpec
     vendor :RedHat
     type :Linux
-    version {
+    check :version do
       `cat /etc/*-release`.match(/release (\d+\.\d+)/)[1]
-    }
+    end
     package_manager :RPM, {
       :query_command => 'rpm -qi',
       :install_command => 'sudo yum install',
