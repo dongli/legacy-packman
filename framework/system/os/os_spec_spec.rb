@@ -2,6 +2,7 @@ module PACKMAN
   class OsSpecSpec
     attr_accessor :vendor, :type, :distro, :version, :arch
     attr_accessor :version_query_block, :package_managers
+    attr_accessor :check_blocks, :checked_items
 
     def initialize
       @vendor = nil
@@ -10,6 +11,8 @@ module PACKMAN
       @version = nil
       @version_query_block = nil
       @package_managers = {}
+      @check_blocks = {}
+      @checked_items = {}
       @arch = `uname -m`.chomp
     end
 
@@ -20,6 +23,7 @@ module PACKMAN
       @distro = ancestor.distro if not @distro
       @version_query_block = ancestor.version_query_block if not @version_query_block
       @package_managers.merge! ancestor.package_managers
+      @check_blocks.merge! ancestor.check_blocks
     end
   end
 end

@@ -38,6 +38,7 @@ module PACKMAN
       end
     end
 
+    def self.spec; @@spec; end
     def self.type; @@spec.type; end
     def self.distro; @@spec.distro; end
     def self.version; @@spec.version; end
