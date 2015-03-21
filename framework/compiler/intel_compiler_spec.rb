@@ -6,6 +6,7 @@ module PACKMAN
     compiler_command 'fortran' => ['ifort', '-O2 -ip -fPIC']
     flag :openmp => '-openmp'
     flag :pic => '-fPIC'
+    flag :rpath => -> rpath { "-Wl,-rpath,#{rpath}" }
     version_pattern /(\d+\.\d+(\.\d+)?)/
   end
 end
