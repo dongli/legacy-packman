@@ -22,8 +22,8 @@ module PACKMAN
           # 'install_with_source' packages should only be specified in command line.
           next
         end
-        # Binary is preferred (default value is nil).
-        if ( package.has_binary? and package.use_binary? == nil ) or package.use_binary?
+        # Binary is preferred.
+        if ( package.has_binary? and not package.use_binary? and not CommandLine.has_option? '-use_binary') or package.use_binary?
           package = Package.instance package_name, 'use_binary' => true
         end
         # Let user to choose which compiler sets to use if no relevant option is set.

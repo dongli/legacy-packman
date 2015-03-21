@@ -161,7 +161,7 @@ module PACKMAN
       return if key == 'use_binary' and not has_binary?
       @active_spec.update_option key, value, ignore_error
     end
-    def has_binary?; defined? @binary; end
+    def has_binary?; defined?(@binary) != nil; end
 
     # Shortcuts.
     def prefix; PACKMAN.prefix self; end
