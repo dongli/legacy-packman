@@ -1,7 +1,7 @@
 class Armadillo < PACKMAN::Package
-  url 'https://downloads.sourceforge.net/project/arma/armadillo-4.300.3.tar.gz'
-  sha1 '0decfda2f7cfa3c3dc534a7e7cc5d88e11794f70'
-  version '4.300.3'
+  url 'http://nchc.dl.sourceforge.net/project/arma/armadillo-4.650.4.tar.gz'
+  sha1 '66525126e5b7d44d5f0b1689052e29ff662824a6'
+  version '4.650.4'
 
   option 'use_mkl' => false
 
@@ -17,12 +17,12 @@ class Armadillo < PACKMAN::Package
     # The CMake find modules provided by Armadillo is so weak that
     # they can not find the dependent libraries just installed.
     if PACKMAN::OS.type == :Linux and not use_mkl?
-      PACKMAN.replace 'build_aux/cmake/Modules/ARMA_FindLAPACK.cmake',
+      PACKMAN.replace 'cmake_aux/Modules/ARMA_FindLAPACK.cmake',
         /^  PATHS / => "  PATHS #{Lapack.lib} "
-      PACKMAN.replace 'build_aux/cmake/Modules/ARMA_FindOpenBLAS.cmake',
+      PACKMAN.replace 'cmake_aux/Modules/ARMA_FindOpenBLAS.cmake',
         /^  PATHS / => "  PATHS #{Openblas.lib} "
     end
-    PACKMAN.replace 'build_aux/cmake/Modules/ARMA_FindARPACK.cmake',
+    PACKMAN.replace 'cmake_aux/Modules/ARMA_FindARPACK.cmake',
       /^  PATHS / => "  PATHS #{Arpack.lib} "
     # In some cases, the MKL does not work as expected.
     if not use_mkl?
