@@ -6,11 +6,11 @@ module PACKMAN
       # Download packages to package_root.
       collect_all = ( CommandLine.has_option? '-all' or options.include? :all )
       if collect_all
-        package_names = Dir.glob("#{ENV['PACKMAN_ROOT']}/packages/*.rb").map { |f| File.basename(f).gsub('.rb', '').capitalize.to_sym }
+        packages = Dir.glob("#{ENV['PACKMAN_ROOT']}/packages/*.rb").map { |f| File.basename(f).gsub('.rb', '').capitalize.to_sym }
       else
-        package_names = CommandLine.packages.empty? ? ConfigManager.package_options.keys : CommandLine.packages.uniq
+        packages = CommandLine.packages.empty? ? ConfigManager.package_options.keys : CommandLine.packages.uniq
       end
-      package_names.each do |package_name|
+      packages.each do |package_name|
         if not collect_all
           package = Package.instance package_name
           ConfigManager.propagate_options_to package

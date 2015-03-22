@@ -3,6 +3,8 @@ class Ruby < PACKMAN::Package
   sha1 '12376b79163e02bc9bd1a39329d67c3d19ccace9'
   version '2.2.1'
 
+  label 'compiler_insensitive'
+
   depends_on 'pkgconfig'
   depends_on 'readline'
   depends_on 'gdbm'

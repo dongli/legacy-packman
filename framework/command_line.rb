@@ -1,41 +1,35 @@
 module PACKMAN
   class CommandLine
     PermittedSubcommands = {
-      :config => 'Edit the config file in the default location.',
       :collect => 'Collect packages from internet.',
-      :fix => 'Fix the potential legacy errors.',
+      :config => 'Edit the config file in the default location.',
       :edit => 'Open the class file for the given package',
-      :install => 'Install packages and their dependencies.',
-      :remove => 'Remove packages.',
-      :switch => 'Switch different compiler set (new bashrc will be generated).',
-      :mirror => 'Control FTP mirror service.',
-      :update => 'Update PACKMAN.',
+      :fix => 'Fix the potential legacy errors.',
       :help => 'Print help message.',
+      :install => 'Install packages and their dependencies.',
+      :mirror => 'Control FTP mirror service.',
+      :remove => 'Remove packages.',
       :report => 'Report version of PACKMAN an other information.',
       :start => 'Start a package if it provides a start method.',
+      :status => 'Check the status of a package if it provides a status method.',
       :stop => 'Stop a package if it provides a stop method.',
-      :status => 'Check the status of a package if it provides a status method.'
+      :switch => 'Switch different compiler set (new bashrc will be generated).',
+      :update => 'Update PACKMAN.',
+      :upgrade => 'Upgrade packages.',
     }.freeze
     PermittedCommonOptions = {
       '-debug' => 'Print debug information.'
     }.freeze
     PermittedOptions = {
-      :config => {},
       :collect => {
         '-all' => 'Collect all packages.'
       },
-      :fix => {},
+      :config => {},
       :edit => {},
+      :fix => {},
+      :help => {},
       :install => {
         '-verbose' => 'Show verbose information.'
-      },
-      :remove => {
-        '-all' => 'Remove all versions and compiler sets.',
-        '-purge' => 'Also remove unneeded dependencies.'
-      },
-      :switch => {
-        '-compiler_set_index' => 'Choose which compiler set will be used.',
-        '-output' => 'Set the output BASH configure file path (Default is <package_root>/packman.bashrc).'
       },
       :mirror => {
         '-init' => 'Initialize FTP mirror service.',
@@ -45,8 +39,10 @@ module PACKMAN
         '-sync' => 'Synchronize the packages.',
         '-scan' => 'Scan for FTP mirrors.'
       },
-      :update => {},
-      :help => {},
+      :remove => {
+        '-all' => 'Remove all versions and compiler sets.',
+        '-purge' => 'Also remove unneeded dependencies.'
+      },
       :report => {
         '-compiler_sets' => 'Print the compiler sets (e.g., compiler commands).',
         '-package_root' => 'Print the download root of all packages.',
@@ -55,8 +51,14 @@ module PACKMAN
         '-package_options' => 'Print the available options of the package.'
       },
       :start => {},
+      :status => {},
       :stop => {},
-      :status => {}
+      :switch => {
+        '-compiler_set_index' => 'Choose which compiler set will be used.',
+        '-output' => 'Set the output BASH configure file path (Default is <package_root>/packman.bashrc).'
+      },
+      :update => {},
+      :upgrade => {},
     }.freeze
 
     def self.init
@@ -89,8 +91,8 @@ module PACKMAN
           @@options[key] = nil
         end
       end
-      if [:config, :collect, :fix, :install, :remove, :switch, :mirror,
-          :start, :stop, :status, :report, :update].include? @@subcommand and
+      if [:config, :collect, :start, :fix, :upgrade, :update,  :stop, :status,  :report,
+          :install, :switch, :remove, :mirror].include? @@subcommand and
          not @@config_file
         # Check if there is a configuration file in PACKMAN_ROOT.
         @@config_file = "#{ENV['PACKMAN_ROOT']}/packman.config"

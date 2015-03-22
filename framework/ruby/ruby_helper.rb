@@ -63,7 +63,7 @@ module PACKMAN
           CLI.report_error "Failed to do #{CLI.red cmd_str}!\n#{res}"
         else
           if res =~ /Gem::FilePermissionError/
-            CLI.report_error "You do not have permission to do #{CLI.red command}!"
+            CLI.report_error "You do not have permission to do #{CLI.red cmd}!"
           else
             if cmd =~ /uninstall/
               if res =~ /not installed/
