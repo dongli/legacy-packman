@@ -1,6 +1,6 @@
 module PACKMAN
   class Commands
-    def self.is_any_package_installed
+    def self.is_any_package_upgraded
       @@is_any_package_upgraded ||= false
     end
 
