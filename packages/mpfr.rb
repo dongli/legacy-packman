@@ -4,8 +4,9 @@ class Mpfr < PACKMAN::Package
   version '3.1.2'
 
   patch do
+    # latest update: 2014-12-04
     url 'http://www.mpfr.org/mpfr-current/allpatches'
-    sha1 'd288266ecc33ece2f0f253e7c2e8923d70ad9c37'
+    sha1 '26b8a0f352998c1e54a89520d36c8c4783e41962'
   end
 
   def install
