@@ -7,6 +7,8 @@ module PACKMAN
     flag :openmp => '-openmp'
     flag :pic => '-fPIC'
     flag :rpath => -> rpath { "-Wl,-rpath,#{rpath}" }
-    version_pattern /(\d+\.\d+(\.\d+)?)/
+    check :version do
+      `ifort -v 2>&1`.match(/(\d+\.\d+(\.\d+)?)/)[1]
+    end
   end
 end

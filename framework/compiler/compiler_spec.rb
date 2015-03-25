@@ -32,7 +32,18 @@ module PACKMAN
     def version; active_spec.version; end
 
     def activate_compiler language, command
-      active_spec.query_version command
+      active_spec.check_blocks.each do |name, block|
+        begin
+          active_spec.checked_items[name] = block.call
+        rescue => e
+          if name == :version and not PACKMAN.does_command_exist? command
+            PACKMAN.report_error "Command #{PACKMAN.red command} does not exist! Check your compiler sets in the configure file."
+          else
+            PACKMAN.report_error "Failed to execute block #{PACKMAN.red name} in #{PACKMAN.blue self.class}!"
+          end
+        end
+      end
+      active_spec.version ||= VersionSpec.new active_spec.checked_items[:version].strip
     end
 
     class << self
@@ -41,7 +52,9 @@ module PACKMAN
       end
 
       def vendor val; normal.vendor = val; end
-      def version_pattern val; normal.version_pattern = val; end
+      def version
+        normal.version ||= VersionSpec.new normal.check_blocks[:version].call.strip
+      end
       
       def compiler_command val
         if not val.class == Hash
@@ -68,6 +81,10 @@ module PACKMAN
         val.each do |key, value|
           normal.flags[key] = value
         end
+      end
+
+      def check item, &block
+        normal.check_blocks[item] = block
       end
     end
   end

@@ -8,6 +8,8 @@ module PACKMAN
     flag :pic => '-fPIC'
     flag :rpath => -> rpath { "-Wl,-rpath,#{rpath}" }
     flag :cxxlib => '-lstdc++'
-    version_pattern /^gcc [^ ]+ (\d+\.\d+\.\d+)/
+    check :version do
+      `gcc -v 2>&1`.match(/^gcc [^ ]+ (\d+\.\d+\.\d+)/)[1]
+    end
   end
 end

@@ -45,6 +45,7 @@ module PACKMAN
       # Only invoked by compiler set object.
       @@compiler_spec_classes.each do |compiler_spec_class|
         spec = eval "#{compiler_spec_class}.new" # Temporary variable.
+        next if not spec.compiler_commands[language]
         if spec.compiler_commands[language] =~ /\b#{compiler_command}\b/ or
            compiler_command =~ /\b#{spec.compiler_commands[language]}\b/
           spec.activate_compiler language, compiler_command
