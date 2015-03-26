@@ -1,7 +1,7 @@
 class Nco < PACKMAN::Package
-  url 'https://downloads.sourceforge.net/project/nco/nco-4.4.7.tar.gz'
+  url 'https://downloads.sourceforge.net/project/nco/nco-4.4.8.tar.gz'
   sha1 '5a59d237e54c197430afd7c197d9997d25b9cb38'
-  version '4.4.7'
+  version '4.4.8'
 
   depends_on 'flex'
   depends_on 'curl'
