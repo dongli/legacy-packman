@@ -20,13 +20,17 @@ Checking connectivity... done.
     After that, you will get a <code>packman</code> subdirectory:
 <pre>
 $ ls packman
-README.md <font color="lightblue">doc framework packages</font> <font color="green">packman</font> setup.sh
+README.md bashrc <font color="lightblue">doc framework packages</font> <font color="green">packman setup.sh</font>
 </pre>
-    Secondly, you could source <code>setup.sh</code> manually to check if the version of system Ruby meets the demands:
+    Secondly, you could execute <code>setup.sh</code> to check if the version of system Ruby meets the demands:
 <pre>
-$ source packman/setup.sh
+$ packman/setup.sh
 </pre>
-    If everything is ok, nothing will be printed. Otherwise, a new version Ruby will be installed automatically. Please be patient during this process. Then you can source <code>setup.sh</code> in your <code>~/.bashrc</code> to ensure PACKMAN is effective each time you login.
+    If everything is ok, the following message will be printed to tell that your <code>~/.bashrc</code> has been modified:
+<pre>
+[Notice]: Append "source &lt;path_to_packman&gt;/bashrc" into ~/.bashrc. Reopen or relogin to the terminal please.
+</pre>
+    Otherwise, a new version Ruby will be installed automatically. Please be patient during this process. Then you can relogin the terminal to use PACKMAN.
 </p>
 <h1><a name="ConfigurePACKMAN">Configure PACKMAN</a></h1>
 <p>

@@ -9,6 +9,8 @@ tags: doc
     PACKMAN是用<a href="http://www.git-scm.com/">GIT</a>来管理版本的，并放置在开源网站<a href="https://github.com">GitHub</a>上（同时在国内的<a href="https://gitcafe.com">GitCafe</a>上做了镜像）。获取PACKMAN一共有三种途径，最为推荐的是通过GIT下载最新的版本。首先，进入到一个你希望放置PACKMAN的目录，运行如下名令：
 <pre>
 $ git clone https://github.com/dongli/packman
+或者
+$ git clone https://gitcafe.com/dongli/packman
 Cloning into 'packman'...
 remote: Counting objects: 2594, done.
 remote: Compressing objects: 100% (44/44), done.
@@ -20,13 +22,17 @@ Checking connectivity... done.
     这样你在当前目录下会有一个<code>packman</code>子目录:
 <pre>
 $ ls packman
-README.md <font color="lightblue">doc framework packages</font> <font color="green">packman</font> setup.sh
+README.md bashrc <font color="lightblue">doc framework packages</font> <font color="green">packman setup.sh</font>
 </pre>
-    先在命令行下手动source一下<code>setup.sh</code>文件，它会检查系统的Ruby版本是否满足要求：
+    先在命令行下运行一下<code>setup.sh</code>文件，它会检查系统的Ruby版本是否满足要求：
 <pre>
-$ source packman/setup.sh
+$ packman/setup.sh
 </pre>
-    如果一切正常，则什么都不会显示，而如果Ruby版本过旧，会显示在packman目录下安装一个新的Ruby，请耐心等待。之后可以在你的<code>~/.bashrc</code>文件里source该文件，以保证每次登陆PACKMAN能够使用。
+    如果一切正常，会提示PACKMAN在你的<code>~/.bashrc</code>中增加了一行：
+<pre>
+[Notice]: Append "source &lt;path_to_packman&gt;/bashrc" into ~/.bashrc. Reopen or relogin to the terminal please.
+</pre>
+    而如果Ruby版本过旧，会显示在<code>packman</code>目录下安装一个新的Ruby，请耐心等待。之后重新登录终端即可。
 </p>
 <h1><a name="配置PACKMAN">配置PACKMAN</a></h1>
 <p>
