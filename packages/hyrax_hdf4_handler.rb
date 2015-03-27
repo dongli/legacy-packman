@@ -1,7 +1,7 @@
 class Hyrax_hdf4_handler < PACKMAN::Package
-  url 'http://www.opendap.org/pub/source/hdf4_handler-3.11.5.tar.gz'
-  sha1 '23c9ea8e6ca7e6c1531adf8dc168145b835b4d28'
-  version '3.11.5'
+  url 'http://www.opendap.org/pub/source/hdf4_handler-3.11.6.tar.gz'
+  sha1 '64bcf29df2670d6b1004ed2d5e606172d669ac18'
+  version '3.11.6'
 
   belongs_to 'hyrax'
 

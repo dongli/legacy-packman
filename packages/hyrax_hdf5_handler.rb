@@ -1,7 +1,7 @@
 class Hyrax_hdf5_handler < PACKMAN::Package
-  url 'http://www.opendap.org/pub/source/hdf5_handler-2.2.2.tar.gz'
-  sha1 '186ddd49640d1fa9b2ea378e76ed4f26eff8735b'
-  version '2.2.2'
+  url 'http://www.opendap.org/pub/source/hdf5_handler-2.2.3.tar.gz'
+  sha1 '61490e570559a252ab6f6d7a5111acbc4f084eae'
+  version '2.2.3'
 
   belongs_to 'hyrax'
 

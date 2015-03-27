@@ -1,7 +1,7 @@
 class Hyrax_olfs < PACKMAN::Package
-  url 'http://www.opendap.org/pub/olfs/olfs-1.11.3-webapp.tgz'
-  sha1 '352aeadfdde441e67b263f0fe667cddd10d9e738'
-  version '1.11.3'
+  url 'http://www.opendap.org/pub/olfs/olfs-1.12.1-webapp.tgz'
+  sha1 '8ff3636531418d02fec9a24b61ec17559df97dc8'
+  version '1.12.1'
 
   belongs_to 'hyrax'
 

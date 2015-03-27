@@ -1,7 +1,7 @@
 class Hyrax_fileout_netcdf < PACKMAN::Package
-  url 'http://www.opendap.org/pub/source/fileout_netcdf-1.2.2.tar.gz'
-  sha1 'a50808bcb0374430d9b4b7ba4310acce01305a42'
-  version '1.2.2'
+  url 'http://www.opendap.org/pub/source/fileout_netcdf-1.2.4.tar.gz'
+  sha1 'fcaa4969d5392e11db8ccf02f5f2f14b936a4af5'
+  version '1.2.4'
 
   belongs_to 'hyrax'
 

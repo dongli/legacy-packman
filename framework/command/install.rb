@@ -130,8 +130,6 @@ module PACKMAN
       else
         installed_packages << package.class
       end
-      # NOTE: To avoid GCC build itself!
-      return if package.has_label? 'compiler_insensitive' and is_package_installed? package, options
       # Check dependencies.
       package.dependencies.each do |depend|
         depend_package = Package.instance depend
