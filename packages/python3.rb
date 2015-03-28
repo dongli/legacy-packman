@@ -33,7 +33,7 @@ class Python3 < PACKMAN::Package
     PACKMAN.replace 'setup.py', {
       'sqlite_defines.append(("SQLITE_OMIT_LOAD_EXTENSION", "1"))' => 'pass',
       "do_readline = self.compiler.find_library_file(lib_dirs, 'readline')" =>
-        "do_readline = '#{Readline.lib}/libhistory.#{PACKMAN::OS.shared_library_suffix}'"
+        "do_readline = '#{Readline.lib}/libhistory.#{PACKMAN.shared_library_suffix}'"
     }
     args = %W[
       --prefix=#{prefix}
@@ -41,9 +41,9 @@ class Python3 < PACKMAN::Package
       --datarootdir=#{share}
       --datadir=#{share}
     ]
-    if PACKMAN::OS.mac_gang?
+    if PACKMAN.mac?
       args << "--enable-framework=#{frameworks}"
-      args << "MACOSX_DEPLOYMENT_TARGET=#{PACKMAN::OS.version.major_minor}"
+      args << "MACOSX_DEPLOYMENT_TARGET=#{PACKMAN.os_version.major_minor}"
     end
     args << "--without-gcc" if PACKMAN.compiler_vendor('c') != 'gnu'
     PACKMAN.set_cppflags_and_ldflags [Sqlite, Gdbm]

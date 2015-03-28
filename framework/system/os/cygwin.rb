@@ -1,8 +1,7 @@
 module PACKMAN
-  class CygwinSpec < OsSpec
+  class Cygwin < Os
     vendor :Cygwin
     type :Cygwin
-    distro :Cygwin
     check :version do
       `uname`.match(/(\d+\.\d+)/)[1]
     end

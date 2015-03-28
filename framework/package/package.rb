@@ -44,7 +44,7 @@ module PACKMAN
       tmp = self.class.class_variable_get :"@@#{self.class}_#{slave_name}"
       if tmp.class == Hash
         slave_specs = tmp.values
-      elsif tmp.class = PACKMAN::PackageSpec
+      elsif tmp.class = PACKMAN::PackageAtom
         slave_specs = [tmp]
       end
       slave_specs.each do |slave_spec|
@@ -153,7 +153,7 @@ module PACKMAN
     def attachments; @active_spec.attachments; end
     def provided_stuffs; @active_spec.provided_stuffs; end
     def binary distro, version; @binary[:"#{distro}:#{version}"]; end
-    def skip_distros; @active_spec.skip_distros; end
+    def skipped_os; @active_spec.skipped_os; end
     def option_valid_types; @active_spec.option_valid_types; end
     def options; @active_spec.options; end
     def has_option? key; @active_spec.has_option? key; end
@@ -240,10 +240,10 @@ module PACKMAN
         end
       end
 
-      def stable; eval "@@#{self}_stable ||= PackageSpec.new"; end
+      def stable; eval "@@#{self}_stable ||= PackageAtom.new"; end
 
       def devel &block
-        eval "@@#{self}_devel ||= PackageSpec.new"
+        eval "@@#{self}_devel ||= PackageAtom.new"
         if block_given?
           eval "@@#{self}_devel.instance_eval &block"
         else
@@ -263,7 +263,7 @@ module PACKMAN
         end
         key = key.join('|').to_sym
         if block_given?
-          eval "@@#{self}_binary[key] = PackageSpec.new"
+          eval "@@#{self}_binary[key] = PackageAtom.new"
           eval "@@#{self}_binary[key].instance_eval &block"
           eval "@@#{self}_binary[key].label 'binary'"
         else
@@ -274,7 +274,7 @@ module PACKMAN
       def history_version version, &block
         eval "@@#{self}_history_versions ||= {}"
         if block_given?
-          eval "@@#{self}_history_versions[version] = PackageSpec.new"
+          eval "@@#{self}_history_versions[version] = PackageAtom.new"
           eval "@@#{self}_history_versions[version].instance_eval &block"
           eval "@@#{self}_history_versions[version].version version"
         else
@@ -293,7 +293,7 @@ module PACKMAN
         end
         key = key.join('|').to_sym
         if block_given?
-          eval "@@#{self}_history_binary_versions[key] = PackageSpec.new"
+          eval "@@#{self}_history_binary_versions[key] = PackageAtom.new"
           eval "@@#{self}_history_binary_versions[key].instance_eval &block"
           eval "@@#{self}_history_binary_versions[key].version version"
           eval "@@#{self}_history_binary_versions[key].label 'binary'"
@@ -425,8 +425,8 @@ module PACKMAN
     def check_consistency; true; end
 
     def skip?
-      skip_distros.include? OS.distro or
-      skip_distros.include? :all or
+      skipped_os.include? PACKMAN.os_type or
+      skipped_os.include? :all or
       labels.include? 'should_provided_by_system' or
       ( labels.include? 'use_system_first' and installed? )
     end

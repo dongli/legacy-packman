@@ -12,7 +12,7 @@ class Mongodb < PACKMAN::Package
   depends_on 'scons'
 
   def install
-    if PACKMAN::OS.distro == :Mac_OS_X
+    if PACKMAN.mac?
       PACKMAN.replace 'SConstruct', {
         "osx_version_choices = ['10.6', '10.7', '10.8', '10.9']" =>
         "osx_version_choices = ['10.6', '10.7', '10.8', '10.9', '10.10']"

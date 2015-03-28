@@ -1,5 +1,5 @@
 module PACKMAN
-  class GccCompilerSpec < CompilerSpec
+  class GccCompiler < Compiler
     vendor 'gnu'
     compiler_command 'c'       => ['gcc',      '-O2 -fPIC']
     compiler_command 'c++'     => ['g++',      '-O2 -fPIC']

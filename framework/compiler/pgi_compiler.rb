@@ -1,5 +1,5 @@
 module PACKMAN
-  class PgiCompilerSpec < CompilerSpec
+  class PgiCompiler < Compiler
     vendor 'pgi'
     compiler_command 'c'       => ['pgcc',      '-O2 -fPIC']
     compiler_command 'c++'     => ['pgcpp',     '-O2 -fPIC']

@@ -1,5 +1,5 @@
 module PACKMAN
-  class CompilerSpec
+  class Compiler
     attr_reader :normal, :active_spec
 
     def initialize requested_spec = nil
@@ -48,7 +48,7 @@ module PACKMAN
 
     class << self
       def normal
-        eval "@@#{self.to_s.gsub(/PACKMAN::/, '')}_normal ||= CompilerSpecSpec.new"
+        eval "@@#{self.to_s.gsub(/PACKMAN::/, '')}_normal ||= CompilerAtom.new"
       end
 
       def vendor val; normal.vendor = val; end

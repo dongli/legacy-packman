@@ -2,28 +2,28 @@ class X11 < PACKMAN::Package
   label 'should_provided_by_system'
   
   def system_prefix
-    if PACKMAN::OS.mac_gang?
+    if PACKMAN.mac?
       '/usr/X11'
-    elsif PACKMAN::OS.debian_gang? or PACKMAN::OS.redhat_gang?
+    elsif PACKMAN.debian? or PACKMAN.redhat?
       '/usr'
     end
   end
 
   def installed?
-    if PACKMAN::OS.mac_gang?
+    if PACKMAN.mac?
       return Dir.exist? '/usr/X11'
-    elsif PACKMAN::OS.debian_gang?
-      return PACKMAN::OS.installed? [
+    elsif PACKMAN.debian?
+      return PACKMAN.os_installed? [
         'libx11-dev', 'xorg-dev'
       ]
-    elsif PACKMAN::OS.redhat_gang?
-      return PACKMAN::OS.installed? [
+    elsif PACKMAN.redhat?
+      return PACKMAN.os_installed? [
         'libX11-devel',
         'libXaw', 'libXaw-devel',
         'libXrender', 'libXrender-devel'
       ]
-    elsif PACKMAN::OS.cygwin_gang?
-      return PACKMAN::OS.installed? [
+    elsif PACKMAN.cygwin?
+      return PACKMAN.os_installed? [
         'libX11-devel',
         'libXaw-devel', 'libXaw7'
       ]
@@ -31,18 +31,18 @@ class X11 < PACKMAN::Package
   end
 
   def install_method
-    if PACKMAN::OS.mac_gang?
+    if PACKMAN.mac?
       return "Download Xquartz from http://xquartz.macosforge.org/landing/"
-    elsif PACKMAN::OS.debian_gang?
-      return PACKMAN::OS.how_to_install ['libX11-dev', 'xorg-dev']
-    elsif PACKMAN::OS.redhat_gang?
-      return PACKMAN::OS.how_to_install [
+    elsif PACKMAN.debian?
+      return PACKMAN.os_how_to_install ['libX11-dev', 'xorg-dev']
+    elsif PACKMAN.redhat?
+      return PACKMAN.os_how_to_install [
         'libX11-devel',
         'libXaw', 'libXaw-devel',
         'libXrender', 'libXrender-devel'
       ]
-    elsif PACKMAN::OS.cygwin_gang?
-      return PACKMAN::OS.how_to_install [
+    elsif PACKMAN.cygwin?
+      return PACKMAN.os_how_to_install [
         'libX11-devel',
         'libXaw-devel', 'libXaw7'
       ]

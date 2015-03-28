@@ -13,7 +13,7 @@ class Libtool < PACKMAN::Package
       --disable-dependency-tracking
       --enable-ltdl-install
     ]
-    if PACKMAN::OS.distro == :Mac_OS_X
+    if PACKMAN.mac?
       args << '--program-prefix=g'
     end
     PACKMAN.run './configure', *args
@@ -21,13 +21,13 @@ class Libtool < PACKMAN::Package
   end
 
   def installed?
-    if PACKMAN::OS.distro == :Mac_OS_X
+    if PACKMAN.mac?
       PACKMAN.does_command_exist? 'libtool'
     end
   end
 
   def install_method
-    if PACKMAN::OS.distro == :Mac_OS_X
+    if PACKMAN.mac?
       'Install Command Line Tools to get Libtool!'
     end
   end

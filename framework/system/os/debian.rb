@@ -1,8 +1,7 @@
 module PACKMAN
-  class DebianSpec < OsSpec
+  class Debian < Os
     vendor :Debian
-    type :Linux
-    distro :Debian
+    type :Debian
     check :version do
       `cat /etc/*-release`.match(/VERSION_ID="(\d+)"/)[1]
     end

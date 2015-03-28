@@ -1,6 +1,6 @@
 module PACKMAN
-  class PackageSpec
-    attr_reader :labels, :dependencies, :skip_distros
+  class PackageAtom
+    attr_reader :labels, :dependencies, :skipped_os
     attr_reader :conflict_packages, :conflict_reasons
     attr_reader :provided_stuffs, :master_package
     attr_reader :patches, :embeded_patches, :attachments
@@ -17,7 +17,7 @@ module PACKMAN
     def initialize
       @labels = []
       @dependencies = []
-      @skip_distros = []
+      @skipped_os = []
       @conflict_packages = []
       @conflict_reasons = []
       @provided_stuffs = {}
@@ -46,8 +46,8 @@ module PACKMAN
       val.dependencies.each do |depend|
         @dependencies << depend if not @dependencies.include? depend
       end
-      val.skip_distros.each do |distro|
-        @skip_distros << distro if not @skip_distros.include? distro
+      val.skipped_os.each do |distro|
+        @skipped_os << distro if not @skipped_os.include? distro
       end
       val.conflict_packages.each do |package|
         @conflict_packages << package if not @conflict_packages.include? package
@@ -59,14 +59,14 @@ module PACKMAN
         if not @provided_stuffs.has_key? key
           @provided_stuffs[key] = value
         elsif @provided_stuffs[key] != value
-          PACKMAN.report_error "PackageSpec already provides #{PACKMAN.red "#{key} => #{value}"}!"
+          PACKMAN.report_error "PackageAtom already provides #{PACKMAN.red "#{key} => #{value}"}!"
         end
       end
       val.option_valid_types.each do |key, value|
         if not @option_valid_types.has_key? key
           @option_valid_types[key] = value
         elsif @option_valid_types[key] != value
-          PACKMAN.report_error "PackageSpec already define option type #{PACKMAN.red "#{key} => #{value}"}!"
+          PACKMAN.report_error "PackageAtom already define option type #{PACKMAN.red "#{key} => #{value}"}!"
         end
       end
       val.options.each do |key, value|
@@ -75,7 +75,7 @@ module PACKMAN
         elsif not @options[key]
           @options[key] = value
         elsif value.class != Array and @options[key] != value
-          # PACKMAN.report_warning "PackageSpec already has option #{PACKMAN.red "#{key} => #{@options[key]}"}!"
+          # PACKMAN.report_warning "PackageAtom already has option #{PACKMAN.red "#{key} => #{@options[key]}"}!"
         end
       end
     end
@@ -143,9 +143,9 @@ module PACKMAN
       end
     end
 
-    def skip_on val; @skip_distros << val; end
+    def skip_on val; @skipped_os << val; end
 
-    def skip_on? val; @skip_distros.include? val; end
+    def skip_on? val; @skipped_os.include? val; end
 
     def conflicts_with val, &block
       @conflict_packages << val
@@ -166,7 +166,7 @@ module PACKMAN
 
     def patch &block
       if block_given?
-        new_patch = PackageSpec.new
+        new_patch = PackageAtom.new
         new_patch.instance_eval &block
         @patches.each do |patch|
           return if patch.sha1 == new_patch.sha1
@@ -181,7 +181,7 @@ module PACKMAN
 
     def attach name, &block
       if block_given?
-        attachment = PackageSpec.new
+        attachment = PackageAtom.new
         attachment.instance_eval &block
         @attachments[name] = attachment
       end
@@ -198,7 +198,7 @@ module PACKMAN
         return if @option_updated[key] # NOTE: When option is updated by other sources, ignore the setting in the package class.
         if value.class == Symbol
           return if is_option_added and @option_valid_types[key] == value
-          @options[key] = PackageSpec.default_option_value value
+          @options[key] = PackageAtom.default_option_value value
           @option_valid_types[key] = value
         elsif value.class == TrueClass or value.class == FalseClass
           return if is_option_added

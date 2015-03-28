@@ -1,8 +1,7 @@
 module PACKMAN
-  class MacSpec < OsSpec
+  class Mac < Os
     vendor :Apple
-    type :Darwin
-    distro :Mac_OS_X
+    type :Mac_OS_X
     check :version do
       `sw_vers | grep ProductVersion | cut -d ':' -f 2`
     end

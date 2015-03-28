@@ -2,18 +2,18 @@ class Byacc < PACKMAN::Package
   label 'should_provided_by_system'
 
   def installed?
-    if PACKMAN::OS.mac_gang?
+    if PACKMAN.mac?
       return File.exist? '/usr/bin/yacc'
     else
-      return PACKMAN::OS.installed? 'byacc'
+      return PACKMAN.os_installed? 'byacc'
     end
   end
 
   def install_method
-    if PACKMAN::OS.mac_gang?
+    if PACKMAN.mac?
       return 'You should install Xcode and command line tools.'
     else
-      return PACKMAN::OS.how_to_install 'byacc'
+      return PACKMAN.os_how_to_install 'byacc'
     end
   end
 end

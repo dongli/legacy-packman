@@ -23,7 +23,7 @@ module PACKMAN
     def self.init
       @@compiler_spec_classes = []
       PACKMAN.constants.each do |c|
-        @@compiler_spec_classes << c if c.to_s =~ /\wCompilerSpec/
+        @@compiler_spec_classes << c if c.to_s =~ /\wCompiler/
       end
       @@compiler_sets = []
       @@active_compiler_set = nil

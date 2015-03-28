@@ -14,7 +14,7 @@ class Grib_api < PACKMAN::Package
       --with-netcdf=#{Netcdf_c.prefix}
       --with-jasper=#{Jasper.prefix}
     ]
-    if PACKMAN::OS.cygwin_gang?
+    if PACKMAN.cygwin?
       args << "LIBS='-L#{Curl.lib} -lcurl -L#{Hdf5.lib} -lhdf5 -lhdf5_hl'"
     end
     PACKMAN.run './configure', *args

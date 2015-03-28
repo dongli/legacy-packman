@@ -7,7 +7,7 @@ class Libpng < PACKMAN::Package
 
   depends_on 'zlib'
 
-  if PACKMAN::OS.distro == :Mac_OS_X
+  if PACKMAN.mac?
     def system_prefix
       '/usr/X11'
     end

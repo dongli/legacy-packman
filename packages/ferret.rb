@@ -29,18 +29,16 @@ class Ferret < PACKMAN::Package
     PACKMAN.cd 'FERRET', :norecord
     # Check build type since Ferret does not check it for us.
     build_type = ''
-    if PACKMAN::OS.x86_64?
-      case PACKMAN::OS.type
-      when :Darwin
+    if PACKMAN.x86_64?
+      if PACKMAN.mac?
         build_type = 'x86_64-darwin'
-      when :Linux
+      elsif PACKMAN.linux?
         build_type = 'x86_64-linux'
       end
     else
-      case PACKMAN::OS.type
-      when :Darwin
+      if PACKMAN.mac?
         build_type = 'i386-apple-darwin'
-      when :Linux
+      elsif PACKMAN.linux?
         build_type = 'i386-linux'
       end
     end
@@ -56,7 +54,7 @@ class Ferret < PACKMAN::Package
       /^(\s*INCLUDES\s*=.*)$/ => "\\1\n-I#{Netcdf.include} -I#{Curl.include} \\",
       /^(\s*LDFLAGS\s*=.*)$/ => "\\1 -L#{Netcdf.lib} -L#{Curl.lib} ",
     }
-    if PACKMAN::OS.mac_gang?
+    if PACKMAN.mac?
       PACKMAN.replace "platform_specific.mk.#{build_type}", {
         /^TMAP_LOCAL\s*=.*$/ => "TMAP_LOCAL = #{FileUtils.pwd}",
         /^(\s*INCLUDES\s*=.*)$/ => "\\1\n-I/usr/X11R6/include \\",
@@ -108,18 +106,18 @@ class Ferret < PACKMAN::Package
       }
     end
     # Check if Xmu library is installed by system or not.
-    if PACKMAN::OS.mac_gang?
+    if PACKMAN.mac?
       if not File.exist? '/usr/X11R6/include/X11/Xmu/WinUtil.h'
         PACKMAN.report_error "Mac does not install X11 (search Xquartz)."
       end
     else
       xmu_package = ''
-      if PACKMAN::OS.redhat_gang?
+      if PACKMAN.redhat?
         xmu_package = 'libXmu-devel'
-      elsif PACKMAN::OS.debian_gang?
+      elsif PACKMAN.debian?
         xmu_package = 'libxmu-dev'
       end
-      if not PACKMAN::OS.installed? xmu_package
+      if not PACKMAN.os_installed? xmu_package
         PACKMAN.report_warning "System package "+
           "#{PACKMAN.red xmu_package} is not "+
           "installed! Macro NO_WIN_UTIL_H will be used."
@@ -150,7 +148,7 @@ class Ferret < PACKMAN::Package
       #   /IF \(first_call\) old_handler = SIGNAL\( 2, CTRLC_AST, -1 \)/ => 'IF (first_call) old_handler = SIGNAL( 2, CTRLC_AST )'
       # }
     end
-    if PACKMAN::OS.mac_gang?
+    if PACKMAN.mac?
       PACKMAN.replace 'bin/make_executable_tar', {
         /^set mycp =.*$/ => 'set mycp = "/bin/cp -v -r -p"'
       }

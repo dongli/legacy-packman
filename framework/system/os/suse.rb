@@ -1,8 +1,7 @@
 module PACKMAN
-  class SuseSpec < OsSpec
+  class Suse < Os
     vendor :Novell
-    type :Linux
-    distro :SUSE
+    type :SUSE
     check :version do
       tmp = `cat /etc/*-release`.match(/VERSION = (\d+)\nPATCHLEVEL = (\d)/m)
       "#{tmp[1]}.#{tmp[2]}"

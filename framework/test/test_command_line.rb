@@ -11,7 +11,7 @@ require "uri"
 require "minitest/autorun"
 
 $VERBOSE = nil
-PACKMAN::OS.init
+PACKMAN::OsManager.init
 
 describe PACKMAN::CommandLine do
   it 'should initialize "install netcdf_fortran" successfully' do

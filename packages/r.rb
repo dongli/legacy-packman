@@ -30,9 +30,9 @@ class R < PACKMAN::Package
       --with-blas=#{Openblas.prefix}
       --without-tcltk
     ]
-    if PACKMAN::OS.type == :Darwin
+    if PACKMAN.mac?
       args << '--without-aqua'
-    elsif PACKMAN::OS.type == :Linux
+    elsif PACKMAN.linux?
       args << '--enable-R-shlib'
     end
     PACKMAN.set_cppflags_and_ldflags [Readline, Gettext]
@@ -40,7 +40,7 @@ class R < PACKMAN::Package
     PACKMAN.run 'make'
     PACKMAN.run 'make check 2>&1 | tee make-check.log' if not skip_test?
     PACKMAN.run 'make install'
-    if PACKMAN::OS.type == :Darwin
+    if PACKMAN.mac?
       PACKMAN.mkdir bin, :silent
       ['R', 'Rscript'].each do |cmd|
         PACKMAN.ln "#{prefix}/R.framework/Resources/bin/#{cmd}", bin

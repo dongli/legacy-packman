@@ -27,7 +27,7 @@ class Hyrax_bes < PACKMAN::Package
       --prefix=#{prefix}
       DAP_CFLAGS='#{`#{Opendap.bin}/dap-config --cflags`.strip}'
     ]
-    if not PACKMAN::OS.mac_gang?
+    if not PACKMAN.mac?
       args << "CPPFLAGS='-I#{Uuid.prefix}/include -I#{Readline.prefix}/include'"
       args << "LDFLAGS='-L#{Ncurses.prefix}/lib -L#{Readline.prefix}/lib'"
     end
@@ -43,7 +43,7 @@ class Hyrax_bes < PACKMAN::Package
   def postfix
     # Change user name and group name in bes.conf
     user_name = ENV['USER']
-    if PACKMAN::OS.mac_gang?
+    if PACKMAN.mac?
       group_name = 'staff'
     else
       group_name = user_name

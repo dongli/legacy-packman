@@ -40,19 +40,19 @@ class Sqlite < PACKMAN::Package
       -fno-common
       $CFLAGS
       #{extension_functions.package_path}
-      -o libsqlitefunctions.#{PACKMAN::OS.shared_library_suffix}
+      -o libsqlitefunctions.#{PACKMAN.shared_library_suffix}
       #{ENV['CFLAGS']}
       -I.
       -lm
     ]
     # TODO: Figure out how to do this elegantly.
-    if PACKMAN::OS.type == :Darwin
+    if PACKMAN.mac?
       args << '-dynamiclib'
-    elsif PACKMAN::OS.type == :Linux
+    elsif PACKMAN.linux?
       args << '-shared'
     end
     PACKMAN.run PACKMAN.compiler_command('c'), *args
-    PACKMAN.mv "libsqlitefunctions.#{PACKMAN::OS.shared_library_suffix}", lib
+    PACKMAN.mv "libsqlitefunctions.#{PACKMAN.shared_library_suffix}", lib
     PACKMAN.mkdir doc, :silent
     PACKMAN.work_in doc do
       PACKMAN.decompress sqlite_doc.package_path

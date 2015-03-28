@@ -3,7 +3,7 @@ class Libtiff < PACKMAN::Package
   sha1 '652e97b78f1444237a82cbcfe014310e776eb6f0'
   version '4.0.3'
 
-  label 'do_not_set_ld_library_path' if PACKMAN::OS.mac_gang?
+  label 'do_not_set_ld_library_path' if PACKMAN.mac?
 
   depends_on 'jpeg'
 

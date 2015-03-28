@@ -14,7 +14,7 @@ class Netcdf_fortran < PACKMAN::Package
       PACKMAN.report_warning "Fortran compiler is not available in this compiler set, skip #{PACKMAN.red 'Netcdf_fortran'}."
       return
     end
-    if PACKMAN::OS.mac_gang? and PACKMAN.compiler_vendor('fortran') == 'intel'
+    if PACKMAN.mac? and PACKMAN.compiler_vendor('fortran') == 'intel'
       PACKMAN.append_env 'FCFLAGS', '-xHost -ip -no-prec-div -mdynamic-no-pic'
       PACKMAN.append_env 'FFLAGS', '-xHost -ip -no-prec-div -mdynamic-no-pic'
       # Follow the fixing in Homebrew. This is documented in http://www.unidata.ucar.edu/software/netcdf/docs/known_problems.html#intel-fortran-macosx.

@@ -15,7 +15,7 @@ class Cairo < PACKMAN::Package
       --disable-dependency-tracking
       --with-x
     ]
-    if PACKMAN::OS.mac_gang?
+    if PACKMAN.mac?
       PACKMAN.replace 'configure', /^\s*use_png=no$/ => 'use_png=yes'
       args << "CPPFLAGS='-I#{Libpng.include}'"
       args << "LDFLAGS='-L#{Libpng.lib} -lpng'"

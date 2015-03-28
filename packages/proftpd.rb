@@ -16,9 +16,9 @@ class Proftpd < PACKMAN::Package
       --localstatedir=#{var}
     ]
     PACKMAN.run './configure', *args
-    if PACKMAN::OS.mac_gang?
+    if PACKMAN.mac?
       PACKMAN.run "make INSTALL_USER=`whoami` INSTALL_GROUP=admin install"
-    elsif PACKMAN::OS.cygwin_gang?
+    elsif PACKMAN.cygwin?
       PACKMAN.run 'make install'
     else
       PACKMAN.run "make INSTALL_USER=`whoami` INSTALL_GROUP=`whoami` install"
@@ -30,7 +30,7 @@ class Proftpd < PACKMAN::Package
       /^(ServerType\s*.*)$/ => "\\1\nServerLog #{prefix}/var/proftpd.log",
       /^(DefaultServer.*$)/ => "\\1\nRequireValidShell no\nWtmpLog off",  
     }
-    if PACKMAN::OS.cygwin_gang?
+    if PACKMAN.cygwin?
       PACKMAN.replace "#{prefix}/../config/proftpd.conf", {
         /^User\s*\w+$/ => "User SYSTEM",
         /^Group\s*\w+$/ => "Group Administrators"

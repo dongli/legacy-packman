@@ -1,5 +1,5 @@
 module PACKMAN
-  class CompilerSpecSpec
+  class CompilerAtom
     attr_accessor :vendor, :version, :compiler_commands
     attr_accessor :default_flags, :flags
     attr_accessor :check_blocks, :checked_items

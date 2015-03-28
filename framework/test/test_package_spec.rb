@@ -7,9 +7,9 @@ require "minitest/autorun"
 
 # PACKMAN::CommandLine.options['-debug'] = nil
 
-describe PACKMAN::PackageSpec do
+describe PACKMAN::PackageAtom do
   it 'should initialize expectly' do
-    p = PACKMAN::PackageSpec.new
+    p = PACKMAN::PackageAtom.new
     p.options.has_key?('skip_test').must_equal true
     p.options['skip_test'].must_equal false
     p.option_valid_types['skip_test'].must_equal :boolean
@@ -22,20 +22,20 @@ describe PACKMAN::PackageSpec do
   end
 
   it 'should get filename from a url' do
-    p = PACKMAN::PackageSpec.new
+    p = PACKMAN::PackageAtom.new
     p.url 'http://foo.com/bar.tar.gz'
     p.url.must_equal 'http://foo.com/bar.tar.gz'
     p.filename.must_equal 'bar.tar.gz'
   end
 
   it 'should provide default option value for different types' do
-    PACKMAN::PackageSpec.default_option_value(:boolean).must_equal false
-    PACKMAN::PackageSpec.default_option_value(:integer_array).must_equal []
-    PACKMAN::PackageSpec.default_option_value(:package_name).must_equal nil
+    PACKMAN::PackageAtom.default_option_value(:boolean).must_equal false
+    PACKMAN::PackageAtom.default_option_value(:integer_array).must_equal []
+    PACKMAN::PackageAtom.default_option_value(:package_name).must_equal nil
   end
 
   it 'should set option correctly' do
-    p = PACKMAN::PackageSpec.new
+    p = PACKMAN::PackageAtom.new
 
     proc {
       begin

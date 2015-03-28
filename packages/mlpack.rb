@@ -16,7 +16,7 @@ class Mlpack < PACKMAN::Package
       -DCMAKE_INSTALL_PREFIX=#{prefix}
       -DCMAKE_BUILD_TYPE='Release'
       -DARMADILLO_INCLUDE_DIR=#{Armadillo.include}
-      -DARMADILLO_LIBRARY=#{Armadillo.lib}/libarmadillo.#{PACKMAN::OS.shared_library_suffix}
+      -DARMADILLO_LIBRARY=#{Armadillo.lib}/libarmadillo.#{PACKMAN.shared_library_suffix}
       -DBoost_NO_BOOST_CMAKE=ON
       -DCMAKE_EXE_LINKER_FLAGS='-L#{Hdf5.lib}'
     ]

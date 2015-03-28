@@ -35,7 +35,7 @@ class Cdo < PACKMAN::Package
       --disable-dependency-tracking
       --disable-debug
     ]
-    if PACKMAN::OS.cygwin_gang?
+    if PACKMAN.cygwin?
       args << "LIBS='-L#{Udunits.lib} -lexpat -L#{Curl.lib} -lcurl -ludunits2'"
       # Replace 'sqrtl' to 'sqrt'.
       PACKMAN.replace 'src/clipping/intersection.c', 'sqrtl' => 'sqrt'
@@ -44,7 +44,7 @@ class Cdo < PACKMAN::Package
     end
     args << "CFLAGS='-fp-model source'" if PACKMAN.compiler_vendor('c') == 'intel'
     PACKMAN.run './configure', *args
-    if PACKMAN::OS.cygwin_gang?
+    if PACKMAN.cygwin?
       PACKMAN.run "make LIBS='-L#{Udunits.lib} -ludunits2 -lexpat -L#{Proj.lib} -lproj -L#{Grib_api.lib} -lgrib_api -L#{Netcdf.lib} -lnetcdf'"
       PACKMAN.caveat <<-EOT.gsub(/^\s+/, '')
         The checking codes for remapping with nearest neighbor method will fail

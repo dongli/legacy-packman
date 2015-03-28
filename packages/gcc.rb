@@ -14,7 +14,7 @@ class Gcc < PACKMAN::Package
   provide 'c++' => 'g++'
   provide 'fortran' => 'gfortran'
 
-  if PACKMAN::OS.distro == :Mac_OS_X and PACKMAN::OS.version =~ '10.10'
+  if PACKMAN.os_type == :Mac_OS_X and PACKMAN.os_version =~ '10.10'
     patch do
       url "https://raw.githubusercontent.com/DomT4/scripts/6c0e48921/Homebrew_Resources/Gcc/gcc1010.diff"
       sha1 "083ec884399218584aec76ab8f2a0db97c12a3ba"
@@ -22,7 +22,7 @@ class Gcc < PACKMAN::Package
   end
 
   def install
-    if PACKMAN::OS.mac_gang?
+    if PACKMAN.mac?
       languages = %W[c c++ objc fortran]
     else
       languages = %W[c c++ fortran]

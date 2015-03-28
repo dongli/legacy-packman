@@ -24,14 +24,14 @@ class Ncview < PACKMAN::Package
       --with-udunits2_libdir=#{Udunits.lib}
       --disable-dependency-tracking
     ]
-    if PACKMAN::OS.mac_gang?
+    if PACKMAN.mac?
       args << '--x-includes=/usr/X11/include'
       args << '--x-libraries=/usr/X11/lib'
     else
       args << "--with-png_incdir=#{Libpng.include}"
       args << "--with-png_libdir=#{Libpng.lib}"
     end
-    if PACKMAN::OS.cygwin_gang?
+    if PACKMAN.cygwin?
       args << "LIBS='-L#{Curl.lib} -lcurl -L#{Hdf5.lib} -lhdf5 -lhdf5_hl'"
       PACKMAN.replace 'configure', {
         'libpng.so' => 'libpng.a',

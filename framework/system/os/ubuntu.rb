@@ -1,7 +1,7 @@
 module PACKMAN
-  class UbuntuSpec < DebianSpec
+  class Ubuntu < Debian
     vendor :Canonoical
-    distro :Ubuntu
+    type :Ubuntu
     check :version do
       `cat /etc/*-release`.match(/DISTRIB_RELEASE=(\d+\.\d+)/)[1]
     end

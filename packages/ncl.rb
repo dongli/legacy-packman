@@ -33,7 +33,7 @@ class Ncl < PACKMAN::Package
   end
 
   history_binary_version '6.2.1', [:Debian, :Ubuntu], ['>= 7.6', '>= 12.04'] do
-    if PACKMAN::OS.x86_64?
+    if PACKMAN.x86_64?
       url 'https://www.earthsystemgrid.org/download/fileDownload.htm?logicalFileId=38263864-351d-11e4-a4b4-00c0f03d5b7c'
       sha1 'b7c885391891cb5709c44df3314391787c3ed9c3'
       filename 'ncl_ncarg-6.2.1.Linux_Debian7.6_x86_64_gcc472.tar.gz'
@@ -63,7 +63,7 @@ class Ncl < PACKMAN::Package
   end
 
   binary [:Debian, :Ubuntu], ['>= 6.0', '>= 12.04'] do
-    if PACKMAN::OS.x86_64?
+    if PACKMAN.x86_64?
       url 'https://www.earthsystemgrid.org/download/fileDownload.htm?logicalFileId=e088d94c-cd9a-11e4-bb80-00c0f03d5b7c'
       sha1 '32b0c6192992910e26f7fd19b04e05a7d97fed10'
       version '6.3.0'
@@ -105,7 +105,7 @@ class Ncl < PACKMAN::Package
   end
 
   binary :RHEL, '=~ 5' do
-    if PACKMAN::OS.x86_64?
+    if PACKMAN.x86_64?
       url 'https://www.earthsystemgrid.org/download/fileDownload.htm?logicalFileId=e0883d0b-cd9a-11e4-bb80-00c0f03d5b7c'
       sha1 '379b2f31b4e5fd588c8e118b03a74bd284bccdb2'
       version '6.3.0'
@@ -142,18 +142,18 @@ class Ncl < PACKMAN::Package
   # TODO: Maintain the compilation of NCL from source codes!
   def install
     # Check some system packages.
-    if not PACKMAN::OS.mac_gang?
-      if PACKMAN::OS.redhat_gang?
+    if not PACKMAN.mac?
+      if PACKMAN.redhat?
         xaw_package = 'libXaw-devel'
-      elsif PACKMAN::OS.debian_gang?
+      elsif PACKMAN.debian?
         xaw_package = ['libxt-dev', 'libxaw-headers']
       end
-      if not PACKMAN::OS.installed? xaw_package
+      if not PACKMAN.os_installed? xaw_package
         PACKMAN.report_warning "NCL needs Xaw (its headers) to build "+
           "#{PACKMAN.red 'idt'}, but it is not installed by system! "+
           "You can cancel to install it with the following command if you "+
           "really need #{PACKMAN.red 'idt'}.\n\n"+
-          "#{PACKMAN.yellow '==>'} #{PACKMAN::OS.how_to_install xaw_package}"
+          "#{PACKMAN.yellow '==>'} #{PACKMAN.os_how_to_install xaw_package}"
       end
     end
     PACKMAN.append_env 'NCARG', prefix
@@ -233,9 +233,7 @@ class Ncl < PACKMAN::Package
       writer.print("y\n")
       # Enter local library search path(s).
       reader.expect(/Enter Return \(default\), new directories, or q\(quit\) > /)
-      if PACKMAN::OS.distro == :Mac_OS_X
-        writer.print "/usr/X11R6/lib "
-      end
+      writer.print "/usr/X11R6/lib " if PACKMAN.mac?
       [ Expat, Freetype, Fontconfig, Szip, Jasper, Cairo, Jpeg, Libpng, Hdf4, Hdf5,
         Netcdf_c, Netcdf_fortran, Pixman, Hdf_eos2, Hdf_eos5, Grib2_c, Gdal, Proj,
       Udunits, Vis5dx ].each do |lib|
@@ -246,9 +244,7 @@ class Ncl < PACKMAN::Package
       writer.print "\n"
       # Enter local include search path(s).
       reader.expect(/Enter Return \(default\), new directories, or q\(quit\) > /)
-      if PACKMAN::OS.distro == :Mac_OS_X
-        writer.print "/usr/X11R6/include "
-      end
+      writer.print "/usr/X11R6/include " if PACKMAN.mac?
       [ Expat, Freetype, Fontconfig, Szip, Jasper, Cairo, Jpeg, Libpng, Hdf4, Hdf5,
         Netcdf_c, Netcdf_fortran, Pixman, Hdf_eos2, Hdf_eos5, Grib2_c, Gdal, Proj,
       Udunits, Vis5dx ].each do |lib|
@@ -256,7 +252,7 @@ class Ncl < PACKMAN::Package
           writer.print "#{lib.include} "
         end
       end
-      if PACKMAN::OS.redhat_gang?
+      if PACKMAN.redhat?
         writer.print "/usr/include/freetype2 "
       end
       writer.print "#{Gcc.include} "

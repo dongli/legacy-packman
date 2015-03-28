@@ -35,12 +35,12 @@ class Vis5dx < PACKMAN::Package
       --prefix=#{prefix}
       --with-netcdf=#{Netcdf_c.prefix}
     ]
-    if PACKMAN::OS.distro == :Mac_OS_X
+    if PACKMAN.mac?
       args << 'CPPFLAGS="-I/usr/X11R6/include"'
       args << 'LDFLAGS="-L/usr/X11R6/lib"'
     end
     PACKMAN.run './configure', *args
-    if PACKMAN::OS.distro == :Mac_OS_X
+    if PACKMAN.mac?
       PACKMAN.replace 'libtool', {
         /^allow_undefined_flag="(.*)"$/ => 'allow_undefined_flag="\1 -flat_namespace"'
       }

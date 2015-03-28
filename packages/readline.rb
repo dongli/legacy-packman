@@ -10,7 +10,7 @@ class Readline < PACKMAN::Package
       --prefix=#{prefix}
       --enable-multibyte
     ]
-    if PACKMAN::OS.distro != :Mac_OS_X
+    if PACKMAN.mac?
       args << '--with-curses'
       PACKMAN.append_env 'CFLAGS', "-I#{Ncurses.include}"
       PACKMAN.append_env 'LDFLAGS', "-L#{Ncurses.lib}"

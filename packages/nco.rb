@@ -28,7 +28,7 @@ class Nco < PACKMAN::Package
       CFLAGS='-I#{Curl.include} -I#{Hdf5.include}'
       LDFLAGS='-L#{Curl.lib} -L#{Hdf5.lib}'
     ]
-    if PACKMAN::OS.cygwin_gang?
+    if PACKMAN.cygwin?
       args << "LIBS='-L#{Curl.lib} -lcurl -L#{Hdf5.lib} -lhdf5 -lhdf5_hl'"
     end
     PACKMAN.run './configure', *args

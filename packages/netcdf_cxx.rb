@@ -18,7 +18,7 @@ class Netcdf_cxx < PACKMAN::Package
       --enable-shared
     ]
     PACKMAN.set_cppflags_and_ldflags [Netcdf]
-    if PACKMAN::OS.cygwin_gang?
+    if PACKMAN.cygwin?
       args << "LIBS='-L#{Curl.lib} -lcurl -L#{Hdf5.lib} -lhdf5 -lhdf5_hl'"
     end
     PACKMAN.run './configure', *args

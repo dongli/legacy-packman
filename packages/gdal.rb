@@ -36,7 +36,7 @@ class Gdal < PACKMAN::Package
       --with-odbc=no
       --with-xml2=no
     ]
-    if PACKMAN::OS.distro == :Mac_OS_X
+    if PACKMAN.mac?
       args << '--with-png=internal'
     else
       args << "--with-png=#{Libpng.prefix}"

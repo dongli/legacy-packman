@@ -3,7 +3,7 @@ class Jpeg < PACKMAN::Package
   sha1 'f080b2fffc7581f7d19b968092ba9ebc234556ff'
   version '8d'
 
-  label 'do_not_set_ld_library_path' if PACKMAN::OS.mac_gang?
+  label 'do_not_set_ld_library_path' if PACKMAN.mac?
 
   def install
     args = %W[

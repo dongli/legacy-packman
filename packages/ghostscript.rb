@@ -14,7 +14,7 @@ class Ghostscript < PACKMAN::Package
   depends_on 'freetype'
   depends_on 'x11'
 
-  if PACKMAN::OS.distro == :Mac_OS_X
+  if PACKMAN.mac?
     patch :embed
   end
 

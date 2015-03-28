@@ -21,7 +21,7 @@ class Libiconv < PACKMAN::Package
   end
 
   def installed?
-    if PACKMAN::OS.mac_gang?
+    if PACKMAN.mac?
       File.exist? '/usr/lib/libiconv.dylib'
     end
   end

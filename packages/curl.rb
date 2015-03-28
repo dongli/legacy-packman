@@ -9,7 +9,7 @@ class Curl < PACKMAN::Package
     args = %W[
       --prefix=#{prefix}
     ]
-    if PACKMAN::OS.cygwin_gang?
+    if PACKMAN.cygwin?
       args << "--with-ssl=#{Openssl.prefix}"
     end
     PACKMAN.run './configure', *args

@@ -4,7 +4,7 @@ class Szip < PACKMAN::Package
   version '2.1'
 
   def install
-    if PACKMAN::OS.cygwin_gang?
+    if PACKMAN.cygwin?
       PACKMAN.replace 'src/Makefile.am', {
         /libsz_la_LDFLAGS\s*=\s*(.*)$/ => 'libsz_la_LDFLAGS = \1 -no-undefined'
       }

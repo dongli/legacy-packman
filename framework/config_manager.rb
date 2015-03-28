@@ -197,7 +197,7 @@ module PACKMAN
           file << "package_#{package_name.to_s.downcase} = {\n"
           str = []
           options.each do |key, value|
-            next if value == PackageSpec.default_option_value(package.option_valid_types[key])
+            next if value == PackageAtom.default_option_value(package.option_valid_types[key])
             case value
             when String
               str << "  \"#{key}\" => \"#{value}\""

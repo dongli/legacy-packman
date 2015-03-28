@@ -148,7 +148,7 @@ module PACKMAN
       @@options.each_key do |key|
         next if PermittedOptions[@@subcommand].has_key? key
         next if PermittedCommonOptions.has_key? key
-        next if PackageSpec::CommonOptions.has_key? key.gsub(/^-/, '')
+        next if PackageAtom::CommonOptions.has_key? key.gsub(/^-/, '')
         is_found = false
         @@packages.each do |package_name|
           package = Package.instance package_name

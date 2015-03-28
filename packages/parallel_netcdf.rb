@@ -22,7 +22,7 @@ class Parallel_netcdf < PACKMAN::Package
         }
       end
     end
-    PACKMAN.append_customized_flags(:pic) if PACKMAN::OS.type == :Linux
+    PACKMAN.append_customized_flags(:pic) if PACKMAN.linux?
     args = %W[
       --prefix=#{prefix}
     ]

@@ -19,13 +19,13 @@ class Ncurses < PACKMAN::Package
   end
 
   def installed?
-    if PACKMAN::OS.mac_gang?
+    if PACKMAN.mac?
       return File.exist? '/usr/include/ncurses.h'
     end
   end
 
   def install_method
-    if PACKMAN::OS.mac_gang?
+    if PACKMAN.mac?
       return 'Sorry, Mac should come with Ncurses...'
     end
   end

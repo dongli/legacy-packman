@@ -1,5 +1,5 @@
 module PACKMAN
-  class RedHatSpec < OsSpec
+  class RedHat < Os
     vendor :RedHat
     type :Linux
     check :version do

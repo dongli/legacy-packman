@@ -15,17 +15,17 @@ class Autoconf < PACKMAN::Package
   end
 
   def installed?
-    if PACKMAN::OS.redhat_gang?
-      PACKMAN::OS.installed? 'autoconf'
-    elsif PACKMAN::OS.mac_gang?
+    if PACKMAN.redhat?
+      PACKMAN.os_installed? 'autoconf'
+    elsif PACKMAN.mac?
       PACKMAN.does_command_exist? 'autom4te'
     end
   end
 
   def install_method
-    if PACKMAN::OS.redhat_gang?
-      PACKMAN::OS.how_to_install 'autoconf'
-    elsif PACKMAN::OS.mac_gang?
+    if PACKMAN.redhat?
+      PACKMAN.os_how_to_install 'autoconf'
+    elsif PACKMAN.mac?
 
     end
   end

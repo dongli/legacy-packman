@@ -117,7 +117,7 @@ module PACKMAN
         if not package.methods.include? :installed?
           CLI.report_error "Package #{CLI.red package.class} does not have #{CLI.blue 'installed?'} method!"
         end
-        if not package.skip_distros.include? :all and not package.installed?
+        if not package.skipped_os.include? :all and not package.installed?
           CLI.report_error "Package #{CLI.red package.class} "+
             "should be provided by system!\n#{CLI.blue '==>'} "+
             "The possible installation method is:\n#{package.install_method}"

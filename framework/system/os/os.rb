@@ -1,128 +1,76 @@
 module PACKMAN
-  class OS
-    def self.init
-      res = `uname`
-      case res
-      when /^Darwin */
-        type = :Darwin
-      when /^Linux */
-        type = :Linux
-      when /^CYGWIN*/
-        type = :Cygwin
-      else
-        CLI.report_error "Unknown OS type \"#{res}\"!"
+  class Os
+    attr_reader :normal, :active_spec
+
+    def initialize requested_spec = nil
+      hand_over_spec :normal
+
+      set_active_spec requested_spec
+
+      active_spec.check_blocks.each do |name, block|
+        active_spec.checked_items[name] = block.call
       end
-      case type
-      when :Darwin
-        @@spec = MacSpec.new
-      when :Linux
-        res = `cat /etc/*-release`
-        case res
-        when /Red Hat Enterprise Linux Server/
-          @@spec = RHELSpec.new
-        when /Ubuntu/
-          @@spec = UbuntuSpec.new
-        when /Fedora/
-          @@spec = FedoraSpec.new
-        when /CentOS/
-          @@spec = CentOSSpec.new
-        when /Debian GNU\/Linux/
-          @@spec = DebianSpec.new
-        when /SUSE Linux/
-          @@spec = SuseSpec.new
-        else
-          CLI.report_error "Unknown distro \"#{res}\"!"
+      active_spec.version ||= VersionSpec.new active_spec.checked_items[:version].strip
+    end
+
+    def hand_over_spec name
+      tmp = self.class.to_s.gsub(/PACKMAN::/, '')
+      return if not self.class.class_variable_defined? :"@@#{tmp}_#{name}"
+      spec = self.class.class_variable_get(:"@@#{tmp}_#{name}").clone
+      self.class.ancestors.each do |x|
+        next if x == self.class
+        next if x == Os
+        next if not x.to_s =~ /^PACKMAN/
+        tmp = x.to_s.gsub(/PACKMAN::/, '')
+        ancestor_spec = self.class.class_variable_get(:"@@#{tmp}_#{name}").clone
+        spec.inherit ancestor_spec
+      end
+      instance_variable_set "@#{name}", spec
+    end
+
+    def set_active_spec requested_spec
+      if requested_spec
+        if self.respond_to? requested_spec
+          @active_spec = self.send requested_spec
         end
-      when :Cygwin
-        @@spec = CygwinSpec.new
-      end
-    end
-
-    def self.spec; @@spec; end
-    def self.type; @@spec.type; end
-    def self.distro; @@spec.distro; end
-    def self.version; @@spec.version; end
-    def self.x86_64?; @@spec.x86_64?; end
-    def self.package_managers; @@spec.package_managers; end
-    
-    def self.redhat_gang?
-      if distro == :RHEL or distro == :Fedora or
-         distro == :CentOS or distro == :SUSE
-        return true
       else
-        return false
+        @active_spec = normal
       end
     end
 
-    def self.debian_gang?
-      if distro == :Debian or distro == :Ubuntu
-        return true
-      else
-        return false
+    def vendor; active_spec.vendor; end
+    def type; active_spec.type; end
+    def distro; active_spec.distro; end
+    def version; active_spec.version; end
+    def package_managers; active_spec.package_managers; end
+    def check item
+      if not active_spec.checked_items.has_key? item
+        PACKMAN.report_error "There is no #{PACKMAN.red item} to check!"
       end
+      active_spec.checked_items[item]
     end
+    def x86_64?; active_spec.arch == 'x86_64' ? true : false; end
 
-    def self.mac_gang?
-      if distro == :Mac_OS_X
-        return true
-      else
-        return false
+    class << self
+      def normal
+        eval "@@#{self.to_s.gsub(/PACKMAN::/, '')}_normal ||= OsAtom.new"
       end
-    end
 
-    def self.cygwin_gang?
-      if distro == :Cygwin
-        return true
-      else
-        return false
-      end
-    end
-
-    def self.shared_library_suffix
-      case type
-      when :Linux
-        'so'
-      when :Darwin
-        'dylib'
-      when :Cygwin
-        'dll'
-      end
-    end
-
-    def self.ld_library_path_name
-      case type
-      when :Linux
-        'LD_LIBRARY_PATH'
-      when :Darwin
-        'DYLD_LIBRARY_PATH'
-      when :Cygwin
-        'LD_LIBRARY_PATH'
-      end
-    end
-
-    def self.installed? package_names
-      package_names = [package_names] if not package_names.class == Array
-      res = Array.new(package_names.size, false)
-      package_managers.each do |name, detail|
-        for i in 0..package_names.size-1
-          `#{detail[:query_command]} #{package_names[i]} 1> /dev/null 2>&1`
-          res[i] = true if $?.success?
+      def vendor val; normal.vendor = val; end
+      def type val; normal.type = val; end
+      def package_manager name, detail
+        `which #{detail[:query_command].split.first} 2>&1`
+        if $?.success?
+        #if PACKMAN.does_command_exist? detail[:query_command].split.first
+          normal.package_managers[name] = detail
         end
       end
-      return res.all?
-    end
-
-    def self.how_to_install package_names
-      package_names = [package_names] if not package_names.class == Array
-      res = []
-      package_managers.each do |name, detail|
-        next if not detail[:install_command]
-        res << detail[:install_command]+' '+package_names.join(' ')
+      def version
+        normal.version ||= VersionSpec.new normal.check_blocks[:version].call.strip
       end
-      if res.empty?
-        res << "There is no package manager to install #{package_names.join(' ')}!"
+      def check item, &block
+        normal.check_blocks[item] = block
       end
-      return res.join("\nor\n")
     end
   end
 end

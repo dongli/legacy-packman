@@ -1,5 +1,5 @@
 module PACKMAN
-  class LlvmCompilerSpec < CompilerSpec
+  class LlvmCompiler < Compiler
     vendor 'llvm'
     compiler_command 'c'       => ['clang',   '-O2']
     compiler_command 'c++'     => ['clang++', '-O2']

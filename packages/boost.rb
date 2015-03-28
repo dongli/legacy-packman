@@ -20,24 +20,21 @@ class Boost < PACKMAN::Package
         PACKMAN.report_error "Intel compiler is too old to compile Boost! See "+
           "https://software.intel.com/en-us/articles/boost-1400-compilation-error-while-building-with-intel-compiler/"
       end
-      case PACKMAN::OS.type
-      when :Darwin
+      if PACKMAN.mac?
         toolset << '-darwin'
-      when :Linux
+      elsif PACKMAN.linux?
         toolset << '-linux'
       end
     elsif toolset == 'gnu'
-      case PACKMAN::OS.type
-      when :Darwin
+      if PACKMAN.mac?
         toolset = 'darwin'
-      when :Linux
+      elsif PACKMAN.linux?
         toolset = 'gcc'
       end
     elsif toolset == 'llvm'
-      case PACKMAN::OS.type
-      when :Darwin
+      if PACKMAN.mac?
         toolset = 'clang-darwin'
-      when :Linux
+      elsif PACKMAN.linux?
         toolset = 'clang-linux'
       end
     end
@@ -60,14 +57,14 @@ class Boost < PACKMAN::Package
       install
     ]
     # Check if python development files are installed.
-    if not PACKMAN::OS.installed? ['python-dev', 'python-devel']
+    if not PACKMAN.os_installed? ['python-dev', 'python-devel']
       PACKMAN.report_warning 'Python development files are not installed, '+
         'so Boost will be installed without python library.'
       PACKMAN.report_warning "If you really need that library, cancel and "+
         "install #{PACKMAN.red 'python-dev'} or #{PACKMAN.red 'python-devel'}."
       args << '--without-python'
     end
-    if PACKMAN::OS.mac_gang? and toolset =~ /clang/
+    if PACKMAN.mac? and toolset =~ /clang/
       # Boost.Log cannot be built using Apple GCC at the moment. Disabled
       # on such systems.
       args << "--without-log"

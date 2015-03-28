@@ -16,7 +16,7 @@ class Fontconfig < PACKMAN::Package
       --disable-silent-rules
       --with-expat=#{Expat.prefix}
     ]
-    if PACKMAN::OS.type == :Darwin
+    if PACKMAN.mac?
       args << '--with-add-fonts=/System/Library/Fonts,/Library/Fonts,~/Library/Fonts'
     end
     PACKMAN.run './configure', *args
