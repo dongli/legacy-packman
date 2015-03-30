@@ -427,7 +427,7 @@ module PACKMAN
     def skip?
       skipped_os.include? PACKMAN.os_type or
       skipped_os.include? :all or
-      labels.include? 'should_provided_by_system' or
+      labels.include? 'should_be_provided_by_system' or
       ( labels.include? 'use_system_first' and installed? )
     end
 

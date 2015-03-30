@@ -1,6 +1,6 @@
 class X11 < PACKMAN::Package
-  label 'should_provided_by_system'
-  
+  label 'should_be_provided_by_system'
+
   def system_prefix
     if PACKMAN.mac?
       '/usr/X11'
