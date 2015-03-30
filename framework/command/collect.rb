@@ -42,7 +42,7 @@ module PACKMAN
       end
     end
     # Skip the package that should be provided by system.
-    return if package.has_label? 'should_provided_by_system'
+    return if package.has_label? 'should_be_provided_by_system'
     # Skip the package that is a virtual master.
     return if package.has_label? 'master_package' and not package.url
     # Check if there is any patch to download.

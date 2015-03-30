@@ -1,5 +1,5 @@
 class Yacc < PACKMAN::Package
-  label 'should_provided_by_system'
+  label 'should_be_provided_by_system'
 
   def installed?
     if PACKMAN.debian? or PACKMAN.redhat?
