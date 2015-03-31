@@ -33,7 +33,7 @@ module PACKMAN
             package.compiler_set_indices << ConfigManager.defaults['compiler_set_index']
           else
             # Ask user to choose the compiler sets.
-            tmp = CompilerManager.compiler_sets.clone
+            tmp = CompilerManager.compiler_sets.map { |x| x.command_hash }
             tmp << 'all'
             CLI.ask 'Which compiler sets do you want to use?', tmp
             ans = CLI.get_answer tmp
