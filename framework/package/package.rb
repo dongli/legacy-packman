@@ -82,11 +82,11 @@ module PACKMAN
               else
                 key.to_s.split('|').each do |split_key|
                   tmp1 = split_key.split(':')
-                  next if OS.distro != tmp1.first.to_sym
+                  next if PACKMAN.os_type != tmp1.first.to_sym
                   tmp2 = tmp1.last.match(/(>=|==|=~)?\s*(.*)/)
                   operator = tmp2[1] ? tmp2[1] : '=='
                   v1 = VersionSpec.new tmp2[2]
-                  v2 = OS.version
+                  v2 = PACKMAN.os_version
                   if eval "v2 #{operator} v1"
                     @active_spec = value
                     break
@@ -108,11 +108,11 @@ module PACKMAN
                   package_version = tmp1.first
                   next if package_version != requested_spec[:use_version]
                   tmp2 = tmp1.last.split(':')
-                  next if OS.distro != tmp2.first.to_sym
+                  next if PACKMAN.os_type != tmp2.first.to_sym
                   tmp3 = tmp2.last.match(/(>=|==|=~)?\s*(.*)/)
                   operator = tmp3[1] ? tmp3[1] : '=='
                   v1 = VersionSpec.new tmp3[2]
-                  v2 = OS.version
+                  v2 = PACKMAN.os_version
                   if eval "v2 #{operator} v1"
                     @active_spec = value
                     break
@@ -521,7 +521,7 @@ module PACKMAN
         if not libs.empty?
           file << "export PACKMAN_#{class_name}_LIBRARY=\"-L#{libs.join(' -L')}\"\n"
           if not package.has_label? 'do_not_set_ld_library_path'
-            file << "export #{OS.ld_library_path_name}=\"#{libs.join(':')}:${#{OS.ld_library_path_name}}\"\n"
+            file << "export #{OsManager.ld_library_path_name}=\"#{libs.join(':')}:${#{OsManager.ld_library_path_name}}\"\n"
           end
           file << "export PACKMAN_#{class_name}_RPATH=\"#{libs.join(':')}\"\n"
         end

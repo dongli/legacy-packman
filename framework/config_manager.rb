@@ -141,9 +141,9 @@ module PACKMAN
           }
           compiler_set_0 = {
         EOT
-        case OS.distro
+        case PACKMAN.os_type
         when :Mac_OS_X
-          if OS.spec.check(:Xcode) and OS.spec.check(:CommandLineTools)
+          if PACKMAN.os_spec.check(:Xcode) and PACKMAN.os_spec.check(:CommandLineTools)
             default_compilers['c'] = 'clang'
             default_compilers['c++'] = 'clang++'
           end
