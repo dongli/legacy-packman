@@ -1,7 +1,7 @@
 class Cdo < PACKMAN::Package
-  url 'https://code.zmaw.de/attachments/download/9367/cdo-1.6.6.tar.gz'
-  sha1 'ef2176164bf166c8d5e7a3bfc5163b642312eeb2'
-  version '1.6.6'
+  url 'https://code.zmaw.de/attachments/download/10030/cdo-1.6.8.tar.gz'
+  sha1 'e3a045c2980a0d133c2a84afd30c453574fdbf86'
+  version '1.6.8'
 
   history_version '1.6.3' do
     url 'https://code.zmaw.de/attachments/download/7220/cdo-1.6.3.tar.gz'
