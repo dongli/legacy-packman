@@ -2,7 +2,8 @@ module PACKMAN
   class CLI
     def self.delegated_methods
       [:green, :blue, :red, :yellow, :bold, :caveat,
-       :report_notice, :report_error, :report_warning]
+       :report_notice, :report_error, :report_warning,
+       :blue_arrow]
     end
 
     @@color_map = {
@@ -54,6 +55,16 @@ module PACKMAN
           end
         end
       EOT
+    end
+
+    def self.blue_arrow message, options = []
+      options = [options] if not options.class == Array
+      print "#{blue '==>'} "
+      if options.include? :truncate
+        print "#{truncate message}\n"
+      else
+        print "#{message}\n"
+      end
     end
 
     def self.print_call_stack

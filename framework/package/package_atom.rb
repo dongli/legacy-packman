@@ -11,7 +11,8 @@ module PACKMAN
       'skip_test' => false,
       'compiler_set_indices' => :integer_array,
       'use_binary' => false,
-      'use_version' => :string
+      'use_version' => :string,
+      'use_devel' => false
     }.freeze
 
     def initialize

@@ -50,12 +50,11 @@ module PACKMAN
       cmd_str = default_command_prefix
       cmd_args = args.join(' ')
       cmd_str << " #{cmd} "
-      print "#{CLI.blue '==>'} "
       cmd_str << "#{cmd_args} "
       if CommandLine.has_option? '-debug'
-        print "#{cmd_str}\n"
+        PACKMAN.blue_arrow cmd_str
       else
-        print "#{CLI.truncate("#{cmd} #{cmd_args}")}\n"
+        PACKMAN.blue_arrow "#{cmd} #{cmd_args}", :truncate
       end
       if not CommandLine.has_option? '-verbose'
         cmd_str << "1> #{ConfigManager.package_root}/stdout 2> #{ConfigManager.package_root}/stderr"

@@ -44,7 +44,7 @@ module PACKMAN
       tmp = self.class.class_variable_get :"@@#{self.class}_#{slave_name}"
       if tmp.class == Hash
         slave_specs = tmp.values
-      elsif tmp.class = PACKMAN::PackageAtom
+      elsif tmp.class == PACKMAN::PackageAtom
         slave_specs = [tmp]
       end
       slave_specs.each do |slave_spec|
@@ -57,6 +57,8 @@ module PACKMAN
       if requested_spec
         if requested_spec.class == Hash
           case requested_spec[:in]
+          when :devel
+            @active_spec = devel
           when :history_versions
             if not history_versions.has_key? requested_spec[:use_version]
               if @stable and stable.version == requested_spec[:use_version]
@@ -339,6 +341,8 @@ module PACKMAN
                 "#{PACKMAN.green '+use_version'} to limit the option scope!"
             end
           end
+        elsif options['use_devel']
+          requested_spec[:in] = :devel
         end
         requested_spec = nil if requested_spec.empty?
         package = eval "#{package_name}.new requested_spec"
