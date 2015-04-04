@@ -12,6 +12,7 @@ class Armadillo < PACKMAN::Package
   end
   depends_on 'arpack'
   depends_on 'hdf5'
+  depends_on 'superlu'
 
   def install
     # The CMake find modules provided by Armadillo is so weak that
@@ -24,6 +25,11 @@ class Armadillo < PACKMAN::Package
     end
     PACKMAN.replace 'cmake_aux/Modules/ARMA_FindARPACK.cmake',
       /^  PATHS / => "  PATHS #{Arpack.lib} "
+    PACKMAN.replace 'cmake_aux/Modules/ARMA_FindSuperLU.cmake', {
+      'SET(SuperLU_FOUND NO)' =>
+        "SET (SuperLU_INCLUDE_DIR #{Superlu.include}/superlu)\n"+
+        "SET (SuperLU_LIBRARY #{Superlu.lib}/libsuperlu.a)"
+    }
     # In some cases, the MKL does not work as expected.
     if not use_mkl?
       PACKMAN.replace 'CMakeLists.txt', /(include\(ARMA_FindMKL\))/ => '#\1'
