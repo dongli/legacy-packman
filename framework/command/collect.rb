@@ -105,7 +105,7 @@ module PACKMAN
         url = "#{ConfigManager.use_ftp_mirror}/#{package.dirname}"
         PACKMAN.download ConfigManager.package_root, url, package.dirname
       else
-        PACKMAN.git_clone ConfigManager.package_root, package.git, package.tag, package.dirname
+        PACKMAN.git_clone ConfigManager.package_root, package.git, { :branch => package.tag, :rename => package.dirname }
       end
     end
   end

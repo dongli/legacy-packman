@@ -5,6 +5,8 @@ class Ncurses < PACKMAN::Package
 
   skip_on :Mac_OS_X
 
+  def system_prefix; '/usr'; end if PACKMAN.mac?
+
   # patch :embed
 
   def install

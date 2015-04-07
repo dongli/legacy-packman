@@ -6,6 +6,9 @@ class Vim < PACKMAN::Package
   label 'compiler_insensitive'
 
   option 'use_vundle' => false
+  option 'without_perl' => false
+  option 'without_ruby' => false
+  option 'without_python' => false
 
   patch :embed
 
@@ -22,9 +25,14 @@ class Vim < PACKMAN::Package
       --with-features=huge
       --with-compiledby=PACKMAN
     ]
-    %W[perl python ruby].each do |language|
-      args << "--enable-#{language}interp"
+    %w[perl ruby python].each do |language|
+      if eval "without_#{language}?"
+        args << "--disable-#{language}interp"
+      else
+        args << "--enable-#{language}interp"
+      end
     end
+    PACKMAN.set_cppflags_and_ldflags [Ncurses]
     PACKMAN.run './configure', *args
     PACKMAN.run 'make -j2'
     PACKMAN.run "make install prefix=#{prefix} STRIP=true"
@@ -34,7 +42,7 @@ class Vim < PACKMAN::Package
       vimrc = "#{ENV['HOME']}/.vimrc"
       PACKMAN.mkdir bundle_root, :skip_if_exist
       if not Dir.exist? vundle_root
-        PACKMAN.git_clone bundle_root, 'https://github.com/gmarik/Vundle.vim', 'master'
+        PACKMAN.git_clone bundle_root, 'https://github.com/gmarik/Vundle.vim'
       end
       FileUtils.touch(vimrc) if not File.exist? vimrc
       if not File.open(vimrc, 'r').read.match(/Added by PACKMAN/)
@@ -47,6 +55,7 @@ class Vim < PACKMAN::Package
           call vundle#begin()
           Plugin 'gmarik/Vundle.vim'
           " ---> Add you favorate vundle plugins here.
+          "Plugin 'Valloric/YouCompleteMe'
           call vundle#end()
           filetype plugin on
           set shortmess=c
