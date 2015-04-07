@@ -3,7 +3,7 @@ module PACKMAN
     vendor :Debian
     type :Debian
     check :version do
-      `cat /etc/*-release`.match(/VERSION_ID="(\d+)"/)[1]
+      `cat /etc/*-release`.match(/VERSION_ID="(.+)"/)[1]
     end
     package_manager :DPKG, {
       :query_command => 'dpkg --status',
