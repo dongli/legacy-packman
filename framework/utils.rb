@@ -56,7 +56,7 @@ module PACKMAN
     end
   end
 
-  def self.git_clone(root, url, tag, rename)
+  def self.git_clone root, url, tag, rename = nil
     if Dir.exist? "#{root}/#{rename}"
       FileUtils.rm_rf "#{root}/#{rename}"
     end

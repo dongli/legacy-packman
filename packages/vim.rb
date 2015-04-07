@@ -5,6 +5,8 @@ class Vim < PACKMAN::Package
 
   label 'compiler_insensitive'
 
+  option 'use_vundle' => false
+
   patch :embed
 
   depends_on 'ncurses'
@@ -26,6 +28,32 @@ class Vim < PACKMAN::Package
     PACKMAN.run './configure', *args
     PACKMAN.run 'make -j2'
     PACKMAN.run "make install prefix=#{prefix} STRIP=true"
+    if use_vundle?
+      bundle_root = "#{ENV['HOME']}/.vim/bundle"
+      vundle_root = "#{bundle_root}/Vundle.vim"
+      vimrc = "#{ENV['HOME']}/.vimrc"
+      PACKMAN.mkdir bundle_root, :skip_if_exist
+      if not Dir.exist? vundle_root
+        PACKMAN.git_clone bundle_root, 'https://github.com/gmarik/Vundle.vim', 'master'
+      end
+      FileUtils.touch(vimrc) if not File.exist? vimrc
+      if not File.open(vimrc, 'r').read.match(/Added by PACKMAN/)
+        PACKMAN.append vimrc, <<-EOT.keep_indent
+          " ###################################################
+          " Added by PACKMAN.
+          set nocompatible
+          filetype off
+          set rtp+=~/.vim/bundle/Vundle.vim
+          call vundle#begin()
+          Plugin 'gmarik/Vundle.vim'
+          " ---> Add you favorate vundle plugins here.
+          call vundle#end()
+          filetype plugin on
+          set shortmess=c
+          " ###################################################
+        EOT
+      end
+    end
   end
 end
 
