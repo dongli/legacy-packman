@@ -5,6 +5,8 @@ class Libtool < PACKMAN::Package
 
   skip_on :Mac_OS_X
 
+  def system_prefix; '/usr'; end if PACKMAN.mac?
+
   depends_on 'm4'
 
   def install
