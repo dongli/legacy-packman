@@ -1,5 +1,5 @@
 class Tomcat < PACKMAN::Package
-  url 'http://mirrors.cnnic.cn/apache/tomcat/tomcat-7/v7.0.57/bin/apache-tomcat-7.0.57.tar.gz'
+  url 'http://archive.apache.org/dist/tomcat/tomcat-7/v7.0.57/bin/apache-tomcat-7.0.57.tar.gz'
   sha1 '49ffffe9c2e534e66f81b3173cdbf7e305a75fe2'
   version '7.0.57'
 
