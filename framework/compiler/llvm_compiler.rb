@@ -6,8 +6,8 @@ module PACKMAN
     compiler_command 'fortran' => [nil,       nil]
     flag :rpath => -> rpath { "-Xlinker -rpath #{rpath}" }
     flag :cxxlib => '-lc++'
-    check :version do
-      `clang -v 2>&1`.match(/(\d+\.\d+)/)[1]
+    check :version do |command|
+      `#{command} -v 2>&1`.match(/(\d+\.\d+)/)[1]
     end
   end
 end
