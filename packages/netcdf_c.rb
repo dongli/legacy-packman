@@ -14,18 +14,6 @@ class Netcdf_c < PACKMAN::Package
   depends_on 'hdf5'
   depends_on 'parallel_netcdf' if use_mpi?
 
-  # HDF5 1.8.13 removes symbols related to MPI POSIX VFD, leading to
-  # errors when linking hdf5 and netcdf5 such as "undefined reference to
-  # `_H5Pset_fapl_mpiposix`". This patch fixes those errors, and has been
-  # added upstream. It should be unnecessary once NetCDF releases a new
-  # stable version.
-  patch do
-    url 'https://github.com/Unidata/netcdf-c/commit/435d8a03ed28bb5ad63aff12cbc6ab91531b6bc8.diff'
-    sha1 '770ee66026e4625b80711174600fb8c038b48f5e'
-    # TODO: Add version check here.
-    # valid_only_for '4.3.2'
-  end
-
   def install
     # NOTE: OpenDAP support should be supported in default, but I still add
     #       '--enable-dap' explicitly for reminding.
