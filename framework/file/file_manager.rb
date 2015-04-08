@@ -79,6 +79,10 @@ module PACKMAN
   def self.delete_from_file file_path, patterns, options = []
     patterns = [patterns] if not patterns.class == Array
     options = [options] if not options.class == Array
+    if not File.exist? file_path
+      return if options.include? :no_error
+      PACKMAN.report_error "File #{PACKMAN.red file_path} does not exist!"
+    end
     content = File.open(file_path, 'r').read
     patterns.each do |pattern|
       if content.gsub!(pattern, '') == nil and not options.include? :no_error
