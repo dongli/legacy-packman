@@ -1,7 +1,7 @@
 class Netcdf_fortran < PACKMAN::Package
-  url 'ftp://ftp.unidata.ucar.edu/pub/netcdf/netcdf-fortran-4.4.1.tar.gz'
-  sha1 '452a1b7ef12cbcace770dcc728a7b425cf7fb295'
-  version '4.4.1'
+  url 'ftp://ftp.unidata.ucar.edu/pub/netcdf/netcdf-fortran-4.4.2.tar.gz'
+  sha1 '125cb00c92c05bf05c73c54de8c3c63a815e7a46'
+  version '4.4.2'
 
   belongs_to 'netcdf'
 
