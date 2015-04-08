@@ -120,7 +120,7 @@ module PACKMAN
       begin
         proftpd.login
       rescue => e
-        CLI.report_error "Failed to login FTP server with the following error:\n"+e
+        CLI.report_error "Failed to login FTP server with the following error:\n#{e}"
       end
       begin
         if proftpd.status =~ /PACKMAN FTP Mirror Service/

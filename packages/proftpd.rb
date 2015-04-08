@@ -7,9 +7,11 @@ class Proftpd < PACKMAN::Package
   label 'compiler_insensitive'
 
   def install
-    PACKMAN.replace 'sample-configurations/basic.conf', {
-      /^Group\s*nogroup/ => 'Group nobody'
-    }
+    if PACKMAN.redhat?
+      PACKMAN.replace 'sample-configurations/basic.conf', {
+        /^Group\s*nogroup/ => 'Group nobody'
+      }
+    end
     args = %W[
       --prefix=#{prefix}
       --sysconfdir=#{prefix}/../config
@@ -30,6 +32,12 @@ class Proftpd < PACKMAN::Package
       /^(ServerType\s*.*)$/ => "\\1\nServerLog #{prefix}/var/proftpd.log",
       /^(DefaultServer.*$)/ => "\\1\nRequireValidShell no\nWtmpLog off",  
     }
+    if PACKMAN.debian?
+      PACKMAN.replace "#{prefix}/../config/proftpd.conf", {
+        /(<Anonymous\s+.*>)\n\s*User.*$\n\s*Group.*$/ => "\\1\nUser nobody\nGroup nogroup\n",
+        /(UserAlias\s*anonymous\s*)ftp/ => '\1nobody'
+      }
+    end
     if PACKMAN.cygwin?
       PACKMAN.replace "#{prefix}/../config/proftpd.conf", {
         /^User\s*\w+$/ => "User SYSTEM",
