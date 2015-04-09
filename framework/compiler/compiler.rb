@@ -34,7 +34,11 @@ module PACKMAN
     def activate_compiler language, command
       active_spec.check_blocks.each do |name, block|
         begin
-          active_spec.checked_items[name] = block.call
+          if name == :version
+            active_spec.checked_items[name] = block.call command
+          else
+            active_spec.checked_items[name] = block.call
+          end
         rescue => e
           if name == :version and not PACKMAN.does_command_exist? command
             PACKMAN.report_error "Command #{PACKMAN.red command} does not exist! Check your compiler sets in the configure file."

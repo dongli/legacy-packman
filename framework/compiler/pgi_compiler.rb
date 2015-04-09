@@ -7,8 +7,8 @@ module PACKMAN
     flag :openmp => '-mp'
     flag :pic => '-fPIC'
     flag :rpath => -> rpath { "-Wl,-rpath,#{rpath}" }
-    check :version do
-      `pgcc -V 2>&1`.match(/\d+\.\d+-\d+/)[0]
+    check :version do |command|
+      `#{command} -V 2>&1`.match(/\d+\.\d+-\d+/)[0]
     end
   end
 end
