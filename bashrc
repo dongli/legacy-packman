@@ -4,12 +4,22 @@ export PACKMAN_ROOT=$(cd $(dirname $BASH_SOURCE) && pwd)
 export PATH=$PACKMAN_ROOT:$PATH
 
 # Use ruby installed by PACKMAN if there is.
-if ! which ruby 1> /dev/null; then
+function use_packman_installed_ruby
+{
     if [[ -d "$PACKMAN_ROOT/ruby/bin" ]]; then
         export PATH=$PACKMAN_ROOT/ruby/bin:$PATH
     else
         echo "[Error]: There is no Ruby for PACKMAN!"
         return 1
+    fi
+}
+
+if ! which ruby 1> /dev/null; then
+    use_packman_installed_ruby
+else
+    RUBY_VERSION=$(ruby -v | cut -d ' ' -f 2)
+    if [[ $RUBY_VERSION =~ $(echo '^1\.8') || $RUBY_VERSION =~ $(echo '^1\.9') ]]; then
+        use_packman_installed_ruby
     fi
 fi
 
