@@ -6,17 +6,18 @@ module PACKMAN
 
     def self.default_command_prefix
       cmd_str = ''
+      PACKMAN.reset_env PACKMAN.ld_library_path_name
       # Handle PACKMAN installed compiler.
-      if CompilerManager.active_compiler_set.info.has_key? :installed_by_packman
-        compiler_prefix = PACKMAN.prefix CompilerManager.active_compiler_set.info[:installed_by_packman]
-        Shell::Env.append_source "#{compiler_prefix}/bashrc"
+      if CompilerManager.active_compiler_set.installed_by_packman?
+        compiler_prefix = PACKMAN.prefix CompilerManager.active_compiler_set.package_name
+        PACKMAN.append_shell_source "#{compiler_prefix}/bashrc"
       end
       # Handle customized bashrc.
-      if not Shell::Env.sources.empty?
-        Shell::Env.sources.each do |source|
+      if not PACKMAN.shell_sources.empty?
+        PACKMAN.shell_sources.each do |shell_source|
           # Note: Use '.' instead of 'source', since Ruby system seems invoke a dash not fully bash!
-          cmd_str << ". #{source} && "
-          tmp = File.open(source).read.match(/\w+_RPATH="(.*)"/)
+          cmd_str << ". #{shell_source} && "
+          tmp = File.open(shell_source).read.match(/\w+_RPATH="(.*)"/)
           # Add RPATH options to ensure the correct libraries are linked.
           next if not tmp
           tmp[1].split(':').each do |rpath|
@@ -26,7 +27,6 @@ module PACKMAN
       end
       # Handle compilers.
       CompilerManager.active_compiler_set.info.each do |language, compiler_info|
-        next if language == :installed_by_packman
         flags = PACKMAN.default_compiler_flags language
         PACKMAN.append_env PACKMAN.compiler_flags_env_name(language), flags
         case language
@@ -41,7 +41,7 @@ module PACKMAN
       end
       # Handle customized environment variables.
       PACKMAN.env_keys.each do |key|
-        cmd_str << "#{Shell::Env.export_env key} && "
+        cmd_str << "#{PACKMAN.export_env key} && "
       end
       return cmd_str
     end

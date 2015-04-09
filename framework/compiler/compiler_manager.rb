@@ -135,6 +135,13 @@ module PACKMAN
       return true
     end
 
+    def self.has_packman_gcc?
+      @@compiler_sets.each do |compiler_set|
+        return true if compiler_set.installed_by_packman?
+      end
+      false
+    end
+
     def self.compiler_vendor language
       @@active_compiler_set.info[language][:spec].vendor
     end

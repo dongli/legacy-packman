@@ -2,10 +2,22 @@ module PACKMAN
   class CompilerSet
     attr_reader :command_hash, :info
 
+    def installed_by_packman?
+      command_hash.has_key? 'installed_by_packman'
+    end
+
+    def package_name
+      if installed_by_packman?
+        command_hash['installed_by_packman'].capitalize
+      else
+        PACKMAN.report_error "Package set is not installed by PACKMAN!"
+      end
+    end
+
     def initialize command_hash
       @command_hash = command_hash
       # Expand compiler commands for the compiler installed by packman.
-      if command_hash.has_key? 'installed_by_packman'
+      if installed_by_packman?
         compiler_name = command_hash['installed_by_packman'].capitalize
         if not Package.defined? compiler_name
           CLI.report_error "Unknown PACKMAN installed compiler #{CLI.red compiler_name}!"
@@ -25,10 +37,7 @@ module PACKMAN
       # from different vendors).
       @info = {}
       command_hash.each do |language, compiler_command|
-        if language == 'installed_by_packman'
-          @info[:installed_by_packman] = Package.instance compiler_command.capitalize.to_sym
-          next
-        end
+        next if language == 'installed_by_packman'
         if language =~ /^mpi_(c|c\+\+|fortran)/
           # Let users choose the MPI wrapper.
           actual_language = language.gsub 'mpi_', ''

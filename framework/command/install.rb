@@ -100,13 +100,13 @@ module PACKMAN
       if package.has_label? 'compiler_insensitive' and is_depend
         # NOTE: Some 'compiler_insensitive' package may use other compiler set to build, and it is normally just binary,
         #       so we skip its dependent packages to avoid problems.
-        PACKMAN.append_source package.bashrc if not package.skip?
+        PACKMAN.append_shell_source package.bashrc if not package.skip?
         return
       end
       package.dependencies.each do |depend|
         depend_package = Package.instance depend
         append_bashrc depend_package, true
-        PACKMAN.append_source depend_package.bashrc if not depend_package.skip?
+        PACKMAN.append_shell_source depend_package.bashrc if not depend_package.skip?
       end
     end
 
@@ -242,7 +242,7 @@ module PACKMAN
         end
       end
       # Clean shell environment.
-      PACKMAN.clear_source if not options.include? :depend
+      PACKMAN.clear_shell_source if not options.include? :depend
       PACKMAN.clear_env if not options.include? :depend
     end
   end
