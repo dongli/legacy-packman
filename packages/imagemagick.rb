@@ -54,23 +54,6 @@ class Imagemagick < PACKMAN::Package
     # --with-webp=#{Webp.prefix}
     PACKMAN.set_cppflags_and_ldflags [Libtool]
     PACKMAN.run './configure', *args
-    if PACKMAN.compiler_vendor('c') == 'llvm'
-      # libtool in Imagemagick does not recognize the '-Xlinker -rpath ...'
-      # correctly, so fix it.
-      # There are also an unwanted 'i' after 'instname=...', so delete it!
-      fix_rpath_arg = <<-EOT.keep_indent
-        arg="$1"
-        if [[ "$arg" == "-rpath" ]]; then
-          shift
-          arg="$arg $1"
-        fi
-        shift
-      EOT
-      PACKMAN.replace 'libtool', {
-        /arg="\$1"\n\s*shift/ => fix_rpath_arg,
-        /instname="\$dir\/\$name"i/ => 'instname="$dir/$name"'
-      }
-    end
     PACKMAN.run 'make install'
   end
 end

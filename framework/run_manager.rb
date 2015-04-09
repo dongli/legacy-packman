@@ -5,8 +5,8 @@ module PACKMAN
     end
 
     def self.default_command_prefix
-      cmd_str = ''
-      PACKMAN.reset_env PACKMAN.ld_library_path_name
+      # Reset (DY)LD_LIBRARY_PATH environment variable.
+      cmd_str = "export #{PACKMAN.ld_library_path_name}='' && "
       # Handle PACKMAN installed compiler.
       if CompilerManager.active_compiler_set.installed_by_packman?
         compiler_prefix = PACKMAN.prefix CompilerManager.active_compiler_set.package_name
