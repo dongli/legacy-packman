@@ -10,9 +10,18 @@ if [[ ! -z "$BASH_ARGV" ]]; then
 fi
 
 # Check Ruby availability.
-RUBY_URL=http://cache.ruby-lang.org/pub/ruby/2.2/ruby-2.2.0.tar.gz
+RUBY_URL=http://cache.ruby-lang.org/pub/ruby/2.2/ruby-2.2.1.tar.gz
+RUBY_SHA1=12376b79163e02bc9bd1a39329d67c3d19ccace9
 RUBY_PACKAGE=$(basename $RUBY_URL)
 RUBY_PACKAGE_DIR=$(basename $RUBY_PACKAGE .tar.gz)
+
+if which shasum 2>&1 1> /dev/null; then
+    SHASUM=shasum
+elif which sha1sum 2>&1 1> /dev/null; then
+    SHASUM=sha1sum
+else
+    SHASUM=none
+fi
 
 function install_ruby
 {
@@ -22,6 +31,10 @@ function install_ruby
     cd $PACKMAN_ROOT/ruby
     if [[ ! -f $RUBY_PACKAGE ]]; then
         wget $RUBY_URL -O $RUBY_PACKAGE
+    fi
+    if [[ "$SHASUM" == 'none' || "$($SHASUM $RUBY_PACKAGE | cut -d ' ' -f 1)" != "$RUBY_SHA1" ]]; then
+        echo '[Error]: Ruby is not downloaded successfully!'
+        exit 1
     fi
     rm -rf $RUBY_PACKAGE_DIR
     tar -xzf $RUBY_PACKAGE
