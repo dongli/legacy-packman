@@ -83,7 +83,7 @@ class Ferret < PACKMAN::Package
         /^i386-apple-darwin:$/ => "#{build_type}:",
         /CFLAGS="(.*)"/ => 'CFLAGS="\1 -I/usr/X11R6/include"'
       }
-      if PACKMAN.compiler_vendor('fortran') == 'gnu'
+      if PACKMAN.compiler('fortran').vendor == 'gnu'
         # Fix the wrong compiler flags.
         PACKMAN.replace "platform_specific.mk.#{build_type}", {
           /^(CPP_FLAGS\s*=.*)$/ => "\\1\n-DMANDATORY_FORMAT_WIDTHS -DNO_OPEN_SHARED -DNO_OPEN_READONLY "+
@@ -131,11 +131,11 @@ class Ferret < PACKMAN::Package
     # Bad Ferret developers! Shame on you!
     if build_type == 'x86_64-darwin'
       File.open('xgks/CUSTOMIZE.x86_64-darwin', 'w') do |file|
-        file << "CC=#{PACKMAN.compiler_command 'c'}\n"
-        file << "CFLAGS='#{PACKMAN.default_compiler_flags 'c'}'\n"
+        file << "CC=#{PACKMAN.compiler('c').command}\n"
+        file << "CFLAGS='#{PACKMAN.compiler('c').default_flags['c']}'\n"
         file << "CPPFLAGS='-DNDEBUG'\n"
-        file << "FC=#{PACKMAN.compiler_command 'fortran'}\n"
-        file << "FFLAGS='#{PACKMAN.default_compiler_flags 'fortran'}'\n"
+        file << "FC=#{PACKMAN.compiler('fortran').command}\n"
+        file << "FFLAGS='#{PACKMAN.compiler('fortran').default_flags['fortran']}'\n"
         file << "OS=macosx\n"
         file << "prefix=..\n"
         file << "CPP_X11='/usr/X11R6/include'\n"

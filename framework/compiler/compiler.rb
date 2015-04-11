@@ -26,27 +26,47 @@ module PACKMAN
     end
 
     def vendor; active_spec.vendor; end
-    def compiler_commands; active_spec.compiler_commands; end
+    def all_commands; active_spec.all_commands; end
+    def command; active_spec.command; end
+    def mpi_wrapper; active_spec.mpi_wrapper; end
+    def mpi_wrapper= command; active_spec.mpi_wrapper = command; end
     def default_flags; active_spec.default_flags; end
     def flags; active_spec.flags; end
     def version; active_spec.version; end
+    def flag flag
+      if not active_spec.flags.has_key? flag
+        CLI.report_error "Compiler #{vendor} does not provide flag #{CLI.red flag}! #{PACKMAN.contact_developer}"
+      end
+      active_spec.flags[flag]
+    end
 
     def activate_compiler language, command
+      # Record the real compiler command.
+      active_spec.command = command
+      # Execute the check blocks.
       active_spec.check_blocks.each do |name, block|
+        next if active_spec.check_languages[name] and active_spec.check_languages[name] != language.to_sym
+        # TODO: Check if block needs argument, then send command to it.
         begin
-          if name == :version
+          if name == :version or name == :f2003
             active_spec.checked_items[name] = block.call command
           else
             active_spec.checked_items[name] = block.call
           end
         rescue => e
-          if name == :version and not PACKMAN.does_command_exist? command
-            PACKMAN.report_error "Command #{PACKMAN.red command} does not exist! Check your compiler sets in the configure file."
-          else
-            PACKMAN.report_error "Failed to execute block #{PACKMAN.red name} in #{PACKMAN.blue self.class}!"
-          end
+          PACKMAN.report_error "Failed to execute block #{PACKMAN.red name} in #{PACKMAN.blue self.class}!"
+        end
+        # Set shorthand query method.
+        if [TrueClass, FalseClass].include? active_spec.checked_items[name].class
+          method_body = <<-EOT.keep_indent
+            def #{name}?
+              #{active_spec.checked_items[name]}
+            end
+          EOT
+          self.instance_eval method_body
         end
       end
+      # Convert version string to VersionSpec.
       active_spec.version ||= VersionSpec.new active_spec.checked_items[:version].strip
     end
 
@@ -60,7 +80,7 @@ module PACKMAN
         normal.version ||= VersionSpec.new normal.check_blocks[:version].call.strip
       end
       
-      def compiler_command val
+      def command val
         if not val.class == Hash
           CLI.report_error "Compiler spec syntax error!"
         end
@@ -74,7 +94,7 @@ module PACKMAN
         command = val.values.first.first
         default_flags = val.values.first.last
 
-        normal.compiler_commands[language] = command
+        normal.all_commands[language] = command
         normal.default_flags[language] = default_flags
       end
 
@@ -88,7 +108,14 @@ module PACKMAN
       end
 
       def check item, &block
-        normal.check_blocks[item] = block
+        if item.class == Hash
+          language = item.keys.first
+          name = item.values.first
+          normal.check_languages[name] = language
+        else
+          name = item
+        end
+        normal.check_blocks[name] = block
       end
     end
   end

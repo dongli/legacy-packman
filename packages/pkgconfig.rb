@@ -6,7 +6,7 @@ class Pkgconfig < PACKMAN::Package
   label 'compiler_insensitive'
 
   def install
-    if PACKMAN.mac? and PACKMAN.compiler_vendor('c') == 'gnu'
+    if PACKMAN.mac? and PACKMAN.compiler('c').vendor == 'gnu'
       # See https://github.com/andrewgho/movewin-ruby/issues/1.
       PACKMAN.report_error "#{PACKMAN.red 'Pkgconfig'} cannot be built by GCC on Mac OS X!"
     end

@@ -13,7 +13,7 @@ class Hyrax_bes < PACKMAN::Package
 
   def install
     # Add the lacked 'cstring' header for GCC.
-    if PACKMAN.compiler_vendor('c++') == 'gnu'
+    if PACKMAN.compiler('c++').vendor == 'gnu'
       PACKMAN.replace './cmdln/CmdClient.cc', {
         /^\s*(#include <cstdlib>)\s*$/ => "\\1\n#include <cstring>"
       }

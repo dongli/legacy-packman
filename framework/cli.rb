@@ -3,7 +3,7 @@ module PACKMAN
     def self.delegated_methods
       [:green, :blue, :red, :yellow, :bold, :caveat,
        :report_notice, :report_error, :report_warning,
-       :blue_arrow]
+       :blue_arrow, :under_construction!]
     end
 
     @@color_map = {

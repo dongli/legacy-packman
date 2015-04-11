@@ -45,7 +45,7 @@ class Python3 < PACKMAN::Package
       args << "--enable-framework=#{frameworks}"
       args << "MACOSX_DEPLOYMENT_TARGET=#{PACKMAN.os_version.major_minor}"
     end
-    args << "--without-gcc" if PACKMAN.compiler_vendor('c') != 'gnu'
+    args << "--without-gcc" if PACKMAN.compiler('c').vendor != 'gnu'
     PACKMAN.set_cppflags_and_ldflags [Sqlite, Gdbm]
     PACKMAN.run './configure', *args
     PACKMAN.run 'make'

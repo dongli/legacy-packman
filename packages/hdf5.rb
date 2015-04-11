@@ -30,8 +30,9 @@ class Hdf5 < PACKMAN::Package
       --enable-shared=yes
       --enable-cxx
     ]
-    if PACKMAN.compiler_command 'fortran'
-      args << '--enable-fortran --enable-fortran2003'
+    if PACKMAN.has_compiler? 'fortran', :not_exit
+      args << '--enable-fortran'
+      args << '--enable-fortran2003' if PACKMAN.compiler('fortran').f2003?
     else
       args << '--disable-fortran'
     end

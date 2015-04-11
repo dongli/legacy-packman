@@ -14,7 +14,7 @@ class Libxml2 < PACKMAN::Package
       --without-lzma
     ]
     PACKMAN.run './configure', *args
-    PACKMAN.replace 'Makefile', '-no-undefined' => '' if PACKMAN.compiler_vendor('c') == 'llvm'
+    PACKMAN.replace 'Makefile', '-no-undefined' => '' if PACKMAN.compiler('c').vendor == 'llvm'
     PACKMAN.run 'make -j2'
     PACKMAN.run 'make install'
   end

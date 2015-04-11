@@ -4,7 +4,7 @@ class Gettext < PACKMAN::Package
   version '0.19.3'
 
   def install
-    if PACKMAN.mac? and PACKMAN.compiler_vendor('c') == 'gnu'
+    if PACKMAN.mac? and PACKMAN.compiler('c').vendor == 'gnu'
       # See https://github.com/andrewgho/movewin-ruby/issues/1.
       PACKMAN.report_error "#{PACKMAN.red 'Gettext'} cannot be built by GCC on Mac OS X!"
     end

@@ -32,7 +32,7 @@ class Sqlite < PACKMAN::Package
       --prefix=#{prefix}
       --disable-dependency-tracking
       --enable-dynamic-extensions
-      LIBS=#{PACKMAN.compiler_flag 'c', :cxxlib}
+      LIBS=#{PACKMAN.compiler('c').flag(:cxxlib)}
     ]
     PACKMAN.run './configure', *args
     PACKMAN.run 'make install'

@@ -21,22 +21,22 @@ module PACKMAN
           # Add RPATH options to ensure the correct libraries are linked.
           next if not tmp
           tmp[1].split(':').each do |rpath|
-            PACKMAN.append_env 'LDFLAGS', PACKMAN.compiler_flag('c', :rpath).(rpath)
+            PACKMAN.append_env 'LDFLAGS', PACKMAN.compiler('c').flag(:rpath).(rpath)
           end
         end
       end
       # Handle compilers.
-      CompilerManager.active_compiler_set.info.each do |language, compiler_info|
-        flags = PACKMAN.default_compiler_flags language
+      CompilerManager.active_compiler_set.compilers.each do |language, compiler|
+        flags = compiler.default_flags[language]
         PACKMAN.append_env PACKMAN.compiler_flags_env_name(language), flags
         case language
         when 'c'
-          PACKMAN.reset_env 'CC', compiler_info[:command]
+          PACKMAN.reset_env 'CC', compiler.command
         when 'c++'
-          PACKMAN.reset_env 'CXX', compiler_info[:command]
+          PACKMAN.reset_env 'CXX', compiler.command
         when 'fortran'
-          PACKMAN.reset_env 'F77', compiler_info[:command]
-          PACKMAN.reset_env 'FC', compiler_info[:command]
+          PACKMAN.reset_env 'F77', compiler.command
+          PACKMAN.reset_env 'FC', compiler.command
         end
       end
       # Handle customized environment variables.

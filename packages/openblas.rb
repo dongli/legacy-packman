@@ -5,7 +5,7 @@ class Openblas < PACKMAN::Package
 
   def install
     args = []
-    if PACKMAN.mac? and PACKMAN.compiler_vendor('c') == 'gnu'
+    if PACKMAN.mac? and PACKMAN.compiler('c').vendor == 'gnu'
       # On Mac, only clang support AVX instructions, see http://trac.macports.org/ticket/40592.
       args << 'NO_AVX=1'
     end

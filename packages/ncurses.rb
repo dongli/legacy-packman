@@ -14,7 +14,7 @@ class Ncurses < PACKMAN::Package
       --prefix=#{prefix}
       --disable-debug
     ]
-    args << '--without-ada' if PACKMAN.compiler_vendor('c') == 'intel'
+    args << '--without-ada' if PACKMAN.compiler('c').vendor == 'intel'
     PACKMAN.run './configure', *args
     PACKMAN.run 'make -j2'
     PACKMAN.run 'make install'

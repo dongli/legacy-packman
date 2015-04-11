@@ -113,11 +113,10 @@ module PACKMAN
     def self.print_compiler_sets
       for i in 0..CompilerManager.compiler_sets.size-1
         CLI.report_notice "Compiler set #{CLI.green i}:"
-        CompilerManager.compiler_sets[i].info.each do |language, compiler_info|
-          next if language == :installed_by_packman
-          print "#{CLI.blue '==>'} #{language}: #{compiler_info[:command]} #{compiler_info[:spec].default_flags[language]}\n"
-          if compiler_info.has_key? :mpi_wrapper
-            print "#{CLI.blue '==>'} #{language} MPI wrapper: #{compiler_info[:mpi_wrapper]}\n"
+        CompilerManager.compiler_sets[i].compilers.each do |language, compiler|
+          print "#{CLI.blue '==>'} #{language}: #{compiler.command} #{compiler.default_flags[language]}\n"
+          if compiler.mpi_wrapper
+            print "#{CLI.blue '==>'} #{language} MPI wrapper: #{compiler.mpi_wrapper}\n"
           end
         end
       end
@@ -184,10 +183,13 @@ module PACKMAN
         end
         file << "#{str.join(",\n")}\n}\n"
         for i in 0..CompilerManager.compiler_sets.size-1
+          compiler_set = CompilerManager.compiler_sets[i]
           file << "compiler_set_#{i} = {\n"
           str = []
-          CompilerManager.compiler_sets[i].command_hash.each do |key, value|
-            str << "  \"#{key}\" => \"#{value}\""
+          str << "  \"installed_by_packman\" => \"#{compiler_set.package_name}\"" if compiler_set.installed_by_packman?
+          compiler_set.compilers.each do |language, compiler|
+            str << "  \"#{language}\" => \"#{compiler.command}\""
+            str << "  \"mpi_#{language}\" => \"#{compiler.mpi_wrapper}\"" if compiler.mpi_wrapper
           end
           file << "#{str.join(",\n")}\n"
           file << "}\n"

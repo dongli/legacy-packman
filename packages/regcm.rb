@@ -21,7 +21,7 @@ class Regcm < PACKMAN::Package
     #   PACKMAN.report_error "You should use #{PACKMAN.red '-use_mpi=<...>'} to specify MPI library."
     # end
     PACKMAN.work_in 'RegCM-4.4.5' do
-      if PACKMAN.compiler_vendor('fortran') == 'gnu'
+      if PACKMAN.compiler('fortran').vendor == 'gnu'
         PACKMAN.append_env 'FCFLAGS', '-fno-range-check -std=legacy'
       end
       args = %W[

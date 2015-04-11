@@ -1,15 +1,19 @@
 module PACKMAN
   class CompilerAtom
-    attr_accessor :vendor, :version, :compiler_commands
+    attr_accessor :vendor, :version
+    attr_accessor :command, :mpi_wrapper, :all_commands
     attr_accessor :default_flags, :flags
-    attr_accessor :check_blocks, :checked_items
+    attr_accessor :check_blocks, :checked_items, :check_languages
 
     def initialize
-      @compiler_commands = {}
+      @command = nil
+      @mpi_wrapper = nil
+      @all_commands = {}
       @default_flags = {}
       @flags = {}
       @check_blocks = {}
       @checked_items = {}
+      @check_languages = {}
     end
   end
 end

@@ -1,5 +1,7 @@
 #!/usr/bin/env ruby
 
+ENV['LC_ALL'] = 'C'
+
 if not ENV.has_key? 'PACKMAN_ROOT'
   print "[Error]: #{File.expand_path(File.dirname(__FILE__))}/"+
     "setup.sh is not sourced!\n"

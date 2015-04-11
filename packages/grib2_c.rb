@@ -13,7 +13,7 @@ class Grib2_c < PACKMAN::Package
     PACKMAN.replace 'makefile', {
       /^DEFS=.*$/ => defs,
       /^(INC=.*)$/ => "\\1 #{inc}",
-      /^CC=.*$/ => "CC=#{PACKMAN.compiler_command 'c'}",
+      /^CC=.*$/ => "CC=#{PACKMAN.compiler('c').command}",
     }
     PACKMAN.run 'make all'
     PACKMAN.mkdir include

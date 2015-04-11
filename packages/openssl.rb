@@ -33,7 +33,7 @@ class Openssl < PACKMAN::Package
       /^ZLIB_INCLUDE=\s*$/ => "ZLIB_INCLUDE=-I#{Zlib.include}",
       /^LIBZLIB=\s*$/ => "LIBZLIB=-L#{Zlib.lib}"
     }
-    if PACKMAN.compiler_vendor('c') == 'pgi'
+    if PACKMAN.compiler('c').vendor == 'pgi'
       PACKMAN.replace 'Makefile', {
         '-fomit-frame-pointer' => '',
         '-Wall' => '',

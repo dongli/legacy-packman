@@ -47,7 +47,12 @@ module PACKMAN
               if sets.size > 1 and not CommandLine.has_option? '-all'
                 CLI.report_warning "Package #{CLI.red package_name} (#{File.basename versions[j]}) "+
                   "has been compiled by multiple compiler sets."
-                tmp = sets.map { |s| i = File.basename(s).to_i; "#{CompilerManager.compiler_sets[i].command_hash}" }
+                tmp = sets.map { |s|
+                  i = File.basename(s).to_i
+                  CompilerManager.compiler_sets[i].compilers.map { |language, compiler|
+                    compiler.command
+                  }
+                }
                 tmp << 'all'
                 CLI.ask 'Which set do you want to remove?', tmp
                 removed_sets = CLI.get_answer tmp

@@ -1,9 +1,9 @@
 module PACKMAN
   class LlvmCompiler < Compiler
     vendor 'llvm'
-    compiler_command 'c'       => ['clang',   '-O2']
-    compiler_command 'c++'     => ['clang++', '-O2']
-    compiler_command 'fortran' => [nil,       nil]
+    command 'c'       => ['clang',   '-O2']
+    command 'c++'     => ['clang++', '-O2']
+    command 'fortran' => [nil,       nil]
     flag :rpath => -> rpath { "-Wl,-rpath,#{rpath}" }
     flag :cxxlib => '-lc++'
     check :version do |command|

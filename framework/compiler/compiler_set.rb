@@ -1,23 +1,22 @@
 module PACKMAN
   class CompilerSet
-    attr_reader :command_hash, :info
+    attr_reader :compilers
 
     def installed_by_packman?
-      command_hash.has_key? 'installed_by_packman'
+      @installed_by_packman ||= false
     end
 
     def package_name
       if installed_by_packman?
-        command_hash['installed_by_packman'].capitalize
+        @package_name.capitalize
       else
         PACKMAN.report_error "Package set is not installed by PACKMAN!"
       end
     end
 
     def initialize command_hash
-      @command_hash = command_hash
       # Expand compiler commands for the compiler installed by packman.
-      if installed_by_packman?
+      if command_hash.has_key? 'installed_by_packman'
         compiler_name = command_hash['installed_by_packman'].capitalize
         if not Package.defined? compiler_name
           CLI.report_error "Unknown PACKMAN installed compiler #{CLI.red compiler_name}!"
@@ -35,21 +34,27 @@ module PACKMAN
       end
       # Set the specification for the compilers of each language (they may come
       # from different vendors).
-      @info = {}
+      @compilers = {}
       command_hash.each do |language, compiler_command|
-        next if language == 'installed_by_packman'
+        if language == 'installed_by_packman'
+          @installed_by_packman = true
+          @package_name = compiler_command
+          next
+        end
         if language =~ /^mpi_(c|c\+\+|fortran)/
+          p 'check'
           # Let users choose the MPI wrapper.
           actual_language = language.gsub 'mpi_', ''
-          @info[actual_language] ||= {}
+          @compilers[actual_language] ||= {}
           if not PACKMAN.does_command_exist? compiler_command
-            CLI.report_error "MPI wrapper #{CLI.red compiler_command} does not exist!"
+            PACKMAN.report_error "MPI wrapper #{PACKMAN.red compiler_command} does not exist!"
           end
-          @info[actual_language][:mpi_wrapper] = `which #{compiler_command}`.chomp
+          @compilers[actual_language].mpi_wrapper = `which #{compiler_command}`.chomp
         else
-          @info[language] ||= {}
-          @info[language][:command] = `which #{compiler_command}`.chomp
-          @info[language][:spec] = CompilerManager.compiler_spec language, compiler_command
+          if not PACKMAN.does_command_exist? compiler_command
+            PACKMAN.report_error "Compiler command #{PACKMAN.red compiler_command} does not exist!"
+          end
+          @compilers[language] = CompilerManager.compiler_spec language, `which #{compiler_command}`.chomp
         end
       end
     end

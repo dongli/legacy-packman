@@ -10,13 +10,13 @@ class Boost < PACKMAN::Package
   option 'use_cxx11' => true
 
   def install
-    cxx_compiler = PACKMAN.compiler_command 'c++'
-    compiler_flags = PACKMAN.default_compiler_flags 'c++'
-    toolset = PACKMAN.compiler_vendor 'c++'
+    cxx_compiler = PACKMAN.compiler('c++').command
+    compiler_flags = PACKMAN.compiler('c++').default_flags['c++']
+    toolset = PACKMAN.compiler('c++').vendor
     # Rename toolset according to Boost.Build rule.
     if toolset == 'intel'
       # Lower version (e.g. 11.1) has issues to compile Boost.
-      if PACKMAN.compiler_version('c++') <= '11.1'
+      if PACKMAN.compiler('c++').version <= '11.1'
         PACKMAN.report_error "Intel compiler is too old to compile Boost! See "+
           "https://software.intel.com/en-us/articles/boost-1400-compilation-error-while-building-with-intel-compiler/"
       end

@@ -42,7 +42,7 @@ class Cdo < PACKMAN::Package
     else
       args << "LIBS='-L#{Udunits.lib} -lexpat'"
     end
-    args << "CFLAGS='-fp-model source'" if PACKMAN.compiler_vendor('c') == 'intel'
+    args << "CFLAGS='-fp-model source'" if PACKMAN.compiler('c').vendor == 'intel'
     PACKMAN.run './configure', *args
     if PACKMAN.cygwin?
       PACKMAN.run "make LIBS='-L#{Udunits.lib} -ludunits2 -lexpat -L#{Proj.lib} -lproj -L#{Grib_api.lib} -lgrib_api -L#{Netcdf.lib} -lnetcdf'"
