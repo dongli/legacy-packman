@@ -1,7 +1,7 @@
 class Hyrax_xml_handler < PACKMAN::Package
-  url 'http://www.opendap.org/pub/source/xml_data_handler-1.0.4.tar.gz'
-  sha1 '67dbbc801093b8f498ea926f3ee4f81d7a042445'
-  version '1.0.4'
+  url 'http://www.opendap.org/pub/source/xml_data_handler-1.0.5.tar.gz'
+  sha1 '6812ad918c2f704a29394ffedacabe8034493e77'
+  version '1.0.5'
 
   belongs_to 'hyrax'
 

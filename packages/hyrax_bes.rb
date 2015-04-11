@@ -1,7 +1,7 @@
 class Hyrax_bes < PACKMAN::Package
-  url 'http://www.opendap.org/pub/source/bes-3.13.2.tar.gz'
-  sha1 '0ee77564ccb0acb484bad9321d2c74e4a83afbd6'
-  version '3.13.2'
+  url 'http://www.opendap.org/pub/source/bes-3.14.0.tar.gz'
+  sha1 'bbf0a13ce7c829a94c9d4557cbaa27ca9155fab4'
+  version '3.14.0'
 
   belongs_to 'hyrax'
 

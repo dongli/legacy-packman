@@ -1,7 +1,7 @@
 class Hyrax_dap_server < PACKMAN::Package
-  url 'http://www.opendap.org/pub/source/dap-server-4.1.4.tar.gz'
-  sha1 '4328401e2e051ad9e05a666ad5444a89b88e7fc2'
-  version '4.1.4'
+  url 'http://www.opendap.org/pub/source/dap-server-4.1.6.tar.gz'
+  sha1 '3172ba25cf9b7e8a18932f636ab8afeeb6972269'
+  version '4.1.6'
 
   belongs_to 'hyrax'
 

@@ -362,7 +362,7 @@ module PACKMAN
     def self.all_instances package_name
       begin
         instances = []
-        instances << eval("#{package_name}.new :stable") if eval "defined? @@#{package_name}_stable"
+        instances << eval("#{package_name}.new :stable")
         instances << eval("#{package_name}.new :devel") if eval "defined? @@#{package_name}_devel"
         requested_spec = {}
         if self.class_variable_defined? "@@#{package_name}_history_versions"

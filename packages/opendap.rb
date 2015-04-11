@@ -1,7 +1,7 @@
 class Opendap < PACKMAN::Package
-  url 'http://www.opendap.org/pub/source/libdap-3.13.1.tar.gz'
-  sha1 'fdfd5f311c920e9efb450e8ff82f42bc58197f23'
-  version '3.13.1'
+  url 'http://www.opendap.org/pub/source/libdap-3.14.0.tar.gz'
+  sha1 'a95c345da2164ec7a790b34b7f0aeb9227277770'
+  version '3.14.0'
 
   depends_on 'uuid'
   depends_on 'curl'
