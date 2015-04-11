@@ -10,7 +10,7 @@ class Netcdf_fortran < PACKMAN::Package
   depends_on 'netcdf_c'
 
   def install
-    if not PACKMAN.check_compiler 'fortran', :not_exit
+    if not PACKMAN.has_compiler? 'fortran', :not_exit
       PACKMAN.report_warning "Fortran compiler is not available in this compiler set, skip #{PACKMAN.red 'Netcdf_fortran'}."
       return
     end

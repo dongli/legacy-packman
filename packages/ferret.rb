@@ -24,7 +24,7 @@ class Ferret < PACKMAN::Package
   end
 
   def install
-    PACKMAN.check_compiler 'fortran'
+    PACKMAN.has_compiler? 'fortran'
     # Ferret's tar file contains two extra plain files which messes up PACKMAN.
     PACKMAN.cd 'FERRET', :norecord
     # Check build type since Ferret does not check it for us.
