@@ -1,5 +1,5 @@
 class Tar < PACKMAN::Package
-  url 'http://ftp.gnu.org/gnu/tar/tar-1.28.tar.gz'
+  url 'ftp://ftp.gnu.org/gnu/tar/tar-1.28.tar.gz'
   sha1 'cd30a13bbfefb54b17e039be7c43d2592dd3d5d0'
   version '1.28'
 
