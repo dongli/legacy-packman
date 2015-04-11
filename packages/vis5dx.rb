@@ -1,5 +1,5 @@
 class Vis5dx < PACKMAN::Package
-  url 'http://kaz.dl.sourceforge.net/project/vis5d/vis5d/vis5d%2B-1.3.0-beta/vis5d%2B-1.3.0-beta.tar.gz'
+  url 'http://downloads.sourceforge.net/project/vis5d/vis5d/vis5d%2B-1.3.0-beta/vis5d%2B-1.3.0-beta.tar.gz'
   sha1 '0d944af10c8c3b729467e1540b0a2634058cedb1'
   filename 'vis5dx-1.3.0-beta.tar.gz'
   version '1.3.0'
