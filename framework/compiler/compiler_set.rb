@@ -42,7 +42,6 @@ module PACKMAN
           next
         end
         if language =~ /^mpi_(c|c\+\+|fortran)/
-          p 'check'
           # Let users choose the MPI wrapper.
           actual_language = language.gsub 'mpi_', ''
           @compilers[actual_language] ||= {}
