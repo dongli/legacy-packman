@@ -1,7 +1,7 @@
 class Mlpack < PACKMAN::Package
-  url 'http://www.mlpack.org/files/mlpack-1.0.10.tar.gz'
-  sha1 '9c6f007007362a927ded79bd4835e266dbad4a77'
-  version '1.0.10'
+  url 'http://mlpack.org/files/mlpack-1.0.12.tar.gz'
+  sha1 'ad4909e4978edf03ff70d5f3d884efb24b5992a4'
+  version '1.0.12'
 
   depends_on 'cmake'
   depends_on 'armadillo'
