@@ -6,7 +6,7 @@ class Shapelib < PACKMAN::Package
   def install
     PACKMAN.replace 'Makefile', {
       /^PREFIX\s*=.*$/ => "PREFIX = #{prefix}",
-      /^#CC\s*=.*$/ => "CC = #{PACKMAN.compiler_command 'c'}"
+      /^#CC\s*=.*$/ => "CC = #{PACKMAN.compiler('c').command}"
     }
     PACKMAN.run 'make'
     PACKMAN.run 'make test' if not skip_test?

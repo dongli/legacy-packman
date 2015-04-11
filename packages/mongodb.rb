@@ -21,8 +21,8 @@ class Mongodb < PACKMAN::Package
     args = %W[
       --prefix=#{prefix}
       -j2
-      --cc=#{PACKMAN.compiler_command 'c'}
-      --cxx=#{PACKMAN.compiler_command 'c++'}
+      --cc=#{PACKMAN.compiler('c').command}
+      --cxx=#{PACKMAN.compiler('c++').command}
       --64
       --ssl
       --extrapath=#{Openssl.prefix}

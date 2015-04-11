@@ -21,7 +21,7 @@ class Superlu < PACKMAN::Package
       BLASDEF=-DUSE_VENDOR_BLAS
       BLASLIB='-L#{Openblas.lib} -lopenblas'
     ]
-    if PACKMAN.compiler_command 'fortran'
+    if PACKMAN.has_compiler? 'fortran', :not_exit
       args << 'FORTRAN=${FC} FFLAGS=${FCFLAGS}'
     end
     PACKMAN.run 'make lib', *args

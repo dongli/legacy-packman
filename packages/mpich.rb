@@ -20,7 +20,7 @@ class Mpich < PACKMAN::Package
       --disable-maintainer-mode
       --enable-cxx
     ]
-    if PACKMAN.compiler_command 'fortran'
+    if PACKMAN.has_compiler? 'fortran', :not_exit
       args << '--enable-fortran=all' 
     else
       args << '--disable-fortran'

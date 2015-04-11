@@ -26,7 +26,7 @@ class Parallel_netcdf < PACKMAN::Package
     args = %W[
       --prefix=#{prefix}
     ]
-    if PACKMAN.compiler_command 'fortran'
+    if PACKMAN.has_compiler? 'fortran', :not_exit
       args << '--enable-fortran'
     else
       args << '--disable-fortran'

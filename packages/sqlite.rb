@@ -51,7 +51,7 @@ class Sqlite < PACKMAN::Package
     elsif PACKMAN.linux?
       args << '-shared'
     end
-    PACKMAN.run PACKMAN.compiler_command('c'), *args
+    PACKMAN.run PACKMAN.compiler('c').command, *args
     PACKMAN.mv "libsqlitefunctions.#{PACKMAN.shared_library_suffix}", lib
     PACKMAN.mkdir doc, :silent
     PACKMAN.work_in doc do
