@@ -135,6 +135,15 @@ module PACKMAN
     end
 
     def self.sync_mirror_service
+      # Pack PACKMAN itself.
+      CLI.report_notice "Packing #{CLI.green 'PACKMAN'} itself."
+      PACKMAN.work_in "#{ENV['PACKMAN_ROOT']}/.." do
+        system "tar czf packman.tar.gz "+
+          "--exclude='packman.config' "+
+          "--exclude='ruby' "+
+          "#{File.basename ENV['PACKMAN_ROOT']}"
+        PACKMAN.mv 'packman.tar.gz', ConfigManager.package_root
+      end
       # Download all packages.
       CLI.report_notice 'Download all defined packages.'
       # Load all packages first.
@@ -150,12 +159,6 @@ module PACKMAN
       if not File.exist? ruby_file or not PACKMAN.sha1_same? ruby_file, ruby_sha1
         CLI.report_notice "Download #{CLI.blue ruby_file}."
         PACKMAN.download ConfigManager.package_root, ruby_url, ruby_file_name
-      end
-      # Pack PACKMAN itself.
-      CLI.report_notice "Packing #{CLI.green 'PACKMAN'} itself."
-      PACKMAN.work_in "#{ENV['PACKMAN_ROOT']}/.." do
-        system "tar czf packman.tar.gz --exclude='packman.config' #{File.basename ENV['PACKMAN_ROOT']}"
-        PACKMAN.mv 'packman.tar.gz', ConfigManager.package_root
       end
     end
 
