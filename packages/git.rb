@@ -23,7 +23,7 @@ class Git < PACKMAN::Package
       CC=${CC}
       CFLAGS="${CFLAGS}"
       CPPFLAGS="${CPPFLAGS}"
-      LDFLAGS="${LDFLAGS}"
+      LDFLAGS="${LDFLAGS} -lintl"
     ]
     PACKMAN.set_cppflags_and_ldflags [Gettext, Openssl, Curl]
     PACKMAN.run 'make install', *args
