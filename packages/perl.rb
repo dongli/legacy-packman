@@ -10,7 +10,7 @@ class Perl < PACKMAN::Package
     args = %W[
       -des
       -Dprefix=#{prefix}
-      -Dcc=#{PACKMAN.compiler_command 'c'}
+      -Dcc=#{PACKMAN.compiler('c').command}
       -Dusethreads
       -Duselargefiles
     ]
