@@ -72,6 +72,9 @@ module PACKMAN
     end
 
     def self.update_by_using_ftp
+      if not PACKMAN.does_command_exist? 'git'
+        PACKMAN.report_error "There is no #{PACKMAN.red 'git'}!"
+      end
       ftp_mirror = ConfigManager.use_ftp_mirror
       CLI.report_notice "Update from PACKMAN FTP mirror #{CLI.green ftp_mirror}."
       if Dir.exist? '.git'

@@ -3,6 +3,8 @@ class Git < PACKMAN::Package
   sha1 'a74f0f097a1893f9275b501ae515db2d08422550'
   version '2.3.5'
 
+  label 'compiler_insensitive'
+
   depends_on 'gettext'
   depends_on 'openssl'
   depends_on 'curl'
