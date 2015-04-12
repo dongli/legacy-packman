@@ -71,23 +71,22 @@ class Wrf_wps < PACKMAN::Package
   end
 
   def choose_platform output
-    fortran_compiler_info = PACKMAN.compiler_info 'fortran'
     if build_type == 'serial' or build_type == 'smpar'
       build_type_ = 'serial'
     else
       build_type_ = 'dmpar'
     end
-    if fortran_compiler_info[:spec].vendor == 'gnu'
-      if fortran_compiler_info[:spec].version <= '4.4.7'
+    if PACKMAN.compiler('fortran').vendor == 'gnu'
+      if PACKMAN.compiler('fortran').version <= '4.4.7'
         PACKMAN.report_error "#{PACKMAN.blue 'gfortran'} version "+
-          "#{PACKMAN.red fortran_compiler_info[:spec].version} is too low to build WRF!"
+          "#{PACKMAN.red PACKMAN.compiler('fortran').version} is too low to build WRF!"
       end
       output.each do |line|
         tmp = line.match(/(\d+)\.\s+.*gfortran\s*\(#{build_type_}\)/)
         PACKMAN.report_error "Mess up with configure output of WRF!" if not tmp
         return tmp[1]
       end
-    elsif fortran_compiler_info[:spec].vendor == 'intel'
+    elsif PACKMAN.compiler('fortran').vendor == 'intel'
       output.each do |line|
         tmp = line.match(/(\d+)\.\s+.*Intel compiler\s+\(#{build_type_}\)/)
         PACKMAN.report_error "Mess up with configure output of WRF!" if not tmp

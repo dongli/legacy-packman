@@ -105,20 +105,18 @@ class Wrf_model < PACKMAN::Package
   end
 
   def choose_platform output
-    c_compiler_info = PACKMAN.compiler_info 'c'
-    fortran_compiler_info = PACKMAN.compiler_info 'fortran'
     build_type_ = build_type == 'dm+sm' ? 'dm\+sm' : build_type
     matched_platform = nil
-    if c_compiler_info[:spec].vendor == 'gnu' and fortran_compiler_info[:spec].vendor == 'gnu'
-      if fortran_compiler_info[:spec].version <= '4.4.7'
+    if PACKMAN.compiler('c').vendor == 'gnu' and PACKMAN.compiler('fortran').vendor == 'gnu'
+      if PACKMAN.compiler('fortran').version <= '4.4.7'
         PACKMAN.report_error "#{PACKMAN.blue 'gfortran'} version "+
-          "#{PACKMAN.red fortran_compiler_info[:spec].version} is too low to build WRF!"
+          "#{PACKMAN.red PACKMAN.compiler('fortran').version} is too low to build WRF!"
       end
       output.each do |line|
         matched_platform = line.match(/(\d+)\.\s+.*gfortran\s*\w*\s*with gcc\s+\(#{build_type_}\)/)
         PACKMAN.report_error "Mess up with configure output of WRF!" if not matched_platform
       end
-    elsif c_compiler_info[:spec].vendor == 'intel' and fortran_compiler_info[:spec].vendor == 'intel'
+    elsif PACKMAN.compiler('c').vendor == 'intel' and PACKMAN.compiler('fortran').vendor == 'intel'
       output.each do |line|
         matched_platform = line.match(/(\d+)\.\s+.*ifort \w* with icc\s+\(#{build_type_}\)/)
         PACKMAN.report_error "Mess up with configure output of WRF!" if not matched_platform

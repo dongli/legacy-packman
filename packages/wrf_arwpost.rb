@@ -47,14 +47,13 @@ class Wrf_arwpost < PACKMAN::Package
   end
 
   def choose_platform output
-    fortran_compiler_info = PACKMAN.compiler_info 'fortran'
     matched_platform = nil
-    if fortran_compiler_info[:spec].vendor == 'gnu'
+    if PACKMAN.compiler('fortran').vendor == 'gnu'
       output.each do |line|
         matched_platform = line.match(/(\d+)\.\s+.*gfortran compiler/)
         PACKMAN.report_error "Mess up with configure output of WRF!" if not matched_platform
       end
-    elsif fortran_compiler_info[:spec].vendor == 'intel'
+    elsif PACKMAN.compiler('fortran').vendor == 'intel'
       output.each do |line|
         matched_platform = line.match(/(\d+)\.\s+.*Intel compiler/)
         PACKMAN.report_error "Mess up with configure output of WRF!" if not matched_platform
