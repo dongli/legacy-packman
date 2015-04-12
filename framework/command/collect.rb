@@ -20,10 +20,15 @@ module PACKMAN
         else
           all_instances = Package.all_instances package_name
           all_instances.each do |package|
-            if all_instances.size == 1
-              PACKMAN.download_package package
-            elsif all_instances.size > 1
-              PACKMAN.download_package package, :multiple_versions
+            begin
+              if all_instances.size == 1
+                PACKMAN.download_package package
+              elsif all_instances.size > 1
+                PACKMAN.download_package package, :multiple_versions
+              end
+            rescue SystemExit => e
+              PACKMAN.report_warning "Failed to download #{PACKMAN.red package_name}! Go on?"
+              PACKMAN.get_answer nil
             end
           end
         end

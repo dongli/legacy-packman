@@ -3,7 +3,7 @@ module PACKMAN
     def self.delegated_methods
       [:green, :blue, :red, :yellow, :bold, :caveat,
        :report_notice, :report_error, :report_warning,
-       :blue_arrow, :under_construction!]
+       :blue_arrow, :under_construction!, :ask, :get_answer]
     end
 
     @@color_map = {
@@ -153,10 +153,10 @@ module PACKMAN
             end
             inputs = inputs.first
           end
-          return inputs
         else
-          under_construction!
+          inputs = STDIN.gets
         end
+        return inputs
       end
     end
 
