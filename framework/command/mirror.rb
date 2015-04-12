@@ -137,11 +137,10 @@ module PACKMAN
     def self.sync_mirror_service
       # Pack PACKMAN itself.
       CLI.report_notice "Packing #{CLI.green 'PACKMAN'} itself."
-      PACKMAN.work_in "#{ENV['PACKMAN_ROOT']}/.." do
-        system "tar czf packman.tar.gz "+
-          "--exclude='packman.config' "+
-          "--exclude='ruby' "+
-          "#{File.basename ENV['PACKMAN_ROOT']}"
+      PACKMAN.work_in ENV['PACKMAN_ROOT'] do
+        system 'git archive --prefix=packman/ -o packman.tar HEAD'
+        system "tar --append --file=packman.tar --transform='s,^,packman/,' .git"
+        system 'gzip packman.tar'
         PACKMAN.mv 'packman.tar.gz', ConfigManager.package_root
       end
       # Download all packages.
