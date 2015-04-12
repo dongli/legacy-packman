@@ -143,6 +143,15 @@ module PACKMAN
         system 'gzip packman.tar'
         PACKMAN.mv 'packman.tar.gz', ConfigManager.package_root
       end
+      # Download Ruby.
+      ruby_file_name = 'ruby-2.2.1.tar.gz'
+      ruby_url = "http://cache.ruby-lang.org/pub/ruby/2.2/#{ruby_file_name}"
+      ruby_sha1 = '12376b79163e02bc9bd1a39329d67c3d19ccace9'
+      ruby_file = "#{ConfigManager.package_root}/#{ruby_file_name}"
+      if not File.exist? ruby_file or not PACKMAN.sha1_same? ruby_file, ruby_sha1
+        CLI.report_notice "Download #{CLI.blue ruby_file}."
+        PACKMAN.download ConfigManager.package_root, ruby_url, ruby_file_name
+      end
       # Download all packages.
       CLI.report_notice 'Download all defined packages.'
       # Load all packages first.
@@ -150,15 +159,6 @@ module PACKMAN
         PackageLoader.load_package package_name
       end
       Commands.collect :all
-      # Download Ruby.
-      ruby_file_name = 'ruby-2.1.3.tar.bz2'
-      ruby_url = "http://cache.ruby-lang.org/pub/ruby/2.1/#{ruby_file_name}"
-      ruby_sha1 = 'befbc7b31b0e19c2abe8fa89f08de5d4d7509d19'
-      ruby_file = "#{ConfigManager.package_root}/#{ruby_file_name}"
-      if not File.exist? ruby_file or not PACKMAN.sha1_same? ruby_file, ruby_sha1
-        CLI.report_notice "Download #{CLI.blue ruby_file}."
-        PACKMAN.download ConfigManager.package_root, ruby_url, ruby_file_name
-      end
     end
 
     def self.start_mirror_discovery_service
