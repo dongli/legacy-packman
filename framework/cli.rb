@@ -1,7 +1,7 @@
 module PACKMAN
   class CLI
     def self.delegated_methods
-      [:green, :blue, :red, :yellow, :bold, :caveat,
+      [:green, :blue, :red, :yellow, :bold, :caveat, :pause,
        :report_notice, :report_error, :report_warning,
        :blue_arrow, :under_construction!, :ask, :get_answer]
     end
@@ -160,9 +160,14 @@ module PACKMAN
       end
     end
 
-    def self.pause
-      print "[Press ANY key]"
-      STDIN.gets
+    def self.pause options = {}
+      print options[:message]
+      if options.has_key? :seconds
+        sleep options[:seconds]
+      else
+        STDIN.gets
+      end
+      p
     end
   end
 end

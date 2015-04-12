@@ -27,8 +27,8 @@ module PACKMAN
                 PACKMAN.download_package package, :multiple_versions
               end
             rescue SystemExit => e
-              PACKMAN.report_warning "Failed to download #{PACKMAN.red package_name}! Go on?"
-              PACKMAN.get_answer nil
+              PACKMAN.report_warning "Failed to download #{PACKMAN.red package_name}!"
+              PACKMAN.pause :message => '', :seconds => 1
             end
           end
         end

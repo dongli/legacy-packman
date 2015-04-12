@@ -162,7 +162,7 @@ module PACKMAN
         "#{CLI.blue 'C compiler'}       = #{CLI.red default_compilers['c']}\n"+
         "#{CLI.blue 'C++ compiler'}     = #{CLI.red default_compilers['c++']}\n"+
         "#{CLI.blue 'Fortran compiler'} = #{CLI.red default_compilers['fortran'] ? default_compilers['fortran'] : 'NONE'}"
-      CLI.pause
+      CLI.pause :message => '[Press ANY key]'
     end
 
     def self.write file_path = nil
