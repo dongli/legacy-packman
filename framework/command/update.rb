@@ -97,6 +97,7 @@ module PACKMAN
             mirror_git_sha1 = `git rev-parse HEAD`
             if local_git_sha1 != mirror_git_sha1
               CLI.report_notice "Local version is different from mirror version, update local one."
+              PACKMAN.rm "#{ENV['PACKMAN_ROOT']}/.git"
               PACKMAN.cp '.', ENV['PACKMAN_ROOT']
             else
               CLI.report_notice "Everything is up-to-date."
