@@ -78,7 +78,7 @@ class Grads < PACKMAN::Package
     PACKMAN.run './configure', *args
     ['Makefile', 'src/Makefile'].each do |makefile|
       PACKMAN.replace makefile, {
-        /^LDFLAGS =.*$/ => "LDFLAGS = #{ldflags.join(' ')}",
+        /^LDFLAGS =.*$/ => "LDFLAGS =",
         /^cairo_inc =.*$/ => "cairo_inc = -I#{Cairo.include}/cairo -I#{Freetype.include}/freetype2 -I#{Fontconfig.include} -I#{Libpng.include} -I#{Pixman.include}/pixman-1",
         /^cairo_libs =.*$/ => "cairo_libs = -L#{Cairo.lib} -lcairo -L#{X11.lib} -lXrender -L#{Freetype.lib} -lfreetype -L#{Fontconfig.lib} -lfontconfig -L#{Pixman.lib} -lpixman-1 -L#{Libpng.lib} -lpng -L#{Libxml2.lib} -lxml2 -L#{Zlib.lib} -lz",
         /^grib2_inc =.*$/ => "grib2_inc = -I#{Grib2_c.include}",

@@ -3,6 +3,7 @@ class Opendap < PACKMAN::Package
   sha1 'a95c345da2164ec7a790b34b7f0aeb9227277770'
   version '3.14.0'
 
+  depends_on 'bison'
   depends_on 'uuid'
   depends_on 'curl'
   depends_on 'libxml2'
