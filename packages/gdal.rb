@@ -55,5 +55,6 @@ class Gdal < PACKMAN::Package
     PACKMAN.run './configure', *args
     PACKMAN.run 'make all'
     PACKMAN.run 'make install'
+    create_cmake_config 'GDAL', 'include', 'lib/libgdal.a'
   end
 end
