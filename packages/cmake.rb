@@ -13,4 +13,15 @@ class Cmake < PACKMAN::Package
     PACKMAN.run "make"
     PACKMAN.run "make install"
   end
+
+  def postfix
+    # Fix FindGDAL.
+    PACKMAN.replace "#{share}/cmake-3.2/Modules/FindGDAL.cmake", {
+      'set(GDAL_INCLUDE_DIRS ${GDAL_INCLUDE_DIR})' => <<-EOT.keep_indent
+        exec_program(${GDAL_CONFIG} ARGS --dep-libs OUTPUT_VARIABLE GDAL_CONFIG_DEP_LIBS)
+        set(GDAL_LIBRARIES ${GDAL_LIBRARY} ${GDAL_CONFIG_DEP_LIBS})
+        set(GDAL_INCLUDE_DIRS ${GDAL_INCLUDE_DIR})
+      EOT
+    }
+  end
 end
