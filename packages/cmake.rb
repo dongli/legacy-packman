@@ -15,8 +15,31 @@ class Cmake < PACKMAN::Package
   end
 
   def postfix
-    # Fix FindGDAL.
-    PACKMAN.replace "#{share}/cmake-3.2/Modules/FindGDAL.cmake", {
+    modules = 'cmake-3.2/Modules'
+    # Fix FindArmadillo.cmake.
+    PACKMAN.replace "#{share}/#{modules}/FindArmadillo.cmake", {
+      /(find_library\(ARMADILLO_LIBRARY\n\s*NAMES armadillo)/ => <<-EOT.keep_indent
+        \\1\n
+        HINTS
+          ENV ARMADILLO_DIR
+          ENV ARMADILLO_ROOT
+        PATH_SUFFIXES
+          lib
+          lib64
+      EOT
+    }
+    PACKMAN.replace "#{share}/#{modules}/FindArmadillo.cmake", {
+      /(find_path\(ARMADILLO_INCLUDE_DIR\n\s*NAMES armadillo)/ => <<-EOT.keep_indent
+        \\1\n
+        HINTS
+          ENV ARMADILLO_DIR
+          ENV ARMADILLO_ROOT
+        PATH_SUFFIXES
+          include
+      EOT
+    }
+    # Fix FindGDAL.cmake.
+    PACKMAN.replace "#{share}/#{modules}/FindGDAL.cmake", {
       'set(GDAL_INCLUDE_DIRS ${GDAL_INCLUDE_DIR})' => <<-EOT.keep_indent
         exec_program(${GDAL_CONFIG} ARGS --dep-libs OUTPUT_VARIABLE GDAL_CONFIG_DEP_LIBS)
         set(GDAL_LIBRARIES ${GDAL_LIBRARY} ${GDAL_CONFIG_DEP_LIBS})
