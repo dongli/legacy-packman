@@ -5,7 +5,7 @@ module PACKMAN
         [:append_env, :prepend_env, :reset_env, :clear_env, :has_env?,
          :export_env, :env_keys, :shell_sources,
          :append_shell_source, :prepend_shell_source, :clear_shell_source,
-         :set_cppflags_and_ldflags]
+         :set_cppflags_and_ldflags, :filter_ld_library_path]
       end
 
       def self.init
@@ -111,6 +111,12 @@ module PACKMAN
           append_env 'CPPFLAGS', "-I#{PACKMAN.prefix lib}/include"
           append_env 'LDFLAGS', "-L#{PACKMAN.prefix lib}/lib"
         end
+      end
+
+      def self.filter_ld_library_path
+        paths = ENV[PACKMAN.ld_library_path_name].split ':'
+        paths.delete_if { |path| path =~ /#{ConfigManager.install_root}/ }
+        append_env PACKMAN.ld_library_path_name, paths.join(':')
       end
     end
   end
