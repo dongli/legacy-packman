@@ -114,6 +114,7 @@ module PACKMAN
       end
 
       def self.filter_ld_library_path
+        return if not ENV[PACKMAN.ld_library_path_name]
         paths = ENV[PACKMAN.ld_library_path_name].split ':'
         paths.delete_if { |path| path =~ /#{ConfigManager.install_root}/ }
         append_env PACKMAN.ld_library_path_name, paths.join(':')
