@@ -15,9 +15,9 @@ RUBY_SHA1=12376b79163e02bc9bd1a39329d67c3d19ccace9
 RUBY_PACKAGE=$(basename $RUBY_URL)
 RUBY_PACKAGE_DIR=$(basename $RUBY_PACKAGE .tar.gz)
 
-if which shasum 2>&1 1> /dev/null; then
+if which shasum 2>&1 1> /dev/null 2>&1; then
     SHASUM=shasum
-elif which sha1sum 2>&1 1> /dev/null; then
+elif which sha1sum 2>&1 1> /dev/null 2>&1; then
     SHASUM=sha1sum
 else
     SHASUM=none
@@ -40,7 +40,7 @@ function install_ruby
     tar -xzf $RUBY_PACKAGE
     cd $RUBY_PACKAGE_DIR
     echo "[Notice]: Building Ruby, please wait for a moment! If anything is wrong, please see $PACKMAN_ROOT/ruby/out!"
-    if ! which gcc 2>&1 1> /dev/null; then
+    if ! which gcc 2>&1 1> /dev/null 2>&1; then
         echo '[Error]: There is no GCC compiler!'
         exit 1
     fi
@@ -54,7 +54,7 @@ function install_ruby
     fi
 }
 
-if ! which ruby 2>&1 1> /dev/null; then
+if ! which ruby 2>&1 1> /dev/null 2>&1; then
     echo '[Warning]: System does not provide a Ruby! PACKMAN will install one for you!'
     install_ruby
 fi

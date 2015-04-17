@@ -14,7 +14,7 @@ function use_packman_installed_ruby
     fi
 }
 
-if ! which ruby 2>&1 1> /dev/null; then
+if ! which ruby 2>&1 1> /dev/null 2>&1; then
     use_packman_installed_ruby
 else
     RUBY_VERSION=$(ruby -v | cut -d ' ' -f 2)
