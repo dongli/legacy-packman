@@ -40,7 +40,7 @@ function install_ruby
     tar -xzf $RUBY_PACKAGE
     cd $RUBY_PACKAGE_DIR
     echo "[Notice]: Building Ruby, please wait for a moment! If anything is wrong, please see $PACKMAN_ROOT/ruby/out!"
-    if ! which gcc 1> /dev/null; then
+    if ! which gcc 2>&1 1> /dev/null; then
         echo '[Error]: There is no GCC compiler!'
         exit 1
     fi
@@ -54,7 +54,7 @@ function install_ruby
     fi
 }
 
-if ! which ruby 1> /dev/null; then
+if ! which ruby 2>&1 1> /dev/null; then
     echo '[Warning]: System does not provide a Ruby! PACKMAN will install one for you!'
     install_ruby
 fi
