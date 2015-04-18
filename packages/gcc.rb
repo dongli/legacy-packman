@@ -1,7 +1,7 @@
 class Gcc < PACKMAN::Package
-  url 'http://ftpmirror.gnu.org/gcc/gcc-4.9.1/gcc-4.9.1.tar.bz2'
-  sha1 '3f303f403053f0ce79530dae832811ecef91197e'
-  version '4.9.1'
+  url 'http://ftpmirror.gnu.org/gcc/gcc-4.9.2/gcc-4.9.2.tar.bz2'
+  sha1 '79dbcb09f44232822460d80b033c962c0237c6d8'
+  version '4.9.2'
 
   depends_on 'gmp'
   depends_on 'mpfr'
@@ -13,13 +13,6 @@ class Gcc < PACKMAN::Package
   provide 'c' => 'gcc'
   provide 'c++' => 'g++'
   provide 'fortran' => 'gfortran'
-
-  if PACKMAN.os_type == :Mac_OS_X and PACKMAN.os_version =~ '10.10'
-    patch do
-      url "https://raw.githubusercontent.com/DomT4/scripts/6c0e48921/Homebrew_Resources/Gcc/gcc1010.diff"
-      sha1 "083ec884399218584aec76ab8f2a0db97c12a3ba"
-    end
-  end
 
   def install
     if PACKMAN.mac?
@@ -36,6 +29,8 @@ class Gcc < PACKMAN::Package
       --with-cloog=#{Cloog.prefix}
       --with-isl=#{Isl.prefix}
       --disable-multilib
+      --with-build-config=bootstrap-debug
+      --disable-werror
     ]
     PACKMAN.mkdir 'build', :force do
       PACKMAN.run '../configure', *args
