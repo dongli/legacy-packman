@@ -108,8 +108,11 @@ module PACKMAN
 
       def self.set_cppflags_and_ldflags libs
         libs.each do |lib|
-          append_env 'CPPFLAGS', "-I#{PACKMAN.prefix lib}/include"
-          append_env 'LDFLAGS', "-L#{PACKMAN.prefix lib}/lib"
+          prefix = PACKMAN.prefix lib
+          append_env 'CPPFLAGS', "-I#{prefix}/include"
+          append_env 'LDFLAGS', "-L#{prefix}/lib"
+          # TODO: Some 64-bit machines need 'lib64'! Find a better solution.
+          append_env 'LDFLAGS', "-L#{prefix}/lib64" if Dir.exist? "#{prefix}/lib64"
         end
       end
 

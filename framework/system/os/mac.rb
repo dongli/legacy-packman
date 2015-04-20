@@ -14,9 +14,9 @@ module PACKMAN
     end
     check :CommandLineTools do
       if version >= '10.9'
-        `pkgutil --pkg-info=com.apple.pkg.CLTools_Executables`
+        `pkgutil --pkg-info=com.apple.pkg.CLTools_Executables 2>&1`
       elsif version >= '10.8'
-        `pkgutil --pkg-info=com.apple.pkg.DeveloperToolsCLI`
+        `pkgutil --pkg-info=com.apple.pkg.DeveloperToolsCLI 2>&1`
       end
       $?.success?
     end
