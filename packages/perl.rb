@@ -7,10 +7,11 @@ class Perl < PACKMAN::Package
   label 'master_package'
 
   def install
+    # Perl doesn't respect CFLAGS, so we need to hardcode '-fPIC' flag.
     args = %W[
       -des
       -Dprefix=#{prefix}
-      -Dcc=#{PACKMAN.compiler('c').command}
+      -Dcc="#{PACKMAN.compiler('c').command} -fPIC"
       -Dusethreads
       -Duselargefiles
     ]
