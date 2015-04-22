@@ -18,6 +18,8 @@ class Perl_xml_libxml < PACKMAN::Package
       XMLPREFIX=#{Libxml2.prefix}
     ]
     PACKMAN.run 'perl Makefile.PL', *args
+    # TODO: Add '-fPIC' flag elegantly!
+    PACKMAN.replace 'Makefile', /CCFLAGS\s*=\s*(.*)$/ => 'CCFLAGS = -fPIC \1'
     PACKMAN.run 'make'
     PACKMAN.run 'make test' if not skip_test?
     PACKMAN.run 'make install'
