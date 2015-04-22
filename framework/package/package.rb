@@ -483,7 +483,7 @@ module PACKMAN
       end
       if File.exist? "#{prefix}/bashrc"
         content = File.open("#{prefix}/bashrc", 'r').read
-        slave_package_tags = content.scan(/^# (\w+) (\w{40}) (\d+)?$/)
+        slave_package_tags = content.scan(/^# (\w+) (\w{40}) ?(\d+)?$/)
       end
       root = "#{class_name}_ROOT"
       File.open("#{prefix}/bashrc", 'w') do |file|
