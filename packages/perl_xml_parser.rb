@@ -8,10 +8,13 @@ class Perl_xml_parser < PACKMAN::Package
   belongs_to 'perl'
 
   depends_on 'perl'
+  depends_on 'expat'
 
   def install
     args = %W[
       PREFIX=#{prefix}
+      EXPATINCPATH=#{Expat.include}
+      EXPATLIBPATH=#{Expat.lib}
     ]
     PACKMAN.run 'perl Makefile.PL', *args
     PACKMAN.run 'make'
