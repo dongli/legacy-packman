@@ -5,6 +5,8 @@ class Git < PACKMAN::Package
 
   label 'compiler_insensitive'
 
+  depends_on 'zlib'
+  depends_on 'expat'
   depends_on 'gettext'
   depends_on 'openssl'
   depends_on 'curl'
@@ -19,15 +21,20 @@ class Git < PACKMAN::Package
       V=1
       NO_R_TO_GCC_LINKER=1
       BLK_SHA1=1
+      NO_PERL=1
       GETTEXT=1
+      CURLDIR=#{Curl.prefix}
+      OPENSSLDIR=#{Openssl.prefix}
+      ZLIB_PATH=#{Zlib.prefix}
       USE_LIBPCRE=1
-      LIBPCRE=#{Pcre.prefix}
+      LIBPCREDIR=#{Pcre.prefix}
+      EXPATDIR=#{Expat.prefix}
       CC=${CC}
       CFLAGS="${CFLAGS}"
       CPPFLAGS="${CPPFLAGS}"
       LDFLAGS="${LDFLAGS} -lintl"
     ]
-    PACKMAN.set_cppflags_and_ldflags [Gettext, Openssl, Curl]
+    PACKMAN.set_cppflags_and_ldflags [Gettext]
     PACKMAN.run 'make install', *args
 
   end
