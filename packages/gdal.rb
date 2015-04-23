@@ -42,7 +42,7 @@ class Gdal < PACKMAN::Package
       --with-openjpeg=no
       --with-mysql=no 
       --with-ecw=no
-      --with-fdgb=no
+      --with-fgdb=no
       --with-odbc=no
       --with-xml2=#{Libxml2.prefix}
       --with-armadillo=#{Armadillo.prefix}
