@@ -13,8 +13,8 @@ class Superlu < PACKMAN::Package
     end
     args = %W[
       RANLIB=true
-      CC=${CC}
-      CFLAGS=${CFLAGS}
+      CC="${CC}"
+      CFLAGS="${CFLAGS}"
       SuperLUroot=#{FileUtils.pwd}
       SUPERLULIB=#{FileUtils.pwd}/lib/libsuperlu.a
       NOOPTS=-fPIC
@@ -22,7 +22,7 @@ class Superlu < PACKMAN::Package
       BLASLIB='-L#{Openblas.lib} -lopenblas'
     ]
     if PACKMAN.has_compiler? 'fortran', :not_exit
-      args << 'FORTRAN=${FC} FFLAGS=${FCFLAGS}'
+      args << 'FORTRAN="${FC}" FFLAGS="${FCFLAGS}"'
     end
     PACKMAN.run 'make lib', *args
     PACKMAN.run 'make testing', *args
