@@ -1,7 +1,7 @@
 class Armadillo < PACKMAN::Package
-  url 'http://sourceforge.net/projects/arma/files/armadillo-5.000.0.tar.gz'
-  sha1 '86e4adfc8fdc32f55ccf1b97aa5ed76a2f332fb5'
-  version '5.000.0'
+  url 'http://sourceforge.net/projects/arma/files/armadillo-5.000.1.tar.gz'
+  sha1 '817bc80a5d469afba1c53a73160e7ca6fe0782ad'
+  version '5.000.1'
 
   option 'use_mkl' => false
 
@@ -19,12 +19,12 @@ class Armadillo < PACKMAN::Package
     # they can not find the dependent libraries just installed.
     if PACKMAN.linux? and not use_mkl?
       PACKMAN.replace 'cmake_aux/Modules/ARMA_FindLAPACK.cmake',
-        /^  PATHS / => "  PATHS #{Lapack.lib} "
+        /^\s*PATHS / => "  PATHS #{Lapack.lib} "
       PACKMAN.replace 'cmake_aux/Modules/ARMA_FindOpenBLAS.cmake',
-        /^  PATHS / => "  PATHS #{Openblas.lib} "
+        /^\s*PATHS / => "  PATHS #{Openblas.lib} "
     end
     PACKMAN.replace 'cmake_aux/Modules/ARMA_FindARPACK.cmake',
-      /^  PATHS / => "  PATHS #{Arpack.lib} "
+      /^\s*PATHS / => "  PATHS #{Arpack.lib} "
     PACKMAN.replace 'cmake_aux/Modules/ARMA_FindSuperLU.cmake', {
       'SET(SuperLU_FOUND NO)' =>
         "SET (SuperLU_INCLUDE_DIR #{Superlu.include}/superlu)\n"+
