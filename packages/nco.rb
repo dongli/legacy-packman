@@ -8,7 +8,9 @@ class Nco < PACKMAN::Package
   depends_on 'antlr2'
   depends_on 'netcdf_c'
   depends_on 'texinfo'
+  depends_on 'expat'
   depends_on 'udunits'
+  depends_on 'gsl'
 
   label 'compiler_insensitive'
 
@@ -25,9 +27,8 @@ class Nco < PACKMAN::Package
       NETCDF_ROOT=#{Netcdf_c.prefix}
       UDUNITS2_PATH=#{Udunits.prefix}
       ANTLR_ROOT=#{Antlr2.prefix}
-      CFLAGS='-I#{Curl.include} -I#{Hdf5.include}'
-      LDFLAGS='-L#{Curl.lib} -L#{Hdf5.lib}'
     ]
+    PACKMAN.set_cppflags_and_ldflags [Curl, Hdf5, Expat]
     if PACKMAN.cygwin?
       args << "LIBS='-L#{Curl.lib} -lcurl -L#{Hdf5.lib} -lhdf5 -lhdf5_hl'"
     end
