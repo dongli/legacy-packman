@@ -3,6 +3,7 @@ class Gdal < PACKMAN::Package
   sha1 'e2c67481932ec9fb6ec3c0faadc004f715c4eef4'
   version '1.11.1'
 
+  depends_on 'szip'
   depends_on 'curl'
   depends_on 'hdf4'
   depends_on 'hdf5'
@@ -52,6 +53,7 @@ class Gdal < PACKMAN::Package
     else
       args << "--with-png=#{Libpng.prefix}"
     end
+    PACKMAN.set_cppflags_and_ldflags [Szip]
     PACKMAN.run './configure', *args
     PACKMAN.run 'make all'
     PACKMAN.run 'make install'
