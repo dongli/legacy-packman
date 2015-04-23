@@ -21,6 +21,7 @@ class Hdf4 < PACKMAN::Package
       --enable-fortran
       --enable-static
     ]
+    args << '--disable-fortran' if not PACKMAN.has_compiler? 'fortran', :not_exit
     PACKMAN.run './configure', *args
     PACKMAN.run 'make install'
   end

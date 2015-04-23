@@ -7,7 +7,6 @@ class Libgeotiff < PACKMAN::Package
   depends_on 'jpeg'
   depends_on 'proj'
   depends_on 'zlib'
-  depends_on 'lzlib'
 
   def install
     args = %W[
@@ -18,6 +17,7 @@ class Libgeotiff < PACKMAN::Package
       --with-zlib=#{Zlib.prefix}
       LIBS='-L#{Jpeg.lib}'
     ]
+    PACKMAN.set_cppflags_and_ldflags [Zlib]
     PACKMAN.run './configure', *args
     PACKMAN.run 'make -j2'
     PACKMAN.run 'make install'

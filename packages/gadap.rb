@@ -15,7 +15,12 @@ class Gadap < PACKMAN::Package
     PACKMAN.replace 'src/gaReports.cc', /(#include <iostream>)/ => "\\1\n#include <cstring>\n"
     PACKMAN.replace 'src/gadap.cc', /(#include <vector>)/ => "\\1\n#include <cstring>\n"
     PACKMAN.replace 'test/test.cc', /(#include <string>)/ => "\\1\n#include <cstdlib>\n#include <cstring>\n"
-    PACKMAN.run "./configure --prefix=#{prefix} CXXFLAGS=-L#{Zlib.lib}"
+    args = %W[
+      --prefix=#{prefix}
+      CXXFLAGS="-L#{Zlib.lib} -luuid"
+    ]
+    PACKMAN.set_cppflags_and_ldflags [Uuid]
+    PACKMAN.run "./configure", *args
     PACKMAN.run 'make'
     PACKMAN.run 'make install'
   end

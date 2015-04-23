@@ -7,6 +7,7 @@ class Netcdf_c < PACKMAN::Package
 
   option 'use_mpi' => [:package_name, :boolean]
 
+  depends_on 'm4'
   depends_on 'patch'
   depends_on 'curl'
   depends_on 'zlib'
