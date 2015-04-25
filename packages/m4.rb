@@ -5,7 +5,7 @@ class M4 < PACKMAN::Package
 
   label 'compiler_insensitive'
 
-  depends_on 'xz'
+  depends_on 'tar'
 
   def install
     args = %W[
