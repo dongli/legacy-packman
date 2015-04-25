@@ -1,11 +1,9 @@
 class M4 < PACKMAN::Package
-  url 'http://ftpmirror.gnu.org/m4/m4-1.4.17.tar.xz'
-  sha1 '74ad71fa100ec8c13bc715082757eb9ab1e4bbb0'
+  url 'http://ftp.gnu.org/gnu/m4/m4-1.4.17.tar.gz'
+  sha1 '4f80aed6d8ae3dacf97a0cb6e989845269e342f0'
   version '1.4.17'
 
   label 'compiler_insensitive'
-
-  depends_on 'tar'
 
   def install
     args = %W[
