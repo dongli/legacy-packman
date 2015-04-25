@@ -5,6 +5,8 @@ class M4 < PACKMAN::Package
 
   label 'compiler_insensitive'
 
+  depends_on 'xz'
+
   def install
     args = %W[
       --prefix=#{prefix}
