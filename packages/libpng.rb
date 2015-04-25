@@ -1,6 +1,6 @@
 class Libpng < PACKMAN::Package
-  url 'http://downloads.sf.net/project/libpng/libpng16/1.6.16/libpng-1.6.16.tar.xz'
-  sha1 '31855a8438ae795d249574b0da15b34eb0922e13'
+  url 'http://downloads.sf.net/project/libpng/libpng16/1.6.16/libpng-1.6.16.tar.gz'
+  sha1 '50f3b31d013a31e2cac70db177094f6a7618b8be'
   version '1.6.16'
 
   skip_on :Mac_OS_X
