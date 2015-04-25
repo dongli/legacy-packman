@@ -96,7 +96,7 @@ class Wrf_model < PACKMAN::Package
         PACKMAN.report_error "#{PACKMAN.red 'configure.wrf'} is not generated!"
       end
       # Compile WRF model.
-      PACKMAN.run './compile', run_case
+      PACKMAN.run 'export dontask=1 && ./compile', run_case
       # Check if the executables are generated.
       if not File.exist? 'main/wrf.exe'
         PACKMAN.report_error 'Failed to build WRF!'
