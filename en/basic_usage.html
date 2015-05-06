@@ -60,6 +60,12 @@ $ packman switch -compiler_set_index=<font color="red">&lt;compiler set index&gt
 <h1><a name="SetupFTPmirror">Setup FTP mirror</a></h1>
 <p>
     Yes, that is correct! Setup a FTP mirror in PACKMAN is a super easy job. Any computer can provide the service of downloading packages for other computers, because downloading packages could be very time consuming, and some computers cannot even access the Internet! So let's setup the mirror! Firstly, initialize the mirror service:
+    <div class="notice">
+        <code>&lt;package_root&gt;</code> and its parent directories must have correct privilege! Otherwise, you will encounter:
+<pre>
+530-unable to set anonymous privileges error resolving
+</pre>
+    </div>
 <pre>
 $ packman mirror -init
 [<font color="green">Notice</font>]: Package <font color="green">Proftpd</font> has been installed.

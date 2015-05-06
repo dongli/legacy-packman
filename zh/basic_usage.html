@@ -61,6 +61,11 @@ $ packman switch -compiler_set_index=<font color="red">&lt;编译器集合编号
 <h1><a name="搭建FTP镜像">搭建FTP镜像</a></h1>
 <p>
     是的，没错！搭建FTP镜像是一个非常简单的操作，任何电脑都可以为其它电脑提供下载软件包的中转服务（即镜像），因为有些时候下载某些包十分耗时，或者其它电脑或服务器不方便连接互联网。首先，初始化镜像服务：
+    <div class="notice">
+        <b>注意</b>：<code>&lt;package_root&gt;</code>及其上级目录必须具有正确的权限！否则你会遇到：
+<pre>
+530-unable to set anonymous privileges error resolving</pre>
+    </div>
 <pre>
 $ packman mirror -init
 [<font color="green">Notice</font>]: Package <font color="green">Proftpd</font> has been installed.
