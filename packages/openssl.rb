@@ -1,14 +1,14 @@
 class Openssl < PACKMAN::Package
-  url 'ftp://ftp.openssl.org/source/openssl-1.0.2.tar.gz'
-  sha1 '2f264f7f6bb973af444cd9fc6ee65c8588f610cc'
-  version '1.0.2'
+  url 'https://www.openssl.org/source/openssl-1.0.2a.tar.gz'
+  sha1 '46ecd325b8e587fa491f6bb02ad4a9fb9f382f5f'
+  version '1.0.2a'
 
   label 'do_not_set_ld_library_path'
 
   depends_on 'zlib'
 
   def arch_args; {
-      :Darwin => {
+      :Mac_OS_X => {
         :x86_64 => %w[darwin64-x86_64-cc enable-ec_nistp_64_gcc_128],
         :i386   => %w[darwin-i386-cc]
       }
