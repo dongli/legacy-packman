@@ -95,6 +95,16 @@ class Wrf_model < PACKMAN::Package
       if not File.exist? 'configure.wrf'
         PACKMAN.report_error "#{PACKMAN.red 'configure.wrf'} is not generated!"
       end
+      PACKMAN.replace 'configure.wrf', {
+        /SFC\s*=.*/ => "SFC = $(FC)",
+        /SCC\s*=.*/ => "SCC = $(CC)"
+      }
+      if build_type == 'dmpar' or build_type == 'dm+sm'
+        PACKMAN.replace 'configure.wrf', {
+          /DM_FC\s*=.*/ => "DM_FC = $(MPIF90)",
+          /DM_CC\s*=.*/ => "DM_CC = $(MPICC)"
+        }
+      end
       # Compile WRF model.
       PACKMAN.run 'export dontask=1 && ./compile', run_case
       # Check if the executables are generated.

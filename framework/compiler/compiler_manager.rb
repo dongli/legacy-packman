@@ -4,7 +4,7 @@ module PACKMAN
       [:compiler, :has_compiler?,
        :compiler_flags_env_name, :append_customized_flags,
        :use_openmp, :compiler_support_openmp?, :all_compiler_support_openmp?,
-       :use_mpi]
+       :use_mpi, :compiler_has_mpi_wrapper?]
     end
 
     def self.compiler_flags_env_name language
@@ -90,6 +90,10 @@ module PACKMAN
           "does not have a compiler for #{CLI.red language}!"
       end
       @@active_compiler_set.compilers[language]
+    end
+
+    def self.compiler_has_mpi_wrapper? language
+      @@active_compiler_set.compilers[language].mpi_wrapper != nil
     end
 
     def self.append_customized_flags flags, language = nil

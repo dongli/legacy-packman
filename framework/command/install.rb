@@ -187,7 +187,12 @@ module PACKMAN
           msg << " #{CLI.green CompilerManager.active_compiler_set_index}"
           if package.has_option? 'use_mpi' and package.use_mpi?
             mpi = package.mpi == true ? ConfigManager.defaults['mpi'] : package.mpi
-            msg << " and #{CLI.red mpi.capitalize} library"
+            if PACKMAN.compiler_has_mpi_wrapper? 'c'
+              mpi = nil
+              msg << " and user specified MPI library"
+            else
+              msg << " and #{CLI.red mpi.capitalize} library"
+            end
             PACKMAN.use_mpi mpi
           end
           CLI.report_notice msg+'.'
