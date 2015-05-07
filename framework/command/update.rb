@@ -2,19 +2,17 @@ module PACKMAN
   class Commands
     def self.update
       PACKMAN.work_in ENV['PACKMAN_ROOT'] do
-        if NetworkManager.is_connect_internet?
+        if ConfigManager.use_ftp_mirror != 'no'
+          update_by_using_ftp
+        elsif NetworkManager.is_connect_internet?
           if Dir.exist? '.git'
             update_by_using_git
           else
             update_by_direct_download
           end
         else
-          if ConfigManager.use_ftp_mirror != 'no'
-            update_by_using_ftp
-          else
-            CLI.report_error "This machine can not connect internet! "+
-              "You may use a FTP mirror in your location."
-          end
+          CLI.report_error "This machine can not connect internet! "+
+            "You may use a FTP mirror in your location."
         end
       end
     end
