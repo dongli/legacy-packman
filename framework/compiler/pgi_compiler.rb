@@ -11,7 +11,7 @@ module PACKMAN
       `#{command} -V 2>&1`.match(/\d+\.\d+-\d+/)[0]
     end
     check :fortran => :f2003 do |command|
-      PACKMAN.under_construction!
+      true # pgfortran implicitly has Fortran 2003 feature.
     end
   end
 end
