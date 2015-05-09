@@ -107,4 +107,11 @@ compiler_set_0 = {
       <td>Fortran compiler for the *-th compiler set</td>
     </tr>
   </table>
+    After install <code>gcc</code> through PACKMAN, you need to add a new <code>compiler_set</code>:
+<pre class="prettyprint">
+compiler_set_1 = {
+  "installed_by_packman" => "gcc"
+}
+</pre>
+    This will make PACKMAN set correct environment, otherwise you will encounter errors!
 </p>
