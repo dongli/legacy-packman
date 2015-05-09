@@ -59,12 +59,12 @@ class Wrf_wps < PACKMAN::Package
           }
         end
       end
-      PACKMAN.replace 'configure.wrf', {
+      PACKMAN.replace 'configure.wps', {
         /SFC\s*=.*/ => "SFC := $(FC)",
         /SCC\s*=.*/ => "SCC := $(CC)"
       }
       if build_type == 'dmpar' or build_type == 'dm+sm'
-        PACKMAN.replace 'configure.wrf', {
+        PACKMAN.replace 'configure.wps', {
           /DM_FC\s*=.*/ => "DM_FC := $(MPIF90)",
           /DM_CC\s*=.*/ => "DM_CC := $(MPICC)"
         }
