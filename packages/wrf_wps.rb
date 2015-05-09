@@ -50,14 +50,24 @@ class Wrf_wps < PACKMAN::Package
       if build_type == 'dmpar' or build_type == 'dm+sm'
         if PACKMAN.mac?
           PACKMAN.replace 'configure.wps', {
-            /^(FC\s*=)/ => "DM_FC = mpif90 -fc=$(SFC)\n"+
-                           "DM_CC = mpicc -cc=$(SCC)\n\\1"
+            /^(FC\s*=)/ => "DM_FC := mpif90 -fc=$(SFC)\n"+
+                           "DM_CC := mpicc -cc=$(SCC)\n\\1"
           }
         else
           PACKMAN.replace 'configure.wps', {
             /mpif90 -f90/ => 'mpif90 -fc'
           }
         end
+      end
+      PACKMAN.replace 'configure.wrf', {
+        /SFC\s*=.*/ => "SFC := $(FC)",
+        /SCC\s*=.*/ => "SCC := $(CC)"
+      }
+      if build_type == 'dmpar' or build_type == 'dm+sm'
+        PACKMAN.replace 'configure.wrf', {
+          /DM_FC\s*=.*/ => "DM_FC := $(MPIF90)",
+          /DM_CC\s*=.*/ => "DM_CC := $(MPICC)"
+        }
       end
       # Compile WPS.
       PACKMAN.run './compile'

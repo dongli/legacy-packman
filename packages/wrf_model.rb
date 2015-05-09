@@ -96,13 +96,13 @@ class Wrf_model < PACKMAN::Package
         PACKMAN.report_error "#{PACKMAN.red 'configure.wrf'} is not generated!"
       end
       PACKMAN.replace 'configure.wrf', {
-        /SFC\s*=.*/ => "SFC = $(FC)",
-        /SCC\s*=.*/ => "SCC = $(CC)"
+        /SFC\s*=.*/ => "SFC := $(FC)",
+        /SCC\s*=.*/ => "SCC := $(CC)"
       }
       if build_type == 'dmpar' or build_type == 'dm+sm'
         PACKMAN.replace 'configure.wrf', {
-          /DM_FC\s*=.*/ => "DM_FC = $(MPIF90)",
-          /DM_CC\s*=.*/ => "DM_CC = $(MPICC)"
+          /DM_FC\s*=.*/ => "DM_FC := $(MPIF90)",
+          /DM_CC\s*=.*/ => "DM_CC := $(MPICC)"
         }
       end
       # Compile WRF model.
