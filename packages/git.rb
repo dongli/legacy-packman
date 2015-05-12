@@ -1,7 +1,8 @@
 class Git < PACKMAN::Package
-  url 'https://www.kernel.org/pub/software/scm/git/git-2.3.5.tar.xz'
-  sha1 'a74f0f097a1893f9275b501ae515db2d08422550'
-  version '2.3.5'
+  url 'https://github.com/git/git/archive/v2.4.0.tar.gz'
+  sha1 'a5b5249b5946e600efb697b1f9adfe36d2810435'
+  version '2.4.0'
+  filename 'git-2.4.0.tar.gz'
 
   label 'compiler_insensitive'
 
