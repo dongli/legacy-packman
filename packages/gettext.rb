@@ -1,6 +1,6 @@
 class Gettext < PACKMAN::Package
-  url 'http://ftpmirror.gnu.org/gettext/gettext-0.19.3.tar.xz'
-  sha1 '5c8e37c5275742b6acc1257e2df9b5d1874c12e3'
+  url 'ftp://ftp.gnu.org/pub/gnu/gettext/gettext-0.19.3.tar.gz'
+  sha1 '8a4614d5d797af98822b88858c17ad8b3ed4224f'
   version '0.19.3'
 
   def install
