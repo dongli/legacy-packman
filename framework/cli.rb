@@ -22,7 +22,11 @@ module PACKMAN
     end
 
     def self.width
-      `/usr/bin/tput cols`.strip.to_i
+      if not PACKMAN.does_command_exist? 'tput'
+        80
+      else
+        `tput cols`.strip.to_i
+      end
     end
 
     def self.truncate str

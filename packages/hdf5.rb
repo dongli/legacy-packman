@@ -37,16 +37,7 @@ class Hdf5 < PACKMAN::Package
       args << '--disable-fortran'
     end
     if PACKMAN.cygwin?
-      ['.', 'c++', 'fortran'].each do |language|
-        ["#{language}/src/Makefile", "hl/#{language}/src/Makefile"].each do |makefile|
-          ['am', 'in'].each do |suffix|
-            PACKMAN.replace "#{makefile}.#{suffix}", {
-              /^(\w+)_la_LDFLAGS\s*=\s*(.*)$/ => '\1_la_LDFLAGS = \2 -no-undefined'
-            }
-          end
-        end
-      end
-      args << '--enable-unsupported'
+      args.map! { |arg| arg =~ /enable-shared/ ? '--enable-shared=no' : arg }
     end
     if use_mpi?
       args << '--enable-parallel'

@@ -1,19 +1,16 @@
 class Patch < PACKMAN::Package
-  label 'should_be_provided_by_system'
+  url 'http://ftp.gnu.org/gnu/patch/patch-2.7.5.tar.gz'
+  sha1 '04d23f6e48e95efb07d12ccf44d1f35fb210f457'
+  version '2.7.5'
 
-  def installed?
-    if PACKMAN.redhat? or PACKMAN.debian?
-      PACKMAN.os_installed? 'patch'
-    elsif PACKMAN.mac? or PACKMAN.cygwin?
-      File.exist? '/usr/bin/patch'
-    end
-  end
+  label 'compiler_insensitive'
 
-  def install_method
-    if PACKMAN.redhat? or PACKMAN.debian? or PACKMAN.cygwin?
-      PACKMAN.os_how_to_install 'patch'
-    elsif PACKMAN.mac?
-      'Mac should provide patch when command line tools are installed!'
-    end
+  def install
+    args = %W[
+      --prefix=#{prefix}
+      --disable-dependency-tracking
+    ]
+    PACKMAN.run './configure', *args
+    PACKMAN.run 'make install'
   end
 end

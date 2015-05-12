@@ -30,6 +30,10 @@ class Netcdf_fortran < PACKMAN::Package
     if use_mpi?
       args << '--enable-parallel-tests'
     end
+    if PACKMAN.cygwin?
+      args.map! { |arg| arg =~ /enable-shared/ ? '--enable-shared=no' : arg }
+      args << "LIBS='-L#{Curl.lib} -lcurl -L#{Hdf5.lib} -lhdf5_hl -lhdf5 -L#{Szip.lib} -lsz -L#{Zlib.lib} -lz -L#{Netcdf.lib} -lnetcdf'"
+    end
     PACKMAN.set_cppflags_and_ldflags [Curl, Zlib, Hdf5, Netcdf]
     PACKMAN.run './configure', *args
     PACKMAN.run 'make -j2'

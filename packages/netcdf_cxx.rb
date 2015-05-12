@@ -19,7 +19,8 @@ class Netcdf_cxx < PACKMAN::Package
     ]
     PACKMAN.set_cppflags_and_ldflags [Netcdf]
     if PACKMAN.cygwin?
-      args << "LIBS='-L#{Curl.lib} -lcurl -L#{Hdf5.lib} -lhdf5 -lhdf5_hl'"
+      args.map! { |arg| arg =~ /enable-shared/ ? '--enable-shared=no' : arg }
+      args << "LIBS='-L#{Curl.lib} -lcurl -L#{Hdf5.lib} -lhdf5_hl -lhdf5 -L#{Szip.lib} -lsz -L#{Zlib.lib} -lz'"
     end
     PACKMAN.run './configure', *args
     PACKMAN.run 'make'

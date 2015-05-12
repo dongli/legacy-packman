@@ -37,6 +37,10 @@ class Netcdf_c < PACKMAN::Package
     else
       PACKMAN.set_cppflags_and_ldflags [Curl, Zlib, Szip, Hdf5]
     end
+    if PACKMAN.cygwin?
+      args.map! { |arg| arg =~ /enable-shared/ ? '--enable-shared=no' : arg }
+      args << 'LIBS=-lsz'
+    end
     PACKMAN.run './configure', *args
     PACKMAN.run 'make -j2'
     PACKMAN.run 'make check' if not skip_test?

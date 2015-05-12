@@ -46,14 +46,10 @@ class Cdo < PACKMAN::Package
     PACKMAN.run './configure', *args
     if PACKMAN.cygwin?
       PACKMAN.run "make LIBS='-L#{Udunits.lib} -ludunits2 -lexpat -L#{Proj.lib} -lproj -L#{Grib_api.lib} -lgrib_api -L#{Netcdf.lib} -lnetcdf'"
-      PACKMAN.caveat <<-EOT.gsub(/^\s+/, '')
-        The checking codes for remapping with nearest neighbor method will fail
-        in Cygwin, so 'make check' is skipped.
-      EOT
     else
       PACKMAN.run 'make -j2'
-      PACKMAN.run 'make check' if not skip_test?
     end
+    PACKMAN.run 'make check' if not skip_test?
     PACKMAN.run 'make install'
   end
 end
