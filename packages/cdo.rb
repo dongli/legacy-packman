@@ -36,9 +36,7 @@ class Cdo < PACKMAN::Package
       --disable-debug
     ]
     if PACKMAN.cygwin?
-      args << "LIBS='-L#{Udunits.lib} -lexpat -L#{Curl.lib} -lcurl -ludunits2'"
-      # Replace 'sqrtl' to 'sqrt'.
-      PACKMAN.replace 'src/clipping/intersection.c', 'sqrtl' => 'sqrt'
+      args << "LIBS='-L#{Udunits.lib} -lexpat -L#{Curl.lib} -lcurl -ludunits2 -L#{Grib_api.lib} -lgrib_api'"
     else
       args << "LIBS='-L#{Udunits.lib} -lexpat'"
     end
