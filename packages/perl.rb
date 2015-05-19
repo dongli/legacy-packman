@@ -6,7 +6,12 @@ class Perl < PACKMAN::Package
   label 'compiler_insensitive'
   label 'master_package'
 
+  depends_on 'zlib'
+
   def install
+    PACKMAN.append_env 'BUILD_ZLIB', 'no'
+    PACKMAN.append_env 'ZLIB_INCLUDE', Zlib.include
+    PACKMAN.append_env 'ZLIB_LIB', Zlib.lib
     # Perl doesn't respect CFLAGS, so we need to hardcode '-fPIC' flag.
     args = %W[
       -des

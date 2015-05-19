@@ -18,7 +18,8 @@ module PACKMAN
       :upgrade => 'Upgrade packages.',
     }.freeze
     PermittedCommonOptions = {
-      '-debug' => 'Print debug information.'
+      '-debug' => 'Print debug information.',
+      '-config' => 'Specify configure file.'
     }.freeze
     PermittedOptions = {
       :collect => {
@@ -75,10 +76,6 @@ module PACKMAN
         if not @@subcommand
           CLI.report_error "PACKMAN expects a subcommand!"
         end
-        if File.file? arg
-          @@config_file = arg
-          next
-        end
         if Package.all_package_names.include? arg
           @@packages << arg.capitalize.to_sym
           next
@@ -91,6 +88,7 @@ module PACKMAN
           @@options[key] = nil
         end
       end
+      @@config_file = options['-config'] if has_option? '-config'
       if [:config, :collect, :start, :fix, :upgrade, :update,  :stop, :status,  :report,
           :install, :switch, :remove, :mirror].include? @@subcommand and
          not @@config_file

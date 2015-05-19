@@ -4,6 +4,7 @@ class Nco < PACKMAN::Package
   version '4.4.8'
 
   depends_on 'flex'
+  depends_on 'bison'
   depends_on 'curl'
   depends_on 'antlr2'
   depends_on 'netcdf_c'
