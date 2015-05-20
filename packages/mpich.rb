@@ -1,7 +1,7 @@
 class Mpich < PACKMAN::Package
-  url 'http://www.mpich.org/static/downloads/3.1.2/mpich-3.1.2.tar.gz'
-  sha1 'c5199be7e9f1843b288dba0faf2c071c7a8e999d'
-  version '3.1.2'
+  url 'http://www.mpich.org/static/downloads/3.1.4/mpich-3.1.4.tar.gz'
+  sha1 'af4f563e2772d610e57e17420c9dcc5c3c9fec4e'
+  version '3.1.4'
 
   conflicts_with 'openmpi' do
     because_they_both_provide 'mpi'
