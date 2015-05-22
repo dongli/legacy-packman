@@ -81,7 +81,7 @@ module PACKMAN
       PACKMAN.download ConfigManager.package_root, url, attach_file_name
     end
     # Download current package.
-    if package.respond_to? :url
+    if package.respond_to? :url and package.url
       package_file_path = "#{ConfigManager.package_root}/#{package.filename}"
       if File.exist? package_file_path
         return if PACKMAN.sha1_same? package_file_path, package.sha1
@@ -96,7 +96,7 @@ module PACKMAN
         url = "#{ConfigManager.use_ftp_mirror}/#{package.filename}"
       end
       PACKMAN.download ConfigManager.package_root, url, package.filename
-    elsif package.respond_to? :git
+    elsif package.respond_to? :git and package.git
       package_dir_path = "#{ConfigManager.package_root}/#{package.dirname}"
       if Dir.exist? package_dir_path
         return if PACKMAN.sha1_same? package_dir_path, package.sha1
