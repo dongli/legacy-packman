@@ -3,7 +3,7 @@ class M4 < PACKMAN::Package
   sha1 '4f80aed6d8ae3dacf97a0cb6e989845269e342f0'
   version '1.4.17'
 
-  label 'compiler_insensitive'
+  label :compiler_insensitive
 
   def install
     args = %W[

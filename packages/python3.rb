@@ -3,7 +3,7 @@ class Python3 < PACKMAN::Package
   sha1 '7ca5cd664598bea96eec105aa6453223bb6b4456'
   version '3.4.3'
 
-  label 'compiler_insensitive'
+  label :compiler_insensitive
 
   depends_on 'pkgconfig'
   depends_on 'readline'

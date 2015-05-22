@@ -3,7 +3,7 @@ class Wrf_arwpost < PACKMAN::Package
   sha1 '97a61e0b302fd669c4938e405c7a07cb1c446c9b'
   version '3.1'
 
-  label 'install_with_source'
+  label :installed_with_source
 
   belongs_to 'wrf'
 

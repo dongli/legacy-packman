@@ -3,7 +3,7 @@ class Cmake < PACKMAN::Package
   sha1 'd22be01828508027617494c8b59d5999d4c1490e'
   version '3.2.2'
 
-  label 'compiler_insensitive'
+  label :compiler_insensitive
 
   def install
     args = %W[

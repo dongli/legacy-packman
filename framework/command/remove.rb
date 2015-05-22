@@ -31,7 +31,7 @@ module PACKMAN
         end
         for j in 0..versions.size-1
           if removed_versions.include? j or removed_versions.include? versions.size
-            if not package.has_label? 'compiler_insensitive' and not package.has_label? 'binary'
+            if not package.has_label? :compiler_insensitive and not package.has_label? :binary
               sets = Dir.glob("#{versions[j]}/*").sort
               # Check if sets are 0, 1, ...
               sets.each do |set|

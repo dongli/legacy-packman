@@ -38,7 +38,7 @@ module PACKMAN
       package.dependencies.each do |depend_name|
         next if depend_name == :package_name # Skip the placeholder :package_name. TODO: Clean this out!
         load @@package_files[depend_name]
-        if package.has_label? 'master_package'
+        if package.has_label? :master_package
           options = PackageGroupHelper.inherit_options package.options, depend_name
         else
           options = {}

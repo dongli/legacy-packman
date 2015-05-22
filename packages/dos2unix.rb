@@ -3,7 +3,7 @@ class Dos2unix < PACKMAN::Package
   sha1 'a8f3d048859acb5483c8e15a1dfd0a01a2bcabe0'
   version '7.2'
 
-  label 'compiler_insensitive'
+  label :compiler_insensitive
 
   depends_on 'gettext'
 

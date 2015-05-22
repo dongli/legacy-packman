@@ -3,8 +3,8 @@ class Perl < PACKMAN::Package
   sha1 'cd424d1520ba2686fe5d4422565aaf880e9467f6'
   version '5.20.1'
 
-  label 'compiler_insensitive'
-  label 'master_package'
+  label :compiler_insensitive
+  label :master_package
 
   depends_on 'zlib'
 

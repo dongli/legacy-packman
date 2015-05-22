@@ -3,7 +3,7 @@ class Tomcat < PACKMAN::Package
   sha1 '49ffffe9c2e534e66f81b3173cdbf7e305a75fe2'
   version '7.0.57'
 
-  label 'compiler_insensitive'
+  label :compiler_insensitive
 
   def install
     PACKMAN.rm 'bin/*.bat'

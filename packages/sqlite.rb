@@ -3,8 +3,8 @@ class Sqlite < PACKMAN::Package
   sha1 '1db237523419af7110e1d92c6b766e965f9322e4'
   version '3.8.8.2'
 
-  label 'compiler_insensitive'
-  label 'do_not_set_ld_library_path'
+  label :compiler_insensitive
+  label :not_set_ld_library_path
 
   depends_on 'readline'
   depends_on 'icu4c'

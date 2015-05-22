@@ -3,7 +3,7 @@ class Perl_xml_namespacesupport < PACKMAN::Package
   sha1 'a948c02de081542f4d30e0efabc2929754b62a3b'
   version '1.11'
 
-  label 'compiler_insensitive'
+  label :compiler_insensitive
 
   belongs_to 'perl'
 

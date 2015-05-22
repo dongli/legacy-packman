@@ -15,7 +15,7 @@ module PACKMAN
 
       set_active_spec requested_spec
 
-      if active_spec.has_label? 'install_with_source'
+      if active_spec.has_label? :installed_with_source
         active_spec.option 'target_dir' => :directory
       end
 
@@ -155,7 +155,6 @@ module PACKMAN
     def attachments; @active_spec.attachments; end
     def provided_stuffs; @active_spec.provided_stuffs; end
     def binary distro, version; @binary[:"#{distro}:#{version}"]; end
-    def skipped_os; @active_spec.skipped_os; end
     def option_valid_types; @active_spec.option_valid_types; end
     def options; @active_spec.options; end
     def has_option? key; @active_spec.has_option? key; end
@@ -202,7 +201,6 @@ module PACKMAN
       def depends_on val, condition = true; stable.depends_on val, condition; end
       def belongs_to val; stable.belongs_to val; end
       def provide val; stable.provide val; end
-      def skip_on val; stable.skip_on val; end
       def option option_hash
         stable.option option_hash
         option_name = option_hash.keys.first
@@ -267,7 +265,7 @@ module PACKMAN
         if block_given?
           eval "@@#{self}_binary[key] = PackageAtom.new"
           eval "@@#{self}_binary[key].instance_eval &block"
-          eval "@@#{self}_binary[key].label 'binary'"
+          eval "@@#{self}_binary[key].label :binary"
         else
           eval "@@#{self}_binary[key]"
         end
@@ -298,7 +296,7 @@ module PACKMAN
           eval "@@#{self}_history_binary_versions[key] = PackageAtom.new"
           eval "@@#{self}_history_binary_versions[key].instance_eval &block"
           eval "@@#{self}_history_binary_versions[key].version version"
-          eval "@@#{self}_history_binary_versions[key].label 'binary'"
+          eval "@@#{self}_history_binary_versions[key].label :binary"
         else
           CLI.report_error "No block is given!"
         end
@@ -334,7 +332,7 @@ module PACKMAN
           if eval "defined? @@#{package_name}_history_versions"
             requested_spec[:in] = :history_versions
             requested_spec[:use_version] = options['use_version']
-          elsif not eval "@@#{package_name}_stable.has_label? 'master_package'"
+          elsif not eval "@@#{package_name}_stable.has_label? :master_package"
             if "#{eval "@@#{package_name}_stable.version"}" != options['use_version']
               PACKMAN.report_error "Package #{PACKMAN.red package_name} does not have history versions, "+
                 "so you cannot set #{PACKMAN.red '-use_version'} or should use "+
@@ -429,11 +427,8 @@ module PACKMAN
     def postfix; end
     def check_consistency; true; end
 
-    def skip?
-      skipped_os.include? PACKMAN.os_type or
-      skipped_os.include? :all or
-      labels.include? 'should_be_provided_by_system' or
-      ( labels.include? 'use_system_first' and installed? )
+    def should_be_skipped?
+      has_label? :skipped or has_label? :try_system_package_first
     end
 
     def is_compressed?
@@ -525,7 +520,7 @@ module PACKMAN
         end
         if not libs.empty?
           file << "export PACKMAN_#{class_name}_LIBRARY=\"-L#{libs.join(' -L')}\"\n"
-          if not package.has_label? 'do_not_set_ld_library_path'
+          if not package.has_label? :not_set_ld_library_path
             file << "export #{OsManager.ld_library_path_name}=\"#{libs.join(':')}:${#{OsManager.ld_library_path_name}}\"\n"
           end
           file << "export PACKMAN_#{class_name}_RPATH=\"#{libs.join(':')}\"\n"
@@ -623,7 +618,7 @@ module PACKMAN
     else
       package_ = package
     end
-    if package_.has_label? 'install_with_source'
+    if package_.has_label? :installed_with_source
       if not package_.target_dir
         CLI.report_error "Use #{CLI.red '-target_dir'} to specify where to install #{CLI.green package.class}!"
       end
@@ -633,7 +628,7 @@ module PACKMAN
       prefix = package_.system_prefix
     else
       prefix = "#{ConfigManager.install_root}/#{package_.class.to_s.downcase}/#{package_.version}"
-      if not package_.has_label? 'compiler_insensitive' and not package_.use_binary?
+      if not package_.has_label? :compiler_insensitive and not package_.use_binary?
         compiler_set_index = CompilerManager.active_compiler_set_index
         prefix << "/#{compiler_set_index}"
       end

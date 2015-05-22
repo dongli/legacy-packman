@@ -3,7 +3,7 @@ class Patch < PACKMAN::Package
   sha1 '04d23f6e48e95efb07d12ccf44d1f35fb210f457'
   version '2.7.5'
 
-  label 'compiler_insensitive'
+  label :compiler_insensitive
 
   def install
     args = %W[

@@ -18,7 +18,7 @@ class Cdo < PACKMAN::Package
   depends_on 'proj'
   depends_on 'libxml2'
 
-  label 'compiler_insensitive'
+  label :compiler_insensitive
 
   def install
     args = %W[

@@ -3,8 +3,8 @@ class Ruby_sqlite3 < PACKMAN::Package
   sha1 '6bbe47c3e690568b9aaf2c7d9aca59a069608b1e'
   version '1.3.10'
 
-  label 'use_system_first'
-  label 'no_bashrc'
+  label :try_system_package_first
+  label :not_set_bashrc
 
   depends_on 'sqlite'
 

@@ -3,7 +3,7 @@ class Regcm < PACKMAN::Package
   sha1 '9bb6a5dcb9fc70203c3465c9a4cc1bf9424c3ae2'
   version '4.4.5'
 
-  label 'install_with_source'
+  label :installed_with_source
 
   option 'use_mpi' => [:package_name, :boolean]
   option 'use_clm' => false

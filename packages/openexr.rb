@@ -3,7 +3,7 @@ class Openexr < PACKMAN::Package
   sha1 '4a3db5ea527856145844556e0ee349f45ed4cbc7'
   version '2.1.0'
 
-  label 'master_package'
+  label :master_package
   belongs_to 'openexr'
 
   depends_on 'openexr_ilmbase'

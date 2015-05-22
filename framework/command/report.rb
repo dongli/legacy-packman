@@ -33,7 +33,7 @@ module PACKMAN
           package = Package.instance package_name
           CLI.report_notice "Options of package #{CLI.green package_name}:"
           record_options package
-          if package.has_label? 'master_package'
+          if package.has_label? :master_package
             package.dependencies.each do |depend_package_name|
               depend_package = Package.instance depend_package_name
               record_options depend_package

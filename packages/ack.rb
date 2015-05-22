@@ -3,7 +3,7 @@ class Ack < PACKMAN::Package
   sha1 '49c43603420521e18659ce3c50778a4894dd4a5f'
   version '2.14'
 
-  label 'compiler_insensitive'
+  label :compiler_insensitive
 
   def install
     PACKMAN.mkdir prefix, :force

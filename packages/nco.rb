@@ -13,7 +13,7 @@ class Nco < PACKMAN::Package
   depends_on 'udunits'
   depends_on 'gsl'
 
-  label 'compiler_insensitive'
+  label :compiler_insensitive
 
   def install
     args = %W[

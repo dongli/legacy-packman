@@ -3,7 +3,7 @@ class Libtool < PACKMAN::Package
   sha1 'b75650190234ed898757ec8ca033ffabbee89e7c'
   version '2.4.5'
 
-  skip_on :Mac_OS_X
+  label :skipped if PACKMAN.mac?
 
   def system_prefix; '/usr'; end if PACKMAN.mac?
 

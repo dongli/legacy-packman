@@ -1,5 +1,5 @@
 class Python2 < PACKMAN::Package
-  label 'should_be_provided_by_system'
+  label :try_system_package_first
 
   def installed?
     if PACKMAN.debian?

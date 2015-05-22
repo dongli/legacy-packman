@@ -8,7 +8,7 @@ class Wrf_wps < PACKMAN::Package
     sha1 '5f214825484571c9783b2ee691aa2c9d9cfc6076'
   end
 
-  label 'install_with_source'
+  label :installed_with_source
 
   belongs_to 'wrf'
 

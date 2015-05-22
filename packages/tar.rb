@@ -3,7 +3,7 @@ class Tar < PACKMAN::Package
   sha1 'cd30a13bbfefb54b17e039be7c43d2592dd3d5d0'
   version '1.28'
 
-  label 'compiler_insensitive'
+  label :compiler_insensitive
 
   depends_on 'xz'
   depends_on 'bzip2'

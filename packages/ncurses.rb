@@ -3,7 +3,7 @@ class Ncurses < PACKMAN::Package
   sha1 '3e042e5f2c7223bffdaac9646a533b8c758b65b5'
   version '5.9'
 
-  skip_on :Mac_OS_X
+  label :skipped if PACKMAN.mac?
 
   def system_prefix; '/usr'; end if PACKMAN.mac?
 

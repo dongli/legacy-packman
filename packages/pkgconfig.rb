@@ -3,7 +3,7 @@ class Pkgconfig < PACKMAN::Package
   sha1 '71853779b12f958777bffcb8ca6d849b4d3bed46'
   version '0.28'
 
-  label 'compiler_insensitive'
+  label :compiler_insensitive
 
   def install
     if PACKMAN.mac? and PACKMAN.compiler('c').vendor == 'gnu'

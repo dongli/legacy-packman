@@ -1,5 +1,5 @@
 class Netcdf < PACKMAN::Package
-  label 'master_package'
+  label :master_package
 
   option 'use_mpi' => [:package_name, :boolean]
   option 'with_cxx' => true

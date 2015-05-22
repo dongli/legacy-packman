@@ -4,7 +4,7 @@ class Flex < PACKMAN::Package
   version '2.5.37'
   # NOTE: Failed to build 2.5.39.
 
-  label 'compiler_insensitive'
+  label :compiler_insensitive
 
   depends_on 'm4'
   depends_on 'libiconv'

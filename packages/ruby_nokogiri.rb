@@ -3,8 +3,8 @@ class Ruby_nokogiri < PACKMAN::Package
   sha1 'd05f23c90be242d7e1bff447874e75207c36a207'
   version '1.6.6.2'
 
-  label 'use_system_first'
-  label 'no_bashrc'
+  label :try_system_package_first
+  label :not_set_bashrc
 
   # TODO: Should check if Ruby is above 2.0.0.
   depends_on 'libxml2'

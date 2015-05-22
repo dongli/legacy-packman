@@ -7,7 +7,7 @@ class Hyrax_olfs < PACKMAN::Package
 
   depends_on 'tomcat'
 
-  label 'compiler_insensitive'
+  label :compiler_insensitive
 
   def install
     PACKMAN.mkdir prefix, :force

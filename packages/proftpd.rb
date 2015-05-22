@@ -4,7 +4,7 @@ class Proftpd < PACKMAN::Package
   sha1 'a5b6c80a8ddeeeccc1c6448d797ccd62a3f63b65'
   version '1.3.4d'
 
-  label 'compiler_insensitive'
+  label :compiler_insensitive
 
   def install
     if PACKMAN.redhat?

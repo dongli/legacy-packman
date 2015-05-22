@@ -3,5 +3,5 @@ class Triangle < PACKMAN::Package
   sha1 '63d11e0b5bf097eb946a4da4ee18ddf279e16fc4'
   version '1.6'
 
-  skip_on :all
+  label :skipped
 end

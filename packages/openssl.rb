@@ -3,7 +3,7 @@ class Openssl < PACKMAN::Package
   sha1 '46ecd325b8e587fa491f6bb02ad4a9fb9f382f5f'
   version '1.0.2a'
 
-  label 'do_not_set_ld_library_path'
+  label :not_set_ld_library_path
 
   depends_on 'zlib'
 

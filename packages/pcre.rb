@@ -3,7 +3,7 @@ class Pcre < PACKMAN::Package
   sha1 '9a074e9cbf3eb9f05213fd9ca5bc188644845ccc'
   version '8.36'
 
-  label 'compiler_insensitive'
+  label :compiler_insensitive
 
   depends_on 'zlib'
   depends_on 'bzip2'

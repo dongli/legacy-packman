@@ -3,7 +3,7 @@ class Libiconv < PACKMAN::Package
   sha1 'be7d67e50d72ff067b2c0291311bc283add36965'
   version '1.14'
 
-  skip_on :Mac_OS_X
+  label :skipped if PACKMAN.mac?
 
   def system_prefix; '/usr'; end if PACKMAN.mac?
 

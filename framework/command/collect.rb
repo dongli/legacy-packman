@@ -40,7 +40,7 @@ module PACKMAN
     options = [options] if not options or options.class != Array
     # Recursively download dependency packages.
     package.dependencies.each do |depend|
-      if package.has_label? 'master_package'
+      if package.has_label? :master_package
         download_package Package.instance(depend, package.options)
       else
         download_package Package.instance(depend)
@@ -49,7 +49,7 @@ module PACKMAN
     # Skip the package that should be provided by system.
     return if package.has_label? 'should_be_provided_by_system'
     # Skip the package that is a virtual master.
-    return if package.has_label? 'master_package' and not package.url
+    return if package.has_label? :master_package and not package.url
     # Check if there is any patch to download.
     patch_counter = -1
     package.patches.each do |patch|

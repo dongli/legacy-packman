@@ -1,6 +1,6 @@
 class Wrf < PACKMAN::Package
-  label 'master_package'
-  label 'install_with_source'
+  label :master_package
+  label :installed_with_source
 
   option 'with_da' => false
   option 'with_arwpost' => false

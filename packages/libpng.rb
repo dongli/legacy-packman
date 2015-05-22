@@ -3,7 +3,7 @@ class Libpng < PACKMAN::Package
   sha1 '50f3b31d013a31e2cac70db177094f6a7618b8be'
   version '1.6.16'
 
-  skip_on :Mac_OS_X
+  label :skipped if PACKMAN.mac?
 
   depends_on 'zlib'
 

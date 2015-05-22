@@ -4,7 +4,7 @@ class Git < PACKMAN::Package
   version '2.4.0'
   filename 'git-2.4.0.tar.gz'
 
-  label 'compiler_insensitive'
+  label :compiler_insensitive
 
   depends_on 'zlib'
   depends_on 'expat'

@@ -3,7 +3,7 @@ class Perl_data_dumper < PACKMAN::Package
   sha1 'e4f716d500d821da3e802513be7f26b24bf795ac'
   version '2.154'
 
-  label 'compiler_insensitive'
+  label :compiler_insensitive
 
   belongs_to 'perl'
 

@@ -3,7 +3,7 @@ class Vim < PACKMAN::Package
   sha1 '601abf7cc2b5ab186f40d8790e542f86afca86b7'
   version '7.4'
 
-  label 'compiler_insensitive'
+  label :compiler_insensitive
 
   option 'use_vundle' => false
   option 'without_perl' => false

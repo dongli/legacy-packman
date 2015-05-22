@@ -3,7 +3,7 @@ class Gifsicle < PACKMAN::Package
   sha1 '517e68b781594851750d7d807e25bd18b1f5dbc4'
   version '1.86'
 
-  label 'compiler_insensitive'
+  label :compiler_insensitive
 
   depends_on 'x11'
 

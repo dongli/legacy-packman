@@ -1,8 +1,8 @@
 class Hyrax < PACKMAN::Package
   version '1.9.7'
 
-  label 'master_package'
-  label 'compiler_insensitive'
+  label :master_package
+  label :compiler_insensitive
 
   depends_on 'tomcat'
   depends_on 'opendap'

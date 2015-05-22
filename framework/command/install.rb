@@ -17,9 +17,9 @@ module PACKMAN
       packages = CommandLine.packages.empty? ? ConfigManager.package_options.keys : CommandLine.packages.uniq
       packages.each do |package_name|
         package = Package.instance package_name
-        if package.has_label? 'install_with_source' and
+        if package.has_label? :installed_with_source and
            not CommandLine.packages.include? package_name
-          # 'install_with_source' packages should only be specified in command line.
+          # :installed_with_source packages should only be specified in command line.
           next
         end
         # Binary is preferred.
@@ -46,12 +46,12 @@ module PACKMAN
         end
         if not package.use_binary? and not CommandLine.has_option? '-compiler_set_indices' and
            not package.compiler_set_indices.include? ConfigManager.defaults['compiler_set_index'] and
-           not package.has_label? 'compiler_insensitive'
+           not package.has_label? :compiler_insensitive
           package.compiler_set_indices << ConfigManager.defaults['compiler_set_index']
         end
         package.compiler_set_indices.sort!
         # Check if the package is still under construction.
-        if package.has_label? 'under_construction'
+        if package.has_label? :under_construction
           msg = "Sorry, #{CLI.red package.class} is still under construction"
           why = (package.labels.select { |l| l =~ /under_construction/ }).first.gsub(/under_construction(:)?\s*/, '')
           if why != ''
@@ -81,7 +81,7 @@ module PACKMAN
           if package.check_consistency
             if not options.include? :depend
               msg = "Package #{CLI.green package.class} has been installed"
-              if not package.use_binary? and not package.has_label? 'compiler_insensitive'
+              if not package.use_binary? and not package.has_label? :compiler_insensitive
                 msg << " by using compiler set #{CLI.green CompilerManager.active_compiler_set_index}"
               end
               CLI.report_notice msg+'.' if not options.include? :silent
@@ -97,32 +97,35 @@ module PACKMAN
     end
 
     def self.append_bashrc package, is_depend = false
-      if package.has_label? 'compiler_insensitive' and is_depend
-        # NOTE: Some 'compiler_insensitive' package may use other compiler set to build, and it is normally just binary,
+      if package.has_label? :compiler_insensitive and is_depend
+        # NOTE: Some :compiler_insensitive package may use other compiler set to build, and it is normally just binary,
         #       so we skip its dependent packages to avoid problems.
-        PACKMAN.append_shell_source package.bashrc if not package.skip?
+        PACKMAN.append_shell_source package.bashrc if not package.should_be_skipped?
         return
       end
       package.dependencies.each do |depend|
         depend_package = Package.instance depend
         append_bashrc depend_package, true
-        PACKMAN.append_shell_source depend_package.bashrc if not depend_package.skip?
+        PACKMAN.append_shell_source depend_package.bashrc if not depend_package.should_be_skipped?
       end
     end
 
     def self.install_package package, options = []
       options = [options] if not options.class == Array
       # Check if the package should be skipped.
-      if package.skip?
+      if package.should_be_skipped?
         if not package.methods.include? :installed?
           CLI.report_error "Package #{CLI.red package.class} does not have #{CLI.blue 'installed?'} method!"
         end
-        if not package.skipped_os.include? :all and not package.installed?
-          CLI.report_error "Package #{CLI.red package.class} "+
-            "should be provided by system!\n#{CLI.blue '==>'} "+
-            "The possible installation method is:\n#{package.install_method}"
+        if not package.installed?
+          if not package.methods.include? :install
+            CLI.report_error "Package #{CLI.red package.class} "+
+              "should be provided by system!\n#{CLI.blue '==>'} "+
+              "The possible installation method is:\n#{package.install_method}"
+          end
+        else
+          return
         end
-        return
       end
       # Check if the package has been installed.
       if installed_packages.include? package.class
@@ -143,7 +146,7 @@ module PACKMAN
         end
       end
       # Check if the package is a master.
-      if package.has_label? 'master_package' and not options.include? :depend and not package.respond_to? :install
+      if package.has_label? :master_package and not options.include? :depend and not package.respond_to? :install
         CLI.report_notice "Package master #{CLI.green package.class} has been installed."
         return
       end
@@ -172,7 +175,7 @@ module PACKMAN
         # Write bashrc file for the package.
         Package.bashrc package, :compiler_insensitive
         package.postfix
-      elsif package.has_label? 'install_with_source'
+      elsif package.has_label? :installed_with_source
         if package.compiler_set_indices.size != 1
           CLI.report_error "Currently, only one compiler set is allowed to build packages that are installed with source."
         end
@@ -240,7 +243,7 @@ module PACKMAN
           PACKMAN.cd_back
           FileUtils.rm_rf build_dir
           # Write bashrc file for the package.
-          Package.bashrc package if not package.has_label? 'no_bashrc'
+          Package.bashrc package if not package.has_label? :not_set_bashrc
           package.postfix
           # Clean build files.
           FileUtils.rm_rf build_upper_dir if Dir.exist? build_upper_dir

@@ -3,7 +3,7 @@ class Imagemagick < PACKMAN::Package
   sha1 '77e2dc47f87ec1c5b2cb519f298acf1f8202d7d8'
   version '6.9.1-1'
 
-  label 'compiler_insensitive'
+  label :compiler_insensitive
 
   depends_on 'libtool'
   depends_on 'zlib'

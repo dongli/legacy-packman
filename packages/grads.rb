@@ -3,7 +3,7 @@ class Grads < PACKMAN::Package
   sha1 '16643f7148bfeb256ac824725dfee154530a52ff'
   version '2.1.a2'
 
-  label 'compiler_insensitive'
+  label :compiler_insensitive
 
   depends_on 'zlib'
   depends_on 'szip'

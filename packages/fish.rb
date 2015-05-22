@@ -3,7 +3,7 @@ class Fish < PACKMAN::Package
   sha1 'f7f8d8d26721833be3458b8113c74b747296ec0b'
   version '2.1.2'
 
-  label 'compiler_insensitive'
+  label :compiler_insensitive
 
   def install
     args = %W[

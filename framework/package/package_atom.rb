@@ -1,6 +1,6 @@
 module PACKMAN
   class PackageAtom
-    attr_reader :labels, :dependencies, :skipped_os
+    attr_reader :labels, :dependencies
     attr_reader :conflict_packages, :conflict_reasons
     attr_reader :provided_stuffs, :master_package
     attr_reader :patches, :embeded_patches, :attachments
@@ -18,7 +18,6 @@ module PACKMAN
     def initialize
       @labels = []
       @dependencies = []
-      @skipped_os = []
       @conflict_packages = []
       @conflict_reasons = []
       @provided_stuffs = {}
@@ -46,9 +45,6 @@ module PACKMAN
       end
       val.dependencies.each do |depend|
         @dependencies << depend if not @dependencies.include? depend
-      end
-      val.skipped_os.each do |distro|
-        @skipped_os << distro if not @skipped_os.include? distro
       end
       val.conflict_packages.each do |package|
         @conflict_packages << package if not @conflict_packages.include? package
@@ -109,13 +105,13 @@ module PACKMAN
       return @filename
     end
 
-    def label val; @labels << val if not @labels.include? val; end
+    def label val
+      PackageLabels.check val
+      @labels << val if not @labels.include? val
+    end
 
     def has_label? val
-      @labels.each do |label|
-        return true if label =~ /#{val}/
-      end
-      return false
+      @labels.include? val
     end
 
     def depends_on val, condition = true
@@ -143,10 +139,6 @@ module PACKMAN
         CLI.report_error 'Package definition syntax error!'
       end
     end
-
-    def skip_on val; @skipped_os << val; end
-
-    def skip_on? val; @skipped_os.include? val; end
 
     def conflicts_with val, &block
       @conflict_packages << val

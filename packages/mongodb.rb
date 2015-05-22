@@ -3,7 +3,7 @@ class Mongodb < PACKMAN::Package
   sha1 'c11c9d31063f2fc126249f7580e8417a8f4ef2b5'
   version '2.6.7'
 
-  label 'compiler_insensitive'
+  label :compiler_insensitive
 
   option 'use_boost' => false
 

@@ -8,9 +8,9 @@ module PACKMAN
       packages = CommandLine.packages.empty? ? ConfigManager.package_options.keys : CommandLine.packages.uniq
       packages.each do |package_name|
         package = Package.instance package_name
-        if package.has_label? 'install_with_source' and
+        if package.has_label? :installed_with_source and
            not CommandLine.packages.include? package_name
-          # 'install_with_source' packages should only be specified in command line.
+          # :installed_with_source packages should only be specified in command line.
           next
         end
         # Binary is preferred.

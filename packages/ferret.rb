@@ -3,7 +3,7 @@ class Ferret < PACKMAN::Package
   sha1 '1b63fa4c6577db871f705cabe05ebbee6f3811cd'
   version '6.93'
 
-  label 'compiler_insensitive'
+  label :compiler_insensitive
 
   depends_on 'readline'
   depends_on 'lesstif'

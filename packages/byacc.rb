@@ -1,5 +1,20 @@
 class Byacc < PACKMAN::Package
-  label 'should_be_provided_by_system'
+  url 'ftp://invisible-island.net/byacc/byacc-20141128.tgz'
+  sha1 '59ea0a166b10eaec99edacc4c38fcb006c6e84d3'
+  version '20141128'
+
+  label :try_system_package_first
+
+  def install
+    args = %W[
+      --prefix=#{prefix}
+      --disable-debug
+      --disable-dependency-tracking
+    ]
+    PACKMAN.run './configure', *args
+    PACKMAN.run 'make -j2'
+    PACKMAN.run 'make install'
+  end
 
   def installed?
     if PACKMAN.mac?

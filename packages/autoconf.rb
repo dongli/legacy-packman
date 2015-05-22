@@ -3,7 +3,7 @@ class Autoconf < PACKMAN::Package
   sha1 '562471cbcb0dd0fa42a76665acf0dbb68479b78a'
   version '2.69'
 
-  label 'should_be_provided_by_system'
+  label :try_system_package_first
 
   depends_on 'm4'
 

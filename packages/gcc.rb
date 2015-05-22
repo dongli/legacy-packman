@@ -9,7 +9,7 @@ class Gcc < PACKMAN::Package
   depends_on 'isl'
   depends_on 'cloog'
 
-  label 'compiler_insensitive'
+  label :compiler_insensitive
   provide 'c' => 'gcc'
   provide 'c++' => 'g++'
   provide 'fortran' => 'gfortran'

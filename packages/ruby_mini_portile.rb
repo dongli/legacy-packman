@@ -3,8 +3,8 @@ class Ruby_mini_portile < PACKMAN::Package
   sha1 '696b940eb4ff8076a2080684046da1d2b10f41b8'
   version '0.6.2'
 
-  label 'use_system_first'
-  label 'no_bashrc'
+  label :try_system_package_first
+  label :not_set_bashrc
 
   def install
     PACKMAN.gem 'install', "mini_portile-#{version}.gem"

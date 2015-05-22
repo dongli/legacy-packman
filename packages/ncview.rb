@@ -3,7 +3,7 @@ class Ncview < PACKMAN::Package
   sha1 '425b0f5d505af9c1f974903435af385582be7ae4'
   version '2.1.2'
 
-  label 'compiler_insensitive'
+  label :compiler_insensitive
 
   depends_on 'x11'
   depends_on 'netcdf_c'
