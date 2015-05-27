@@ -5,6 +5,7 @@ class Glib < PACKMAN::Package
 
   depends_on 'pkgconfig'
   depends_on 'gettext'
+  depends_on 'zlib'
   depends_on 'libffi'
 
   patch do
@@ -27,7 +28,7 @@ class Glib < PACKMAN::Package
       --disable-dtrace
       --disable-libelf
     ]
-    PACKMAN.set_cppflags_and_ldflags [Gettext, Libffi]
+    PACKMAN.set_cppflags_and_ldflags [Gettext, Zlib, Libffi]
     PACKMAN.run './configure', *args
     PACKMAN.run 'make -j2'
     # PACKMAN.run 'ulimit -n 1024; make check'
