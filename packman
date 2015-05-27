@@ -21,8 +21,12 @@ if PACKMAN::CommandLine.process_exclusive?
       "#{PACKMAN.red pid}) running! Please "+
       "wait until it is completed.", :keep_pid_file
   else
-    File.open(pid_file, 'w') do |file|
-      file << Process.pid
+    begin
+      File.open(pid_file, 'w') do |file|
+        file << Process.pid
+      end
+    rescue Errno::EACCES
+      PACKMAN.report_error "You do not have permission to install packages!"
     end
   end
 end
