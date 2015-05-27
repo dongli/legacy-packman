@@ -428,7 +428,7 @@ module PACKMAN
     def check_consistency; true; end
 
     def should_be_skipped?
-      has_label? :skipped or has_label? :try_system_package_first
+      has_label? :skipped or (has_label? :try_system_package_first and installed?)
     end
 
     def is_compressed?
