@@ -1,7 +1,7 @@
 class Ncview < PACKMAN::Package
-  url 'ftp://cirrus.ucsd.edu/pub/ncview/ncview-2.1.2.tar.gz'
-  sha1 '425b0f5d505af9c1f974903435af385582be7ae4'
-  version '2.1.2'
+  url 'ftp://cirrus.ucsd.edu/pub/ncview/ncview-2.1.5.tar.gz'
+  sha1 '31685d068f158ea235654cbee118980f3f038eab'
+  version '2.1.5'
 
   label :compiler_insensitive
 
