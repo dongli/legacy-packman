@@ -19,7 +19,10 @@ module PACKMAN
       @vendor = ancestor.vendor if not @vendor
       @type = ancestor.type if not @type
       @package_managers.merge! ancestor.package_managers
-      @check_blocks.merge! ancestor.check_blocks
+      ancestor.check_blocks.each do |name, block|
+        next if @check_blocks.keys.include? name
+        @check_blocks[name] = block
+      end
     end
   end
 end
