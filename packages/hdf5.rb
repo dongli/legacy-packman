@@ -33,6 +33,11 @@ class Hdf5 < PACKMAN::Package
     if PACKMAN.has_compiler? 'fortran', :not_exit
       args << '--enable-fortran'
       args << '--enable-fortran2003' if PACKMAN.compiler('fortran').f2003?
+      if PACKMAN.compiler('fortran').vendor == 'gnu' and PACKMAN.compiler('fortran').version <= '4.4.3'
+        PACKMAN.replace 'fortran/test/tH5F_F03.f90', {
+          /(call verify\("h5fget_file_image_f", file_sz.*)$/i => '!\1'
+        }
+      end
     else
       args << '--disable-fortran'
     end
