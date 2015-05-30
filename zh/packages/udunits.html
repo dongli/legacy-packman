@@ -6,7 +6,7 @@ tags: package
 ---
 <h1>简介</h1>
 <p>
-    填写简介。
+    物理量单位操作和转换的C程序库。
 </p>
 <h1>依赖包</h1>
 <p>
@@ -15,9 +15,53 @@ tags: package
 </p>
 <h1>安装范例</h1>
 <p>
-    填写安装范例。
+    正常安装。
 </p>
 <h1>使用范例</h1>
+<h2>转换时间单位</h2>
 <p>
-    填写使用范例。
+<pre class="prettyprint">
+#include &lt;udunits2.h&gt;
+#include &lt;iostream&gt;
+#include &lt;errno.h&gt;
+
+using namespace std;
+
+int main(void) {
+    ut_set_error_message_handler(ut_ignore);
+    
+    errno = 0;
+    ut_system *utSystem = ut_read_xml(NULL);
+    if (ut_get_status() != UT_SUCCESS) {
+        cout << "[Error]: udunits2: " << strerror(errno) << endl;
+    }
+
+    errno = 0;
+    ut_unit *utTimeUnit1 = ut_parse(utSystem, "hours since 0000-01-01 00:00:00", UT_ASCII);
+    if (ut_get_status() != UT_SUCCESS) {
+        cout << "[Error]: udunits2: " << strerror(errno) << endl;
+    }
+
+    errno = 0;
+    ut_unit *utTimeUnit2 = ut_parse(utSystem, "seconds since 0000-01-01 00:00:00", UT_ASCII);
+    if (ut_get_status() != UT_SUCCESS) {
+        cout << "[Error]: udunits2: " << strerror(errno) << endl;
+    }
+
+    errno = 0;
+    cv_converter *cvConverter = ut_get_converter(utTimeUnit1, utTimeUnit2);
+    if (ut_get_status() != UT_SUCCESS) {
+        cout << "[Error]: udunits2: " << strerror(errno) << endl;
+    }
+
+    // 转换时间单位：
+    //	1 hours since 0000-01-01 00:00:00 -> 3600 seconds since 0000-01-01 00:00:00
+    cout << cv_convert_double(cvConverter, 1.0) << endl;
+
+    cv_free(cvConverter);
+    ut_free(utTimeUnit1);
+    ut_free(utTimeUnit2);
+    ut_free_system(utSystem);
+}
+</pre>
 </p>
