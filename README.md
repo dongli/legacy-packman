@@ -12,6 +12,11 @@ PACKMAN is yet another package manager written in Ruby. While inspired by Homebr
 
 For more information, see PACKMAN's [website](http://dongli.github.io/packman/).
 
+Support
+=======
+
+PACKMAN is currently developed only by me, and there will be definitely some unsatisfactory. If you find one, email me, or report on [this](https://ogx.io/project/packman) forum.
+
 Authors
 =======
 
