@@ -25,9 +25,7 @@ class Openssl < PACKMAN::Package
     if arch_args.has_key? PACKMAN.os_type
       PACKMAN.run './Configure', *(args+arch_args[PACKMAN.os_type][PACKMAN.x86_64? ? :x86_64 : :i386])
     else
-      res = `./config`
-      args << res.lines.last.match(/^Configured for (.+)\./)[1]
-      PACKMAN.run './Configure', *args
+      PACKMAN.run './config', *args
     end
     PACKMAN.replace 'Makefile', {
       /^ZLIB_INCLUDE=\s*$/ => "ZLIB_INCLUDE=-I#{Zlib.include}",
