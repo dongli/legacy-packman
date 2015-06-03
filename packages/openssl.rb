@@ -11,6 +11,10 @@ class Openssl < PACKMAN::Package
       :Mac_OS_X => {
         :x86_64 => %w[darwin64-x86_64-cc enable-ec_nistp_64_gcc_128],
         :i386   => %w[darwin-i386-cc]
+      },
+      :Cygwin => {
+        :x86_64 => %w[Cygwin-x86_64],
+        :i386   => %w[Cygwin]
       }
   }; end
 
