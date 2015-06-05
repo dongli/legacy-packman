@@ -8,16 +8,20 @@ class Jasper < PACKMAN::Package
 
   patch :embed
 
-  attach 'config_scripts' do
-    url 'http://git.savannah.gnu.org/cgit/config.git/snapshot/config-1c8b09aec7b36055f10c59c587a13a9828091492.tar.gz'
-    sha1 '18337e462bf0e35f3820bd268dc73b517810dcdb'
+  attach 'config_guess' do
+    url 'http://git.savannah.gnu.org/cgit/config.git/plain/config.guess?id=1c8b09aec7b36055f10c59c587a13a9828091492'
+    sha1 '873653bf1bd19f3534aa788a3f4cacac973b08c0'
+  end
+
+  attach 'config_sub' do
+    url 'http://git.savannah.gnu.org/cgit/config.git/plain/config.sub?id=1c8b09aec7b36055f10c59c587a13a9828091492'
+    sha1 '17c4f8628ea435c999be66ee4c2967fdaf3b2955'
   end
 
   def install
     if PACKMAN.cygwin? and PACKMAN.x86_64?
-      PACKMAN.decompress config_scripts.package_path
-      PACKMAN.cp 'config-1c8b09aec7b36055f10c59c587a13a9828091492/config.guess', './acaux'
-      PACKMAN.cp 'config-1c8b09aec7b36055f10c59c587a13a9828091492/config.sub', './acaux'
+      PACKMAN.cp config_guess.package_path, './acaux'
+      PACKMAN.cp config_sub.package_path, './acaux'
     end
     args = %W[
       --prefix=#{prefix}
