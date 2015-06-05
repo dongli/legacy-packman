@@ -9,17 +9,14 @@ class Regcm < PACKMAN::Package
   option 'use_clm' => false
   option 'use_clm45' => false
   option 'use_megan' => false
-  option 'use_mpiserial' => false
 
+  depends_on 'mpich' if use_mpi? and mpi == 'mpich'
+  depends_on 'openmpi' if use_mpi? and mpi == 'openmpi'
   depends_on 'netcdf'
   depends_on 'hdf5'
   depends_on 'szip'
 
   def install
-    # TODO: How to let user use the MPI library installed by others?
-    # if not mpi
-    #   PACKMAN.report_error "You should use #{PACKMAN.red '-use_mpi=<...>'} to specify MPI library."
-    # end
     PACKMAN.work_in 'RegCM-4.4.5' do
       if PACKMAN.compiler('fortran').vendor == 'gnu'
         PACKMAN.append_env 'FCFLAGS', '-fno-range-check -std=legacy'
@@ -32,7 +29,7 @@ class Regcm < PACKMAN::Package
       args << '--enable-clm' if use_clm?
       args << '--enable-clm45' if use_clm45?
       args << '--enable-megan' if use_megan?
-      args << '--enable-mpiserial' if use_mpiserial?
+      args << '--enable-mpiserial' if not use_mpi?
       PACKMAN.run './configure', *args
       PACKMAN.run 'make'
       PACKMAN.run 'make install'
