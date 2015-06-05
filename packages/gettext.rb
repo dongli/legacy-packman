@@ -3,6 +3,8 @@ class Gettext < PACKMAN::Package
   sha1 '8a4614d5d797af98822b88858c17ad8b3ed4224f'
   version '0.19.3'
 
+  depends_on 'libiconv'
+
   def install
     if PACKMAN.mac? and PACKMAN.compiler('c').vendor == 'gnu'
       # See https://github.com/andrewgho/movewin-ruby/issues/1.
@@ -23,6 +25,7 @@ class Gettext < PACKMAN::Package
       --without-git
       --without-cvs
       --without-xz
+      --with-libiconv-prefix=#{Libiconv.prefix}
     ]
     PACKMAN.run './configure', *args
     PACKMAN.run 'make -j2'

@@ -8,7 +8,17 @@ class Jasper < PACKMAN::Package
 
   patch :embed
 
+  attach 'config_scripts' do
+    url 'http://git.savannah.gnu.org/cgit/config.git/snapshot/config-1c8b09aec7b36055f10c59c587a13a9828091492.tar.gz'
+    sha1 '18337e462bf0e35f3820bd268dc73b517810dcdb'
+  end
+
   def install
+    if PACKMAN.cygwin? and PACKMAN.x86_64?
+      PACKMAN.decompress config_scripts.package_path
+      PACKMAN.cp 'config-1c8b09aec7b36055f10c59c587a13a9828091492/config.guess', './acaux'
+      PACKMAN.cp 'config-1c8b09aec7b36055f10c59c587a13a9828091492/config.sub', './acaux'
+    end
     args = %W[
       --prefix=#{prefix}
       --disable-dependency-tracking

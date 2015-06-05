@@ -5,13 +5,14 @@ class Dos2unix < PACKMAN::Package
 
   label :compiler_insensitive
 
+  depends_on 'libiconv'
   depends_on 'gettext'
 
   def install
     args = %W[
       prefix=#{prefix}
-      CFLAGS_OS='-I#{Gettext.include}'
-      LDFLAGS_EXTRA='-L#{Gettext.lib} -lintl'
+      CFLAGS_OS='-I#{Libiconv.include} -I#{Gettext.include}'
+      LDFLAGS_EXTRA='-L#{Libiconv.lib} -liconv -L#{Gettext.lib} -lintl'
       install
     ]
     PACKMAN.run 'make', *args

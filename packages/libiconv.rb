@@ -9,7 +9,8 @@ class Libiconv < PACKMAN::Package
 
   def install
     PACKMAN.replace 'srclib/stdio.in.h', {
-      /(_GL_WARN_ON_USE \(gets, "gets is a security hole - use fgets instead"\);)/ => "#if defined(__GLIBC__) && !defined(__UCLIBC__) && !__GLIBC_PREREQ(2, 16)\n\\1\n#endif\n"
+      /(_GL_WARN_ON_USE \(gets, "gets is a security hole - use fgets instead"\);)/ =>
+      "#if defined(__GLIBC__) && !defined(__UCLIBC__) && defined(__GLIBC_PREREQ)\n#if !__GLIBC_PREREQ(2, 16)\n\\1\n#endif\n#endif\n"
     }
     args = %W[
       --prefix=#{prefix}
