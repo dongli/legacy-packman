@@ -4,6 +4,11 @@ class Openblas < PACKMAN::Package
   version '0.2.11'
 
   def install
+    if PACKMAN.mac? and PACKMAN.os_version >= '10.5'
+      PACKMAN.replace 'Makefile.system', {
+        'export MACOSX_DEPLOYMENT_TARGET=10.2' => "export MACOSX_DEPLOYMENT_TARGET=#{PACKMAN.os_version}"
+      }
+    end
     args = []
     if PACKMAN.mac? and PACKMAN.compiler('c').vendor == 'gnu'
       # On Mac, only clang support AVX instructions, see http://trac.macports.org/ticket/40592.
