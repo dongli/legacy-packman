@@ -3,7 +3,7 @@ module PACKMAN
     vendor :Apple
     type :Mac_OS_X
     check :version do
-      `sw_vers | grep ProductVersion | cut -d ':' -f 2`
+      `sw_vers`.match(/ProductVersion:\s*(\d+\.\d+\.\d+)/)[1]
     end
     package_manager :Homebrew, {
       :query_command => 'brew list',
