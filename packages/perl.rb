@@ -9,9 +9,10 @@ class Perl < PACKMAN::Package
   depends_on 'zlib'
 
   def install
-    PACKMAN.append_env 'BUILD_ZLIB', 'no'
-    PACKMAN.append_env 'ZLIB_INCLUDE', Zlib.include
-    PACKMAN.append_env 'ZLIB_LIB', Zlib.lib
+    # Avoid the linking with system Zlib that may not be compiled with '-fPIC'.
+    PACKMAN.append_env 'BUILD_ZLIB', 'yes'
+    PACKMAN.append_env 'ZLIB_INCLUDE', FileUtils.pwd+'/cpan/Compress-Raw-Zlib/zlib-src'
+    PACKMAN.append_env 'ZLIB_LIB', FileUtils.pwd+'/cpan/Compress-Raw-Zlib/zlib-src'
     # Perl doesn't respect CFLAGS, so we need to hardcode '-fPIC' flag.
     args = %W[
       -des
