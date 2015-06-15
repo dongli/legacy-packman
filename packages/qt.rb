@@ -13,18 +13,16 @@ class Qt < PACKMAN::Package
       -opensource
       -nomake demos
       -nomake examples
+      -no-qt3support
       -fast
       -release
     ]
-    if PACKMAN.mac?
-      args << '-cocoa' 
-      if PACKMAN.compiler('c').vendor == 'llvm'
-        args << '-platform'
-        if PACKMAN.os_version >= '10.9'
-          args << 'unsupported/macx-clang-libc++'
-        else
-          args << 'unsupported/macx-clang'
-        end
+    if PACKMAN.mac? and PACKMAN.compiler('c').vendor == 'llvm'
+      args << '-platform'
+      if PACKMAN.os_version >= '10.9'
+        args << 'unsupported/macx-clang-libc++'
+      else
+        args << 'unsupported/macx-clang'
       end
     end
     if PACKMAN.x86_64?
