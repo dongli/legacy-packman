@@ -1,5 +1,5 @@
 class Openssl < PACKMAN::Package
-  url 'https://www.openssl.org/source/openssl-1.0.2a.tar.gz'
+  url 'https://www.openssl.org/source/old/1.0.2/openssl-1.0.2a.tar.gz'
   sha1 '46ecd325b8e587fa491f6bb02ad4a9fb9f382f5f'
   version '1.0.2a'
 
