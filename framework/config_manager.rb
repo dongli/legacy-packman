@@ -114,6 +114,7 @@ module PACKMAN
       for i in 0..CompilerManager.compiler_sets.size-1
         CLI.report_notice "Compiler set #{CLI.green i}:"
         CompilerManager.compiler_sets[i].compilers.each do |language, compiler|
+          next if not compiler
           print "#{CLI.blue '==>'} #{language}: #{compiler.command} #{compiler.default_flags[language]}\n"
           if compiler.mpi_wrapper
             print "#{CLI.blue '==>'} #{language} MPI wrapper: #{compiler.mpi_wrapper}\n"

@@ -51,9 +51,11 @@ module PACKMAN
           @compilers[actual_language].mpi_wrapper = `which #{compiler_command}`.chomp
         else
           if not PACKMAN.does_command_exist? compiler_command
-            PACKMAN.report_error "Compiler command #{PACKMAN.red compiler_command} does not exist!"
+            PACKMAN.report_warning "Compiler command #{PACKMAN.red compiler_command} does not exist!"
+            @compilers[language] = nil
+          else
+            @compilers[language] = CompilerManager.compiler_spec language, `which #{compiler_command}`.chomp
           end
-          @compilers[language] = CompilerManager.compiler_spec language, `which #{compiler_command}`.chomp
         end
       end
     end
