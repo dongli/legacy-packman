@@ -189,6 +189,7 @@ module PACKMAN
           str = []
           str << "  \"installed_by_packman\" => \"#{compiler_set.package_name}\"" if compiler_set.installed_by_packman?
           compiler_set.compilers.each do |language, compiler|
+            next if not compiler
             str << "  \"#{language}\" => \"#{compiler.command}\""
             str << "  \"mpi_#{language}\" => \"#{compiler.mpi_wrapper}\"" if compiler.mpi_wrapper
           end
