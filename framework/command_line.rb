@@ -25,7 +25,9 @@ module PACKMAN
       :collect => {
         '-all' => 'Collect all packages.'
       },
-      :config => {},
+      :config => {
+        '-silent' => 'Do not print message and enter editor.'
+      },
       :edit => {},
       :fix => {},
       :help => {},

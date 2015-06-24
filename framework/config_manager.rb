@@ -157,13 +157,15 @@ module PACKMAN
         file << ",\n  \"fortran\" => \"#{default_compilers['fortran']}\"" if default_compilers.has_key? 'fortran'
         file << "\n}"
       end
-      CLI.report_notice "#{CLI.green file_path} is generated. Please revise the following settings:\n"+
-        "#{CLI.blue 'package_root'}     = #{CLI.red '~/.packman/packages'}\n"+
-        "#{CLI.blue 'install_root'}     = #{CLI.red '~/.packman'}\n"+
-        "#{CLI.blue 'C compiler'}       = #{CLI.red default_compilers['c']}\n"+
-        "#{CLI.blue 'C++ compiler'}     = #{CLI.red default_compilers['c++']}\n"+
-        "#{CLI.blue 'Fortran compiler'} = #{CLI.red default_compilers['fortran'] ? default_compilers['fortran'] : 'NONE'}"
-      CLI.pause :message => '[Press ANY key]'
+      if not CommandLine.has_option? '-silent'
+        CLI.report_notice "#{CLI.green file_path} is generated. Please revise the following settings:\n"+
+          "#{CLI.blue 'package_root'}     = #{CLI.red '~/.packman/packages'}\n"+
+          "#{CLI.blue 'install_root'}     = #{CLI.red '~/.packman'}\n"+
+          "#{CLI.blue 'C compiler'}       = #{CLI.red default_compilers['c']}\n"+
+          "#{CLI.blue 'C++ compiler'}     = #{CLI.red default_compilers['c++']}\n"+
+          "#{CLI.blue 'Fortran compiler'} = #{CLI.red default_compilers['fortran'] ? default_compilers['fortran'] : 'NONE'}"
+        CLI.pause :message => '[Press ANY key]'
+      end
     end
 
     def self.write file_path = nil
