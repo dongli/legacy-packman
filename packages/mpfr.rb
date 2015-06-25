@@ -1,13 +1,7 @@
 class Mpfr < PACKMAN::Package
-  url 'http://ftpmirror.gnu.org/mpfr/mpfr-3.1.2.tar.bz2'
-  sha1 '46d5a11a59a4e31f74f73dd70c5d57a59de2d0b4'
-  version '3.1.2'
-
-  patch do
-    # latest update: 2014-12-04
-    url 'http://www.mpfr.org/mpfr-current/allpatches'
-    sha1 '26b8a0f352998c1e54a89520d36c8c4783e41962'
-  end
+  url 'http://www.mpfr.org/mpfr-current/mpfr-3.1.3.tar.gz'
+  sha1 'b48bec6fcc9c0458e38150778f2be85d1665aadc'
+  version '3.1.3'
 
   def install
     args = %W[
