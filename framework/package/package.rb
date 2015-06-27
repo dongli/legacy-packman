@@ -416,7 +416,9 @@ module PACKMAN
       end
       package.embeded_patches.each do |patch|
         CLI.report_notice "Apply embeded patch."
-        File.new('packman_embed_patch', 'w').write(patch)
+        file = File.new('packman_embed_patch', 'w')
+        file << patch
+        file.close
         PACKMAN.run "patch --ignore-whitespace -N -p1 < packman_embed_patch"
         if not $?.success?
           CLI.report_error "Failed to apply embeded patch for #{CLI.red package.class}!"
