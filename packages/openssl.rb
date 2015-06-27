@@ -2,6 +2,7 @@ class Openssl < PACKMAN::Package
   url 'https://www.openssl.org/source/old/1.0.2/openssl-1.0.2a.tar.gz'
   sha1 '46ecd325b8e587fa491f6bb02ad4a9fb9f382f5f'
   version '1.0.2a'
+  revision 1
 
   label :not_set_ld_library_path
 
@@ -50,5 +51,16 @@ class Openssl < PACKMAN::Package
     PACKMAN.run 'make'
     PACKMAN.run 'make test' if not skip_test?
     PACKMAN.run 'make install'
+  end
+
+  def postfix
+    keychains = %w[
+      /Library/Keychains/System.keychain
+      /System/Library/Keychains/SystemRootCertificates.keychain
+    ]
+    cert_pem = File.new etc+'openssl/cert.pem', 'w'
+    keychains.each do |keychain|
+      cert_pem << `security find-certificate -a -p #{keychain}`
+    end
   end
 end
