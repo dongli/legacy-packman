@@ -15,6 +15,13 @@ class Vim < PACKMAN::Package
   depends_on 'ncurses'
 
   def install
+    PACKMAN.replace 'src/os_unix.h', {
+      /(#if defined\(__CYGWIN__\) \|\| defined\(__CYGWIN32__\))/ =>
+      "#if defined(__APPLE__)\n"+
+      "#include <AvailabilityMacros.h>\n"+
+      "#endif\n"+
+      "\\1"
+    }
     args = %W[
       --prefix=#{prefix}
       --enable-multibyte
