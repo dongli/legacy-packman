@@ -59,10 +59,18 @@ class Vim < PACKMAN::Package
           Plugin 'gmarik/Vundle.vim'
           " ---> Add you favorate vundle plugins here.
           "Plugin 'Shougo/neocomplete.vim'
+          "Plugin 'Shougo/neosnippet.vim'
+          "Plugin 'Shougo/neosnippet-snippets'
           call vundle#end()
           filetype plugin on
           let g:neocomplete#enable_at_startup = 1
           let g:neocomplete#enable_smart_case = 1
+          imap <expr><TAB> neosnippet#expandable_or_jumpable() ?
+            \\ "\\<Plug>(neosnippet_expand_or_jump)"
+            \\: pumvisible() ? "\\<C-n>" : "\\<TAB>"
+          smap <expr><TAB> neosnippet#expandable_or_jumpable() ?
+            \\ "\\<Plug>(neosnippet_expand_or_jump)"
+            \\: "\\<TAB>"
           " ###################################################
         EOT
       end
