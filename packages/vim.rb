@@ -62,6 +62,22 @@ class Vim < PACKMAN::Package
         PACKMAN.append vimrc, <<-EOT.keep_indent
           " ###################################################
           " Added by PACKMAN.
+          " Good defaults.
+          set smarttab
+          set expandtab
+          set autoindent
+          set smartindent
+          set backspace=indent,eol,start
+          set hlsearch
+          set number
+          syntax on
+          filetype plugin indent on
+          " Jump to last edit location.
+          autocmd BufReadPost * if line("'\"") > 1 && line("'\"") <= line("$") | exe "normal! g'\"" | endif
+          " Status bar.
+          set laststatus=2
+          set statusline=%F%m\ [type=%Y]\ [line=%l,column=%c,%p%%]
+          " Vundle settings.
           set nocompatible
           filetype off
           set rtp+=~/.vim/bundle/Vundle.vim
