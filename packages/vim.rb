@@ -6,15 +6,18 @@ class Vim < PACKMAN::Package
   label :compiler_insensitive
 
   option 'use_vundle' => false
-  option 'without_perl' => false
-  option 'without_ruby' => false
-  option 'without_python' => false
-  option 'without_lua' => false
+  option 'with_perl' => false
+  option 'with_ruby' => false
+  option 'with_python' => false
+  option 'with_lua' => true
 
   patch :embed
 
   depends_on 'ncurses'
-  depends_on 'lua' if not without_lua?
+  depends_on 'perl' if with_perl?
+  depends_on 'ruby' if with_ruby?
+  depends_on 'python' if with_python?
+  depends_on 'lua' if with_lua?
 
   def install
     PACKMAN.append_env 'LUA_PREFIX', Lua.prefix
@@ -29,10 +32,10 @@ class Vim < PACKMAN::Package
       --with-compiledby=PACKMAN
     ]
     %w[perl ruby python lua].each do |language|
-      if eval "without_#{language}?"
-        args << "--disable-#{language}interp"
-      else
+      if eval "with_#{language}?"
         args << "--enable-#{language}interp"
+      else
+        args << "--disable-#{language}interp"
       end
     end
     PACKMAN.set_cppflags_and_ldflags [Ncurses]
