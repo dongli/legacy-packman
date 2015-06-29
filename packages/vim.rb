@@ -42,6 +42,10 @@ class Vim < PACKMAN::Package
     PACKMAN.run './configure', *args
     PACKMAN.run 'make -j2'
     PACKMAN.run "make install prefix=#{prefix} STRIP=true"
+    PACKMAN.report_notice "Link #{PACKMAN.blue 'vim'} into #{PACKMAN::blue 'vi'}."
+    PACKMAN.work_in bin do
+      PACKMAN.ln 'vim', 'vi'
+    end
   end
 
   def postfix
