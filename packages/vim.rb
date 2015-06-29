@@ -73,10 +73,10 @@ class Vim < PACKMAN::Package
           syntax on
           filetype plugin indent on
           " Jump to last edit location.
-          autocmd BufReadPost * if line("'\"") > 1 && line("'\"") <= line("$") | exe "normal! g'\"" | endif
+          autocmd BufReadPost * if line("'\\"") > 1 && line("'\\"") <= line("$") | exe "normal! g'\\"" | endif
           " Status bar.
           set laststatus=2
-          set statusline=%F%m\ [type=%Y]\ [line=%l,column=%c,%p%%]
+          set statusline=%F%m\\ [type=%Y]\\ [line=%l,column=%c,%p%%]
           " Vundle settings.
           set nocompatible
           filetype off
