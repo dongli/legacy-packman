@@ -39,6 +39,9 @@ class Vim < PACKMAN::Package
     PACKMAN.run './configure', *args
     PACKMAN.run 'make -j2'
     PACKMAN.run "make install prefix=#{prefix} STRIP=true"
+  end
+
+  def postfix
     if use_vundle?
       bundle_root = "#{ENV['HOME']}/.vim/bundle"
       vundle_root = "#{bundle_root}/Vundle.vim"
