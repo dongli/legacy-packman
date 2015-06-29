@@ -58,7 +58,7 @@ class Openssl < PACKMAN::Package
       /Library/Keychains/System.keychain
       /System/Library/Keychains/SystemRootCertificates.keychain
     ]
-    cert_pem = File.new etc+'openssl/cert.pem', 'w'
+    cert_pem = File.new etc+'/openssl/cert.pem', 'w'
     keychains.each do |keychain|
       cert_pem << `security find-certificate -a -p #{keychain}`
     end
