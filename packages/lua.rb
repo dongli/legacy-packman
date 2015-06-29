@@ -5,9 +5,13 @@ class Lua < PACKMAN::Package
 
   label :compiler_insensitive
 
+  depends_on 'readline'
+
   def install
     PACKMAN.replace 'src/Makefile', {
-      /^\s*CC\s*=.*$/ => "CC= #{PACKMAN.compiler('c').command}"
+      /^\s*CC\s*=.*$/ => "CC= #{PACKMAN.compiler('c').command}",
+      /^\s*CFLAGS\s*=(.*)$/ => "CFLAGS= \\1 -I#{Readline.include}",
+      /^\s*LDFLAGS\s*=(.*)$/ => "LDFLAGS= \\1 -L#{Readline.lib}"
     }
     PACKMAN.replace 'src/luaconf.h', {
       /#define LUA_ROOT.*/ => "#define LUA_ROOT \"#{prefix}\""
