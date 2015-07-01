@@ -28,7 +28,7 @@ class Gdk_pixbuf < PACKMAN::Package
     PACKMAN.run 'make install'
   end
 
-  def postfix
+  def post_install
     # Copy DIR file into Gobject_introspection.
     PACKMAN.cp "#{share}/gir-1.0/*.gir", "#{Gobject_introspection.share}/gir-1.0"
   end

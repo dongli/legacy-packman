@@ -203,7 +203,7 @@ class Ferret < PACKMAN::Package
     end
   end
 
-  def postfix
+  def post_install
     # Ferret has put its shell configuration into 'ferret_paths.sh', so we
     # respect it.
     bashrc = "#{prefix}/bashrc"

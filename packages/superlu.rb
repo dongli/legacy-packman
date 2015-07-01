@@ -38,7 +38,7 @@ class Superlu < PACKMAN::Package
     PACKMAN.cp 'lib/*', lib
   end
 
-  def postfix
+  def post_install
     File.chmod 0644, include+'/superlu/superlu_enum_consts.h'
   end
 end

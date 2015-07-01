@@ -61,7 +61,7 @@ class Python3 < PACKMAN::Package
     end
   end
 
-  def postfix
+  def post_install
     PACKMAN.append bashrc, <<-EOT
       export PYTHONPATH="#{site_packages}:$PYTHONPATH"
     EOT

@@ -14,7 +14,7 @@ class Cmake < PACKMAN::Package
     PACKMAN.run "make install"
   end
 
-  def postfix
+  def post_install
     modules = 'cmake-3.2/Modules'
     # Fix FindArmadillo.cmake.
     PACKMAN.replace "#{share}/#{modules}/FindArmadillo.cmake", {

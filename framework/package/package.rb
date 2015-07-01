@@ -426,7 +426,7 @@ module PACKMAN
       end
     end
 
-    def postfix; end
+    def post_install; end
     def check_consistency; true; end
 
     def should_be_skipped?

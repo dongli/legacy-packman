@@ -273,7 +273,7 @@ class Ncl < PACKMAN::Package
     PACKMAN.mkdir "#{prefix}/tmp"
   end
 
-  def postfix
+  def post_install
     PACKMAN.replace bashrc, {
       /NCL_ROOT/ => 'NCARG_ROOT'
     }

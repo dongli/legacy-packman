@@ -28,7 +28,7 @@ class Librsvg < PACKMAN::Package
     PACKMAN.run 'make install', *args
   end
 
-  def postfix
+  def post_install
     PACKMAN.run "export GDK_PIXBUF_MODULEDIR=#{Gdk_pixbuf.lib}/gdk-pixbuf-2.0/2.10.0/loaders && gdk-pixbuf-query-loaders --update-cache"
   end
 end

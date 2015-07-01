@@ -27,7 +27,7 @@ class Proftpd < PACKMAN::Package
     end
   end
 
-  def postfix
+  def post_install
     PACKMAN.replace "#{prefix}/../config/proftpd.conf", {
       /^(ServerType\s*.*)$/ => "\\1\nServerLog #{prefix}/var/proftpd.log",
       /^(DefaultServer.*$)/ => "\\1\nRequireValidShell no\nWtmpLog off",  

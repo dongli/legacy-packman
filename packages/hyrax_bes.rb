@@ -40,7 +40,7 @@ class Hyrax_bes < PACKMAN::Package
     EOT
   end
 
-  def postfix
+  def post_install
     # Change user name and group name in bes.conf
     user_name = ENV['USER']
     if PACKMAN.mac?

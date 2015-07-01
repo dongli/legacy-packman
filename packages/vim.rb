@@ -48,7 +48,7 @@ class Vim < PACKMAN::Package
     end
   end
 
-  def postfix
+  def post_install
     if use_vundle?
       bundle_root = "#{ENV['HOME']}/.vim/bundle"
       vundle_root = "#{bundle_root}/Vundle.vim"

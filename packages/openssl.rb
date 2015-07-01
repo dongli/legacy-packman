@@ -53,7 +53,7 @@ class Openssl < PACKMAN::Package
     PACKMAN.run 'make install'
   end
 
-  def postfix
+  def post_install
     keychains = %w[
       /Library/Keychains/System.keychain
       /System/Library/Keychains/SystemRootCertificates.keychain
