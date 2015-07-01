@@ -49,7 +49,7 @@ module PACKMAN
         bashrc_files.sort!
         if bashrc_files.size == 1
           content << "source #{bashrc_files.first}\n"
-        elsif bashrc_files.size > 1
+        elsif bashrc_files.size > 1 and CommandLine.has_option? '-verbose'
           strip_level = compiler_insensitive ? 1 : 2
           available_versions = bashrc_files.map { |p| File.basename(PACKMAN.strip_dir(p, strip_level)) }
           package_name = File.basename(dir).capitalize.to_sym
