@@ -1,7 +1,7 @@
 class Mongodb < PACKMAN::Package
-  url 'https://fastdl.mongodb.org/src/mongodb-src-r2.6.7.tar.gz'
-  sha1 'c11c9d31063f2fc126249f7580e8417a8f4ef2b5'
-  version '2.6.7'
+  url 'https://fastdl.mongodb.org/src/mongodb-src-r3.0.4.tar.gz'
+  sha1 '5df86eabb1631dfb3cd29a1424f7c65f70277e58'
+  version '3.0.4'
 
   label :compiler_insensitive
 
@@ -12,12 +12,6 @@ class Mongodb < PACKMAN::Package
   depends_on 'scons'
 
   def install
-    if PACKMAN.mac?
-      PACKMAN.replace 'SConstruct', {
-        "osx_version_choices = ['10.6', '10.7', '10.8', '10.9']" =>
-        "osx_version_choices = ['10.6', '10.7', '10.8', '10.9', '10.10']"
-      }
-    end
     args = %W[
       --prefix=#{prefix}
       -j2
