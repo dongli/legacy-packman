@@ -32,7 +32,10 @@ module PACKMAN
       :edit => {},
       :fix => {},
       :help => {},
-      :install => {},
+      :install => {
+        '-force' => 'Force to run install procedures no matter packages are installed or not.',
+        '-only_post' => 'Only run post-install procedures.'
+      },
       :mirror => {
         '-init' => 'Initialize FTP mirror service.',
         '-start' => 'Start FTP mirror service.',

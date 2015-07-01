@@ -24,5 +24,45 @@ module PACKMAN
       res = `id -u #{name} 2>&1`
       $?.success?
     end
+    command :get_unique_id do
+      existed_ids = `dscl . list /Users UniqueID`.gsub(/^[^\s]+\s+/, '').split("\n").map { |id| id.to_i }
+      id = 500
+      id += 1 until not existed_ids.include? id
+      id
+    end
+    command :get_primary_group_id do
+      existed_ids = `dscl . list /Users PrimaryGroupID`.gsub(/^[^\s]+\s+/, '').split("\n").map { |id| id.to_i }
+      id = 500
+      id += 1 until not existed_ids.include? id
+      id
+    end
+    command :create_user do |name|
+      if check_user name
+        PACKMAN.report_error "User #{PACKMAN.red name} exists!"
+      end
+      res = `sudo dscl . create /Users/#{name} 2>&1`
+      PACKMAN.report_error "Failed to create #{PACKMAN.red name}! See errors:\n#{res}" if not $?.success?
+      unique_id = get_unique_id
+      res = `sudo dscl . create /Users/#{name} UniqueID #{unique_id} 2>&1`
+      PACKMAN.report_error "Failed to set user id for #{PACKMAN.red name}! See errors:\n#{res}" if not $?.success?
+      primary_group_id = get_primary_group_id
+      res = `sudo dscl . create /Users/#{name} PrimaryGroupID #{primary_group_id} 2>&1`
+      PACKMAN.report_error "Failed to set group id for #{PACKMAN.red name}! See errors:\n#{res}" if not $?.success?
+      PACKMAN.report_notice "Please enter a password for user #{PACKMAN.blue name}:"
+      system "sudo dscl . passwd /Users/#{name}"
+      PACKMAN.report_error "Failed to set password for #{PACKMAN.red name}!" if not $?.success?
+      PACKMAN.report_notice "Create user #{PACKMAN.blue name}."
+    end
+    command :delete_user do |name|
+      if name == ENV['USER']
+        PACKMAN.report_error "Cannot delete current user #{PACKMAN.red name}!"
+      end
+      if not check_user name
+        PACKMAN.report_error "User #{PACKMAN.red name} does not exist!"
+      end
+      res = `sudo dscl . delete /Users/#{name}`
+      PACKMAN.report_error "Failed to delete user #{PACKMAN.red name}!" if not $?.success?
+      PACKMAN.report_notice "Delete user #{PACKMAN.blue name}."
+    end
   end
 end

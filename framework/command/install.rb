@@ -62,7 +62,11 @@ module PACKMAN
           CLI.report_warning msg
           next
         end
-        install_package package
+        if CommandLine.has_option? '-only_post'
+          package.post_install
+        else
+          install_package package
+        end
         # Record the installed package into config file.
         ConfigManager.package_options[package_name] = package.options
       end
@@ -165,7 +169,7 @@ module PACKMAN
         # Install precompiled package.
         prefix = PACKMAN.prefix package, :compiler_insensitive
         # Check if the package has already installed.
-        return if is_package_installed? package, options
+        return if is_package_installed? package, options and not CommandLine.has_option? '-force'
         # Use precompiled binary file.
         CLI.report_notice "Use precompiled binary files for #{CLI.green package.class}."
         PACKMAN.mkdir prefix, :force
@@ -174,7 +178,7 @@ module PACKMAN
         PACKMAN.cd_back
         # Write bashrc file for the package.
         Package.bashrc package, :compiler_insensitive
-        package.postfix
+        package.post_install
       elsif package.has_label? :installed_with_source
         if package.compiler_set_indices.size != 1
           CLI.report_error "Currently, only one compiler set is allowed to build packages that are installed with source."
@@ -202,14 +206,14 @@ module PACKMAN
           package.install
         end
         Package.bashrc package
-        package.postfix
+        package.post_install
       else
         # Build package for each compiler set.
         build_upper_dir = "#{ConfigManager.package_root}/#{package.class}"
         package.compiler_set_indices.each do |index|
           CompilerManager.activate_compiler_set index
           # Check if the package has already installed.
-          next if is_package_installed? package, options
+          next if is_package_installed? package, options and not CommandLine.has_option? '-force'
           # Append bashrc file.
           append_bashrc package
           # Decompress package file.
@@ -244,7 +248,7 @@ module PACKMAN
           FileUtils.rm_rf build_dir
           # Write bashrc file for the package.
           Package.bashrc package if not package.has_label? :not_set_bashrc
-          package.postfix
+          package.post_install
           # Clean build files.
           FileUtils.rm_rf build_upper_dir if Dir.exist? build_upper_dir
         end

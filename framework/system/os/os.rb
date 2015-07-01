@@ -11,6 +11,14 @@ module PACKMAN
         active_spec.checked_items[name] = block.call
       end
       active_spec.version ||= VersionSpec.new active_spec.checked_items[:version].strip
+      # Add helper methods.
+      active_spec.commands.each_key do |name|
+        self.instance_eval <<-EOT
+          def #{name} *args
+            active_spec.commands[:#{name}].call *args
+          end
+        EOT
+      end
     end
 
     def hand_over_spec name
@@ -79,6 +87,15 @@ module PACKMAN
       end
       def command name, &block
         normal.commands[name] = block
+        # Add helper method.
+        self.class_eval <<-EOT
+          def self.#{name} *args
+            normal.commands[:#{name}].call *args
+          end
+        EOT
+      end
+      def _command name
+        normal.commands[name]
       end
     end
   end
