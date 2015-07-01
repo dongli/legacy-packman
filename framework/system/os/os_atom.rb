@@ -3,6 +3,7 @@ module PACKMAN
     attr_accessor :vendor, :type, :version, :arch
     attr_accessor :package_managers
     attr_accessor :check_blocks, :checked_items
+    attr_accessor :commands
 
     def initialize
       @vendor = nil
@@ -11,6 +12,7 @@ module PACKMAN
       @package_managers = {}
       @check_blocks = {}
       @checked_items = {}
+      @commands = {}
       @arch = `uname -m`.chomp
     end
 
@@ -22,6 +24,10 @@ module PACKMAN
       ancestor.check_blocks.each do |name, block|
         next if @check_blocks.keys.include? name
         @check_blocks[name] = block
+      end
+      ancestor.commands.each do |name, block|
+        next if @commands.keys.include? name
+        @commands[name] = block
       end
     end
   end

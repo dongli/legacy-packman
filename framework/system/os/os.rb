@@ -49,6 +49,12 @@ module PACKMAN
       end
       active_spec.checked_items[item]
     end
+    def command name
+      if not active_spec.commands.has_key? name
+        PACKMAN.report_error "There is no #{PACKMAN.rd name} command!"
+      end
+      active_spec.commands[name]
+    end
     def x86_64?; active_spec.arch == 'x86_64' ? true : false; end
 
     class << self
@@ -70,6 +76,9 @@ module PACKMAN
       end
       def check item, &block
         normal.check_blocks[item] = block
+      end
+      def command name, &block
+        normal.commands[name] = block
       end
     end
   end

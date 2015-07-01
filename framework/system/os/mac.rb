@@ -20,5 +20,9 @@ module PACKMAN
       end
       $?.success?
     end
+    command :check_user do |name|
+      res = `id -u #{name} 2>&1`
+      $?.success?
+    end
   end
 end
