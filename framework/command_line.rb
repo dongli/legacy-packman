@@ -19,7 +19,8 @@ module PACKMAN
     }.freeze
     PermittedCommonOptions = {
       '-debug' => 'Print debug information.',
-      '-config' => 'Specify configure file.'
+      '-config' => 'Specify configure file.',
+      '-verbose' => 'Show verbose information.'
     }.freeze
     PermittedOptions = {
       :collect => {
@@ -31,9 +32,7 @@ module PACKMAN
       :edit => {},
       :fix => {},
       :help => {},
-      :install => {
-        '-verbose' => 'Show verbose information.'
-      },
+      :install => {},
       :mirror => {
         '-init' => 'Initialize FTP mirror service.',
         '-start' => 'Start FTP mirror service.',
