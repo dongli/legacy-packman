@@ -10,7 +10,7 @@ class Hdf5 < PACKMAN::Package
   depends_on 'szip'
   depends_on mpi if use_mpi?
 
-  if PACKMAN.os_type == :Mac_OS_X and use_mpi?
+  if PACKMAN.mac? and use_mpi?
     PACKMAN.caveat <<-EOT.keep_indent
       Parallel HDF5 can not be built succesfully in Mac OS X!
       PACKMAN developer tried hard to solve this problem, but without success!

@@ -27,8 +27,8 @@ class Openssl < PACKMAN::Package
       shared
       enable-cms
     ]
-    if arch_args.has_key? PACKMAN.os_type
-      PACKMAN.run './Configure', *(args+arch_args[PACKMAN.os_type][PACKMAN.x86_64? ? :x86_64 : :i386])
+    if arch_args.has_key? PACKMAN.os.type
+      PACKMAN.run './Configure', *(args+arch_args[PACKMAN.os.type][PACKMAN.os.x86_64? ? :x86_64 : :i386])
     else
       PACKMAN.run './config', *args
     end

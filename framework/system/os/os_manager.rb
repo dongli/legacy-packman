@@ -1,7 +1,7 @@
 module PACKMAN
   class OsManager
     def self.delegated_methods
-      [:os_spec, :os_type, :os_version, :x86_64?, :package_managers,
+      [:os, :package_managers,
        :linux?, :mac?, :cygwin?, :redhat?, :debian?,
        :shared_library_suffix, :ld_library_path_name,
        :os_installed?, :os_how_to_install]
@@ -11,56 +11,53 @@ module PACKMAN
       res = `uname`
       case res
       when /^Darwin */
-        @@spec = Mac.new
+        @@os = Mac.new
       when /^Linux */
         res = `cat /etc/*-release`
         case res
         when /Red Hat Enterprise Linux Server/
-          @@spec = RHEL.new
+          @@os = RHEL.new
         when /Ubuntu/
-          @@spec = Ubuntu.new
+          @@os = Ubuntu.new
         when /Fedora/
-          @@spec = Fedora.new
+          @@os = Fedora.new
         when /CentOS/
-          @@spec = CentOS.new
+          @@os = CentOS.new
         when /Debian GNU\/Linux/
-          @@spec = Debian.new
+          @@os = Debian.new
         when /SUSE Linux/
-          @@spec = Suse.new
+          @@os = Suse.new
         else
           CLI.report_error "Unknown OS type \"#{res}\"!"
         end
       when /^CYGWIN*/
-        @@spec = Cygwin.new
+        @@os = Cygwin.new
       else
         CLI.report_error "Unknown OS type \"#{res}\"!"
       end
     end
 
-    def self.os_spec; @@spec; end
-    def self.os_type; @@spec.type; end
-    def self.os_version; @@spec.version; end
-    def self.x86_64?; @@spec.x86_64?; end
-    def self.package_managers; @@spec.package_managers; end
+    def self.os; @@os; end
+    def self.package_managers; @@os.package_managers; end
   
     def self.linux?
-      [:RHEL, :Fedora, :CentOS, :SUSE, :Debian, :Ubuntu].include? os_type
+      [:RHEL, :Fedora, :CentOS, :SUSE, :Debian, :Ubuntu].include? @@os.type
     end
 
     def self.mac?
-      os_type == :Mac_OS_X
+      @@os.type == :Mac_OS_X
     end
 
     def self.cygwin?
-      os_type == :Cygwin
+      @@os.type == :Cygwin
     end
 
     def self.redhat?
-      [:RHEL, :Fedora, :CentOS, :SUSE].include? os_type
+      [:RHEL, :Fedora, :CentOS, :SUSE].include? @@os.type
     end
 
     def self.debian?
-      [:Debian, :Ubuntu].include? os_type
+      [:Debian, :Ubuntu].include? @@os.type
     end
 
     def self.shared_library_suffix

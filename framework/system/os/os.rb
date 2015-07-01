@@ -51,7 +51,7 @@ module PACKMAN
     end
     def command name
       if not active_spec.commands.has_key? name
-        PACKMAN.report_error "There is no #{PACKMAN.rd name} command!"
+        PACKMAN.report_error "There is no #{PACKMAN.red name} command!"
       end
       active_spec.commands[name]
     end

@@ -84,7 +84,7 @@ module PACKMAN
               else
                 key.to_s.split('|').each do |split_key|
                   tmp1 = split_key.split(':')
-                  next if PACKMAN.os_type != tmp1.first.to_sym
+                  next if PACKMAN.os.type != tmp1.first.to_sym
                   tmp2 = tmp1.last.match(/(>=|==|=~)?\s*(.*)/)
                   operator = tmp2[1] ? tmp2[1] : '=='
                   v1 = VersionSpec.new tmp2[2]
@@ -110,7 +110,7 @@ module PACKMAN
                   package_version = tmp1.first
                   next if package_version != requested_spec[:use_version]
                   tmp2 = tmp1.last.split(':')
-                  next if PACKMAN.os_type != tmp2.first.to_sym
+                  next if PACKMAN.os.type != tmp2.first.to_sym
                   tmp3 = tmp2.last.match(/(>=|==|=~)?\s*(.*)/)
                   operator = tmp3[1] ? tmp3[1] : '=='
                   v1 = VersionSpec.new tmp3[2]
