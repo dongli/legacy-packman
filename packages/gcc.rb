@@ -39,7 +39,7 @@ class Gcc < PACKMAN::Package
     end
   end
 
-  def post_install
+  def postfix
     # NOTE: It seems that GCC_ROOT environment variable must not be set.
     # Otherwise, the system GCC will be disturbed!
     PACKMAN.replace "#{PACKMAN.prefix self}/bashrc", {
