@@ -37,11 +37,14 @@ module PACKMAN
       id
     end
     command :create_user do |name|
+      PACKMAN.report_notice "Create user #{PACKMAN.blue name}."
       if check_user name
         PACKMAN.report_error "User #{PACKMAN.red name} exists!"
       end
       res = `sudo dscl . create /Users/#{name} 2>&1`
       PACKMAN.report_error "Failed to create #{PACKMAN.red name}! See errors:\n#{res}" if not $?.success?
+      res = `sudo dscl . create /Users/#{name} UserShell /bin/bash`
+      PACKMAN.report_error "Failed to set user shell for #{PACKMAN.red name}! See errors:\n#{res}" if not $?.success?
       unique_id = get_unique_id
       res = `sudo dscl . create /Users/#{name} UniqueID #{unique_id} 2>&1`
       PACKMAN.report_error "Failed to set user id for #{PACKMAN.red name}! See errors:\n#{res}" if not $?.success?
@@ -51,9 +54,9 @@ module PACKMAN
       PACKMAN.report_notice "Please enter a password for user #{PACKMAN.blue name}:"
       system "sudo dscl . passwd /Users/#{name}"
       PACKMAN.report_error "Failed to set password for #{PACKMAN.red name}!" if not $?.success?
-      PACKMAN.report_notice "Create user #{PACKMAN.blue name}."
     end
     command :delete_user do |name|
+      PACKMAN.report_notice "Delete user #{PACKMAN.blue name}."
       if name == ENV['USER']
         PACKMAN.report_error "Cannot delete current user #{PACKMAN.red name}!"
       end
@@ -62,7 +65,11 @@ module PACKMAN
       end
       res = `sudo dscl . delete /Users/#{name}`
       PACKMAN.report_error "Failed to delete user #{PACKMAN.red name}!" if not $?.success?
-      PACKMAN.report_notice "Delete user #{PACKMAN.blue name}."
+    end
+    command :change_owner do |path, owner|
+      PACKMAN.report_notice "Change owner of #{PACKMAN.blue path} to #{PACKMAN.blue owner}."
+      res = `sudo chown -R #{owner} #{path} 2>&1`
+      PACKMAN.report_error "Failed to change owner of #{PACKMAN.red path} to #{PACKMAN.red owner}! See errors:\n#{res}" if not $?.success?
     end
   end
 end

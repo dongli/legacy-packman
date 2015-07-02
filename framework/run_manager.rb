@@ -9,6 +9,9 @@ module PACKMAN
       # Reset (DY)LD_LIBRARY_PATH environment variable to avoid potential problems.
       PACKMAN.filter_ld_library_path
       # Handle PACKMAN installed compiler.
+      if not CompilerManager.active_compiler_set
+        CompilerManager.activate_compiler_set ConfigManager.defaults['compiler_set_index']
+      end
       if CompilerManager.active_compiler_set.installed_by_packman?
         compiler_prefix = PACKMAN.prefix CompilerManager.active_compiler_set.package_name
         PACKMAN.append_shell_source "#{compiler_prefix}/bashrc"
