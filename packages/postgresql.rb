@@ -7,7 +7,8 @@ class Postgresql < PACKMAN::Package
 
   option 'with_perl' => false
   option 'with_python' => false
-  option 'create_postgres_user' => false
+  option 'admin_user' => 'postgres'
+  option 'cluster_path' => var+'/data'
 
   depends_on 'openssl'
   depends_on 'readline'
@@ -38,8 +39,28 @@ class Postgresql < PACKMAN::Package
   end
 
   def post_install
-    if create_postgres_user? and not PACKMAN.os.check_user 'postgres'
-      PACKMAN.os.create_user 'postgres'
+    PACKMAN.mkdir var, :skip_if_exist
+    PACKMAN.report_notice "Initialize database cluster in #{cluster_path}."
+    PACKMAN.run "#{bin}/initdb --pwprompt -D #{cluster_path}"
+    PACKMAN.os.create_user admin_user unless PACKMAN.os.check_user admin_user
+    if ENV['USER'] != admin_user
+      PACKMAN.os.change_owner var, admin_user
     end
+  end
+
+  def start
+    PACKMAN.report_notice "Enter password of #{PACKMAN.blue admin_user}:"
+    system "su #{admin_user} -c '#{bin}/pg_ctl start -D #{cluster_path} -l #{var}/postgres.log'"
+  end
+
+  def stop
+    PACKMAN.report_notice "Enter password of #{PACKMAN.blue admin_user}:"
+    system "su #{admin_user} -c '#{bin}/pg_ctl stop -D #{cluster_path}'"
+  end
+
+  def status
+    PACKMAN.report_notice "Enter password of #{PACKMAN.blue admin_user}:"
+    system "su #{admin_user} -c '#{bin}/pg_ctl status -D #{cluster_path}'"
+    $?.success? ? :on : :off
   end
 end
