@@ -50,17 +50,32 @@ class Postgresql < PACKMAN::Package
 
   def start
     PACKMAN.report_notice "Enter password of #{PACKMAN.blue admin_user}:"
-    system "su #{admin_user} -c '#{bin}/pg_ctl start -D #{cluster_path} -l #{var}/postgres.log'"
+    cmd = "#{bin}/pg_ctl start -D #{cluster_path} -l #{var}/postgres.log"
+    if ENV['USER'] != admin_user
+      system "su #{admin_user} -c '#{cmd}'"
+    else
+      system cmd
+    end
   end
 
   def stop
     PACKMAN.report_notice "Enter password of #{PACKMAN.blue admin_user}:"
-    system "su #{admin_user} -c '#{bin}/pg_ctl stop -D #{cluster_path}'"
+    cmd = "#{bin}/pg_ctl stop -D #{cluster_path}"
+    if ENV['USER'] != admin_user
+      system "su #{admin_user} -c '#{cmd}'"
+    else
+      system cmd
+    end
   end
 
   def status
     PACKMAN.report_notice "Enter password of #{PACKMAN.blue admin_user}:"
-    system "su #{admin_user} -c '#{bin}/pg_ctl status -D #{cluster_path}'"
+    cmd = "#{bin}/pg_ctl status -D #{cluster_path}"
+    if ENV['USER'] != admin_user
+      system "su #{admin_user} -c '#{cmd}'"
+    else
+      system cmd
+    end
     $?.success? ? :on : :off
   end
 end
