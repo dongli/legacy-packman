@@ -88,7 +88,7 @@ module PACKMAN
                   tmp2 = tmp1.last.match(/(>=|==|=~)?\s*(.*)/)
                   operator = tmp2[1] ? tmp2[1] : '=='
                   v1 = VersionSpec.new tmp2[2]
-                  v2 = PACKMAN.os_version
+                  v2 = PACKMAN.os.version
                   if eval "v2 #{operator} v1"
                     @active_spec = value
                     break
@@ -114,7 +114,7 @@ module PACKMAN
                   tmp3 = tmp2.last.match(/(>=|==|=~)?\s*(.*)/)
                   operator = tmp3[1] ? tmp3[1] : '=='
                   v1 = VersionSpec.new tmp3[2]
-                  v2 = PACKMAN.os_version
+                  v2 = PACKMAN.os.version
                   if eval "v2 #{operator} v1"
                     @active_spec = value
                     break
