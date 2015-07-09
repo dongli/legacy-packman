@@ -41,7 +41,7 @@ class Postgresql < PACKMAN::Package
   def post_install
     PACKMAN.mkdir var, :skip_if_exist
     PACKMAN.report_notice "Initialize database cluster in #{cluster_path}."
-    PACKMAN.run "#{bin}/initdb --pwprompt -D #{cluster_path}"
+    PACKMAN.run "#{bin}/initdb --pwprompt -D #{cluster_path} -E UTF8"
     PACKMAN.os.create_user admin_user unless PACKMAN.os.check_user admin_user
     if ENV['USER'] != admin_user
       PACKMAN.os.change_owner var, admin_user
