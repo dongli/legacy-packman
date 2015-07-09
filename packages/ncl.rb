@@ -33,7 +33,7 @@ class Ncl < PACKMAN::Package
   end
 
   history_binary_version '6.2.1', [:Debian, :Ubuntu], ['>= 7.6', '>= 12.04'] do
-    if PACKMAN.x86_64?
+    if PACKMAN.os.x86_64?
       url 'https://www.earthsystemgrid.org/download/fileDownload.htm?logicalFileId=38263864-351d-11e4-a4b4-00c0f03d5b7c'
       sha1 'b7c885391891cb5709c44df3314391787c3ed9c3'
       filename 'ncl_ncarg-6.2.1.Linux_Debian7.6_x86_64_gcc472.tar.gz'
@@ -63,7 +63,7 @@ class Ncl < PACKMAN::Package
   end
 
   binary [:Debian, :Ubuntu], ['>= 6.0', '>= 12.04'] do
-    if PACKMAN.x86_64?
+    if PACKMAN.os.x86_64?
       url 'https://www.earthsystemgrid.org/download/fileDownload.htm?logicalFileId=e088d94c-cd9a-11e4-bb80-00c0f03d5b7c'
       sha1 '32b0c6192992910e26f7fd19b04e05a7d97fed10'
       version '6.3.0'
@@ -105,7 +105,7 @@ class Ncl < PACKMAN::Package
   end
 
   binary :RHEL, '=~ 5' do
-    if PACKMAN.x86_64?
+    if PACKMAN.os.x86_64?
       url 'https://www.earthsystemgrid.org/download/fileDownload.htm?logicalFileId=e0883d0b-cd9a-11e4-bb80-00c0f03d5b7c'
       sha1 '379b2f31b4e5fd588c8e118b03a74bd284bccdb2'
       version '6.3.0'

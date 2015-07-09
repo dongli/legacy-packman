@@ -8,7 +8,7 @@ class Grib2_c < PACKMAN::Package
 
   def install
     defs = 'DEFS=-DUSE_JPEG2000 -DUSE_PNG'
-    defs << ' -D__64BIT__' if PACKMAN.x86_64?
+    defs << ' -D__64BIT__' if PACKMAN.os.x86_64?
     inc = "-I#{Jasper.include} -I#{Libpng.include}"
     PACKMAN.replace 'makefile', {
       /^DEFS=.*$/ => defs,

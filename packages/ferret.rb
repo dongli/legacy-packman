@@ -29,7 +29,7 @@ class Ferret < PACKMAN::Package
     PACKMAN.cd 'FERRET', :norecord
     # Check build type since Ferret does not check it for us.
     build_type = ''
-    if PACKMAN.x86_64?
+    if PACKMAN.os.x86_64?
       if PACKMAN.mac?
         build_type = 'x86_64-darwin'
       elsif PACKMAN.linux?
@@ -130,7 +130,7 @@ class Ferret < PACKMAN::Package
     end
     # Bad Ferret developers! Shame on you!
     if build_type == 'x86_64-darwin'
-      File.open('xgks/CUSTOMIZE.x86_64-darwin', 'w') do |file|
+      File.open('xgks/CUSTOMIZE.os.x86_64-darwin', 'w') do |file|
         file << "CC=#{PACKMAN.compiler('c').command}\n"
         file << "CFLAGS='#{PACKMAN.compiler('c').default_flags['c']}'\n"
         file << "CPPFLAGS='-DNDEBUG'\n"

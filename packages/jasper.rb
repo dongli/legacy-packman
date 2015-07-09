@@ -19,7 +19,7 @@ class Jasper < PACKMAN::Package
   end
 
   def install
-    if PACKMAN.cygwin? and PACKMAN.x86_64?
+    if PACKMAN.cygwin? and PACKMAN.os.x86_64?
       PACKMAN.cp config_guess.package_path, './acaux'
       PACKMAN.cp config_sub.package_path, './acaux'
     end

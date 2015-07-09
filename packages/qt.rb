@@ -25,7 +25,7 @@ class Qt < PACKMAN::Package
         args << 'unsupported/macx-clang'
       end
     end
-    if PACKMAN.x86_64?
+    if PACKMAN.os.x86_64?
       args << '-arch x86_64'
     else
       args << '-arch x86'
