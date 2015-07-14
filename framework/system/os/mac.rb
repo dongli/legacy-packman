@@ -36,13 +36,14 @@ module PACKMAN
       id += 1 until not existed_ids.include? id
       id
     end
-    command :create_user do |name|
+    command :create_user do |name, options = []|
+      options = [options] if not options.class == Array
       PACKMAN.report_notice "Create user #{PACKMAN.blue name}."
       if check_user name
         PACKMAN.report_error "User #{PACKMAN.red name} exists!"
       end
       res = `sudo dscl . create /Users/#{name} 2>&1`
-      PACKMAN.report_error "Failed to create #{PACKMAN.red name}! See errors:\n#{res}" if not $?.success?
+      PACKMAN.report_error "Failed to create user #{PACKMAN.red name}! See errors:\n#{res}" if not $?.success?
       res = `sudo dscl . create /Users/#{name} UserShell /bin/bash`
       PACKMAN.report_error "Failed to set user shell for #{PACKMAN.red name}! See errors:\n#{res}" if not $?.success?
       unique_id = get_unique_id
@@ -54,6 +55,10 @@ module PACKMAN
       PACKMAN.report_notice "Please enter a password for user #{PACKMAN.blue name}:"
       system "sudo dscl . passwd /Users/#{name}"
       PACKMAN.report_error "Failed to set password for #{PACKMAN.red name}!" if not $?.success?
+      if options.include? :hide_login
+        res = `sudo defaults write /Library/Preferences/com.apple.loginwindow HiddenUsersList -array-add #{name}`
+        PACKMAN.report_error "Failed to hide #{PACKMAN.red name} from login screen!" if not $?.success?
+      end
     end
     command :delete_user do |name|
       PACKMAN.report_notice "Delete user #{PACKMAN.blue name}."
