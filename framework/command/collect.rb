@@ -69,7 +69,11 @@ module PACKMAN
     # Check if there is any attachment to download.
     package.attachments.each_value do |attach|
       url = attach.url
-      attach_file_name = "#{File.basename(URI.parse(url).path)}"
+      if attach.filename
+        attach_file_name = attach.filename
+      else
+        attach_file_name = "#{File.basename(URI.parse(url).path)}"
+      end
       attach_file_path = "#{ConfigManager.package_root}/#{attach_file_name}"
       if File.exist? attach_file_path
         next if PACKMAN.sha1_same? attach_file_path, attach.sha1
