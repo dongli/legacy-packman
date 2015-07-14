@@ -90,8 +90,6 @@ module PACKMAN
       file << "<dict>\n"
       file << "  <key>Label</key>\n"
       file << "  <string>#{options[:label]}</string>\n"
-      file << "  <key>RunAtLoad</key>\n"
-      file << "  <false/>\n"
       file << "  <key>Program</key>\n"
       file << "  <string>#{options[:command]}</string>\n"
       if options.has_key? :arguments
@@ -106,6 +104,10 @@ module PACKMAN
           file << "    <string>#{arg}</string>\n"
         end
         file << "  </array>\n"
+      end
+      if options.has_key? :run_at_load
+        file << "  <key>RunAtLoad</key>\n"
+        file << "  <#{options[:run_at_load]}/>\n"
       end
       if options.has_key? :every
         if options[:every].has_key? :second
@@ -137,6 +139,18 @@ module PACKMAN
           end
           file << "  </dict>\n"
         end
+      end
+      if options.has_key? :working_directory
+        file << "  <key>WorkingDirectory</key>\n"
+        file << "  <string>#{options[:working_directory]}</string>\n"
+      end
+      if options.has_key? :stdout
+        file << "  <key>StandardOutPath</key>\n"
+        file << "  <string>#{options[:stdout]}</string>\n"
+      end
+      if options.has_key? :stderr
+        file << "  <key>StandardErrorPath</key>\n"
+        file << "  <string>#{options[:stderr]}</string>\n"
       end
       file << "</dict>\n"
       file << "</plist>\n"

@@ -39,6 +39,7 @@ class Logrotate < PACKMAN::Package
         '-s '+var+'/lib/logrotate.status',
         etc+'/logrotate.conf'
       ],
+      :run_at_load => false,
       :every => { :hour => 6, :minute => 25 }
     })
   end
