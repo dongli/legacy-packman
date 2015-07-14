@@ -71,5 +71,91 @@ module PACKMAN
       res = `sudo chown -R #{owner} #{path} 2>&1`
       PACKMAN.report_error "Failed to change owner of #{PACKMAN.red path} to #{PACKMAN.red owner}! See errors:\n#{res}" if not $?.success?
     end
+    command :cron_job_exist? do |label|
+      not `launchctl list | grep '#{label}'`.empty?
+    end
+    command :start_cron_job do |options|
+      PACKMAN.report_error "Options does not contain #{PACKMAN.red label}!" if not options.has_key? :label
+      PACKMAN.report_notice "Start a cron job #{PACKMAN.blue options[:label]}."
+      plist_file = "#{ENV['HOME']}/Library/LaunchAgents/#{options[:label]}.plist"
+      file = File.new(plist_file, 'w')
+      file << "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
+      file << "<!DOCTYPE plist PUBLIC \"-//Apple//DTD PLIST 1.0//EN\" \"http://www.apple.com/DTDs/PropertyList-1.0.dtd\">\n"
+      file << "<plist version=\"1.0\">\n"
+      file << "<dict>\n"
+      file << "  <key>Label</key>\n"
+      file << "  <string>#{options[:label]}</string>\n"
+      file << "  <key>RunAtLoad</key>\n"
+      file << "  <false/>\n"
+      file << "  <key>Program</key>\n"
+      file << "  <string>#{options[:command]}</string>\n"
+      if options.has_key? :arguments
+        file << "  <key>ProgramArguments</key>\n"
+        file << "  <array>\n"
+        if options[:arguments].class == Array
+          args = options[:arguments]
+        elsif options[:arguments].class == String
+          args = options[:arguments].split
+        end
+        args.each do |arg|
+          file << "    <string>#{arg}</string>\n"
+        end
+        file << "  </array>\n"
+      end
+      if options.has_key? :every
+        if options[:every].has_key? :second
+          file << "  <key>StartInterval</key>\n"
+          file << "  <integer>#{options[:every][:second]}</integer>\n"
+        end
+        if options[:every].keys & [:minute, :hour, :day, :weekday, :month] != []
+          file << "  <key>StartCalendarInterval</key>\n"
+          file << "  <dict>\n"
+          if options[:every].has_key? :minute
+            file << "    <key>Minute</key>\n"
+            file << "    <integer>#{options[:every][:minute]}</integer>\n"
+          end
+          if options[:every].has_key? :hour
+            file << "    <key>Hour</key>\n"
+            file << "    <integer>#{options[:every][:hour]}</integer>\n"
+          end
+          if options[:every].has_key? :day
+            file << "    <key>Day</key>\n"
+            file << "    <integer>#{options[:every][:day]}</integer>\n"
+          end
+          if options[:every].has_key? :weekday
+            file << "    <key>Day</key>\n"
+            file << "    <integer>#{options[:every][:weekday]}</integer>\n"
+          end
+          if options[:every].has_key? :month
+            file << "    <key>Day</key>\n"
+            file << "    <integer>#{options[:every][:month]}</integer>\n"
+          end
+          file << "  </dict>\n"
+        end
+      end
+      file << "</dict>\n"
+      file << "</plist>\n"
+      file.close
+      if cron_job_exist? options[:label]
+        res = `launchctl unload #{plist_file}`
+        PACKMAN.report_error "Failed to unload #{PACKMAN.red plist_file}!" if not $?.success?
+      end
+      res = `launchctl load #{plist_file}`
+      PACKMAN.report_error "Failed to load #{PACKMAN.red plist_file}!" if not $?.success?
+      res = `launchctl start #{options[:label]}`
+      PACKMAN.report_error "Failed to start a cron job #{PACKMAN.red options[:label]}!" if not $?.success?
+    end
+    command :stop_cron_job do |label|
+      PACKMAN.report_notice "Stop a cron job #{PACKMAN.blue label}."
+      res = `launchctl stop #{label}`
+      PACKMAN.report_error "Failed to stop a cron job #{PACKMAN.red label}!" if not $?.success?
+      plist_file = "#{ENV['HOME']}/Library/LaunchAgents/#{label}.plist"
+      res = `launchctl unload #{plist_file}`
+      PACKMAN.report_error "Failed to unload a cron job #{PACKMAN.red label}!" if not $?.success?
+    end
+    command :status_cron_job do |label|
+      res = `launchctl list #{label} 2>&1`
+      $?.success?
+    end
   end
 end
