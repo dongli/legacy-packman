@@ -1,7 +1,7 @@
 class Imagemagick < PACKMAN::Package
-  url 'http://www.imagemagick.org/download/releases/ImageMagick-6.9.1-1.tar.xz'
-  sha1 '77e2dc47f87ec1c5b2cb519f298acf1f8202d7d8'
-  version '6.9.1-1'
+  url 'http://www.imagemagick.org/download/ImageMagick-6.9.1-8.tar.gz'
+  sha1 '0c04ed521796c5ac5fce4ac64e66b7e8c6a07173'
+  version '6.9.1-8'
 
   label :compiler_insensitive
 

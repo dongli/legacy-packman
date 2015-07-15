@@ -1,6 +1,6 @@
 class Bison < PACKMAN::Package
   url 'http://ftp.gnu.org/gnu/bison/bison-3.0.4.tar.gz'
-  sha1 '8270497aad88c7dd4f2c317298c50513fb0c3c8e'
+  sha1 'ec1f2706a7cfedda06d29dc394b03e092a1e1b74'
   version '3.0.4'
 
   label :compiler_insensitive
