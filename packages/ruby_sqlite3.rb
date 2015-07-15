@@ -1,5 +1,5 @@
 class Ruby_sqlite3 < PACKMAN::Package
-  url PACKMAN.gem_source+'sqlite3-1.3.10.gem'
+  url PACKMAN.gem_url('sqlite3-1.3.10.gem')
   sha1 '6bbe47c3e690568b9aaf2c7d9aca59a069608b1e'
   version '1.3.10'
 
