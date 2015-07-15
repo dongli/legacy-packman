@@ -184,11 +184,7 @@ module PACKMAN
           CLI.report_error "Currently, only one compiler set is allowed to build packages that are installed with source."
         end
         CompilerManager.activate_compiler_set package.compiler_set_indices.first
-        if not package.target_dir
-          CLI.report_error "Option #{CLI.red '-target_dir=...'} is needed!"
-        end
-        package.decompress_to package.target_dir
-        PACKMAN.work_in package.target_dir do
+        if package.has_label? :not_use_target_dir_option
           Package.apply_patch package
           msg = "Build package #{CLI.green package.class} with compiler set"
           msg << " #{CLI.green CompilerManager.active_compiler_set_index}"
@@ -204,8 +200,30 @@ module PACKMAN
           end
           CLI.report_notice msg+'.'
           package.install
+        else
+          if not package.target_dir
+            CLI.report_error "Option #{CLI.red '-target_dir=...'} is needed!"
+          end
+          package.decompress_to package.target_dir
+          PACKMAN.work_in package.target_dir do
+            Package.apply_patch package
+            msg = "Build package #{CLI.green package.class} with compiler set"
+            msg << " #{CLI.green CompilerManager.active_compiler_set_index}"
+            if package.has_option? 'use_mpi' and package.use_mpi?
+              mpi = package.mpi == true ? ConfigManager.defaults['mpi'] : package.mpi
+              if PACKMAN.compiler_has_mpi_wrapper? 'c'
+                mpi = nil
+                msg << " and user specified MPI library"
+              else
+                msg << " and #{CLI.red mpi.capitalize} library"
+              end
+              PACKMAN.use_mpi mpi
+            end
+            CLI.report_notice msg+'.'
+            package.install
+          end
+          Package.bashrc package
         end
-        Package.bashrc package
         package.post_install
       else
         # Build package for each compiler set.

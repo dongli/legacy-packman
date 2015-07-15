@@ -4,6 +4,7 @@ module PACKMAN
       :binary,
       :compiler_insensitive,
       :installed_with_source,
+      :not_use_target_dir_option,
       :master_package,
       :not_set_bashrc,
       :not_set_ld_library_path,

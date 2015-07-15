@@ -24,6 +24,10 @@ module PACKMAN
       res = `id -u #{name} 2>&1`
       $?.success?
     end
+    command :check_group do |name|
+      res = `dscl . list /Groups | grep #{name} 2>&1`
+      $?.success?
+    end
     command :get_unique_id do
       existed_ids = `dscl . list /Users UniqueID`.gsub(/^[^\s]+\s+/, '').split("\n").map { |id| id.to_i }
       id = 500
@@ -35,6 +39,15 @@ module PACKMAN
       id = 500
       id += 1 until not existed_ids.include? id
       id
+    end
+    command :is_user_in_group? do |user_name, group_name|
+      (`id #{user_name}`.split.select{ |x| x =~ /groups/ }).first.match(group_name) != nil
+    end
+    command :add_user_to_group do |user_name, group_name|
+      if not is_user_in_group? user_name, group_name
+        res = `sudo dseditgroup -o edit -a #{user_name} -t user #{group_name}`
+        PACKMAN.report_error "Failed to add user #{PACKMAN.red user_name} to group #{PACKMAN.red group_name}! See errors:\n#{res}" if not $?.success?
+      end
     end
     command :create_user do |name, options = []|
       options = [options] if not options.class == Array
@@ -55,6 +68,27 @@ module PACKMAN
       PACKMAN.report_notice "Please enter a password for user #{PACKMAN.blue name}:"
       system "sudo dscl . passwd /Users/#{name}"
       PACKMAN.report_error "Failed to set password for #{PACKMAN.red name}!" if not $?.success?
+      if options.include? :with_group
+        res = `sudo dscl . create /Groups/#{name}`
+        PACKMAN.report_error "Failed to create group #{PACKMAN.red name}! See error:\n#{res}" if not $?.success?
+        res = `sudo dscl . create /Groups/#{name} passwd "*"`
+        PACKMAN.report_error "Failed to passwd group #{PACKMAN.red name}! See error:\n#{res}" if not $?.success?
+        res = `sudo dscl . create /Groups/#{name} gid #{primary_group_id}`
+        PACKMAN.report_error "Failed to set group id for #{PACKMAN.red name}! See error:\n#{res}" if not $?.success?
+      end
+      if options.include? :with_home
+        res = `sudo dscl . create /Users/#{name} NFSHomeDirectory /Users/#{name}`
+        PACKMAN.report_error "Failed to create home for #{PACKMAN.red name}!" if not $?.success?
+        if not File.directory? "/Users/#{name}"
+          res = `sudo mkdir /Users/#{name}`
+          PACKMAN.report_error "Failed to create home for #{PACKMAN.red name}!" if not $?.success?
+        end
+        if options.include? :with_group
+          change_owner "/Users/#{name}", name+':'+name
+        else
+          change_owner "/Users/#{name}", name
+        end
+      end
       if options.include? :hide_login
         res = `sudo defaults write /Library/Preferences/com.apple.loginwindow HiddenUsersList -array-add #{name}`
         PACKMAN.report_error "Failed to hide #{PACKMAN.red name} from login screen!" if not $?.success?
@@ -90,11 +124,10 @@ module PACKMAN
       file << "<dict>\n"
       file << "  <key>Label</key>\n"
       file << "  <string>#{options[:label]}</string>\n"
-      file << "  <key>Program</key>\n"
-      file << "  <string>#{options[:command]}</string>\n"
+      file << "  <key>ProgramArguments</key>\n"
+      file << "  <array>\n"
+      file << "    <string>#{options[:command]}</string>\n"
       if options.has_key? :arguments
-        file << "  <key>ProgramArguments</key>\n"
-        file << "  <array>\n"
         if options[:arguments].class == Array
           args = options[:arguments]
         elsif options[:arguments].class == String
@@ -103,11 +136,23 @@ module PACKMAN
         args.each do |arg|
           file << "    <string>#{arg}</string>\n"
         end
-        file << "  </array>\n"
       end
+      file << "  </array>\n"
       if options.has_key? :run_at_load
         file << "  <key>RunAtLoad</key>\n"
         file << "  <#{options[:run_at_load]}/>\n"
+      end
+      if options.has_key? :keep_alive
+        file << "  <key>KeepAlive</key>\n"
+        file << "  <#{options[:keep_alive]}/>\n"
+      end
+      if options.has_key? :group_name
+        file << "  <key>GroupName</key>\n"
+        file << "  <string>#{options[:group_name]}</string>\n"
+      end
+      if options.has_key? :user_name
+        file << "  <key>UserName</key>\n"
+        file << "  <string>#{options[:user_name]}</string>\n"
       end
       if options.has_key? :every
         if options[:every].has_key? :second
@@ -164,16 +209,22 @@ module PACKMAN
       res = `launchctl start #{options[:label]}`
       PACKMAN.report_error "Failed to start a cron job #{PACKMAN.red options[:label]}!" if not $?.success?
     end
-    command :stop_cron_job do |label|
-      PACKMAN.report_notice "Stop a cron job #{PACKMAN.blue label}."
-      res = `launchctl stop #{label}`
-      PACKMAN.report_error "Failed to stop a cron job #{PACKMAN.red label}!" if not $?.success?
-      plist_file = "#{ENV['HOME']}/Library/LaunchAgents/#{label}.plist"
+    command :stop_cron_job do |options|
+      if not options.has_key? :label
+        PACKMAN.report_error "Options do not contain cron job #{PACKMAN.red 'label'}!"
+      end
+      PACKMAN.report_notice "Stop a cron job #{PACKMAN.blue options[:label]}."
+      res = `launchctl stop #{options[:label]}`
+      PACKMAN.report_error "Failed to stop a cron job #{PACKMAN.red options[:label]}!" if not $?.success?
+      plist_file = "#{ENV['HOME']}/Library/LaunchAgents/#{options[:label]}.plist"
       res = `launchctl unload #{plist_file}`
-      PACKMAN.report_error "Failed to unload a cron job #{PACKMAN.red label}!" if not $?.success?
+      PACKMAN.report_error "Failed to unload a cron job #{PACKMAN.red options[:label]}!" if not $?.success?
     end
-    command :status_cron_job do |label|
-      res = `launchctl list #{label} 2>&1`
+    command :status_cron_job do |options|
+      if not options.has_key? :label
+        PACKMAN.report_error "Options do not contain cron job #{PACKMAN.red 'label'}!"
+      end
+      res = `launchctl list #{options[:label]} 2>&1`
       $?.success?
     end
   end

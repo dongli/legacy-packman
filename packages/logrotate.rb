@@ -45,11 +45,11 @@ class Logrotate < PACKMAN::Package
   end
 
   def status
-    PACKMAN.os.status_cron_job 'org.packman.logrotate'
+    PACKMAN.os.status_cron_job :label => 'org.packman.logrotate'
   end
 
   def stop
-    PACKMAN.os.stop_cron_job 'org.packman.logrotate'
+    PACKMAN.os.stop_cron_job :label => 'org.packman.logrotate'
   end
 end
 

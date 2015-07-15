@@ -15,7 +15,7 @@ module PACKMAN
           CLI.report_error "#{CLI.red package_name} does not provide #{CLI.blue 'stop'} method!"
         end
         package.stop
-        CLI.report_notice "#{CLI.green package_name} is stopped."
+        CLI.report_notice "#{CLI.blue package_name} is stopped."
       end
     end
   end

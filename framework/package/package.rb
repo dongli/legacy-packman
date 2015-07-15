@@ -15,7 +15,7 @@ module PACKMAN
 
       set_active_spec requested_spec
 
-      if active_spec.has_label? :installed_with_source
+      if active_spec.has_label? :installed_with_source and not active_spec.has_label? :not_use_target_dir_option
         active_spec.option 'target_dir' => :directory
       end
 

@@ -1,7 +1,7 @@
 module PACKMAN
   class RunManager
     def self.delegated_methods
-      [:run]
+      [:run, :run_no_redirect]
     end
 
     def self.default_command_prefix
@@ -82,6 +82,25 @@ module PACKMAN
       if not CommandLine.has_option? '-verbose'
         FileUtils.rm("#{ConfigManager.package_root}/stdout")
         FileUtils.rm("#{ConfigManager.package_root}/stderr")
+      end
+    end
+
+    def self.run_no_redirect cmd, *args
+      cmd_str = default_command_prefix
+      cmd_args = args.join(' ')
+      cmd_str << " #{cmd} "
+      cmd_str << "#{cmd_args} "
+      if CommandLine.has_option? '-debug'
+        PACKMAN.blue_arrow cmd_str
+      else
+        PACKMAN.blue_arrow "#{cmd} #{cmd_args}", :truncate
+      end
+      system cmd_str
+      if not $?.success?
+        info =  "PATH: #{FileUtils.pwd}\n"
+        info << "Command: #{cmd_str}\n"
+        info << "Return: #{$?}\n"
+        CLI.report_error "Failed to run the following command:\n"+info
       end
     end
   end

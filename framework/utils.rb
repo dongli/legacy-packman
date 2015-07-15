@@ -13,6 +13,19 @@ module PACKMAN
     return $?.success?
   end
 
+  def self.is_process_running? pid
+    if pid.class == String
+      pid = pid.chomp
+      return false if pid == ''
+    end
+    begin
+      Process.kill 0, pid.to_i
+      true
+    rescue Errno::ESRCH
+      false
+    end
+  end
+
   def self.download root, url, rename = nil, cmd = nil
     cmd ||= ConfigManager.download_command
     FileUtils.mkdir root if not Dir.exist? root

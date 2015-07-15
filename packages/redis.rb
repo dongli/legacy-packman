@@ -6,6 +6,7 @@ class Redis < PACKMAN::Package
   label :compiler_insensitive
 
   option 'use_jemalloc' => false
+  option 'config_file' => :string
 
   def install
     args = %W[
@@ -25,23 +26,35 @@ class Redis < PACKMAN::Package
     PACKMAN.cp 'sentinel.conf', etc+'/redis-sentinel.conf'
   end
 
-  def start
-    PACKMAN.os.start_cron_job({
-      :label => 'org.packman.redis',
-      :command => bin+'/redis-server',
-      :arguments => etc+'/redis.conf',
-      :working_directory => var,
-      :run_at_load => true,
-      :stdout => var+'/log/redis.log',
-      :stderr => var+'/log/redis.log'
-    })
+  def start options = {}
+    if options.empty?
+      PACKMAN.os.start_cron_job(
+        :label => 'org.packman.redis',
+        :command => bin+'/redis-server',
+        :arguments => config_file ? config_file : etc+'/redis.conf',
+        :working_directory => var,
+        :run_at_load => true,
+        :stdout => var+'/log/redis.log',
+        :stderr => var+'/log/redis.log'
+      )
+    else
+      PACKMAN.os.start_cron_job options
+    end
   end
 
-  def status
-    PACKMAN.os.status_cron_job 'org.packman.redis'
+  def status options = {}
+    if options.empty?
+      PACKMAN.os.status_cron_job :label => 'org.packman.redis'
+    else
+      PACKMAN.os.status_cron_job options
+    end
   end
 
-  def stop
-    PACKMAN.os.stop_cron_job 'org.packman.redis'
+  def stop options = {}
+    if options.empty?
+      PACKMAN.os.stop_cron_job :label => 'org.packman.redis'
+    else
+      PACKMAN.os.stop_cron_job options
+    end
   end
 end
