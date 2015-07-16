@@ -12,6 +12,20 @@ PACKMAN is yet another package manager written in Ruby. While inspired by Homebr
 
 For more information, see PACKMAN's [website](http://dongli.github.io/packman/).
 
+Highlights
+==========
+
+PACKMAN now supports to install and run GitLab on Mac (other Linux OSs will be supported later) by just four commands:
+
+```
+$ packman install gitlab
+$ packman start gitlab
+$ packman status gitlab
+$ packman stop gitlab
+```
+
+Does this win your smile? :smile:
+
 Support
 =======
 
