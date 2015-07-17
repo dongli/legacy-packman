@@ -18,7 +18,7 @@ module PACKMAN
         case status
         when :on, true
           PACKMAN::CLI.report_notice "#{CLI.blue package_name} is #{CLI.green 'on'}."
-        when :off, false
+        when :off, false, nil
           PACKMAN::CLI.report_notice "#{CLI.blue package_name} is #{CLI.red 'off'}."
         else
           PACKMAN::CLI.report_notice "#{CLI.blue package_name} is #{CLI.red status}."
