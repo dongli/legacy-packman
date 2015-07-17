@@ -55,8 +55,16 @@ module PACKMAN
     Dir.glob("#{dir_path}/*").empty?
   end
 
+  def self.write_file file_path, content
+    PACKMAN.report_notice "Write file #{CLI.blue file_path}."
+    if not File.exist? file_path
+      # TODO: Create necessary parent directories.
+    end
+    File.open(file_path, 'w') { |file| file << content }
+  end
+
   def self.append file_path, lines
-    File.open(file_path, "a") { |file|  file << lines }
+    File.open(file_path, 'a') { |file| file << lines }
   end
 
   def self.replace file_path, replaces, options = []

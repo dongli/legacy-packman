@@ -54,6 +54,7 @@ class Nginx < PACKMAN::Package
   end
 
   def start options = {}
+    return if status
     PACKMAN.replace etc+'/nginx/nginx.conf', {
       /worker_processes.*/ => "worker_processes #{worker_processes};",
       /worker_connections.*/ => "worker_connections #{worker_connections};"

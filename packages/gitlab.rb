@@ -17,6 +17,7 @@ class Gitlab < PACKMAN::Package
   option 'admin_email_user' => 'smtp'
   option 'admin_email_domain' => 'gitlab.company.com'
   option 'admin_email_password' => 'xxxxx' # TODO: How to set email password wisely?
+  option 'unicorn_timeout' => 60
 
   depends_on 'postgresql'
   depends_on 'redis'
@@ -26,6 +27,7 @@ class Gitlab < PACKMAN::Package
   depends_on 'ruby_nokogiri'
   depends_on 'libiconv'
   depends_on 'icu4c'
+  depends_on 'nginx'
 
   attach 'gitlab_shell' do
     url 'https://github.com/gitlabhq/gitlab-shell/archive/v2.6.3.tar.gz'
@@ -50,6 +52,7 @@ class Gitlab < PACKMAN::Package
   @@redis_dir         = @@gitlab_home+'/var/db/redis'
   @@redis_pid         = @@pids+'/redis.pid'
   @@redis_log         = @@logs+'/redis.log'
+  @@nginx_conf        = @@gitlab_home+'/nginx.conf'
 
   def database_must_online! db = nil
     begin
@@ -58,6 +61,11 @@ class Gitlab < PACKMAN::Package
     rescue
       PACKMAN.report_error "#{PACKMAN.blue 'Postgresql'} is #{PACKMAN.red 'off'}! Start it first."
     end
+  end
+
+  def webserver_must_online!
+    s = Nginx.new
+    PACKMAN.report_error "#{PACKMAN.blue 'Nginx'} is #{PACKMAN.red 'off'}! Start it first." if not s.status
   end
 
   def install
@@ -82,6 +90,7 @@ class Gitlab < PACKMAN::Package
       PACKMAN.work_in 'gitlab-shell' do
         PACKMAN.run "sudo -u git cp config.yml.example config.yml"
         PACKMAN.run "sudo -u git sed -i '' \"s/user: git/user: git/g\" config.yml"
+        PACKMAN.run "sudo -u git sed -i '' \"s/gitlab_url: .*/gitlab_url: \\\"http:\\/\\/#{domain}:#{port}\\\"/\" config.yml"
         PACKMAN.run "sudo -u git sed -i '' \"s/\\/home\\/git/#{@@user_home.gsub('/', '\\/')}/g\" config.yml" if PACKMAN.mac?
         PACKMAN.run "sudo -u git sed -i '' \"s/\\/usr\\/bin\\/redis-cli/#{Redis.bin.gsub('/', '\\/')}\\/redis-cli/\" config.yml"
         PACKMAN.run "sudo -u git sed -i '' \"s/\\/var\\/run\\/redis\\/redis.sock/#{@@redis_sock.gsub('/', '\\/')}/\" config.yml"
@@ -130,7 +139,10 @@ class Gitlab < PACKMAN::Package
         # Modify 'unicorn.rb'.
         PACKMAN.run "sudo -u git cp config/unicorn.rb.example config/unicorn.rb"
         PACKMAN.run "sudo -u git sed -i '' \"s/\\/home\\/git/#{@@user_home.gsub('/', '\\/')}/g\" config/unicorn.rb"
-        PACKMAN.run "sudo -u git sed -i '' \"s/\\(listen .*\\.socket\\)/#\\1/\" config/unicorn.rb"
+        PACKMAN.run "sudo -u git sed -i '' \"s/\\(listen .*127\\.0\\.0\\.1:8080\\)/#\\1/\" config/unicorn.rb"
+        PACKMAN.run "sudo -u git sed -i '' \"s/unicorn.stdout.log/unicorn.log/\" config/unicorn.rb"
+        PACKMAN.run "sudo -u git sed -i '' \"s/unicorn.stderr.log/unicorn.log/\" config/unicorn.rb"
+        PACKMAN.run "sudo -u git sed -i '' \"s/timeout .*/timeout #{unicorn_timeout}/\" config/unicorn.rb"
         #
         PACKMAN.run "sudo -u git -H cp config/initializers/rack_attack.rb.example config/initializers/rack_attack.rb"
         # TODO: Fix this.
@@ -164,6 +176,30 @@ class Gitlab < PACKMAN::Package
         PACKMAN.run "sudo -u git mkdir -p #{@@redis_dir}"
         PACKMAN.run "sudo -u git touch #{@@redis_pid}"
         PACKMAN.run "sudo -u git touch #{@@redis_log}"
+        # Create 'nginx.conf'.
+        PACKMAN.write_file @@nginx_conf, <<-EOT.keep_indent
+          upstream app {
+            server unix:#{@@sockets}/gitlab.socket fail_timeout=0;
+          }
+
+          server {
+            listen #{port};
+            server_name #{domain};
+            root #{@@gitlab_home}/public;
+            try_files $uri/index.html $uri @app;
+
+            location @app {
+              proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+              proxy_set_header Host $http_host;
+              proxy_redirect off;
+              proxy_pass http://app;
+            }
+
+            error_page 500 502 503 504 /500.html;
+            client_max_body_size 4G;
+            keepalive_timeout 10;
+          }
+        EOT
         # Modify 'resque.yml'.
         PACKMAN.run "sudo -u git -H cp config/resque.yml.example config/resque.yml"
         PACKMAN.run "sudo -u git sed -i '' \"s/\\/var\\/run\\/redis\\/redis.sock/#{@@redis_sock.gsub('/', '\\/')}/\" config/resque.yml"
@@ -176,6 +212,7 @@ class Gitlab < PACKMAN::Package
 
   def start
     database_must_online!
+    webserver_must_online!
     PACKMAN.work_in @@gitlab_home do
       if File.exist? "#{@@pids}/redis.pid"
         if PACKMAN.is_process_running? `cat #{@@pids}/redis.pid`
