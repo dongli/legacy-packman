@@ -63,7 +63,10 @@ module PACKMAN
           next
         end
         if CommandLine.has_option? '-only_post'
-          package.post_install
+          package.compiler_set_indices.each do |index|
+            CompilerManager.activate_compiler_set index
+            package.post_install
+          end
         else
           install_package package
         end

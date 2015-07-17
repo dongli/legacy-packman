@@ -54,13 +54,15 @@ class Openssl < PACKMAN::Package
   end
 
   def post_install
-    keychains = %w[
-      /Library/Keychains/System.keychain
-      /System/Library/Keychains/SystemRootCertificates.keychain
-    ]
     cert_pem = File.new etc+'/openssl/cert.pem', 'w'
-    keychains.each do |keychain|
-      cert_pem << `security find-certificate -a -p #{keychain}`
+    if PACKMAN.mac?
+      keychains = %w[
+        /Library/Keychains/System.keychain
+        /System/Library/Keychains/SystemRootCertificates.keychain
+      ]
+      keychains.each do |keychain|
+        cert_pem << `security find-certificate -a -p #{keychain}`
+      end
     end
   end
 end
