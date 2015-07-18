@@ -1,5 +1,3 @@
-require 'sequel'
-
 class Gitlab < PACKMAN::Package
   url 'https://github.com/gitlabhq/gitlabhq/archive/v7.12.2.tar.gz'
   sha1 'af3b0d0f78ed812a456792ddedd80dc8c0aaa3a1'
@@ -55,6 +53,8 @@ class Gitlab < PACKMAN::Package
   @@nginx_conf        = @@gitlab_home+'/nginx.conf'
 
   def database_must_online! db = nil
+    require 'sequel'
+
     begin
       db ||= Sequel.postgres('postgres', :host => 'localhost')
       db.test_connection
@@ -69,9 +69,13 @@ class Gitlab < PACKMAN::Package
   end
 
   def install
+    require 'sequel'
+
     PACKMAN.os.create_user('git', [:with_home, :with_group, :hide_login]) unless PACKMAN.os.check_user 'git'
     if not File.directory? @@user_home
-      PACKMAN.report_error "User home for #{PACKMAN.red 'git'} does not exist!"
+      PACKMAN.report_notice "User home for #{PACKMAN.red 'git'} does not exist, so create it."
+      PACKMAN.run "sudo mkdir #{@@user_home}"
+      PACKMAN.run "sudo chown -R git:git #{@@user_home}"
     end
     db = Sequel.postgres('postgres', :host => 'localhost')
     database_must_online! db
@@ -176,30 +180,6 @@ class Gitlab < PACKMAN::Package
         PACKMAN.run "sudo -u git mkdir -p #{@@redis_dir}"
         PACKMAN.run "sudo -u git touch #{@@redis_pid}"
         PACKMAN.run "sudo -u git touch #{@@redis_log}"
-        # Create 'nginx.conf'.
-        PACKMAN.write_file @@nginx_conf, <<-EOT.keep_indent
-          upstream app {
-            server unix:#{@@sockets}/gitlab.socket fail_timeout=0;
-          }
-
-          server {
-            listen #{port};
-            server_name #{domain};
-            root #{@@gitlab_home}/public;
-            try_files $uri/index.html $uri @app;
-
-            location @app {
-              proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-              proxy_set_header Host $http_host;
-              proxy_redirect off;
-              proxy_pass http://app;
-            }
-
-            error_page 500 502 503 504 /500.html;
-            client_max_body_size 4G;
-            keepalive_timeout 10;
-          }
-        EOT
         # Modify 'resque.yml'.
         PACKMAN.run "sudo -u git -H cp config/resque.yml.example config/resque.yml"
         PACKMAN.run "sudo -u git sed -i '' \"s/\\/var\\/run\\/redis\\/redis.sock/#{@@redis_sock.gsub('/', '\\/')}/\" config/resque.yml"
@@ -207,6 +187,30 @@ class Gitlab < PACKMAN::Package
       # Change all the files writable by the ENV['USER']!
       PACKMAN.os.add_user_to_group ENV['USER'], 'git'
       PACKMAN.run 'sudo chmod -R g+w *'
+      # Create 'nginx.conf'.
+      PACKMAN.write_file @@nginx_conf, <<-EOT.keep_indent
+        upstream app {
+          server unix:#{@@sockets}/gitlab.socket fail_timeout=0;
+        }
+
+        server {
+          listen #{port};
+          server_name #{domain};
+          root #{@@gitlab_home}/public;
+          try_files $uri/index.html $uri @app;
+
+          location @app {
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header Host $http_host;
+            proxy_redirect off;
+            proxy_pass http://app;
+          }
+
+          error_page 500 502 503 504 /500.html;
+          client_max_body_size 4G;
+          keepalive_timeout 10;
+        }
+      EOT
     end
   end
 
