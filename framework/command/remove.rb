@@ -20,7 +20,7 @@ module PACKMAN
           tmp = versions.map { |v| File.basename(v) }
           tmp << 'all'
           CLI.ask 'Which version do you want to remove?', tmp
-          removed_versions = CLI.get_answer tmp
+          removed_versions = CLI.get_answer :possible_answers => tmp
         elsif versions.size == 1
           removed_versions = [0]
         elsif CommandLine.has_option? '-all'
@@ -55,7 +55,7 @@ module PACKMAN
                 }
                 tmp << 'all'
                 CLI.ask 'Which set do you want to remove?', tmp
-                removed_sets = CLI.get_answer tmp
+                removed_sets = CLI.get_answer :possible_answers => tmp
                 if removed_sets.include? tmp.size-1
                   removed_sets = Array.new(sets.size) { |i| i }
                 end

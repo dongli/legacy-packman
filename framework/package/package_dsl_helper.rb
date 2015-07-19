@@ -29,6 +29,9 @@ module PACKMAN
             def #{option_name}?
               #{spec}.options["#{option_name}"]
             end
+            def #{option_name}= value
+              #{spec}.options["#{option_name}"] = value
+            end
           EOT
         when :package_name
           if option_name =~ /use_/
@@ -56,6 +59,9 @@ module PACKMAN
           method_bodies << <<-EOT
             def #{option_name}
               #{spec}.options["#{option_name}"]
+            end
+            def #{option_name}= value
+              #{spec}.options["#{option_name}"] = value
             end
           EOT
         end

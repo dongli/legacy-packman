@@ -124,41 +124,56 @@ module PACKMAN
       exit
     end
 
-    def self.ask question, possible_answers
+    def self.ask question, possible_answers = []
+      possible_answers ||= []
+      possible_answers = [possible_answers] if not possible_answers.class == Array
       question.split("\n").each do |line|
         print "#{yellow '==>'} #{line}\n"
       end
-      print "#{yellow '==>'} Possible answers:\n"
-      for i in 0..possible_answers.size-1
-        print "    #{bold i}: #{possible_answers[i]}\n"
+      if not possible_answers.empty?
+        print "#{yellow '==>'} Possible answers:\n"
+        for i in 0..possible_answers.size-1
+          print "    #{bold i}: #{possible_answers[i]}\n"
+        end
       end
     end
 
-    def self.get_answer possible_answers, options = nil
-      options = [options] if not options or options.class != Array
+    def self.get_answer options = {}
+      options ||= {}
       while true
         print '> '
-        if possible_answers
+        if options.has_key? :possible_answers
           begin
-            inputs = STDIN.gets.strip.split(/\s/)
-            report_error "You need to input something!" if inputs.empty?
+            inputs = STDIN.gets.strip.split(/\s/).map { |x| x.chomp }
+            if inputs.empty?
+              report_warning "You need to input something!"
+              next
+            end
             for i in 0..inputs.size-1
               inputs[i] = Integer(inputs[i])
-              if not (0..possible_answers.size-1).cover? inputs[i]
-                report_error "Input in out of range!"
+              if not (0..options[:possible_answers].size-1).cover? inputs[i]
+                report_warning "Input in out of range!"
+                next
               end
             end
           rescue
-            report_error "Input should be integers!"
+            report_warning "Input should be integers!"
+            next
           end
-          if options.include? :only_one
-            if inputs.size != 1
-              report_error 'Only one should be selected!'
+          if options.has_key? :only
+            if inputs.size != options[:only]
+              report_warning "Only #{options[:only]} should be selected!"
+              next
             end
             inputs = inputs.first
           end
         else
-          inputs = STDIN.gets
+          if options.has_key? :password
+            require 'highline/import'
+            inputs = $terminal.ask('') { |q| q.echo = '*' }
+          else
+            inputs = STDIN.gets.chomp
+          end
         end
         return inputs
       end

@@ -26,7 +26,7 @@ module PACKMAN
             tmp = CompilerManager.compiler_sets.clone
             tmp << 'all'
             CLI.ask 'Which compiler sets do you want to use?', tmp
-            ans = CLI.get_answer tmp
+            ans = CLI.get_answer :possible_answers => tmp
             for i in 0..CompilerManager.compiler_sets.size-1
               if ans.include? i or ans.include? CompilerManager.compiler_sets.size
                 package.compiler_set_indices << i
