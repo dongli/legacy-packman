@@ -171,6 +171,7 @@ module PACKMAN
     def etc; prefix+'/etc'; end
     def include; prefix+'/include'; end
     def lib; prefix+'/lib'; end
+    def libexec; prefix+'/libexec'; end
     def share; prefix+'/share'; end
     def doc; share+'/doc/'+self.class.to_s.downcase; end
     def man; share+'/man'; end
@@ -183,6 +184,7 @@ module PACKMAN
     def self.etc; prefix+'/etc'; end
     def self.include; prefix+'/include'; end
     def self.lib; prefix+'/lib'; end
+    def self.libexec; prefix+'/libexec'; end
     def self.share; prefix+'/share'; end
     def self.doc; share+'/doc/'+self.class.to_s.downcase; end
     def self.man; share+'/man'; end
