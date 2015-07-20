@@ -143,7 +143,7 @@ module PACKMAN
         EOT
         case PACKMAN.os.type
         when :Mac_OS_X
-          if PACKMAN.os_spec.check(:Xcode) and PACKMAN.os_spec.check(:CommandLineTools)
+          if PACKMAN.os.check(:Xcode) and PACKMAN.os.check(:CommandLineTools)
             default_compilers['c'] = 'clang'
             default_compilers['c++'] = 'clang++'
           end
