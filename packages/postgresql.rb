@@ -39,13 +39,12 @@ class Postgresql < PACKMAN::Package
   end
 
   def post_install
-    PACKMAN.mkdir var, :skip_if_exist
-    PACKMAN.report_notice "Initialize database cluster in #{cluster_path}."
-    PACKMAN.run "#{bin}/initdb --pwprompt -D #{cluster_path} -E UTF8"
+    PACKMAN.report_notice "Create system user #{PACKMAN.blue admin_user}."
     PACKMAN.os.create_user(admin_user, [:hide_login]) unless PACKMAN.os.check_user admin_user
-    if ENV['USER'] != admin_user
-      PACKMAN.os.change_owner var, admin_user
-    end
+    PACKMAN.report_notice "Initialize database cluster in #{cluster_path}."
+    PACKMAN.run "sudo mkdir #{var}" if not Dir.exist? var
+    PACKMAN.os.change_owner var, admin_user
+    PACKMAN.run "sudo -u #{admin_user} #{bin}/initdb --pwprompt -U #{admin_user} -D #{cluster_path} -E UTF8"
   end
 
   def start
