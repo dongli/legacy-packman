@@ -10,11 +10,11 @@ class Gitlab < PACKMAN::Package
 
   option 'domain' => 'localhost'
   option 'port' => 8080
-  option 'admin_email_address' => :string
-  option 'admin_email_port' => :integer
-  option 'admin_email_user' => :string
-  option 'admin_email_domain' => :string
-  option 'admin_email_use_tls' => :boolean
+  option 'smtp_address' => :string
+  option 'smtp_port' => :integer
+  option 'smtp_email' => :string
+  option 'smtp_domain' => :string
+  option 'smtp_use_tls' => :boolean
   option 'unicorn_timeout' => 60
 
   depends_on 'postgresql'
@@ -115,35 +115,35 @@ class Gitlab < PACKMAN::Package
         PACKMAN.run "sudo -u git cp config/initializers/smtp_settings.rb.sample config/initializers/smtp_settings.rb"
         # Do not let other people see this file, since it contains email password!
         PACKMAN.run "sudo -u git chmod o-r config/initializers/smtp_settings.rb"
-        if not PACKMAN::CommandLine.has_option? '-admin_email_address'
-          PACKMAN.ask 'Input admin email address:'
-          self.admin_email_address = PACKMAN.get_answer
+        if not PACKMAN::CommandLine.has_option? '-smtp_address'
+          PACKMAN.ask 'Input smtp address:'
+          self.smtp_address = PACKMAN.get_answer
         end
-        PACKMAN.run "sudo -u git sed -i '' \"s/address: .*/address: \\\"#{admin_email_address}\\\",/\" config/initializers/smtp_settings.rb"
-        if not PACKMAN::CommandLine.has_option? '-admin_email_port'
-          PACKMAN.ask 'Input admin email port:'
-          self.admin_email_port = PACKMAN.get_answer
+        PACKMAN.run "sudo -u git sed -i '' \"s/address: .*/address: \\\"#{smtp_address}\\\",/\" config/initializers/smtp_settings.rb"
+        if not PACKMAN::CommandLine.has_option? '-smtp_port'
+          PACKMAN.ask 'Input smtp port:'
+          self.smtp_port = PACKMAN.get_answer
         end
-        PACKMAN.run "sudo -u git sed -i '' \"s/port: .*/port: #{admin_email_port},/\" config/initializers/smtp_settings.rb"
-        if not PACKMAN::CommandLine.has_option? '-admin_email_user'
-          PACKMAN.ask 'Input admin email user:'
-          self.admin_email_user = PACKMAN.get_answer
+        PACKMAN.run "sudo -u git sed -i '' \"s/port: .*/port: #{smtp_port},/\" config/initializers/smtp_settings.rb"
+        if not PACKMAN::CommandLine.has_option? '-smtp_email'
+          PACKMAN.ask 'Input smtp email:'
+          self.smtp_email = PACKMAN.get_answer
         end
-        PACKMAN.run "sudo -u git sed -i '' \"s/user_name: .*/user_name: \\\"#{admin_email_user}\\\",/\" config/initializers/smtp_settings.rb"
-        PACKMAN.ask 'Input admin email password:'
+        PACKMAN.run "sudo -u git sed -i '' \"s/user_name: .*/user_name: \\\"#{smtp_email}\\\",/\" config/initializers/smtp_settings.rb"
+        PACKMAN.ask 'Input smtp email password:'
         password = PACKMAN.get_answer :password => true
         PACKMAN.run "sudo -u git sed -i '' \"s/password: .*/password: \\\"#{password}\\\",/\" config/initializers/smtp_settings.rb"
-        if not PACKMAN::CommandLine.has_option? '-admin_email_domain'
-          PACKMAN.ask 'Input edmin mail domain:'
-          self.admin_email_domain = PACKMAN.get_answer
+        if not PACKMAN::CommandLine.has_option? '-smtp_domain'
+          PACKMAN.ask 'Input smtp domain:'
+          self.smtp_domain = PACKMAN.get_answer
         end
-        PACKMAN.run "sudo -u git sed -i '' \"s/domain: .*/domain: \\\"#{admin_email_domain}\\\",/\" config/initializers/smtp_settings.rb"
-        if not PACKMAN::CommandLine.has_option? '-admin_email_use_tls'
-          PACKMAN.ask 'Whether admin email uses tls?', ['yes', 'no']
-          self.admin_email_use_tls = ( PACKMAN.get_answer :possible_answers => ['yes', 'no'] ) == 0 ? true : false
+        PACKMAN.run "sudo -u git sed -i '' \"s/domain: .*/domain: \\\"#{smtp_domain}\\\",/\" config/initializers/smtp_settings.rb"
+        if not PACKMAN::CommandLine.has_option? '-smtp_use_tls'
+          PACKMAN.ask 'Whether smtp uses tls?', ['yes', 'no']
+          self.smtp_use_tls = ( PACKMAN.get_answer :possible_answers => ['yes', 'no'] ) == 0 ? true : false
         end
-        PACKMAN.run "sudo -u git sed -i '' \"s/enable_starttls_auto: .*/enable_starttls_auto: #{admin_email_use_tls?},/\" config/initializers/smtp_settings.rb"
-        if not admin_email_use_tls?
+        PACKMAN.run "sudo -u git sed -i '' \"s/enable_starttls_auto: .*/enable_starttls_auto: #{smtp_use_tls?},/\" config/initializers/smtp_settings.rb"
+        if not smtp_use_tls?
           PACKMAN.run "sudo -u git sed -i '' \"s/openssl_verify_mode: .*/openssl_verify_mode: 'none'/\" config/initializers/smtp_settings.rb"
         end
         PACKMAN.run "sudo chown -R git log/"
@@ -240,6 +240,7 @@ class Gitlab < PACKMAN::Package
           keepalive_timeout 10;
         }
       EOT
+      PACKMAN.report_notice "You need to insert #{PACKMAN.blue "include #{@@nginx_conf}"} to #{PACKMAN.blue "#{Nginx.etc}/nginx/nginx.conf"}."
     end
   end
 
