@@ -15,6 +15,7 @@ class Wrf_wps < PACKMAN::Package
   option 'build_type' => 'serial'
   option 'use_mpi' => [:package_name, :boolean]
 
+  depends_on 'm4'
   depends_on 'netcdf'
   depends_on 'libpng'
   depends_on 'jasper'

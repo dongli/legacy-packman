@@ -34,6 +34,7 @@ class Wrf_model < PACKMAN::Package
     version '3.6.1'
   end
 
+  depends_on 'm4'
   depends_on 'netcdf'
   depends_on mpi if use_mpi?
 
