@@ -120,7 +120,7 @@ module PACKMAN
     def self.install_package package, options = []
       options = [options] if not options.class == Array
       # Check if the package should be skipped.
-      if package.should_be_skipped?
+      if package.should_be_skipped? or not package.methods.include? :install
         if not package.methods.include? :installed?
           CLI.report_error "Package #{CLI.red package.class} does not have #{CLI.blue 'installed?'} method!"
         end
