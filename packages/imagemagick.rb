@@ -1,7 +1,7 @@
 class Imagemagick < PACKMAN::Package
-  url 'http://www.imagemagick.org/download/ImageMagick-6.9.1-8.tar.gz'
-  sha1 '0c04ed521796c5ac5fce4ac64e66b7e8c6a07173'
-  version '6.9.1-8'
+  url 'http://www.imagemagick.org/download/ImageMagick-6.9.1-10.tar.gz'
+  sha1 'e44f4685e91c47590fe850c78d36f0626a511eb8'
+  version '6.9.1-10'
 
   label :compiler_insensitive
 
@@ -12,20 +12,27 @@ class Imagemagick < PACKMAN::Package
   depends_on 'jpeg'
   depends_on 'libtiff'
   depends_on 'libpng'
-  depends_on 'little_cms'
   depends_on 'x11'
   depends_on 'ghostscript'
   depends_on 'libwmf'
   depends_on 'librsvg'
   depends_on 'liblqr'
   depends_on 'openexr'
-  # depends_on 'webp' # WebP is hosted by Google, so we cannot access it within our great China!
   depends_on 'fftw'
   depends_on 'pango'
   depends_on 'djvulibre'
   depends_on 'openjpeg'
+  depends_on 'little_cms'
+  # depends_on 'webp' # WebP is hosted by Google, so we cannot access it within our great China!
   
   def install
+    PACKMAN.replace 'configure', { 'lcms2/lcms2.h' => 'lcms2.h' }
+    PACKMAN.replace 'magick/profile.c', { 'lcms/lcms2.h' => 'lcms2.h' }
+    PACKMAN.replace 'magick/property.c', {
+      'lcms/lcms2.h' => 'lcms2.h',
+      'lcms/lcms.h' => 'lcms2.h',
+      'lcms.h' => 'lcms2.h'
+    }
     args = %W[
       --prefix=#{prefix}
       --disable-dependency-tracking
@@ -33,26 +40,29 @@ class Imagemagick < PACKMAN::Package
       --disable-static
       --with-modules
       --disable-openmp
-      --with-zlib=#{Zlib.prefix}
-      --with-fontconfig=#{Fontconfig.prefix}
-      --with-freetype=#{Freetype.prefix}
-      --with-jpeg=#{Jpeg.prefix}
-      --with-tiff=#{Libtiff.prefix}
-      --with-png=#{Libpng.prefix}
-      --with-lcms2=#{Little_cms.prefix}
-      --with-gslib=#{Ghostscript.prefix}
+      --with-zlib=yes
+      --with-fontconfig=yes
+      --with-freetype=yes
+      --with-jpeg=yes
+      --with-tiff=yes
+      --with-png=yes
+      --with-gslib=yes
       --with-gs-font-dir=#{Ghostscript.share}/ghostscript/fonts
-      --with-wmf=#{Libwmf.prefix}
-      --with-rsvg=#{Librsvg.prefix}
-      --with-lqr=#{Liblqr.prefix}
-      --with-openexr=#{Openexr.prefix}
-      --with-fftw=#{Fftw.prefix}
-      --with-pango=#{Pango.prefix}
-      --with-djvu=#{Djvulibre.prefix}
-      --with-openjp2=#{Openjpeg.prefix}
+      --with-wmf=yes
+      --with-rsvg=yes
+      --with-lqr=yes
+      --with-openexr=yes
+      --with-fftw=yes
+      --with-pango=yes
+      --with-djvu=yes
+      --with-openjp2=yes
+      --with-lcms2=yes
     ]
     # --with-webp=#{Webp.prefix}
-    PACKMAN.set_cppflags_and_ldflags [Libtool]
+    PACKMAN.set_cppflags_and_ldflags [Libtool, Jpeg, Libtiff, Libpng, Djvulibre,
+                                      Fftw, Fontconfig, Freetype, Ghostscript,
+                                      Liblqr, Openexr, Openjpeg, Pango, Librsvg,
+                                      Libwmf, Zlib, Little_cms]
     PACKMAN.run './configure', *args
     PACKMAN.run 'make install'
   end
