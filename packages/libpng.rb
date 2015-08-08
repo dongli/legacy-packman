@@ -1,5 +1,5 @@
 class Libpng < PACKMAN::Package
-  url 'http://downloads.sf.net/project/libpng/libpng16/1.6.16/libpng-1.6.16.tar.gz'
+  url 'http://nchc.dl.sourceforge.net/project/libpng/libpng16/older-releases/1.6.16/libpng-1.6.16.tar.gz'
   sha1 '50f3b31d013a31e2cac70db177094f6a7618b8be'
   version '1.6.16'
 
