@@ -27,8 +27,7 @@ module PACKMAN
     end
   end
 
-  def self.mkdir dir, options = []
-    options = [options] if not options.class == Array
+  def self.mkdir dir, *options
     if Dir.exist? dir
       if options.include? :force
         FileUtils.rm_rf dir

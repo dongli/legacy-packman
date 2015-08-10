@@ -25,7 +25,7 @@ class Mlpack < PACKMAN::Package
     else
       args << "-DCMAKE_CXX_FLAGS='-I#{Hdf5.include}'"
     end
-    PACKMAN.mkdir 'build', [:force, :silent] do
+    PACKMAN.mkdir 'build', :force, :silent do
       PACKMAN.run 'cmake ..', *args
       PACKMAN.run 'make -j2'
       PACKMAN.run 'make test' if not skip_test?
