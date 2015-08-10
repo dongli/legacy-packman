@@ -30,7 +30,12 @@ module PACKMAN
     cmd ||= ConfigManager.download_command
     FileUtils.mkdir root if not Dir.exist? root
     if not does_command_exist? cmd
-      CLI.report_error "Download command #{CLI.red cmd} does not exist!"
+      if cmd == :curl
+        download root, url, rename, :wget
+        return
+      else
+        CLI.report_error "Download command #{CLI.red cmd} does not exist!"
+      end
     end
     filename = rename ? rename : File.basename(URI.parse(url).path)
     case cmd
