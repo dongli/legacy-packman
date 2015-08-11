@@ -21,7 +21,7 @@ class R < PACKMAN::Package
   def install
     args = %W[
       --prefix=#{prefix}
-      --with-readline=#{Readline.prefix}
+      --with-readline=#{Readline_.prefix}
       --with-libintl-prefix=#{Gettext.prefix}
       --with-libtiff=#{Libtiff.prefix}
       --with-jpeglib=#{Jpeg.prefix}
@@ -35,7 +35,7 @@ class R < PACKMAN::Package
     elsif PACKMAN.linux?
       args << '--enable-R-shlib'
     end
-    PACKMAN.set_cppflags_and_ldflags [Readline, Gettext]
+    PACKMAN.set_cppflags_and_ldflags [Readline_, Gettext]
     PACKMAN.run './configure', *args
     PACKMAN.run 'make'
     PACKMAN.run 'make check 2>&1 | tee make-check.log' if not skip_test?

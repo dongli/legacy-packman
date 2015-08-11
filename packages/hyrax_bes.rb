@@ -28,8 +28,8 @@ class Hyrax_bes < PACKMAN::Package
       DAP_CFLAGS='#{`#{Opendap.bin}/dap-config --cflags`.strip}'
     ]
     if not PACKMAN.mac?
-      args << "CPPFLAGS='-I#{Uuid.prefix}/include -I#{Readline.prefix}/include'"
-      args << "LDFLAGS='-L#{Ncurses.prefix}/lib -L#{Readline.prefix}/lib'"
+      args << "CPPFLAGS='-I#{Uuid.prefix}/include -I#{Readline_.prefix}/include'"
+      args << "LDFLAGS='-L#{Ncurses.prefix}/lib -L#{Readline_.prefix}/lib'"
     end
     PACKMAN.run './configure', *args
     PACKMAN.run 'make'

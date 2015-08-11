@@ -21,7 +21,7 @@ class Ruby < PACKMAN::Package
       --with-out-ext=tk
       --without-gmp
     ]
-    PACKMAN.set_cppflags_and_ldflags [Readline, Gdbm, Gmp, Libffi, Libyaml, Openssl]
+    PACKMAN.set_cppflags_and_ldflags [Readline_, Gdbm, Gmp, Libffi, Libyaml, Openssl]
     PACKMAN.run './configure', *args
     PACKMAN.run 'make'
     PACKMAN.run 'make install'

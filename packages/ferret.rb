@@ -99,7 +99,7 @@ class Ferret < PACKMAN::Package
       end
     else
       PACKMAN.replace 'site_specific.mk', {
-        /^READLINE_DIR\s*=.*$/ => "READLINE_DIR = #{Readline.prefix}"
+        /^READLINE_DIR\s*=.*$/ => "READLINE_DIR = #{Readline_.prefix}"
       }
       PACKMAN.replace "platform_specific.mk.#{build_type}", {
         /^(\s*TERMCAPLIB\s*=).*$/ => "\\1 -L#{Ncurses.lib} -lncurses"

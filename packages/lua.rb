@@ -11,8 +11,8 @@ class Lua < PACKMAN::Package
   def install
     PACKMAN.replace 'src/Makefile', {
       /^\s*CC\s*=.*$/ => "CC= #{PACKMAN.compiler('c').command}",
-      /^\s*CFLAGS\s*=(.*)$/ => "CFLAGS= \\1 -I#{Readline.include} -I#{Ncurses.include}",
-      /^\s*LDFLAGS\s*=(.*)$/ => "LDFLAGS= \\1 -L#{Readline.lib} -L#{Ncurses.lib}",
+      /^\s*CFLAGS\s*=(.*)$/ => "CFLAGS= \\1 -I#{Readline_.include} -I#{Ncurses.include}",
+      /^\s*LDFLAGS\s*=(.*)$/ => "LDFLAGS= \\1 -L#{Readline_.lib} -L#{Ncurses.lib}",
       /^\s*LIBS\s*=(.*)$/ => "LIBS= \\1 -lncurses"
     }
     PACKMAN.replace 'src/luaconf.h', {

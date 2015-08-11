@@ -33,7 +33,7 @@ class Python3 < PACKMAN::Package
     PACKMAN.replace 'setup.py', {
       'sqlite_defines.append(("SQLITE_OMIT_LOAD_EXTENSION", "1"))' => 'pass',
       "do_readline = self.compiler.find_library_file(lib_dirs, 'readline')" =>
-        "do_readline = '#{Readline.lib}/libhistory.#{PACKMAN.shared_library_suffix}'"
+        "do_readline = '#{Readline_.lib}/libhistory.#{PACKMAN.shared_library_suffix}'"
     }
     args = %W[
       --prefix=#{prefix}

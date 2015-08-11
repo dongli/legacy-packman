@@ -345,7 +345,7 @@ module PACKMAN
           requested_spec[:in] = :devel
         end
         requested_spec = nil if requested_spec.empty?
-        package = eval "#{package_name}.new requested_spec"
+        package = eval "#{PackageAlias.check package_name}.new requested_spec"
         # Propagete the given options.
         options.each { |key, value| package.update_option key, value, true }
         return package
@@ -385,7 +385,7 @@ module PACKMAN
           requested_spec[:in] = :history_binary_versions
           eval("@@#{package_name}_history_binary_versions").each do |key, value|
             requested_spec[:key] = key
-            instances << eval("#{package_name}.new requested_spec")
+            instances << eval("#{PackageAlias.check package_name}.new requested_spec")
           end
         end
         return instances

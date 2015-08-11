@@ -31,7 +31,7 @@ class Postgresql < PACKMAN::Package
       --with-uuid=e2fs
     ]
     args << '--with-bonjour' if PACKMAN.mac?
-    PACKMAN.set_cppflags_and_ldflags [Openssl, Readline, Gettext, Zlib, Uuid]
+    PACKMAN.set_cppflags_and_ldflags [Openssl, Readline_, Gettext, Zlib, Uuid]
     PACKMAN.run './configure', *args
     PACKMAN.run 'make -j2'
     PACKMAN.run 'make check' if not skip_test?

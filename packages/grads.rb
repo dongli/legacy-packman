@@ -33,7 +33,7 @@ class Grads < PACKMAN::Package
     ldflags = []
     [X11, Fontconfig, Freetype, Pixman, Cairo, Zlib, Szip, Libtiff,
      Zlib, Jpeg, Jasper, Libpng, Shapelib, Grib2_c, Libiconv, Ncurses,
-     Udunits, Libgd, Curl, Libxml2, Opendap, Readline].each do |lib|
+     Udunits, Libgd, Curl, Libxml2, Opendap, Readline_].each do |lib|
       if lib == Cairo
         cppflags << "-I#{lib.include}/cairo"
       elsif lib == Freetype
@@ -64,7 +64,7 @@ class Grads < PACKMAN::Package
     PACKMAN.replace 'src/gacfg.c', '<fontconfig.h>' => '<fontconfig/fontconfig.h>'
     args = %W[
       --prefix=#{prefix}
-      --with-readline=#{Readline.prefix}
+      --with-readline=#{Readline_.prefix}
       --with-printim
       --with-cairo=#{Cairo.prefix}
       --with-sdf
@@ -97,9 +97,9 @@ class Grads < PACKMAN::Package
         /^hdf_libs =.*$/ => "hdf_libs = -L#{Hdf4.lib} -lmfhdf -ldf -L#{Jpeg.lib} -ljpeg -L#{Zlib.lib} -lz -L#{Szip.lib} -lsz -L#{Udunits.lib} -ludunits2",
         /^nc_inc =.*$/ => "nc_inc = -I#{Netcdf.include}",
         /^nc_libs =.*$/ => "nc_libs = -L#{Netcdf.lib} -lnetcdf -L#{Udunits.lib} -ludunits2",
-        /^readline_inc =.*$/ => "readline_inc = -I#{Readline.include}",
-        /^readline_libs =.*$/ => "readline_libs = -L#{Readline.lib} -lreadline -L#{Ncurses.lib} -lncurses",
-        /^LIBS = -lm  -lreadline/ => "LIBS = -lm -L#{Readline.lib} -lreadline -L#{Ncurses.lib} -lncurses"
+        /^readline_inc =.*$/ => "readline_inc = -I#{Readline_.include}",
+        /^readline_libs =.*$/ => "readline_libs = -L#{Readline_.lib} -lreadline -L#{Ncurses.lib} -lncurses",
+        /^LIBS = -lm  -lreadline/ => "LIBS = -lm -L#{Readline_.lib} -lreadline -L#{Ncurses.lib} -lncurses"
       }
     end
     PACKMAN.run 'make -j2'
