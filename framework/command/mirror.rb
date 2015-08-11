@@ -8,7 +8,7 @@ module PACKMAN
     RequestRecvTimeout = 1
 
     def self.mirror
-      PackageLoader.load_package :Proftpd
+      PACKMAN.load_package :Proftpd
       if CommandLine.has_option? '-init'
         init_mirror_service
       elsif CommandLine.has_option? '-start'
@@ -156,7 +156,7 @@ module PACKMAN
       CLI.report_notice 'Download all defined packages.'
       # Load all packages first.
       Package.all_package_names.each do |package_name|
-        PackageLoader.load_package package_name
+        PACKMAN.load_package package_name
       end
       Commands.collect :all
     end

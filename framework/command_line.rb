@@ -71,18 +71,24 @@ module PACKMAN
       @@subcommand = nil
       @@config_file = nil
       @@packages = []
+      @@package_method = nil
       @@options = {}
       ARGV.each do |arg|
         if PermittedSubcommands.keys.include? arg.to_sym
           @@subcommand = arg.to_sym
           next
         end
-        if not @@subcommand
-          CLI.report_error "PACKMAN expects a subcommand!"
-        end
         if Package.all_package_names.include? arg
           @@packages << arg.capitalize.to_sym
           next
+        end
+        if not @@subcommand
+          CLI.report_error "PACKMAN expects a subcommand!" if @@packages.empty?
+          package = Package.instance @@packages.first
+          if package.public_methods.include? arg.to_sym
+            @@package_method = arg.to_sym
+            next
+          end
         end
         key = arg.gsub(/=.*/, '')
         value = arg.match(/=(.*)/)
@@ -94,7 +100,7 @@ module PACKMAN
       end
       @@config_file = options['-config'] if has_option? '-config'
       if [:config, :collect, :start, :fix, :upgrade, :update,  :stop, :status,  :report,
-          :install, :switch, :remove, :mirror].include? @@subcommand and
+          :install, :switch, :remove, :mirror, nil].include? @@subcommand and
          not @@config_file
         # Check if there is a configuration file in PACKMAN_ROOT.
         @@config_file = "#{ENV['PACKMAN_ROOT']}/packman.config"
@@ -110,6 +116,18 @@ module PACKMAN
       @@process_exclusive = true
       if [:edit, :switch, :report, :status].include? @@subcommand
         @@process_exclusive = false
+      end
+    end
+
+    def self.run
+      if @@subcommand
+        if not Commands.respond_to? @@subcommand
+          PACKMAN.report_error "Unknown subcommand "+
+            "#{PACKMAN::CommandLine.subcommand}!"
+        end
+        PACKMAN::Commands.send PACKMAN::CommandLine.subcommand
+      else
+        PACKMAN::Commands.delegate
       end
     end
 
@@ -133,6 +151,10 @@ module PACKMAN
       @@packages ||= []
     end
 
+    def self.package_method
+      @@package_method
+    end
+
     def self.options
       @@options ||= {}
     end
@@ -148,7 +170,7 @@ module PACKMAN
     def self.check_options
       # Check options.
       @@options.each_key do |key|
-        next if PermittedOptions[@@subcommand].has_key? key
+        next if @@subcommand and PermittedOptions[@@subcommand].has_key? key
         next if PermittedCommonOptions.has_key? key
         next if PackageAtom::CommonOptions.has_key? key.gsub(/^-/, '')
         is_found = false

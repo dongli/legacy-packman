@@ -31,12 +31,7 @@ if PACKMAN::CommandLine.process_exclusive?
   end
 end
 
-if not PACKMAN::Commands.respond_to? PACKMAN::CommandLine.subcommand
-  PACKMAN.report_error "Unknown subcommand "+
-    "#{PACKMAN::CommandLine.subcommand}!"
-end
-
-PACKMAN::Commands.send PACKMAN::CommandLine.subcommand
+PACKMAN::CommandLine.run
 
 # Delete the pid file.
 PACKMAN.rm pid_file if PACKMAN::CommandLine.process_exclusive?

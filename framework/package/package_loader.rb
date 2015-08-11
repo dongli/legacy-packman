@@ -1,5 +1,9 @@
 module PACKMAN
   class PackageLoader
+    def self.delegated_methods
+      [:load_package]
+    end
+
     # Collect package definition files.
     @@package_files = {}
     tmp = Dir.glob("#{ENV['PACKMAN_ROOT']}/packages/*.rb")

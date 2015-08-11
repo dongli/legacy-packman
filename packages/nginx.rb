@@ -11,10 +11,14 @@ class Nginx < PACKMAN::Package
   option 'worker_processes' => 'auto'
   option 'worker_connections' => 1024
   option 'port' => 8080
+  option 'with_passenger' => false
 
   depends_on 'pcre'
   depends_on 'zlib'
   depends_on 'openssl'
+  depends_on 'passenger' if with_passenger?
+
+  def self.conf; Nginx.etc+'/nginx/nginx.conf'; end
 
   def install
     PACKMAN.append 'conf/nginx.conf', "\ninclude servers/*;\n"
@@ -42,6 +46,10 @@ class Nginx < PACKMAN::Package
       --with-http_spdy_module
       --with-http_gunzip_module
     ]
+    if with_passenger?
+      nginx_ext = `#{Passenger.bin}/passenger-config --nginx-addon-dir`.chomp
+      args << "--add-module=#{nginx_ext}"
+    end
     PACKMAN.set_cppflags_and_ldflags [Pcre, Zlib, Openssl]
     PACKMAN.run './configure', *args
     PACKMAN.run 'make -j2'
@@ -51,6 +59,23 @@ class Nginx < PACKMAN::Package
     PACKMAN.mkdir var+'/run/nginx'
     PACKMAN.mkdir man+'/man8'
     PACKMAN.cp 'man/nginx.8', man+'/man8'
+  end
+
+  def post_install
+    conf = etc+'/nginx/nginx.conf'
+    root = `#{Passenger.bin+'/passenger-config'} --root`.chomp
+    if File.new(conf).read.include? root
+      PACKMAN.report_error "#{PACKMAN.red conf} contains #{root}!"
+    end
+    if with_passenger?
+      PACKMAN.append conf, <<-EOT.keep_indent
+
+        http {
+          passenger_root #{root};
+          passenger_ruby #{Ruby.bin+'/ruby'};
+        }
+      EOT
+    end
   end
 
   def start options = {}
