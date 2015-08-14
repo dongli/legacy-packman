@@ -1,7 +1,8 @@
 class Openblas < PACKMAN::Package
   url 'https://github.com/xianyi/OpenBLAS/archive/v0.2.11.zip'
-  sha1 '533526327ec9a375387de0c18d5d7f5ea60e299b'
+  sha1 '5b31a71feaccb7898bff50de2db03808317d6348'
   version '0.2.11'
+  filename 'openblas-0.2.11.zip'
 
   def install
     if PACKMAN.mac? and PACKMAN.os.version >= '10.5'
