@@ -14,6 +14,7 @@ class Fontconfig < PACKMAN::Package
       --prefix=#{prefix}
       --disable-dependency-tracking
       --disable-silent-rules
+      --disable-docs
       --with-expat=#{Expat.prefix}
     ]
     if PACKMAN.mac?
