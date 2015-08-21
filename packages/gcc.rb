@@ -3,6 +3,10 @@ class Gcc < PACKMAN::Package
   sha1 '79dbcb09f44232822460d80b033c962c0237c6d8'
   version '4.9.2'
 
+  history_version '4.9.1' do
+    # FIXME: Use more elegant method to handle compiler package version change.
+  end
+
   depends_on 'gmp'
   depends_on 'mpfr'
   depends_on 'mpc'

@@ -614,7 +614,7 @@ module PACKMAN
 
   def self.prefix package, options = []
     options = [options] if not options.class == Array
-    if package.class == Class or package.class == String
+    if package.class == Class or package.class == Symbol
       package = Package.instance package
     end
     if package.master_package

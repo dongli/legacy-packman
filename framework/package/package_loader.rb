@@ -1,7 +1,7 @@
 module PACKMAN
   class PackageLoader
     def self.delegated_methods
-      [:load_package]
+      [:load_package, :package_options]
     end
 
     # Collect package definition files.
