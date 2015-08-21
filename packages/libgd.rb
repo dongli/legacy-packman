@@ -3,6 +3,7 @@ class Libgd < PACKMAN::Package
   sha1 'a0f3053724403aef9e126f4aa5c662573e5836cd'
   version '2.1.0'
 
+  depends_on 'zlib'
   depends_on 'jpeg'
   depends_on 'libpng'
   depends_on 'libtiff'
@@ -14,12 +15,14 @@ class Libgd < PACKMAN::Package
     args = %W[
       --prefix=#{prefix}
       --disable-dependency-tracking
+      --with-zlib=#{Zlib.prefix}
       --with-jpeg=#{Jpeg.prefix}
       --with-png=#{Libpng.prefix}
       --with-tiff=#{Libtiff.prefix}
       --with-fontconfig=#{Fontconfig.prefix}
       --with-freetype=#{Freetype.prefix}
     ]
+    PACKMAN.set_cppflags_and_ldflags [Zlib]
     PACKMAN.run './configure', *args
     PACKMAN.run 'make install'
   end
