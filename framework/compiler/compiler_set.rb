@@ -39,6 +39,7 @@ module PACKMAN
         if language == 'installed_by_packman'
           @installed_by_packman = true
           @package_name = compiler_command
+          PACKMAN.load_package @package_name
           next
         end
         if language =~ /^mpi_(c|c\+\+|fortran)/
