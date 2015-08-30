@@ -10,6 +10,7 @@ class Postgresql < PACKMAN::Package
   option 'admin_user' => 'postgres'
   option 'cluster_path' => var+'/data'
 
+  depends_on 'flex'
   depends_on 'openssl'
   depends_on 'readline'
   depends_on 'gettext'
@@ -28,7 +29,8 @@ class Postgresql < PACKMAN::Package
       --with-openssl
       --with-libxml
       --with-zlib
-      --with-uuid=e2fs
+      --with-uuid=ossp
+      LIBS=-lintl
     ]
     args << '--with-bonjour' if PACKMAN.mac?
     PACKMAN.set_cppflags_and_ldflags [Openssl, Readline_, Gettext, Zlib, Uuid]
