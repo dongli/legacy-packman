@@ -195,7 +195,7 @@ class Gitlab < PACKMAN::Package
         PACKMAN.run "sudo -u git -H bundle config build.charlock_holmes --with-icu-dir=#{Icu4c.prefix}"
         PACKMAN.run "sudo -u git -H bundle config build.nokogiri --with-iconv-dir=#{Libiconv.prefix}"
         PACKMAN.run "sudo -u git -H bundle install --path vendor/bundle --deployment --without development test mysql aws"
-        PACKMAN.run_no_redirect "sudo -u git -H bundle exec rake gitlab:setup RAILS_ENV=production"
+        PACKMAN.run "sudo -u git -H bundle exec rake gitlab:setup RAILS_ENV=production", :screen_output
         PACKMAN.run "sudo -u git -H bundle exec rake assets:precompile RAILS_ENV=production"
         # Modify 'redis.conf'.
         PACKMAN.run "sudo -u git -H cp #{Redis.etc+'/redis.conf'} ."

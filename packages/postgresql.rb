@@ -11,7 +11,9 @@ class Postgresql < PACKMAN::Package
   option 'cluster_path' => var+'/data'
 
   depends_on 'flex'
+  depends_on 'bison'
   depends_on 'openssl'
+  depends_on 'ncurses'
   depends_on 'readline'
   depends_on 'gettext'
   depends_on 'libxml2'
@@ -33,7 +35,7 @@ class Postgresql < PACKMAN::Package
       LIBS=-lintl
     ]
     args << '--with-bonjour' if PACKMAN.mac?
-    PACKMAN.set_cppflags_and_ldflags [Openssl, Readline_, Gettext, Zlib, Uuid]
+    PACKMAN.set_cppflags_and_ldflags [Openssl, Ncurses, Readline_, Gettext, Zlib, Uuid]
     PACKMAN.run './configure', *args
     PACKMAN.run 'make -j2'
     PACKMAN.run 'make check' if not skip_test?
@@ -52,27 +54,27 @@ class Postgresql < PACKMAN::Package
   def start
     cmd = "#{bin}/pg_ctl start -D #{cluster_path} -l #{var}/postgres.log"
     if ENV['USER'] != admin_user
-      PACKMAN.run "sudo -u #{admin_user} #{cmd}"
+      PACKMAN.run "sudo -u #{admin_user} #{cmd}", :screen_output, :skip_error
     else
-      PACKMAN.run cmd
+      PACKMAN.run cmd, :screen_output, :skip_error
     end
   end
 
   def stop
     cmd = "#{bin}/pg_ctl stop -D #{cluster_path}"
     if ENV['USER'] != admin_user
-      PACKMAN.run "sudo -u #{admin_user} #{cmd}"
+      PACKMAN.run "sudo -u #{admin_user} #{cmd}", :screen_output, :skip_error
     else
-      PACKMAN.run cmd
+      PACKMAN.run cmd, :screen_output, :skip_error
     end
   end
 
   def status
     cmd = "#{bin}/pg_ctl status -D #{cluster_path}"
     if ENV['USER'] != admin_user
-      PACKMAN.run "sudo -u #{admin_user} #{cmd}"
+      PACKMAN.run "sudo -u #{admin_user} #{cmd}", :screen_output, :skip_error
     else
-      PACKMAN.run cmd
+      PACKMAN.run cmd, :screen_output, :skip_error
     end
     $?.success? ? :on : :off
   end

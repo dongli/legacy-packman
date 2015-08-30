@@ -1,7 +1,7 @@
 module PACKMAN
   class RunManager
     def self.delegated_methods
-      [:run, :run_no_redirect]
+      [:run]
     end
 
     def self.default_command_prefix
@@ -57,7 +57,8 @@ module PACKMAN
 
     def self.run cmd, *args
       cmd_str = default_command_prefix
-      cmd_args = args.join(' ')
+      cmd_args = args.select { |a| a.class == String }.join(' ')
+      run_args = args.select { |a| a.class == Symbol }
       cmd_str << " #{cmd} "
       cmd_str << "#{cmd_args} "
       if CommandLine.has_option? '-debug'
@@ -65,11 +66,11 @@ module PACKMAN
       else
         PACKMAN.blue_arrow "#{cmd} #{cmd_args}", :truncate
       end
-      if not CommandLine.has_option? '-verbose'
+      if not CommandLine.has_option? '-verbose' and not run_args.include? :screen_output
         cmd_str << "1> #{ConfigManager.package_root}/stdout 2> #{ConfigManager.package_root}/stderr"
       end
       system cmd_str
-      if not $?.success?
+      if not $?.success? and not run_args.include? :skip_error
         info =  "PATH: #{FileUtils.pwd}\n"
         info << "Command: #{cmd_str}\n"
         info << "Return: #{$?}\n"
@@ -79,28 +80,9 @@ module PACKMAN
         end
         CLI.report_error "Failed to run the following command:\n"+info
       end
-      if not CommandLine.has_option? '-verbose'
+      if not CommandLine.has_option? '-verbose' and not run_args.include? :screen_output
         FileUtils.rm("#{ConfigManager.package_root}/stdout")
         FileUtils.rm("#{ConfigManager.package_root}/stderr")
-      end
-    end
-
-    def self.run_no_redirect cmd, *args
-      cmd_str = default_command_prefix
-      cmd_args = args.join(' ')
-      cmd_str << " #{cmd} "
-      cmd_str << "#{cmd_args} "
-      if CommandLine.has_option? '-debug'
-        PACKMAN.blue_arrow cmd_str
-      else
-        PACKMAN.blue_arrow "#{cmd} #{cmd_args}", :truncate
-      end
-      system cmd_str
-      if not $?.success?
-        info =  "PATH: #{FileUtils.pwd}\n"
-        info << "Command: #{cmd_str}\n"
-        info << "Return: #{$?}\n"
-        CLI.report_error "Failed to run the following command:\n"+info
       end
     end
   end

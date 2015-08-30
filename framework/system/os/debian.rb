@@ -47,10 +47,10 @@ module PACKMAN
       if not check_user name
         PACKMAN.report_error "User #{PACKMAN.red name} does not exist!"
       end
-      res = `userdel #{args} #{name}`
+      res = `sudo userdel #{args} #{name}`
       PACKMAN.report_error "Failed to delete user #{PACKMAN.red name}!" if not $?.success?
     end
-    command :change_owner do |name|
+    command :change_owner do |path, owner|
       PACKMAN.report_notice "Change owner of #{PACKMAN.blue path} to #{PACKMAN.blue owner}."
       res = `sudo chown -R #{owner} #{path} 2>&1`
       PACKMAN.report_error "Failed to change owner of #{PACKMAN.red path} to #{PACKMAN.red owner}! See errors:\n#{res}" if not $?.success?
