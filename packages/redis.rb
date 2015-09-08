@@ -6,7 +6,7 @@ class Redis < PACKMAN::Package
   label :compiler_insensitive
 
   option 'use_jemalloc' => false
-  option 'config_file' => :string
+  option 'config_file' => :string # Default: .../etc/redis.conf
 
   def install
     args = %W[
@@ -19,7 +19,8 @@ class Redis < PACKMAN::Package
     PACKMAN.replace 'redis.conf', {
       '/var/run/redis.pid' => var+'/run/redis.pid',
       'dir ./' => 'dir '+var+'/db/redis/',
-      '# bind 127.0.0.1' => 'bind 127.0.0.1'
+      '# bind 127.0.0.1' => 'bind 127.0.0.1',
+      'daemonize no' => 'daemonize yes'
     }
     PACKMAN.mkdir etc
     PACKMAN.cp 'redis.conf', etc
@@ -27,34 +28,17 @@ class Redis < PACKMAN::Package
   end
 
   def start options = {}
-    if options.empty?
-      PACKMAN.os.start_cron_job(
-        :label => 'org.packman.redis',
-        :command => bin+'/redis-server',
-        :arguments => config_file ? config_file : etc+'/redis.conf',
-        :working_directory => var,
-        :run_at_load => true,
-        :stdout => var+'/log/redis.log',
-        :stderr => var+'/log/redis.log'
-      )
-    else
-      PACKMAN.os.start_cron_job options
-    end
+    config_file = [config_file, options[:config_file], "#{etc}/redis.conf"].find { |x| x }
+    PACKMAN.run "#{bin}/redis-server #{config_file}"
   end
 
-  def status options = {}
-    if options.empty?
-      PACKMAN.os.status_cron_job :label => 'org.packman.redis'
-    else
-      PACKMAN.os.status_cron_job options
-    end
+  def status
+    PACKMAN.run "#{bin}/redis-cli info", :skip_error
+    $?.success? ? :on : :off
   end
 
-  def stop options = {}
-    if options.empty?
-      PACKMAN.os.stop_cron_job :label => 'org.packman.redis'
-    else
-      PACKMAN.os.stop_cron_job options
-    end
+  def stop
+    return 'already off' if status == :off
+    PACKMAN.run "#{bin}/redis-cli shutdown"
   end
 end
