@@ -10,7 +10,7 @@ class M4 < PACKMAN::Package
       --prefix=#{prefix}
       --disable-dependency-tracking
     ]
-    args << 'CFLAGS=-fgnu89-inline' if PACKMAN.type == :RHEL
+    args << 'CFLAGS=-fgnu89-inline' if PACKMAN.os.type == :RHEL
     PACKMAN.run './configure', *args
     PACKMAN.run 'make'
     PACKMAN.run 'make install'
