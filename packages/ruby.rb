@@ -1,17 +1,19 @@
 class Ruby < PACKMAN::Package
-  url 'http://cache.ruby-lang.org/pub/ruby/2.2/ruby-2.2.1.tar.gz'
-  sha1 '12376b79163e02bc9bd1a39329d67c3d19ccace9'
-  version '2.2.1'
+  url 'https://cache.ruby-lang.org/pub/ruby/2.2/ruby-2.2.3.tar.gz'
+  sha1 '0d9e158534cb31e72740138b8f697b57b448e5c3'
+  version '2.2.3'
 
   label :compiler_insensitive
 
   depends_on 'pkgconfig'
+  depends_on 'ncurses'
   depends_on 'readline'
   depends_on 'gdbm'
   depends_on 'gmp'
   depends_on 'libffi'
   depends_on 'libyaml'
   depends_on 'openssl'
+  depends_on 'zlib'
 
   def install
     args = %W[
@@ -21,7 +23,7 @@ class Ruby < PACKMAN::Package
       --with-out-ext=tk
       --without-gmp
     ]
-    PACKMAN.set_cppflags_and_ldflags [Readline_, Gdbm, Gmp, Libffi, Libyaml, Openssl]
+    PACKMAN.set_cppflags_and_ldflags [Ncurses, Readline_, Gdbm, Gmp, Libffi, Libyaml, Openssl, Zlib]
     PACKMAN.run './configure', *args
     PACKMAN.run 'make'
     PACKMAN.run 'make install'
