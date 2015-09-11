@@ -10,8 +10,6 @@ class Ncview < PACKMAN::Package
   depends_on 'udunits'
   depends_on 'libpng'
 
-  patch :embed
-
   def install
     # Ignore the C compiler difference, since we may use MPI wrapper to build Netcdf_c.
     PACKMAN.replace 'configure', {
@@ -43,38 +41,3 @@ class Ncview < PACKMAN::Package
   end
 end
 
-__END__
-diff --git a/configure b/configure
-index b80ae96..a650f6f 100755
---- a/configure
-+++ b/configure
-@@ -8672,29 +8672,6 @@ if test x$CC_TEST_SAME != x$NETCDF_CC_TEST_SAME; then
-  exit -1
- fi
-
--#----------------------------------------------------------------------------------
--# Construct our RPATH flags.  Idea here is that we have LDFLAGS that might look,
--# for example, something like this:
--#  LIBS="-L/usr/local/lib -lnetcdf -L/home/pierce/lib -ludunits"
--# We want to convert this to -rpath flags suitable for the compiler, which would
--# have this format:
--#  "-Wl,-rpath,/usr/local/lib -Wl,-rpath,/home/pierce/lib"
--#
--# As a safety check, I only do this for the GNU compiler, as I don't know if this
--# is anything like correct syntax for other compilers.  Note that this *does* work
--# for the Intel icc compiler, but also that the icc compiler sets $ac_compiler_gnu
--# to "yes".  Go figure.
--#----------------------------------------------------------------------------------
--if test x$ac_compiler_gnu = xyes; then
-- RPATH_FLAGS=""
-- for word in $UDUNITS2_LDFLAGS $NETCDF_LDFLAGS; do
--   if test `expr $word : -L/` -eq 3; then
--     RPDIR=`expr substr $word 3 999`;
--     RPATH_FLAGS="$RPATH_FLAGS -Wl,-rpath,$RPDIR"
--   fi
-- done
--
--fi
-
-
- ac_config_files="$ac_config_files Makefile src/Makefile"
