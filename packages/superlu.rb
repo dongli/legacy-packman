@@ -11,6 +11,9 @@ class Superlu < PACKMAN::Package
     elsif PACKMAN.mac?
       PACKMAN.cp 'MAKE_INC/make.mac-x', 'make.inc'
     end
+    if PACKMAN.has_compiler? 'fortran', :not_exit and PACKMAN.compiler('fortran').vendor == 'intel'
+      fortran_lib = '-lifcore'
+    end
     args = %W[
       RANLIB=true
       CC="${CC}"
@@ -19,7 +22,7 @@ class Superlu < PACKMAN::Package
       SUPERLULIB=#{FileUtils.pwd}/lib/libsuperlu.a
       NOOPTS=-fPIC
       BLASDEF=-DUSE_VENDOR_BLAS
-      BLASLIB='-L#{Openblas.lib} -lopenblas'
+      BLASLIB='-L#{Openblas.lib} -lopenblas #{fortran_lib}'
     ]
     if PACKMAN.has_compiler? 'fortran', :not_exit
       args << 'FORTRAN="${FC}" FFLAGS="${FCFLAGS}"'
