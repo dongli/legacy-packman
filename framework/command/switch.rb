@@ -49,7 +49,7 @@ module PACKMAN
         bashrc_files.sort!
         if bashrc_files.size == 1
           content << "source #{bashrc_files.first}\n"
-        elsif bashrc_files.size > 1 and CommandLine.has_option? '-verbose'
+        elsif bashrc_files.size > 1
           strip_level = compiler_insensitive ? 1 : 2
           available_versions = bashrc_files.map { |p| File.basename(PACKMAN.strip_dir(p, strip_level)) }
           package_name = File.basename(dir).capitalize.to_sym
@@ -61,7 +61,7 @@ module PACKMAN
             end
             msg << "PACKMAN will use #{CLI.green PACKMAN.strip_dir bashrc_files.last, strip_level}!\n"
             msg << "If this is not what you want, you can specify the version in #{CLI.red CommandLine.config_file}."
-            CLI.report_warning msg
+            CLI.report_warning msg if CommandLine.has_option? '-verbose'
             content << "source #{bashrc_files.last}\n"
             next
           end
