@@ -17,8 +17,7 @@ class Szip < PACKMAN::Package
       --disable-debug
       --disable-dependency-tracking
     ]
-    PACKMAN.run('./configure', *args)
-    PACKMAN.run('make install')
-    create_cmake_config 'SZIP', 'include', 'lib'
+    PACKMAN.run './configure', *args
+    PACKMAN.run 'make install'
   end
 end

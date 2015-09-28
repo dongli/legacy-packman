@@ -54,16 +54,29 @@ module PACKMAN
     Dir.glob("#{dir_path}/*").empty?
   end
 
+  def self.create_parent_directories file_path
+    Pathname.new(file_path).dirname.descend do |dir|
+      if not Dir.exist? dir
+        mkdir dir
+      end
+    end
+  end
+
   def self.write_file file_path, content
     PACKMAN.report_notice "Write file #{CLI.blue file_path}."
-    if not File.exist? file_path
-      # TODO: Create necessary parent directories.
-    end
+    create_parent_directories file_path
     File.open(file_path, 'w') { |file| file << content }
   end
 
   def self.append file_path, lines
+    create_parent_directories file_path
+    FileUtils.touch(file_path) if not File.exist? file_path
     File.open(file_path, 'a') { |file| file << lines }
+  end
+
+  def self.contain? file_path, lines
+    return false if not File.exist? file_path
+    File.open(file_path, 'r').read.include? lines
   end
 
   def self.replace file_path, replaces, options = []
@@ -83,9 +96,8 @@ module PACKMAN
     file.close
   end
 
-  def self.delete_from_file file_path, patterns, options = []
-    patterns = [patterns] if not patterns.class == Array
-    options = [options] if not options.class == Array
+  def self.delete_from_file file_path, *options
+    patterns = options.select { |x| x.class != Symbol }
     if not File.exist? file_path
       return if options.include? :no_error
       PACKMAN.report_error "File #{PACKMAN.red file_path} does not exist!"

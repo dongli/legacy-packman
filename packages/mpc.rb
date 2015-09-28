@@ -1,7 +1,7 @@
 class Mpc < PACKMAN::Package
-  url 'http://ftpmirror.gnu.org/mpc/mpc-1.0.2.tar.gz'
-  sha1 '5072d82ab50ec36cc8c0e320b5c377adb48abe70'
-  version '1.0.2'
+  url 'http://ftpmirror.gnu.org/mpc/mpc-1.0.3.tar.gz'
+  sha1 'b8be66396c726fdc36ebb0f692ed8a8cca3bcc66'
+  version '1.0.3'
 
   def install
     args = %W[

@@ -9,6 +9,5 @@ class Zlib < PACKMAN::Package
     ]
     PACKMAN.run './configure', *args
     PACKMAN.run 'make install'
-    create_cmake_config 'ZLIB', 'include', 'lib'
   end
 end

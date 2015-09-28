@@ -23,7 +23,7 @@ class Gdal < PACKMAN::Package
     args = %W[
       --prefix=#{prefix}
       --with-static-proj4=#{Proj.prefix}
-      --without-pam 
+      --without-pam
       --with-gif=#{Giflib.prefix}
       --with-libtiff=#{Libtiff.prefix}
       --with-geotiff=#{Libgeotiff.prefix}
@@ -32,7 +32,7 @@ class Gdal < PACKMAN::Package
       --with-sqlite3=no
       --with-expat=#{Expat.prefix}
       --with-curl=#{Curl.bin}
-      --without-ld-shared 
+      --without-ld-shared
       --with-hdf4=#{Hdf4.prefix}
       --with-hdf5=#{Hdf5.prefix}
       --with-pg=no
@@ -41,7 +41,7 @@ class Gdal < PACKMAN::Package
       --with-freexl=no
       --with-geos=#{Geos.prefix}
       --with-openjpeg=no
-      --with-mysql=no 
+      --with-mysql=no
       --with-ecw=no
       --with-fgdb=no
       --with-odbc=no
@@ -57,6 +57,5 @@ class Gdal < PACKMAN::Package
     PACKMAN.run './configure', *args
     PACKMAN.run 'make all'
     PACKMAN.run 'make install'
-    create_cmake_config 'GDAL', 'include', 'lib/libgdal.a'
   end
 end

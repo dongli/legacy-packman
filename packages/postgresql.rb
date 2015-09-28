@@ -31,11 +31,10 @@ class Postgresql < PACKMAN::Package
       --with-openssl
       --with-libxml
       --with-zlib
-      --with-uuid=ossp
       LIBS=-lintl
     ]
     args << '--with-bonjour' if PACKMAN.mac?
-    PACKMAN.set_cppflags_and_ldflags [Openssl, Ncurses, Readline_, Gettext, Zlib, Uuid]
+    PACKMAN.set_cppflags_and_ldflags [Openssl, Ncurses, Readline_, Gettext, Zlib]
     PACKMAN.run './configure', *args
     PACKMAN.run 'make -j2'
     PACKMAN.run 'make check' if not skip_test?

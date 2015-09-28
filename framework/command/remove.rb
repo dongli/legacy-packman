@@ -31,6 +31,7 @@ module PACKMAN
         end
         for j in 0..versions.size-1
           if removed_versions.include? j or removed_versions.include? versions.size
+            package = Package.instance package_name, { 'use_version' => versions[j].split('/').last }
             if not package.has_label? :compiler_insensitive and not package.has_label? :binary
               sets = Dir.glob("#{versions[j]}/*").sort
               # Check if sets are 0, 1, ...
@@ -67,8 +68,8 @@ module PACKMAN
               for i in 0..sets.size-1
                 if removed_sets.include? i
                   CLI.report_notice "Remove #{CLI.red sets[i]}."
-                  PACKMAN.delete_from_file "#{ConfigManager.install_root}/packman.bashrc",
-                    "source #{sets[i]}/bashrc", :no_error
+                  CompilerManager.activate_compiler_set sets[i].split('/').last
+                  Commands.unlink package_name
                   PACKMAN.rm sets[i]
                   ConfigManager.package_options[package_name]['compiler_set_indices'].delete i if ConfigManager.package_options.has_key? package_name
                 end
@@ -80,8 +81,10 @@ module PACKMAN
               end
             else
               CLI.report_notice "Remove #{CLI.red versions[j]}."
-              PACKMAN.delete_from_file "#{ConfigManager.install_root}/packman.bashrc",
-                "source #{versions[j]}/bashrc", :no_error
+              for i in 0..CompilerManager.compiler_sets.size-1
+                CompilerManager.activate_compiler_set i
+                Commands.unlink package_name
+              end
               PACKMAN.rm versions[j]
               ConfigManager.package_options.delete package_name # Remove the package item from config file.
             end

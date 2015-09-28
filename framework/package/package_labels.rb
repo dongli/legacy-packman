@@ -6,11 +6,11 @@ module PACKMAN
       :installed_with_source,
       :not_use_target_dir_option,
       :master_package,
-      :not_set_bashrc,
       :not_set_ld_library_path,
       :skipped,
       :try_system_package_first,
-      :under_construction
+      :under_construction,
+      :compiler_set
     ]
 
     def self.check label

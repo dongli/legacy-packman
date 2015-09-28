@@ -7,6 +7,7 @@ module PACKMAN
       :fix => 'Fix the potential legacy errors.',
       :help => 'Print help message.',
       :install => 'Install packages and their dependencies.',
+      :link => 'Link installed package files into one directory.',
       :mirror => 'Control FTP mirror service.',
       :remove => 'Remove packages.',
       :report => 'Report version of PACKMAN an other information.',
@@ -14,6 +15,7 @@ module PACKMAN
       :status => 'Check the status of a package if it provides a status method.',
       :stop => 'Stop a package if it provides a stop method.',
       :switch => 'Switch different compiler set (new bashrc will be generated).',
+      :unlink => 'Unlink installed package files from central directory.',
       :update => 'Update PACKMAN.',
       :upgrade => 'Upgrade packages.',
     }.freeze
@@ -36,6 +38,7 @@ module PACKMAN
         '-force' => 'Force to run install procedures no matter packages are installed or not.',
         '-only_post' => 'Only run post-install procedures.'
       },
+      :link => {},
       :mirror => {
         '-init' => 'Initialize FTP mirror service.',
         '-start' => 'Start FTP mirror service.',
@@ -62,6 +65,7 @@ module PACKMAN
         '-compiler_set_index' => 'Choose which compiler set will be used.',
         '-output' => 'Set the output BASH configure file path (Default is <package_root>/packman.bashrc).'
       },
+      :unlink => {},
       :update => {},
       :upgrade => {},
     }.freeze
@@ -100,7 +104,7 @@ module PACKMAN
       end
       @@config_file = options['-config'] if has_option? '-config'
       if [:config, :collect, :start, :fix, :upgrade, :update,  :stop, :status,  :report,
-          :install, :switch, :remove, :mirror, nil].include? @@subcommand and
+          :install, :switch, :remove, :mirror, :link, :unlink, nil].include? @@subcommand and
          not @@config_file
         # Check if there is a configuration file in PACKMAN_ROOT.
         @@config_file = "#{ENV['PACKMAN_ROOT']}/packman.config"

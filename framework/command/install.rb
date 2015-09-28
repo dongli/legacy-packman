@@ -75,15 +75,13 @@ module PACKMAN
       end
       # Update config file.
       ConfigManager.write
-      # Invoke switch subcommand.
-      Commands.switch if is_any_package_installed
+      Files::ShellConfig.write
     end
 
     def self.is_package_installed? package, options = []
       options = [options] if not options.class == Array
-      bashrc = package.bashrc
-      if File.exist? bashrc
-        match = File.open("#{bashrc}", 'r').read.match(/#{package.sha1}( (\d+)?)?$/)
+      if File.exist? package.info
+        match = File.open(package.info, 'r').read.match(/#{package.sha1}( (\d+)?)?$/)
         if match and match[2] == package.revision
           if package.check_consistency
             if not options.include? :depend
@@ -101,20 +99,6 @@ module PACKMAN
       end
       @@is_any_package_installed = true
       return false
-    end
-
-    def self.append_bashrc package, is_depend = false
-      if package.has_label? :compiler_insensitive and is_depend
-        # NOTE: Some :compiler_insensitive package may use other compiler set to build, and it is normally just binary,
-        #       so we skip its dependent packages to avoid problems.
-        PACKMAN.append_shell_source package.bashrc if not package.should_be_skipped?
-        return
-      end
-      package.dependencies.each do |depend|
-        depend_package = Package.instance depend
-        append_bashrc depend_package, true
-        PACKMAN.append_shell_source depend_package.bashrc if not depend_package.should_be_skipped?
-      end
     end
 
     def self.install_package package, options = []
@@ -181,9 +165,9 @@ module PACKMAN
         PACKMAN.cd prefix
         PACKMAN.decompress "#{ConfigManager.package_root}/#{package.filename}"
         PACKMAN.cd_back
-        # Write bashrc file for the package.
-        Package.bashrc package, :compiler_insensitive
+        Files::Info.write package,:compiler_insensitive
         package.post_install
+        link_package package
       elsif package.has_label? :installed_with_source
         if package.compiler_set_indices.size != 1
           CLI.report_error "Currently, only one compiler set is allowed to build packages that are installed with source."
@@ -227,7 +211,7 @@ module PACKMAN
             CLI.report_notice msg+'.'
             package.install
           end
-          Package.bashrc package
+          Files::Info.write package
         end
         package.post_install
       else
@@ -237,8 +221,6 @@ module PACKMAN
           CompilerManager.activate_compiler_set index
           # Check if the package has already installed.
           next if is_package_installed? package, options and not CommandLine.has_option? '-force'
-          # Append bashrc file.
-          append_bashrc package
           # Decompress package file.
           if package.is_compressed?
             package.decompress_to ConfigManager.package_root
@@ -269,16 +251,30 @@ module PACKMAN
           package.install
           PACKMAN.cd_back
           FileUtils.rm_rf build_dir
-          # Write bashrc file for the package.
-          Package.bashrc package if not package.has_label? :not_set_bashrc
+          Files::Info.write package
           package.post_install
+          link_package package
           # Clean build files.
           FileUtils.rm_rf build_upper_dir if Dir.exist? build_upper_dir
         end
       end
       # Clean shell environment.
-      PACKMAN.clear_shell_source if not options.include? :depend
       PACKMAN.clear_env if not options.include? :depend
+    end
+
+    def self.link_package package
+      if package.has_label? :compiler_set
+        CompilerManager.add_compiler_set package.provided_stuffs.merge('installed_by_packman' => package.class.to_s.downcase)
+        CompilerManager.activate_compiler_set CompilerManager.compiler_sets.size-1
+        Commands.link package.class
+      elsif package.has_label? :compiler_insensitive
+        for i in 0..CompilerManager.compiler_sets.size-1
+          CompilerManager.activate_compiler_set i
+          Commands.link package.class
+        end
+      else
+        Commands.link package.class
+      end
     end
   end
 end

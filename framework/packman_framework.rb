@@ -22,6 +22,9 @@ require "system/os/suse"
 require "system/shell/env"
 require "system/network_manager"
 require "file/file_manager"
+require "file/inventory"
+require "file/info"
+require "file/shell_config"
 require "compiler/compiler_atom"
 require "compiler/compiler"
 require "compiler/gcc_compiler"
@@ -36,9 +39,11 @@ require "command/delegate"
 require "command/fix"
 require "command/edit"
 require "command/install"
+require "command/link"
 require "command/remove"
 require "command/switch"
 require "command/mirror"
+require "command/unlink"
 require "command/update"
 require "command/upgrade"
 require "command/report"
@@ -79,7 +84,7 @@ def handover_delegated_methods root, father = nil
             args << "*#{p.last}"
           when :opt
             args << "#{p.last} = nil"
-          end          
+          end
         end
       rescue NoMethodError => e
         PACKMAN.report_error "Failed to handover delegated method #{PACKMAN.red method_name} in #{PACKMAN.red child_name}!"
@@ -128,6 +133,6 @@ at_exit {
   if $!
     # Delete pid_file if exception is thrown.
     pid_file = "#{ENV['PACKMAN_ROOT']}/.pid"
-    PACKMAN.rm pid_file if File.exist? pid_file and PACKMAN::CommandLine.process_exclusive?  
+    PACKMAN.rm pid_file if File.exist? pid_file and PACKMAN::CommandLine.process_exclusive?
   end
 }

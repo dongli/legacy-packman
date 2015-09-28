@@ -3,7 +3,7 @@ class Jpeg < PACKMAN::Package
   sha1 'f080b2fffc7581f7d19b968092ba9ebc234556ff'
   version '8d'
 
-  label :not_set_ld_library_path if PACKMAN.mac?
+  label :skipped if PACKMAN.mac?
 
   def install
     args = %W[
@@ -12,7 +12,9 @@ class Jpeg < PACKMAN::Package
     ]
     PACKMAN.run './configure', *args
     PACKMAN.run 'make install'
+  end
 
-    create_cmake_config 'JPEG', 'include', 'lib/libjpeg.a'
+  def installed?
+    File.exist? '/System/Library/Frameworks/ImageIO.framework/Versions/A/Resources/libJPEG.dylib'
   end
 end

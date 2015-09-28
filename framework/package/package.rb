@@ -177,7 +177,7 @@ module PACKMAN
     def man; share+'/man'; end
     def var; prefix+'/var'; end
     def frameworks; prefix+'/Frameworks'; end
-    def bashrc; prefix+'/bashrc'; end
+    def info; prefix+'/packman.info'; end
     def self.prefix; PACKMAN.prefix self; end
     def self.bin; prefix+'/bin'; end
     def self.sbin; prefix+'/sbin'; end
@@ -189,7 +189,7 @@ module PACKMAN
     def self.doc; share+'/doc/'+self.class.to_s.downcase; end
     def self.man; share+'/man'; end
     def self.frameworks; prefix+'/Frameworks'; end
-    def self.bashrc; prefix+'/bashrc'; end
+    def self.info; prefix+'/packman.info'; end
     def self.var; prefix+'/var'; end
 
     # Package DSL.
@@ -470,71 +470,6 @@ module PACKMAN
       PACKMAN.cp "#{root}/#{file}", copy_dir
     end
 
-    def self.bashrc package, options = []
-      options = [options] if not options.class == Array
-      prefix = PACKMAN.prefix package, options
-      if not Dir.exist? prefix
-        CLI.report_error "Package #{CLI.red package.class} has not been installed!"
-      end
-      if package.master_package
-        class_name = package.master_package.to_s.upcase
-      else
-        class_name = package.class.name.upcase
-      end
-      if File.exist? "#{prefix}/bashrc"
-        content = File.open("#{prefix}/bashrc", 'r').read
-        slave_package_tags = content.scan(/^# (\w+) (\w{40}) ?(\d+)?$/)
-      end
-      root = "#{class_name}_ROOT"
-      File.open("#{prefix}/bashrc", 'w') do |file|
-        # Write package tag or tags.
-        if package.master_package and slave_package_tags
-          tmp = package.class.name.upcase.to_sym
-          slave_package_tags.each do |tag|
-            if tag.first.to_sym == tmp
-              file << "# #{package.class.name.upcase} #{package.sha1} #{package.revision}\n"
-              updated = true
-            else
-              file << "# #{tag[0]} #{tag[1]} #{tag[2]}\n"
-            end
-          end
-        end
-        if not defined? updated
-          file << "# #{package.class.name.upcase} #{package.sha1} #{package.revision}\n"
-        end
-        file << "export #{root}=#{prefix}\n"
-        if Dir.exist?("#{prefix}/bin")
-          file << "export PATH=${#{root}}/bin:${PATH}\n"
-        end
-        if Dir.exist?("#{prefix}/sbin")
-          file << "export PATH=${#{root}}/sbin:${PATH}\n"
-        end
-        if Dir.exist?("#{prefix}/share/man")
-          file << "export MANPATH=\"${#{root}}/share/man:${MANPATH}\"\n"
-        end
-        if Dir.exist?("#{prefix}/include")
-          file << "export PACKMAN_#{class_name}_INCLUDE=\"-I${#{root}}/include\"\n"
-        end
-        libs = []
-        if Dir.exist?("#{prefix}/lib")
-          libs << "#{prefix}/lib"
-        end
-        if Dir.exist?("#{prefix}/lib64")
-          libs << "#{prefix}/lib64"
-        end
-        if not libs.empty?
-          file << "export PACKMAN_#{class_name}_LIBRARY=\"-L#{libs.join(' -L')}\"\n"
-          if not package.has_label? :not_set_ld_library_path
-            file << "export #{OsManager.ld_library_path_name}=\"#{libs.join(':')}:${#{OsManager.ld_library_path_name}}\"\n"
-          end
-          file << "export PACKMAN_#{class_name}_RPATH=\"#{libs.join(':')}\"\n"
-        end
-        if Dir.exist?("#{prefix}/lib/pkgconfig")
-          file << "export PKG_CONFIG_PATH=\"${#{root}}/lib/pkgconfig:${PKG_CONFIG_PATH}\"\n"
-        end
-      end
-    end
-
     def self.default_cmake_args(package)
       %W[
         -DCMAKE_INSTALL_PREFIX=#{prefix(package)}
@@ -543,57 +478,6 @@ module PACKMAN
         -DCMAKE_VERBOSE_MAKEFILE=ON
         -Wno-dev
       ]
-    end
-
-    def create_cmake_config name, include_dirs, library_dirs, libraries = []
-      include_dirs = [include_dirs] if not include_dirs.class == Array
-      library_dirs = [library_dirs] if not library_dirs.class == Array
-      libraries = [libraries] if not libraries.class == Array
-      prefix = PACKMAN.prefix(self)
-      if not Dir.exist? "#{prefix}/include" or not Dir.exist? "#{prefix}/lib"
-        CLI.report_error "Nonstandard package #{CLI.red self.class} without \"include\" or \"lib\" directories!"
-      end
-      if not Dir.glob("#{prefix}/**/#{name.downcase}-config.cmake").empty? or
-         not Dir.glob("#{prefix}/**/#{name.downcase.capitalize}Config.cmake").empty?
-        CLI.report_error "CMake configure file has already been installed for #{CLI.red self.class}!"
-      end
-      File.open("#{prefix}/#{name.downcase}-config.cmake", 'w') do |file|
-        file << "set (#{name}_INCLUDE_DIRS \""
-        for i in 0..include_dirs.size-1
-          file << ' ' if i > 0
-          file << "#{prefix}/#{include_dirs[i]}"
-        end
-        file << "\")\n"
-        file << "set (#{name}_LIBRARY_DIRS \""
-        for i in 0..library_dirs.size-1
-          file << ' ' if i > 0
-          file << "#{prefix}/#{library_dirs[i]}"
-        end
-        file << "\")\n"
-        if not libraries.empty?
-          file << "set (#{name}_LIBRARIES \""
-          for i in 0..libraries.size-1
-            file << ' ' if i > 0
-            file << "#{libraries[i]}"
-          end
-          file << "\")\n"
-        end
-      end
-      File.open("#{prefix}/#{name.downcase}-config-version.cmake", 'w') do |file|
-        file << <<-EOT
-          set (PACKAGE_VERSION \"#{self.version}\")
-          if ("${PACKAGE_VERSION}" VERSION_LESS "${PACKAGE_FIND_VERSION}")
-            set (PACKAGE_VERSION_COMPATIBLE FALSE)
-          else ()
-            set (PACKAGE_VERSION_COMPATIBLE TRUE)
-            if ("${PACKAGE_VERSION}" VERSION_EQUAL "${PACKAGE_FIND_VERSION}")
-              set (PACKAGE_VERSION_EXACT TRUE)
-            else ()
-              set (PACKAGE_VERSION_EXACT FALSE)
-            endif ()
-          endif ()
-        EOT
-      end
     end
 
     def install_method

@@ -33,6 +33,11 @@ module PACKMAN
       @@compiler_sets
     end
 
+    def self.add_compiler_set command_hash
+      @@compiler_sets ||= []
+      @@compiler_sets << CompilerSet.new(command_hash)
+    end
+
     def self.active_compiler_set
       @@active_compiler_set
     end
@@ -75,6 +80,8 @@ module PACKMAN
           CLI.report_error "Compiler set index #{CLI.red index} is not in range!"
         end
         @@active_compiler_set = @@compiler_sets[index]
+      elsif compiler_set_object_or_index.class == String
+        activate_compiler_set compiler_set_object_or_index.to_i
       else
         CLI.report_error "Invalid argument #{CLI.red compiler_set_object_or_index}! "+
           "A compiler set object or index is expected."

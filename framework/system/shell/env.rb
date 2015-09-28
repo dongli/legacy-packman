@@ -3,14 +3,11 @@ module PACKMAN
     class Env
       def self.delegated_methods
         [:append_env, :prepend_env, :reset_env, :clear_env, :has_env?,
-         :export_env, :env_keys, :shell_sources,
-         :append_shell_source, :prepend_shell_source, :clear_shell_source,
-         :set_cppflags_and_ldflags, :filter_ld_library_path]
+         :export_env, :env_keys, :set_cppflags_and_ldflags]
       end
 
       def self.init
         @@customized_env = {}
-        @@customized_shell_source = {}
       end
 
       def self.append_env keys, value, separator = nil
@@ -28,14 +25,6 @@ module PACKMAN
         end
       end
 
-      def self.append_shell_source paths
-        i = [CompilerManager.active_compiler_set_index]
-        @@customized_shell_source[i] ||= []
-        Array(paths).each do |path|
-          @@customized_shell_source[i] << path if not @@customized_shell_source[i].include? path
-        end
-      end
-
       def self.prepend_env keys, value, separator = ' '
         i = [CompilerManager.active_compiler_set_index]
         @@customized_env[i] ||= {}
@@ -50,14 +39,6 @@ module PACKMAN
         end
       end
 
-      def self.prepend_shell_source paths
-        i = [CompilerManager.active_compiler_set_index]
-        @@customized_shell_source[i] ||= []
-        Array(paths).each do |path|
-          @@customized_shell_source[i].unshift path if not @@customized_shell_source[i].include? path
-        end
-      end
-
       def self.reset_env key, value = nil
         i = [CompilerManager.active_compiler_set_index]
         @@customized_env[i] ||= {}
@@ -66,10 +47,6 @@ module PACKMAN
 
       def self.clear_env
         @@customized_env.clear
-      end
-
-      def self.clear_shell_source
-        @@customized_shell_source.clear
       end
 
       def self.[] key
@@ -82,12 +59,6 @@ module PACKMAN
         i = [CompilerManager.active_compiler_set_index]
         @@customized_env[i] ||= {}
         @@customized_env[i].keys
-      end
-
-      def self.shell_sources
-        i = [CompilerManager.active_compiler_set_index]
-        @@customized_shell_source[i] ||= []
-        @@customized_shell_source[i]
       end
 
       def self.has_env? key

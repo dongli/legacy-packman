@@ -70,7 +70,7 @@ function complete_packman()
     "config" | "help" | "mirror" | "report" | "switch" | "update")
         completed_words=$(eval "echo \$${prev_word##*/}_options")
         ;;
-    "collect" | "edit" | "install" | "remove" | "start" | "status" | "stop" | "upgrade")
+    "collect" | "edit" | "install" | "remove" | "start" | "status" | "stop" | "upgrade" | "link" | "unlink")
         completed_words="$(eval "echo \$${prev_word##*/}_options") $packages"
         ;;
     *)
@@ -85,3 +85,11 @@ function complete_packman()
 }
 
 complete -o bashdefault -F complete_packman packman
+
+# Source packman.bashrc in <install_root> if there is.
+if [[ -f "$PACKMAN_ROOT/packman.config" ]]; then
+    install_root=$(sed -n 's/install_root = "\(.*\)"/\1/p' "$PACKMAN_ROOT/packman.config")
+    if [[ -f "$install_root/packman.bashrc" ]]; then
+        source "$install_root/packman.bashrc"
+    fi
+fi

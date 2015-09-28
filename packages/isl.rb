@@ -1,7 +1,7 @@
 class Isl < PACKMAN::Package
-  url 'http://isl.gforge.inria.fr/isl-0.12.2.tar.bz2'
-  sha1 'ca98a91e35fb3ded10d080342065919764d6f928'
-  version '0.12.2'
+  url 'http://isl.gforge.inria.fr/isl-0.14.1.tar.bz2'
+  sha1 'b653327b20e807d1df3a7e2f546ea924f1e030c0'
+  version '0.14.1'
 
   depends_on 'gmp'
 
