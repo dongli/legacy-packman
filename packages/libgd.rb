@@ -3,12 +3,12 @@ class Libgd < PACKMAN::Package
   sha1 'a0f3053724403aef9e126f4aa5c662573e5836cd'
   version '2.1.0'
 
-  depends_on 'zlib'
-  depends_on 'jpeg'
-  depends_on 'libpng'
-  depends_on 'libtiff'
-  depends_on 'fontconfig'
-  depends_on 'freetype'
+  depends_on :zlib
+  depends_on :jpeg
+  depends_on :libpng
+  depends_on :libtiff
+  depends_on :fontconfig
+  depends_on :freetype
   # libvpx is not able to download, since it is stored in GoogleCode..
 
   def install
@@ -22,7 +22,6 @@ class Libgd < PACKMAN::Package
       --with-fontconfig=#{Fontconfig.prefix}
       --with-freetype=#{Freetype.prefix}
     ]
-    PACKMAN.set_cppflags_and_ldflags [Zlib]
     PACKMAN.run './configure', *args
     PACKMAN.run 'make install'
   end

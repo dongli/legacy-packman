@@ -5,10 +5,10 @@ class Ncview < PACKMAN::Package
 
   label :compiler_insensitive
 
-  depends_on 'x11'
-  depends_on 'netcdf_c'
-  depends_on 'udunits'
-  depends_on 'libpng'
+  depends_on :x11
+  depends_on :netcdf_c
+  depends_on :udunits
+  depends_on :libpng
 
   def install
     # Ignore the C compiler difference, since we may use MPI wrapper to build Netcdf_c.

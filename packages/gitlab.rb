@@ -8,25 +8,25 @@ class Gitlab < PACKMAN::Package
   label :installed_with_source
   label :not_use_target_dir_option
 
-  option 'domain' => 'localhost'
-  option 'port' => 8080
-  option 'smtp_address' => :string
-  option 'smtp_port' => :integer
-  option 'smtp_email' => :string
-  option 'smtp_domain' => :string
-  option 'smtp_use_tls' => :boolean
-  option 'unicorn_timeout' => 60
+  option :domain => 'localhost'
+  option :port => 8080
+  option :smtp_address => :string
+  option :smtp_port => :integer
+  option :smtp_email => :string
+  option :smtp_domain => :string
+  option :smtp_use_tls => :boolean
+  option :unicorn_timeout => 60
 
-  depends_on 'postgresql'
-  depends_on 'redis'
-  depends_on 'git'
-  depends_on 'ruby'
-  depends_on 'ruby_sequel'
-  depends_on 'ruby_nokogiri'
-  depends_on 'ruby_highline'
-  depends_on 'libiconv'
-  depends_on 'icu4c'
-  depends_on 'nginx'
+  depends_on :postgresql
+  depends_on :redis
+  depends_on :git
+  depends_on :ruby
+  depends_on :ruby_sequel
+  depends_on :ruby_nokogiri
+  depends_on :ruby_highline
+  depends_on :libiconv
+  depends_on :icu4c
+  depends_on :nginx
 
   attach 'gitlab_shell' do
     url 'https://github.com/gitlabhq/gitlab-shell/archive/v2.6.3.tar.gz'

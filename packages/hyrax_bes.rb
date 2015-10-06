@@ -5,15 +5,15 @@ class Hyrax_bes < PACKMAN::Package
 
   belongs_to 'hyrax'
 
-  depends_on 'uuid'
-  depends_on 'readline'
-  depends_on 'libxml2'
-  depends_on 'opendap'
-  depends_on 'gdal' # TODO: How to solve gdal failure?
+  depends_on :uuid
+  depends_on :readline
+  depends_on :libxml2
+  depends_on :opendap
+  depends_on :gdal # TODO: How to solve gdal failure?
 
   def install
     # Add the lacked 'cstring' header for GCC.
-    if PACKMAN.compiler('c++').vendor == 'gnu'
+    if PACKMAN.compiler(:cxx).vendor == :gnu
       PACKMAN.replace './cmdln/CmdClient.cc', {
         /^\s*(#include <cstdlib>)\s*$/ => "\\1\n#include <cstring>"
       }

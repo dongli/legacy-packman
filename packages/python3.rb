@@ -5,12 +5,12 @@ class Python3 < PACKMAN::Package
 
   label :compiler_insensitive
 
-  depends_on 'pkgconfig'
-  depends_on 'readline'
-  depends_on 'openssl'
-  depends_on 'sqlite'
-  depends_on 'gdbm'
-  depends_on 'x11'
+  depends_on :pkgconfig
+  depends_on :readline
+  depends_on :openssl
+  depends_on :sqlite
+  depends_on :gdbm
+  depends_on :x11
 
   attach 'setuptools' do
     url 'https://pypi.python.org/packages/source/s/setuptools/setuptools-12.3.tar.gz'
@@ -45,8 +45,7 @@ class Python3 < PACKMAN::Package
       args << "--enable-framework=#{frameworks}"
       args << "MACOSX_DEPLOYMENT_TARGET=#{PACKMAN.os.version.major_minor}"
     end
-    args << "--without-gcc" if PACKMAN.compiler('c').vendor != 'gnu'
-    PACKMAN.set_cppflags_and_ldflags [Sqlite, Gdbm]
+    args << "--without-gcc" if PACKMAN.compiler(:c).vendor != :gnu
     PACKMAN.run './configure', *args
     PACKMAN.run 'make'
     PACKMAN.run "make install PYTHONAPPSDIR=#{prefix}"

@@ -5,19 +5,19 @@ class Vim < PACKMAN::Package
 
   label :compiler_insensitive
 
-  option 'use_vundle' => false
-  option 'with_perl' => false
-  option 'with_ruby' => false
-  option 'with_python' => false
-  option 'with_lua' => true
+  option :use_vundle => false
+  option :with_perl => false
+  option :with_ruby => false
+  option :with_python => false
+  option :with_lua => true
 
   patch :embed
 
-  depends_on 'ncurses'
-  depends_on 'perl' if with_perl?
-  depends_on 'ruby' if with_ruby?
-  depends_on 'python' if with_python?
-  depends_on 'lua' if with_lua?
+  depends_on :ncurses
+  depends_on :perl if with_perl?
+  depends_on :ruby if with_ruby?
+  depends_on :python if with_python?
+  depends_on :lua if with_lua?
 
   def install
     PACKMAN.append_env 'LUA_PREFIX', Lua.prefix
@@ -38,7 +38,6 @@ class Vim < PACKMAN::Package
         args << "--disable-#{language}interp"
       end
     end
-    PACKMAN.set_cppflags_and_ldflags [Ncurses]
     PACKMAN.run './configure', *args
     PACKMAN.run 'make -j2'
     PACKMAN.run "make install prefix=#{prefix} STRIP=true"
@@ -112,7 +111,7 @@ index 02eeafc..57c45c9 100644
 @@ -37,6 +37,10 @@
  # define HAVE_TOTAL_MEM
  #endif
- 
+
 +#if defined(__APPLE__)
 +#include <AvailabilityMacros.h>
 +#endif

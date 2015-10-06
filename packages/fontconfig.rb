@@ -3,9 +3,9 @@ class Fontconfig < PACKMAN::Package
   sha1 '08565feea5a4e6375f9d8a7435dac04e52620ff2'
   version '2.11.1'
 
-  depends_on 'pkgconfig'
-  depends_on 'freetype'
-  depends_on 'expat'
+  depends_on :pkgconfig
+  depends_on :freetype
+  depends_on :expat
 
   patch :embed
 

@@ -4,8 +4,8 @@ class Vis5dx < PACKMAN::Package
   filename 'vis5dx-1.3.0-beta.tar.gz'
   version '1.3.0'
 
-  depends_on 'netcdf_c'
-  depends_on 'mesa3d'
+  depends_on :netcdf_c
+  depends_on :mesa3d
 
   def install
     # http://cypresslin.web.fc2.com/Memo/M-ENG-Vis5DInst.html

@@ -3,9 +3,9 @@ class Little_cms < PACKMAN::Package
   sha1 'b0ecee5cb8391338e6c281d1c11dcae2bc22a5d2'
   version '2.6'
 
-  depends_on 'jpeg'
-  depends_on 'libtiff'
-  depends_on 'zlib'
+  depends_on :jpeg
+  depends_on :libtiff
+  depends_on :zlib
 
   def install
     args = %W[

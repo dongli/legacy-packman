@@ -6,23 +6,20 @@ module PACKMAN
 
     def self.default_command_prefix
       cmd_str = ''
-      # Handle PACKMAN installed compiler.
-      if not CompilerManager.active_compiler_set
-        CompilerManager.activate_compiler_set ConfigManager.defaults['compiler_set_index']
-      end
-      if CompilerManager.active_compiler_set.installed_by_packman?
-        compiler_prefix = PACKMAN.prefix CompilerManager.active_compiler_set.package_name
-      end
+      PACKMAN.append_env 'CPPFLAGS', PACKMAN.cppflags
+      PACKMAN.append_env 'LDFLAGS', PACKMAN.ldflags
       # Handle RPATH variable.
-      PACKMAN.append_env 'LDFLAGS', PACKMAN.compiler('c').flag(:rpath).("#{ConfigManager.install_root}/#{CompilerManager.active_compiler_set_index}/lib")
+      rpath_flag = PACKMAN.compiler(:c).flag(:rpath).("#{ConfigManager.install_root}/#{CompilerManager.active_compiler_set_index}")
+      PACKMAN.append_env 'LDFLAGS', rpath_flag
       # Handle compilers.
       CompilerManager.active_compiler_set.compilers.each do |language, compiler|
         flags = compiler.default_flags[language]
         PACKMAN.append_env PACKMAN.compiler_flags_env_name(language), flags
+        PACKMAN.append_env PACKMAN.compiler_flags_env_name(language), rpath_flag
         case language
         when 'c'
           PACKMAN.reset_env 'CC', compiler.command
-        when 'c++'
+        when 'cxx'
           PACKMAN.reset_env 'CXX', compiler.command
         when 'fortran'
           PACKMAN.reset_env 'F77', compiler.command

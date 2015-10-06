@@ -12,14 +12,14 @@ class Wrf_wps < PACKMAN::Package
 
   belongs_to 'wrf'
 
-  option 'build_type' => 'serial'
-  option 'use_mpi' => [:package_name, :boolean]
+  option :build_type => 'serial'
+  option :use_mpi => [:package_name, :boolean]
 
-  depends_on 'm4'
-  depends_on 'netcdf'
-  depends_on 'libpng'
-  depends_on 'jasper'
-  depends_on 'zlib'
+  depends_on :m4
+  depends_on :netcdf
+  depends_on :libpng
+  depends_on :jasper
+  depends_on :zlib
 
   def decompress_to target_dir
     PACKMAN.work_in target_dir do
@@ -87,17 +87,17 @@ class Wrf_wps < PACKMAN::Package
     else
       build_type_ = 'dmpar'
     end
-    if PACKMAN.compiler('fortran').vendor == 'gnu'
-      if PACKMAN.compiler('fortran').version <= '4.4.7'
+    if PACKMAN.compiler(:fortran).vendor == :gnu
+      if PACKMAN.compiler(:fortran).version <= '4.4.7'
         PACKMAN.report_error "#{PACKMAN.blue 'gfortran'} version "+
-          "#{PACKMAN.red PACKMAN.compiler('fortran').version} is too low to build WRF!"
+          "#{PACKMAN.red PACKMAN.compiler(:fortran).version} is too low to build WRF!"
       end
       output.each do |line|
         tmp = line.match(/(\d+)\.\s+.*gfortran\s*\(#{build_type_}\)/)
         PACKMAN.report_error "Mess up with configure output of WRF!" if not tmp
         return tmp[1]
       end
-    elsif PACKMAN.compiler('fortran').vendor == 'intel'
+    elsif PACKMAN.compiler(:fortran).vendor == :intel
       output.each do |line|
         tmp = line.match(/(\d+)\.\s+.*Intel compiler\s+\(#{build_type_}\)/)
         PACKMAN.report_error "Mess up with configure output of WRF!" if not tmp

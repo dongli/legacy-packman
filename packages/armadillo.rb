@@ -3,16 +3,16 @@ class Armadillo < PACKMAN::Package
   sha1 '817bc80a5d469afba1c53a73160e7ca6fe0782ad'
   version '5.000.1'
 
-  option 'use_mkl' => false
+  option :use_mkl => false
 
-  depends_on 'cmake'
+  depends_on :cmake
   if PACKMAN.linux? and not use_mkl?
-    depends_on 'lapack'
-    depends_on 'openblas'
+    depends_on :lapack
+    depends_on :openblas
   end
-  depends_on 'arpack'
-  depends_on 'hdf5'
-  depends_on 'superlu'
+  depends_on :arpack
+  depends_on :hdf5
+  depends_on :superlu
 
   def install
     # The CMake find modules provided by Armadillo is so weak that
@@ -27,7 +27,7 @@ class Armadillo < PACKMAN::Package
       /^\s*PATHS / => "  PATHS #{Arpack.lib} "
     PACKMAN.replace 'cmake_aux/Modules/ARMA_FindSuperLU.cmake', {
       'SET(SuperLU_FOUND NO)' =>
-        "SET (SuperLU_INCLUDE_DIR #{Superlu.include}/superlu)\n"+
+        "SET (SuperLU_INCLUDE_DIR #{Superlu.inc}/superlu)\n"+
         "SET (SuperLU_LIBRARY #{Superlu.lib}/libsuperlu.a)"
     }
     # In some cases, the MKL does not work as expected.

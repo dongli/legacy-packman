@@ -2,7 +2,7 @@ module PACKMAN
   class Os
     attr_reader :normal, :active_spec
 
-    def initialize requested_spec = nil
+    def initialize requested_spec = nil, *options
       hand_over_spec :normal
 
       set_active_spec requested_spec
@@ -64,6 +64,7 @@ module PACKMAN
       active_spec.commands[name]
     end
     def x86_64?; active_spec.arch == 'x86_64' ? true : false; end
+    def to_hash; active_spec.to_hash; end
 
     class << self
       def normal

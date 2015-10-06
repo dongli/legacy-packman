@@ -6,7 +6,7 @@ class Perl < PACKMAN::Package
   label :compiler_insensitive
   label :master_package
 
-  depends_on 'zlib'
+  depends_on :zlib
 
   def install
     # Avoid the linking with system Zlib that may not be compiled with '-fPIC'.
@@ -17,7 +17,7 @@ class Perl < PACKMAN::Package
     args = %W[
       -des
       -Dprefix=#{prefix}
-      -Dcc="#{PACKMAN.compiler('c').command} -fPIC"
+      -Dcc="#{PACKMAN.compiler(:c).command} -fPIC"
       -Dusethreads
       -Duselargefiles
     ]

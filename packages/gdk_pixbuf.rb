@@ -3,12 +3,12 @@ class Gdk_pixbuf < PACKMAN::Package
   sha1 '6277b4e5b5e334b3669f15ae0376e184be9e8cd8'
   version '2.30.8'
 
-  depends_on 'glib'
-  depends_on 'jpeg'
-  depends_on 'libpng'
-  depends_on 'libtiff'
-  depends_on 'jasper'
-  depends_on 'gobject_introspection'
+  depends_on :glib
+  depends_on :jpeg
+  depends_on :libpng
+  depends_on :libtiff
+  depends_on :jasper
+  depends_on :gobject_introspection
 
   def install
     args = %W[
@@ -21,8 +21,6 @@ class Gdk_pixbuf < PACKMAN::Package
       --without-gdiplus
       --with-jasper
     ]
-    PACKMAN.set_cppflags_and_ldflags [
-      Glib, Jpeg, Libpng, Libtiff, Jasper, Gobject_introspection]
     PACKMAN.run './configure', *args
     PACKMAN.run 'make'
     PACKMAN.run 'make install'

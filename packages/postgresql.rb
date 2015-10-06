@@ -5,22 +5,22 @@ class Postgresql < PACKMAN::Package
 
   label :compiler_insensitive
 
-  option 'with_perl' => false
-  option 'with_python' => false
-  option 'admin_user' => 'postgres'
-  option 'cluster_path' => var+'/data'
+  option :with_perl => false
+  option :with_python => false
+  option :admin_user => 'postgres'
+  option :cluster_path => var+'/data'
 
-  depends_on 'flex'
-  depends_on 'bison'
-  depends_on 'openssl'
-  depends_on 'ncurses'
-  depends_on 'readline'
-  depends_on 'gettext'
-  depends_on 'libxml2'
-  depends_on 'zlib'
-  depends_on 'uuid'
-  depends_on 'perl' if with_perl?
-  depends_on 'python' if with_python?
+  depends_on :flex
+  depends_on :bison
+  depends_on :openssl
+  depends_on :ncurses
+  depends_on :readline
+  depends_on :gettext
+  depends_on :libxml2
+  depends_on :zlib
+  depends_on :uuid
+  depends_on :perl if with_perl?
+  depends_on :python if with_python?
 
   def install
     PACKMAN.append_env 'LANG', 'C'
@@ -34,7 +34,6 @@ class Postgresql < PACKMAN::Package
       LIBS=-lintl
     ]
     args << '--with-bonjour' if PACKMAN.mac?
-    PACKMAN.set_cppflags_and_ldflags [Openssl, Ncurses, Readline_, Gettext, Zlib]
     PACKMAN.run './configure', *args
     PACKMAN.run 'make -j2'
     PACKMAN.run 'make check' if not skip_test?

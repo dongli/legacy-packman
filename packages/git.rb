@@ -6,12 +6,12 @@ class Git < PACKMAN::Package
 
   label :compiler_insensitive
 
-  depends_on 'zlib'
-  depends_on 'expat'
-  depends_on 'gettext'
-  depends_on 'openssl'
-  depends_on 'curl'
-  depends_on 'pcre'
+  depends_on :zlib
+  depends_on :expat
+  depends_on :gettext
+  depends_on :openssl
+  depends_on :curl
+  depends_on :pcre
 
   def install
     args = %W[
@@ -26,7 +26,7 @@ class Git < PACKMAN::Package
       GETTEXT=1
       CURLDIR=#{Curl.prefix}
       OPENSSLDIR=#{Openssl.prefix}
-      ZLIB_PATH=#{Zlib.prefix}
+      ZLIB_PATH=#{Zlib_.prefix}
       USE_LIBPCRE=1
       LIBPCREDIR=#{Pcre.prefix}
       EXPATDIR=#{Expat.prefix}
@@ -35,8 +35,6 @@ class Git < PACKMAN::Package
       CPPFLAGS="${CPPFLAGS}"
       LDFLAGS="${LDFLAGS} -lintl"
     ]
-    PACKMAN.set_cppflags_and_ldflags [Gettext]
     PACKMAN.run 'make install', *args
-
   end
 end

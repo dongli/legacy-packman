@@ -5,18 +5,18 @@ class Ferret < PACKMAN::Package
 
   label :compiler_insensitive
 
-  depends_on 'readline'
-  depends_on 'lesstif'
-  depends_on 'libxml2'
-  depends_on 'jpeg'
-  depends_on 'hdf4'
-  depends_on 'hdf5'
-  depends_on 'netcdf'
-  depends_on 'zlib'
-  depends_on 'szip'
-  depends_on 'curl'
-  depends_on 'opendap'
-  depends_on 'tcsh'
+  depends_on :readline
+  depends_on :lesstif
+  depends_on :libxml2
+  depends_on :jpeg
+  depends_on :hdf4
+  depends_on :hdf5
+  depends_on :netcdf
+  depends_on :zlib
+  depends_on :szip
+  depends_on :curl
+  depends_on :opendap
+  depends_on :tcsh
 
   attach 'dsets' do
     url 'ftp://ftp.pmel.noaa.gov/ferret/pub/data/fer_dsets.tar.gz'
@@ -48,7 +48,7 @@ class Ferret < PACKMAN::Package
       /^INSTALL_FER_DIR\s*=.*$/ => "INSTALL_FER_DIR = #{prefix}",
       /^HDF5_DIR\s*=.*$/ => "HDF5_DIR = #{Hdf5.prefix}",
       /^NETCDF4_DIR\s*=.*$/ => "NETCDF4_DIR = #{Netcdf.prefix}",
-      /^LIBZ_DIR\s*=.*$/ => "LIBZ_DIR = #{Zlib.prefix}"
+      /^LIBZ_DIR\s*=.*$/ => "LIBZ_DIR = #{Zlib_.prefix}"
     }
     PACKMAN.replace "platform_specific.mk.#{build_type}", {
       /^(\s*INCLUDES\s*=.*)$/ => "\\1\n-I#{Netcdf.include} -I#{Curl.include} \\",
@@ -61,10 +61,10 @@ class Ferret < PACKMAN::Package
         /^CPP\s*=.*$/ => 'CPP = /usr/bin/cpp',
         /^LD\s*=.*$/ => 'LD = gcc',
         /^READLINELIB\s*=.*$/ => 'READLINELIB = -lreadline -ltermcap',
-        /^HDFLIB\s*=.*$/ => "HDFLIB = -L#{Hdf4.lib} -ldf -L#{Jpeg.lib} -ljpeg -L#{Zlib.lib} -lz",
+        /^HDFLIB\s*=.*$/ => "HDFLIB = -L#{Hdf4.lib} -ldf -L#{Jpeg.lib} -ljpeg -L#{Zlib_.lib} -lz",
         /^CDFLIB\s*=.*$/ => "CDFLIB = -L#{Netcdf.lib} -lnetcdf -lnetcdff "+
         "-L#{Hdf5.lib} -lhdf5_hl -lhdf5 "+
-        "-L#{Zlib.lib} -lz -lm -L#{Szip.lib} -lsz -L#{Opendap.lib} -ldap -ldapclient "+
+        "-L#{Zlib_.lib} -lz -lm -L#{Szip.lib} -lsz -L#{Opendap.lib} -ldap -ldapclient "+
         "-L#{Curl.lib} -lcurl -L#{Libxml2.prefix} -lxml2 -lpthread -licucore -lstdc++",
         /\/usr\/local\/lib\/libXm.a/ => "#{Lesstif.lib}/libXm.a",
         # Why Ferret developers put fixed intel library into the configuration file??

@@ -39,13 +39,13 @@ module PACKMAN
 
     def self.os; @@os; end
     def self.package_managers; @@os.package_managers; end
-  
+
     def self.linux?
       [:RHEL, :Fedora, :CentOS, :SUSE, :Debian, :Ubuntu].include? @@os.type
     end
 
     def self.mac?
-      @@os.type == :Mac_OS_X
+      @@os.type == :Mac
     end
 
     def self.cygwin?

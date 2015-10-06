@@ -5,9 +5,9 @@ class Hyrax_hdf5_handler < PACKMAN::Package
 
   belongs_to 'hyrax'
 
-  depends_on 'opendap'
-  depends_on 'hyrax_bes'
-  depends_on 'hdf5'
+  depends_on :opendap
+  depends_on :hyrax_bes
+  depends_on :hdf5
 
   def install
     args = %W[

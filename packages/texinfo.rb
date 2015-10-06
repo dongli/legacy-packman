@@ -3,7 +3,7 @@ class Texinfo < PACKMAN::Package
   sha1 'dc54edfbb623d46fb400576b3da181f987e63516'
   version '5.2'
 
-  depends_on 'perl_data_dumper'
+  depends_on :perl_data_dumper
 
   def install
     args = %W[

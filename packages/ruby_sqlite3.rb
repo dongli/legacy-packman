@@ -6,7 +6,7 @@ class Ruby_sqlite3 < PACKMAN::Package
   label :try_system_package_first
   label :not_set_bashrc
 
-  depends_on 'sqlite'
+  depends_on :sqlite
 
   def install
     PACKMAN.gem "install sqlite3-#{version}.gem -- --use-system-libraries "+

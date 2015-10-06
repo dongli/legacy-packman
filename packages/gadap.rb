@@ -3,7 +3,7 @@ class Gadap < PACKMAN::Package
   sha1 'cbd72f39296ac2745350471293ffe407ac750c1d'
   version '2.0'
 
-  depends_on 'opendap'
+  depends_on :opendap
 
   def install
     # Fix bugs!
@@ -17,9 +17,8 @@ class Gadap < PACKMAN::Package
     PACKMAN.replace 'test/test.cc', /(#include <string>)/ => "\\1\n#include <cstdlib>\n#include <cstring>\n"
     args = %W[
       --prefix=#{prefix}
-      CXXFLAGS="-L#{Zlib.lib} -luuid"
+      CXXFLAGS="-L#{Zlib_.lib} -luuid"
     ]
-    PACKMAN.set_cppflags_and_ldflags [Uuid]
     PACKMAN.run "./configure", *args
     PACKMAN.run 'make'
     PACKMAN.run 'make install'

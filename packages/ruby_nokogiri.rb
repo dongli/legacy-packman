@@ -7,9 +7,9 @@ class Ruby_nokogiri < PACKMAN::Package
   label :not_set_bashrc
 
   # TODO: Should check if Ruby is above 2.0.0.
-  depends_on 'libxml2'
-  depends_on 'libxslt'
-  depends_on 'ruby_mini_portile'
+  depends_on :libxml2
+  depends_on :libxslt
+  depends_on :ruby_mini_portile
 
   def install
     PACKMAN.gem 'install', "nokogiri-#{version}.gem -- --use-system-libraries "+

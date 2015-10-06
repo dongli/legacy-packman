@@ -3,14 +3,14 @@ class R < PACKMAN::Package
   sha1 '93809368e5735a630611633ac1fa99010020c5d6'
   version '3.1.2'
 
-  depends_on 'readline'
-  depends_on 'gettext'
-  depends_on 'libtiff'
-  depends_on 'jpeg'
-  depends_on 'libpng'
-  depends_on 'cairo'
-  depends_on 'x11'
-  depends_on 'openblas'
+  depends_on :readline
+  depends_on :gettext
+  depends_on :libtiff
+  depends_on :jpeg
+  depends_on :libpng
+  depends_on :cairo
+  depends_on :x11
+  depends_on :openblas
 
   # NOTE: We cannot access Google sites within our great LAN!!
   # attach 'bash_completion' do
@@ -35,7 +35,6 @@ class R < PACKMAN::Package
     elsif PACKMAN.linux?
       args << '--enable-R-shlib'
     end
-    PACKMAN.set_cppflags_and_ldflags [Readline_, Gettext]
     PACKMAN.run './configure', *args
     PACKMAN.run 'make'
     PACKMAN.run 'make check 2>&1 | tee make-check.log' if not skip_test?

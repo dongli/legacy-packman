@@ -33,7 +33,6 @@ module PACKMAN
     def self.init_mirror_service
       # Install proftpd.
       proftpd = Proftpd.new
-      proftpd.compiler_set_indices << 0
       install_package proftpd
       # Check available port for FTP service.
       port = 2121

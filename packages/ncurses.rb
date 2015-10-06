@@ -14,7 +14,7 @@ class Ncurses < PACKMAN::Package
       --prefix=#{prefix}
       --disable-debug
     ]
-    args << '--without-ada' if PACKMAN.compiler('c').vendor == 'intel'
+    args << '--without-ada' if PACKMAN.compiler(:c).vendor == :intel
     PACKMAN.run './configure', *args
     PACKMAN.run 'make -j2'
     PACKMAN.run 'make install'
@@ -58,4 +58,3 @@ index 639b790..25d69b3 100755
  		CC_SHARED_OPTS="-dynamic"
  		MK_SHARED_LIB='${CC} ${CFLAGS} -dynamiclib -install_name ${libdir}/`basename $@` -compatibility_version ${ABI_VERSION} -current_version ${ABI_VERSION} -o $@'
  		test "$cf_cv_shlib_version" = auto && cf_cv_shlib_version=abi
-

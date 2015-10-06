@@ -4,10 +4,10 @@ class Sqlite < PACKMAN::Package
   version '3.8.8.2'
 
   label :compiler_insensitive
-  label :not_set_ld_library_path
+  label :unlinked
 
-  depends_on 'readline'
-  depends_on 'icu4c'
+  depends_on :readline
+  depends_on :icu4c
 
   attach 'extension_functions' do
     url 'https://www.sqlite.org/contrib/download/extension-functions.c/download/extension-functions.c?get=25'
@@ -32,7 +32,7 @@ class Sqlite < PACKMAN::Package
       --prefix=#{prefix}
       --disable-dependency-tracking
       --enable-dynamic-extensions
-      LIBS=#{PACKMAN.compiler('c').flag(:cxxlib)}
+      LIBS=#{PACKMAN.compiler(:c).flag(:cxxlib)}
     ]
     PACKMAN.run './configure', *args
     PACKMAN.run 'make install'
@@ -51,7 +51,7 @@ class Sqlite < PACKMAN::Package
     elsif PACKMAN.linux?
       args << '-shared'
     end
-    PACKMAN.run PACKMAN.compiler('c').command, *args
+    PACKMAN.run PACKMAN.compiler(:c).command, *args
     PACKMAN.mv "libsqlitefunctions.#{PACKMAN.shared_library_suffix}", lib
     PACKMAN.mkdir doc, :silent
     PACKMAN.work_in doc do

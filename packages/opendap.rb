@@ -3,12 +3,12 @@ class Opendap < PACKMAN::Package
   sha1 'a95c345da2164ec7a790b34b7f0aeb9227277770'
   version '3.14.0'
 
-  depends_on 'flex'
-  depends_on 'bison'
-  depends_on 'uuid'
-  depends_on 'curl'
-  depends_on 'libxml2'
-  depends_on 'openssl'
+  depends_on :flex
+  depends_on :bison
+  depends_on :uuid
+  depends_on :curl
+  depends_on :libxml2
+  depends_on :openssl
 
   def install
     args = %W[
@@ -19,7 +19,6 @@ class Opendap < PACKMAN::Package
       --with-xml2=#{Libxml2.prefix}
       --with-included-regex
     ]
-    PACKMAN.set_cppflags_and_ldflags [Uuid, Flex, Openssl]
     PACKMAN.run './configure', *args
     # Regenerate parser codes.
     PACKMAN.work_in 'd4_ce' do

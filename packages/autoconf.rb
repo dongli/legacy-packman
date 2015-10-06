@@ -5,7 +5,7 @@ class Autoconf < PACKMAN::Package
 
   label :try_system_package_first
 
-  depends_on 'm4'
+  depends_on :m4
 
   def install
     ENV['PERL'] = '/usr/bin/perl'

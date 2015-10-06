@@ -12,11 +12,11 @@ class Wrf_model < PACKMAN::Package
 
   belongs_to 'wrf'
 
-  option 'build_type' => 'serial'
-  option 'use_mpi' => [:package_name, :boolean]
-  option 'use_nest' => 0
-  option 'run_case' => 'em_real'
-  option 'with_chem' => false
+  option :build_type => 'serial'
+  option :use_mpi => [:package_name, :boolean]
+  option :use_nest => 0
+  option :run_case => 'em_real'
+  option :with_chem => false
   if build_type == 'dmpar' or build_type == 'dm+sm'
     if not use_mpi?
       PACKMAN.report_error "MPI library needs to be specified with "+
@@ -34,8 +34,8 @@ class Wrf_model < PACKMAN::Package
     version '3.6.1'
   end
 
-  depends_on 'm4'
-  depends_on 'netcdf'
+  depends_on :m4
+  depends_on :netcdf
   depends_on mpi if use_mpi?
 
   def decompress_to target_dir
@@ -118,16 +118,16 @@ class Wrf_model < PACKMAN::Package
   def choose_platform output
     build_type_ = build_type == 'dm+sm' ? 'dm\+sm' : build_type
     matched_platform = nil
-    if PACKMAN.compiler('c').vendor == 'gnu' and PACKMAN.compiler('fortran').vendor == 'gnu'
-      if PACKMAN.compiler('fortran').version <= '4.4.7'
+    if PACKMAN.compiler(:c).vendor == :gnu and PACKMAN.compiler(:fortran).vendor == :gnu
+      if PACKMAN.compiler(:fortran).version <= '4.4.7'
         PACKMAN.report_error "#{PACKMAN.blue 'gfortran'} version "+
-          "#{PACKMAN.red PACKMAN.compiler('fortran').version} is too low to build WRF!"
+          "#{PACKMAN.red PACKMAN.compiler(:fortran).version} is too low to build WRF!"
       end
       output.each do |line|
         matched_platform = line.match(/(\d+)\.\s+.*gfortran\s*\w*\s*with gcc\s+\(#{build_type_}\)/)
         PACKMAN.report_error "Mess up with configure output of WRF!" if not matched_platform
       end
-    elsif PACKMAN.compiler('c').vendor == 'intel' and PACKMAN.compiler('fortran').vendor == 'intel'
+    elsif PACKMAN.compiler(:c).vendor == :intel and PACKMAN.compiler(:fortran).vendor == :intel
       output.each do |line|
         matched_platform = line.match(/(\d+)\.\s+.*ifort \w* with icc\s+\(#{build_type_}\)/)
         PACKMAN.report_error "Mess up with configure output of WRF!" if not matched_platform

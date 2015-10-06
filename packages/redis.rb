@@ -5,13 +5,13 @@ class Redis < PACKMAN::Package
 
   label :compiler_insensitive
 
-  option 'use_jemalloc' => false
-  option 'config_file' => :string # Default: .../etc/redis.conf
+  option :use_jemalloc => false
+  option :config_file => :string # Default: .../etc/redis.conf
 
   def install
     args = %W[
       PREFIX=#{prefix}
-      CC=#{PACKMAN.compiler('c').command}
+      CC=#{PACKMAN.compiler(:c).command}
     ]
     args << 'MALLOC=jemalloc' if use_jemalloc?
     PACKMAN.run 'make install', *args

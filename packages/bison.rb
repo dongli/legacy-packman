@@ -5,9 +5,9 @@ class Bison < PACKMAN::Package
 
   label :compiler_insensitive
 
-  depends_on 'm4'
-  depends_on 'libiconv'
-  depends_on 'gettext'
+  depends_on :m4
+  depends_on :libiconv
+  depends_on :gettext
 
   def install
     args = %W[

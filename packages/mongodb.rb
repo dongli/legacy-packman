@@ -5,18 +5,18 @@ class Mongodb < PACKMAN::Package
 
   label :compiler_insensitive
 
-  option 'use_boost' => false
+  option :use_boost => false
 
-  depends_on 'boost' if use_boost?
-  depends_on 'openssl'
-  depends_on 'scons'
+  depends_on :boost if use_boost?
+  depends_on :openssl
+  depends_on :scons
 
   def install
     args = %W[
       --prefix=#{prefix}
       -j2
-      --cc=#{PACKMAN.compiler('c').command}
-      --cxx=#{PACKMAN.compiler('c++').command}
+      --cc=#{PACKMAN.compiler(:c).command}
+      --cxx=#{PACKMAN.compiler(:cxx).command}
       --64
       --ssl
       --extrapath=#{Openssl.prefix}

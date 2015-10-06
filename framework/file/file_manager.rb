@@ -21,7 +21,8 @@ module PACKMAN
     FileUtils.rm_rf Dir.glob(file_path), :secure => true
   end
 
-  def self.ln src, dest
+  def self.ln src, dest, *options
+    rm dest if options.include? :remove_link_if_exist and File.symlink? dest
     Dir.glob(src).each do |file|
       FileUtils.ln_sf file, dest
     end
@@ -79,8 +80,7 @@ module PACKMAN
     File.open(file_path, 'r').read.include? lines
   end
 
-  def self.replace file_path, replaces, options = []
-    options = [options] if not options.class == Array
+  def self.replace file_path, replaces, *options
     content = File.open(file_path, 'r').read
     replaces.each do |pattern, replacement|
       if content.gsub!(pattern, replacement) == nil
@@ -113,8 +113,7 @@ module PACKMAN
     file.close
   end
 
-  def self.compression_type file_path, options = []
-    options = [options] if not options.class == Array
+  def self.compression_type file_path, *options
     if file_path =~ /\.tar.Z$/i
       return :tar_Z
     elsif file_path =~ /\.(tar(\..*)?|tgz|tbz2)$/i
@@ -134,8 +133,7 @@ module PACKMAN
     end
   end
 
-  def self.decompress file_path, options = []
-    options = [options] if not options.class == Array
+  def self.decompress file_path, *options
     CLI.report_notice "Decompress #{CLI.blue File.basename(file_path)}." if not options.include? :silent
     case PACKMAN.compression_type file_path
     when :tar_Z
@@ -149,6 +147,12 @@ module PACKMAN
     when :zip
       system "unzip -o #{file_path} 1> /dev/null"
     end
+  end
+
+  def self.compress src_path, dst_path, *options
+    CLI.report_notice "Compress #{CLI.blue src_path} into #{dst_path}." if not options.include? :silent
+    system "tar czf #{dst_path} #{src_path}"
+    CLI.report_error 'Failed to compress!' if not $?.success?
   end
 
   def self.sha1_same? file_path, expect

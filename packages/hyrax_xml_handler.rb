@@ -5,9 +5,9 @@ class Hyrax_xml_handler < PACKMAN::Package
 
   belongs_to 'hyrax'
 
-  depends_on 'opendap'
-  depends_on 'hyrax_bes'
-  depends_on 'libxml2'
+  depends_on :opendap
+  depends_on :hyrax_bes
+  depends_on :libxml2
 
   def install
     PACKMAN.replace 'get_xml_data.h', {

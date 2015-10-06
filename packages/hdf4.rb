@@ -3,18 +3,18 @@ class Hdf4 < PACKMAN::Package
   sha1 '3b98d9ef6ff1fbc569e53432bddc14c148da8274'
   version '4.2.11'
 
-  depends_on 'byacc'
-  depends_on 'flex'
-  depends_on 'zlib'
-  depends_on 'szip'
-  depends_on 'jpeg'
+  depends_on :byacc
+  depends_on :flex
+  depends_on :zlib
+  depends_on :szip
+  depends_on :jpeg
 
   def install
     # Note: We can not enable shared and fortran simultaneously.
     # => configure:5994: error: Cannot build shared fortran libraries. Please configure with --disable-fortran flag.
     args = %W[
       --prefix=#{prefix}
-      --with-zlib=#{Zlib.prefix}
+      --with-zlib=#{Zlib_.prefix}
       --with-jpeg=#{Jpeg.prefix}
       --with-szlib=#{Szip.prefix}
       --disable-netcdf

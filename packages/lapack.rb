@@ -5,18 +5,18 @@ class Lapack < PACKMAN::Package
   sha1 '5870081889bf5d15fd977993daab29cf3c5ea970'
   version '3.5.0'
 
-  label :not_set_ld_library_path if PACKMAN.mac?
+  label :unlinked if PACKMAN.mac?
 
-  depends_on 'cmake'
+  depends_on :cmake
 
-  option 'build_static' => false
+  option :with_static => false
 
   def install
     args = %W[
       -DCMAKE_INSTALL_PREFIX=#{prefix}
       -DCMAKE_BUILD_TYPE="Release"
     ]
-    args << "-DBUILD_SHARED_LIBS=ON" if not build_static?
+    args << "-DBUILD_SHARED_LIBS=ON" if not with_static?
     PACKMAN.run 'cmake', *args
     PACKMAN.run 'make -j2'
     PACKMAN.run 'make test' if not skip_test?

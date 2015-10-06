@@ -3,12 +3,12 @@ class Gobject_introspection < PACKMAN::Package
   sha1 'b3e095004aa8321a5a814aacd019e6953d69c4eb'
   version '1.42.0'
 
-  depends_on 'flex'
-  depends_on 'bison'
-  depends_on 'python2'
-  depends_on 'glib'
-  depends_on 'libffi'
-  depends_on 'cairo'
+  depends_on :flex
+  depends_on :bison
+  depends_on :python2
+  depends_on :glib
+  depends_on :libffi
+  depends_on :cairo
 
   if PACKMAN.mac?
     patch do
@@ -24,7 +24,6 @@ class Gobject_introspection < PACKMAN::Package
       --disable-dependency-tracking
       --with-cairo
     ]
-    PACKMAN.set_cppflags_and_ldflags [Glib, Libffi, Cairo]
     PACKMAN.run './configure', *args
     PACKMAN.run 'make'
     # PACKMAN.run 'make check' if not skip_test?

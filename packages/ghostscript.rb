@@ -3,16 +3,16 @@ class Ghostscript < PACKMAN::Package
   sha1 'f53bcc47e912c7bffc2ced62ed9311376fb18bab'
   version '9.15'
 
-  depends_on 'expat'
-  depends_on 'jpeg'
-  depends_on 'jbig2dec'
-  depends_on 'libtiff'
-  depends_on 'libpng'
-  depends_on 'little_cms'
-  depends_on 'djvulibre' # TODO: Does ghostscript need it?
-  depends_on 'fontconfig'
-  depends_on 'freetype'
-  depends_on 'x11'
+  depends_on :expat
+  depends_on :jpeg
+  depends_on :jbig2dec
+  depends_on :libtiff
+  depends_on :libpng
+  depends_on :little_cms
+  depends_on :djvulibre # TODO: Does ghostscript need it?
+  depends_on :fontconfig
+  depends_on :freetype
+  depends_on :x11
 
   if PACKMAN.mac?
     patch :embed
@@ -45,7 +45,6 @@ class Ghostscript < PACKMAN::Package
       --disable-compile-inits
       --disable-gtk
     ]
-    PACKMAN.set_cppflags_and_ldflags [Expat, Jpeg, Jbig2dec, Libtiff, Libpng, Little_cms, Fontconfig, Freetype]
     PACKMAN.run './configure', *args
     PACKMAN.replace 'Makefile', {
       /^DEVICE_DEVS17=/ => 'DEVICE_DEVS17=$(DD)djvumask.dev $(DD)djvusep.dev'
@@ -64,8 +63,8 @@ index ae2d7d8..4f4daed 100644
 --- a/base/unix-dll.mak
 +++ b/base/unix-dll.mak
 @@ -64,12 +64,12 @@ GS_SONAME_MAJOR_MINOR=$(GS_SONAME_BASE)$(GS_SOEXT)$(SO_LIB_VERSION_SEPARATOR)$(G
- 
- 
+
+
  # MacOS X
 -#GS_SOEXT=dylib
 -#GS_SONAME=$(GS_SONAME_BASE).$(GS_SOEXT)
@@ -79,5 +78,5 @@ index ae2d7d8..4f4daed 100644
 -#LDFLAGS_SO_MAC=-dynamiclib -install_name $(GS_SONAME_MAJOR_MINOR)
 +LDFLAGS_SO_MAC=-dynamiclib -install_name __PREFIX__/lib/$(GS_SONAME_MAJOR_MINOR)
  #LDFLAGS_SO=-dynamiclib -install_name $(FRAMEWORK_NAME)
- 
+
  GS_SO=$(BINDIR)/$(GS_SONAME)

@@ -7,7 +7,7 @@ class Perl_xml_namespacesupport < PACKMAN::Package
 
   belongs_to 'perl'
 
-  depends_on 'perl'
+  depends_on :perl
 
   def install
     args = %W[

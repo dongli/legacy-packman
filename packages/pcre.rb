@@ -5,8 +5,8 @@ class Pcre < PACKMAN::Package
 
   label :compiler_insensitive
 
-  depends_on 'zlib'
-  depends_on 'bzip2'
+  depends_on :zlib
+  depends_on :bzip2
 
   def install
     args = %W[
@@ -21,7 +21,6 @@ class Pcre < PACKMAN::Package
       --enable-pcregrep-libbz2
       --enable-jit
     ]
-    PACKMAN.set_cppflags_and_ldflags [Zlib, Bzip2]
     PACKMAN.run './configure', *args
     PACKMAN.run 'make'
     PACKMAN.run 'make test' if not skip_test?

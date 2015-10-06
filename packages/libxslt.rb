@@ -3,7 +3,7 @@ class Libxslt < PACKMAN::Package
   sha1 '4df177de629b2653db322bfb891afa3c0d1fa221'
   version '1.1.28'
 
-  depends_on 'libxml2'
+  depends_on :libxml2
 
   def install
     args = %W[

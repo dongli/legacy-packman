@@ -130,7 +130,7 @@ module PACKMAN
       return res
     end
 
-    def self.validate version_string
+    def self.check version_string
       tmp = version_string.match(/(>=|==|=~)?(.*)/)
       VersionSpec.new tmp[2]
     end

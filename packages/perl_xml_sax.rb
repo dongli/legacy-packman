@@ -7,9 +7,9 @@ class Perl_xml_sax < PACKMAN::Package
 
   belongs_to 'perl'
 
-  depends_on 'perl'
-  depends_on 'perl_xml_sax_base'
-  depends_on 'perl_xml_namespacesupport'
+  depends_on :perl
+  depends_on :perl_xml_sax_base
+  depends_on :perl_xml_namespacesupport
 
   def install
     args = %W[

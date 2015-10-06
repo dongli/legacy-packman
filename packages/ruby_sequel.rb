@@ -6,8 +6,8 @@ class Ruby_sequel < PACKMAN::Package
   label :try_system_package_first
   label :not_set_bashrc
 
-  depends_on 'ruby_sqlite3'
-  depends_on 'ruby_pg'
+  depends_on :ruby_sqlite3
+  depends_on :ruby_pg
 
   def install
     PACKMAN.gem "install sequel-#{version}.gem"

@@ -8,25 +8,14 @@ module PACKMAN
       elsif CommandLine.has_option? '-install_root'
         print "#{ConfigManager.install_root}\n"
       elsif CommandLine.has_option? '-installed_packages'
-        Dir.glob("#{ConfigManager.install_root}/*").each do |package_root|
-          package_name = File.basename package_root
-          next if not Package.all_package_names.include? package_name
-          versions = Dir.glob("#{package_root}/*").sort.map { |x| File.basename x }
-          sets = []
-          Dir.glob("#{package_root}/*").each do |dir|
-            sets << Dir.glob("#{dir}/*").sort.map { |x| File.basename x }
-            sets.last.delete_if { |x| not PACKMAN.integer? x or not (0..CompilerManager.compiler_sets.size-1).include? Integer(x) }
-          end
-          print "#{CLI.green package_name}: "
-          version_set_pairs = []
-          for i in 0..versions.size-1
-            if sets[i].empty?
-              version_set_pairs << "#{CLI.blue versions[i]}"
+        installed_packages.each do |package_name, version_set_pairs|
+          print "#{PACKMAN.green package_name}: #{version_set_pairs.map { |v, s|
+            if s.empty?
+              PACKMAN.blue v
             else
-              version_set_pairs << "#{CLI.blue versions[i]} #{sets[i]}"
+              "#{PACKMAN.blue v} #{s}"
             end
-          end
-          print "#{version_set_pairs.join(" | ")}\n"
+          }.join(" | ")}\n"
         end
       elsif CommandLine.has_option? '-package_options'
         CommandLine.packages.each do |package_name|
@@ -67,6 +56,26 @@ module PACKMAN
           end
         end
       end
+    end
+
+    def self.installed_packages
+      res = {}
+      Dir.glob("#{ConfigManager.install_root}/*").each do |package_root|
+        package_name = File.basename package_root
+        next if not Package.all_package_names.include? package_name
+        versions = Dir.glob("#{package_root}/*").sort.map { |x| File.basename x }
+        sets = []
+        Dir.glob("#{package_root}/*").each do |dir|
+          sets << Dir.glob("#{dir}/*").sort.map { |x| File.basename x }
+          sets.last.delete_if { |x| not PACKMAN.integer? x or not (0..CompilerManager.compiler_sets.size-1).include? Integer(x) }
+        end
+        version_set_pairs = {}
+        for i in 0..versions.size-1
+          version_set_pairs[versions[i]] = sets[i].map { |s| s.to_i }
+        end
+        res[package_name.to_sym] = version_set_pairs
+      end
+      res
     end
   end
 end

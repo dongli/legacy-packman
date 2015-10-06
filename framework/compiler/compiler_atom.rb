@@ -15,5 +15,12 @@ module PACKMAN
       @checked_items = {}
       @check_languages = {}
     end
+
+    def to_hash
+      {
+        :vendor => vendor,
+        :version => version.major_minor
+      }
+    end
   end
 end

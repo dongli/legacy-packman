@@ -3,8 +3,8 @@ class Lesstif < PACKMAN::Package
   sha1 'b894e544d529a235a6a665d48ca94a465f44a4e5'
   version '0.95.2'
 
-  depends_on 'x11'
-  depends_on 'freetype'
+  depends_on :x11
+  depends_on :freetype
 
   def install
     PACKMAN.replace 'configure', {

@@ -7,8 +7,8 @@ class Perl_xml_parser < PACKMAN::Package
 
   belongs_to 'perl'
 
-  depends_on 'perl'
-  depends_on 'expat'
+  depends_on :perl
+  depends_on :expat
 
   def install
     args = %W[

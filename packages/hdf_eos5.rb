@@ -3,7 +3,7 @@ class Hdf_eos5 < PACKMAN::Package
   sha1 'e27d276dd1bef5eab77a42d2c9fa26b98026f75d'
   version '1.14'
 
-  depends_on 'hdf5'
+  depends_on :hdf5
 
   def install
     args = %W[

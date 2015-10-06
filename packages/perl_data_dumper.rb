@@ -7,7 +7,7 @@ class Perl_data_dumper < PACKMAN::Package
 
   belongs_to 'perl'
 
-  depends_on 'perl'
+  depends_on :perl
 
   def install
     args = %W[

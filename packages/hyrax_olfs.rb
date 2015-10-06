@@ -5,7 +5,7 @@ class Hyrax_olfs < PACKMAN::Package
 
   belongs_to 'hyrax'
 
-  depends_on 'tomcat'
+  depends_on :tomcat
 
   label :compiler_insensitive
 

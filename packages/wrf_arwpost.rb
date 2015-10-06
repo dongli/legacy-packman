@@ -7,7 +7,7 @@ class Wrf_arwpost < PACKMAN::Package
 
   belongs_to 'wrf'
 
-  depends_on 'netcdf'
+  depends_on :netcdf
 
   def decompress_to target_dir
     PACKMAN.mkdir target_dir, :skip_if_exist
@@ -48,12 +48,12 @@ class Wrf_arwpost < PACKMAN::Package
 
   def choose_platform output
     matched_platform = nil
-    if PACKMAN.compiler('fortran').vendor == 'gnu'
+    if PACKMAN.compiler(:fortran).vendor == :gnu
       output.each do |line|
         matched_platform = line.match(/(\d+)\.\s+.*gfortran compiler/)
         PACKMAN.report_error "Mess up with configure output of WRF!" if not matched_platform
       end
-    elsif PACKMAN.compiler('fortran').vendor == 'intel'
+    elsif PACKMAN.compiler(:fortran).vendor == :intel
       output.each do |line|
         matched_platform = line.match(/(\d+)\.\s+.*Intel compiler/)
         PACKMAN.report_error "Mess up with configure output of WRF!" if not matched_platform

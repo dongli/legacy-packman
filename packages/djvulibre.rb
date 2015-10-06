@@ -7,8 +7,8 @@ class Djvulibre < PACKMAN::Package
     patch :embed
   end
 
-  depends_on 'jpeg'
-  depends_on 'libtiff'
+  depends_on :jpeg
+  depends_on :libtiff
 
   def install
     args = %W[

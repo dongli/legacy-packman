@@ -1,19 +1,19 @@
 module PACKMAN
   class CompilerManager
     def self.delegated_methods
-      [:compiler, :has_compiler?,
+      [:compiler, :has_compiler?, :cppflags, :ldflags,
        :compiler_flags_env_name, :append_customized_flags,
        :use_openmp, :compiler_support_openmp?, :all_compiler_support_openmp?,
-       :use_mpi, :compiler_has_mpi_wrapper?]
+       :use_mpi, :compiler_has_mpi_wrapper?, :active_compiler_set]
     end
 
     def self.compiler_flags_env_name language
       case language
-      when 'c'
+      when :c
         'CFLAGS'
-      when 'c++'
+      when :cxx
         'CXXFLAGS'
-      when 'fortran'
+      when :fortran
         'FCFLAGS'
       else
         PACKMAN.report_error "Unknown language #{PACKMAN.red language} for get environment variable name of compiler flags!"
@@ -47,6 +47,7 @@ module PACKMAN
     end
 
     def self.compiler_spec language, command
+      language = language.to_sym
       # Only invoked by compiler set object.
       @@compiler_spec_classes.each do |compiler_spec_class|
         spec = eval "#{compiler_spec_class}.new" # Temporary variable.
@@ -65,6 +66,10 @@ module PACKMAN
       command_hash_array.each do |command_hash|
         @@compiler_sets << CompilerSet.new(command_hash)
       end
+    end
+
+    def self.activate_default_compiler_set
+      activate_compiler_set ConfigManager.defaults[:compiler_set_index]
     end
 
     def self.activate_compiler_set compiler_set_object_or_index
@@ -156,8 +161,8 @@ module PACKMAN
         end
       end
       # TODO: Clean the following codes.
-      if compiler('c').vendor == 'gnu' and compiler('c').version >= '4.9' and
-         compiler('fortran').vendor == 'intel' and compiler('fortran').version <= '14.0.3'
+      if compiler(:c).vendor == :gnu and compiler(:c).version >= '4.9' and
+         compiler(:fortran).vendor == :intel and compiler(:fortran).version <= '14.0.3'
         return false
       end
       return true
@@ -171,24 +176,36 @@ module PACKMAN
           PACKMAN.report_error "MPI #{PACKMAN.red mpi_vendor} has not been installed!"
         end
         # Override the CC, CXX, F77, FC if they are set.
-        PACKMAN.reset_env('CC', "#{mpi.bin}/#{mpi.provided_stuffs['c']}")
-        PACKMAN.reset_env('MPICC', "#{mpi.bin}/#{mpi.provided_stuffs['c']}")
-        PACKMAN.reset_env('CXX', "#{mpi.bin}/#{mpi.provided_stuffs['c++']}")
-        PACKMAN.reset_env('MPICXX', "#{mpi.bin}/#{mpi.provided_stuffs['c++']}")
-        PACKMAN.reset_env('F77', "#{mpi.bin}/#{mpi.provided_stuffs['fortran:77']}") if PACKMAN.compiler('fortran').command
-        PACKMAN.reset_env('MPIF77', "#{mpi.bin}/#{mpi.provided_stuffs['fortran:77']}") if PACKMAN.compiler('fortran').command
-        PACKMAN.reset_env('FC', "#{mpi.bin}/#{mpi.provided_stuffs['fortran:90']}") if PACKMAN.compiler('fortran').command
-        PACKMAN.reset_env('MPIF90', "#{mpi.bin}/#{mpi.provided_stuffs['fortran:90']}") if PACKMAN.compiler('fortran').command
+        PACKMAN.reset_env('CC', "#{mpi.bin}/#{mpi.provided_stuffs[:c]}")
+        PACKMAN.reset_env('MPICC', "#{mpi.bin}/#{mpi.provided_stuffs[:c]}")
+        PACKMAN.reset_env('CXX', "#{mpi.bin}/#{mpi.provided_stuffs[:cxx]}")
+        PACKMAN.reset_env('MPICXX', "#{mpi.bin}/#{mpi.provided_stuffs[:cxx]}")
+        if PACKMAN.compiler(:fortran).command
+          PACKMAN.reset_env('F77', "#{mpi.bin}/#{mpi.provided_stuffs[:fortran]['77']}")
+          PACKMAN.reset_env('MPIF77', "#{mpi.bin}/#{mpi.provided_stuffs[:fortran]['77']}")
+          PACKMAN.reset_env('FC', "#{mpi.bin}/#{mpi.provided_stuffs[:fortran]['90']}")
+          PACKMAN.reset_env('MPIF90', "#{mpi.bin}/#{mpi.provided_stuffs[:fortran]['90']}")
+        end
       else
-        PACKMAN.reset_env('CC', "#{compiler('c').mpi_wrapper}")
-        PACKMAN.reset_env('MPICC', "#{compiler('c').mpi_wrapper}")
-        PACKMAN.reset_env('CXX', "#{compiler('c++').mpi_wrapper}")
-        PACKMAN.reset_env('MPICXX', "#{compiler('c++').mpi_wrapper}")
-        PACKMAN.reset_env('F77', "#{compiler('fortran').mpi_wrapper}") if PACKMAN.compiler('fortran').command
-        PACKMAN.reset_env('MPIF77', "#{compiler('fortran').mpi_wrapper}") if PACKMAN.compiler('fortran').command
-        PACKMAN.reset_env('FC', "#{compiler('fortran').mpi_wrapper}") if PACKMAN.compiler('fortran').command
-        PACKMAN.reset_env('MPIF90', "#{compiler('fortran').mpi_wrapper}") if PACKMAN.compiler('fortran').command
+        PACKMAN.reset_env('CC', "#{compiler(:c).mpi_wrapper}")
+        PACKMAN.reset_env('MPICC', "#{compiler(:c).mpi_wrapper}")
+        PACKMAN.reset_env('CXX', "#{compiler(:cxx).mpi_wrapper}")
+        PACKMAN.reset_env('MPICXX', "#{compiler(:cxx).mpi_wrapper}")
+        if PACKMAN.compiler(:fortran).command
+          PACKMAN.reset_env('F77', "#{compiler(:fortran).mpi_wrapper}")
+          PACKMAN.reset_env('MPIF77', "#{compiler(:fortran).mpi_wrapper}")
+          PACKMAN.reset_env('FC', "#{compiler(:fortran).mpi_wrapper}")
+          PACKMAN.reset_env('MPIF90', "#{compiler(:fortran).mpi_wrapper}")
+        end
       end
+    end
+
+    def self.cppflags
+      "-I#{ConfigManager.install_root}/#{active_compiler_set_index}/include"
+    end
+
+    def self.ldflags
+      "-L#{ConfigManager.install_root}/#{active_compiler_set_index}/lib"
     end
   end
 end

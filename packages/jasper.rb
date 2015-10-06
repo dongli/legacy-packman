@@ -3,8 +3,8 @@ class Jasper < PACKMAN::Package
   sha1 'bbf30168ceae74d78e28039972657a90799e68d3'
   version '1.900.1'
 
-  depends_on 'patch'
-  depends_on 'jpeg'
+  depends_on :patch
+  depends_on :jpeg
 
   patch :embed
 

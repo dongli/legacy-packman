@@ -3,8 +3,8 @@ class Atk < PACKMAN::Package
   sha1 'b803d055c8e2f786782803b7d21e413718321db7'
   version '2.14.0'
 
-  depends_on 'glib'
-  depends_on 'gobject_introspection'
+  depends_on :glib
+  depends_on :gobject_introspection
 
   def install
     args = %W[

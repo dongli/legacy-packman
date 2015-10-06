@@ -1,12 +1,12 @@
 module PACKMAN
   module Files
     class Inventory
-      def initialize link_root
-        @path = "#{link_root}/packman.inventory"
+      def initialize
+        @path = "#{PACKMAN.link_root}/packman.inventory"
       end
 
       def item package
-        "#{package.class.to_s.upcase} #{package.sha1} #{package.revision}\n"
+        "#{package.name.upcase} #{package.version} #{package.revision}\n"
       end
 
       def add package

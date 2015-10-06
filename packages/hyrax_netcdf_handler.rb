@@ -5,9 +5,9 @@ class Hyrax_netcdf_handler < PACKMAN::Package
 
   belongs_to 'hyrax'
 
-  depends_on 'opendap'
-  depends_on 'hyrax_bes'
-  depends_on 'netcdf_c'
+  depends_on :opendap
+  depends_on :hyrax_bes
+  depends_on :netcdf_c
 
   def install
     args = %W[

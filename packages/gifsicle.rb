@@ -5,7 +5,7 @@ class Gifsicle < PACKMAN::Package
 
   label :compiler_insensitive
 
-  depends_on 'x11'
+  depends_on :x11
 
   def install
     args = %W[

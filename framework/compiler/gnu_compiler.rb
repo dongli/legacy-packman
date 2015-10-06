@@ -1,9 +1,9 @@
 module PACKMAN
-  class GccCompiler < Compiler
-    vendor 'gnu'
-    command 'c'       => ['gcc',      '-O2 -fPIC']
-    command 'c++'     => ['g++',      '-O2 -fPIC']
-    command 'fortran' => ['gfortran', '-O2 -fPIC']
+  class GnuCompiler < Compiler
+    vendor :gnu
+    command :c       => ['gcc',      '-O2 -fPIC']
+    command :cxx     => ['g++',      '-O2 -fPIC']
+    command :fortran => ['gfortran', '-O2 -fPIC']
     flag :openmp => '-fopenmp'
     flag :pic => '-fPIC'
     flag :rpath => -> rpath { "-Wl,-rpath,#{rpath}" }

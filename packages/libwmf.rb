@@ -3,13 +3,13 @@ class Libwmf < PACKMAN::Package
   sha1 '822ab3bd0f5e8f39ad732f2774a8e9f18fc91e89'
   version '0.2.8.4'
 
-  depends_on 'expat'
-  depends_on 'zlib'
-  depends_on 'libgd'
-  depends_on 'freetype'
-  depends_on 'libpng'
-  depends_on 'jpeg'
-  depends_on 'ghostscript'
+  depends_on :expat
+  depends_on :zlib
+  depends_on :libgd
+  depends_on :freetype
+  depends_on :libpng
+  depends_on :jpeg
+  depends_on :ghostscript
 
   def install
     args = %W[

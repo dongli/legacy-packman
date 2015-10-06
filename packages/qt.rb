@@ -17,7 +17,7 @@ class Qt < PACKMAN::Package
       -fast
       -release
     ]
-    if PACKMAN.mac? and PACKMAN.compiler('c').vendor == 'llvm'
+    if PACKMAN.mac? and PACKMAN.compiler(:c).vendor == :llvm
       args << '-platform'
       if PACKMAN.os.version >= '10.9'
         args << 'unsupported/macx-clang-libc++'

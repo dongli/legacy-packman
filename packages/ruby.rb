@@ -5,15 +5,15 @@ class Ruby < PACKMAN::Package
 
   label :compiler_insensitive
 
-  depends_on 'pkgconfig'
-  depends_on 'ncurses'
-  depends_on 'readline'
-  depends_on 'gdbm'
-  depends_on 'gmp'
-  depends_on 'libffi'
-  depends_on 'libyaml'
-  depends_on 'openssl'
-  depends_on 'zlib'
+  depends_on :pkgconfig
+  depends_on :ncurses
+  depends_on :readline
+  depends_on :gdbm
+  depends_on :gmp
+  depends_on :libffi
+  depends_on :libyaml
+  depends_on :openssl
+  depends_on :zlib
 
   def install
     args = %W[
@@ -23,7 +23,6 @@ class Ruby < PACKMAN::Package
       --with-out-ext=tk
       --without-gmp
     ]
-    PACKMAN.set_cppflags_and_ldflags [Ncurses, Readline_, Gdbm, Gmp, Libffi, Libyaml, Openssl, Zlib]
     PACKMAN.run './configure', *args
     PACKMAN.run 'make'
     PACKMAN.run 'make install'

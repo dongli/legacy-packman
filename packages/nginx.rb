@@ -6,17 +6,17 @@ class Nginx < PACKMAN::Package
   label :compiler_insensitive
 
   # Start options.
-  option 'user' => 'nobody'
-  option 'group' => 'nogroup'
-  option 'worker_processes' => 'auto'
-  option 'worker_connections' => 1024
-  option 'port' => 8080
-  option 'with_passenger' => false
+  option :user => 'nobody'
+  option :group => 'nogroup'
+  option :worker_processes => 'auto'
+  option :worker_connections => 1024
+  option :port => 8080
+  option :with_passenger => false
 
-  depends_on 'pcre'
-  depends_on 'zlib'
-  depends_on 'openssl'
-  depends_on 'passenger' if with_passenger?
+  depends_on :pcre
+  depends_on :zlib
+  depends_on :openssl
+  depends_on :passenger if with_passenger?
 
   def self.conf; Nginx.etc+'/nginx/nginx.conf'; end
 
@@ -50,7 +50,6 @@ class Nginx < PACKMAN::Package
       nginx_ext = `#{Passenger.bin}/passenger-config --nginx-addon-dir`.chomp
       args << "--add-module=#{nginx_ext}"
     end
-    PACKMAN.set_cppflags_and_ldflags [Pcre, Zlib, Openssl]
     PACKMAN.run './configure', *args
     PACKMAN.run 'make -j2'
     PACKMAN.run 'make install'
@@ -87,7 +86,7 @@ class Nginx < PACKMAN::Package
     PACKMAN.run bin+'/nginx'
   end
 
-  def status   
+  def status
     PACKMAN.is_process_running? `cat #{var}/run/nginx.pid` if File.exist? "#{var}/run/nginx.pid"
   end
 

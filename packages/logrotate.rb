@@ -5,7 +5,7 @@ class Logrotate < PACKMAN::Package
 
   label :compiler_insensitive
 
-  depends_on 'popt'
+  depends_on :popt
 
   patch :embed
 
@@ -17,7 +17,6 @@ class Logrotate < PACKMAN::Package
       --prefix=#{prefix}
       --disable-dependency-tracking
     ]
-    PACKMAN.set_cppflags_and_ldflags [Popt]
     PACKMAN.run './autogen.sh'
     PACKMAN.run './configure', *args
     PACKMAN.run 'make'
@@ -61,11 +60,11 @@ index 56e9103..c61a33a 100644
 @@ -14,22 +14,7 @@ dateext
  # uncomment this if you want your log files compressed
  #compress
- 
+
 -# RPM packages drop log rotation information into this directory
 +# PACKMAN packages drop log rotation information into this directory
  include /etc/logrotate.d
- 
+
 -# no packages own wtmp and btmp -- we'll rotate them here
 -/var/log/wtmp {
 -    monthly

@@ -6,7 +6,7 @@ class Openexr < PACKMAN::Package
   label :master_package
   belongs_to 'openexr'
 
-  depends_on 'openexr_ilmbase'
+  depends_on :openexr_ilmbase
 
   def install
     args = %W[
@@ -14,7 +14,6 @@ class Openexr < PACKMAN::Package
       --disable-debug
       --disable-dependency-tracking
     ]
-    PACKMAN.set_cppflags_and_ldflags [Openexr]
     PACKMAN.run './configure', *args
     PACKMAN.run 'make install'
   end

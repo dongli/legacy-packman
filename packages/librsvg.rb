@@ -3,11 +3,11 @@ class Librsvg < PACKMAN::Package
   sha1 '8ac22591c9db273355cf895f7e87aac149f64437'
   version '2.36.3'
 
-  depends_on 'pkgconfig'
-  depends_on 'x11'
-  depends_on 'gtkx'
-  depends_on 'libcroco'
-  depends_on 'libgsf'
+  depends_on :pkgconfig
+  depends_on :x11
+  depends_on :gtkx
+  depends_on :libcroco
+  depends_on :libgsf
 
   def install
     args = %W[
@@ -19,7 +19,6 @@ class Librsvg < PACKMAN::Package
       --enable-introspection=no
       --enable-svgz
     ]
-    PACKMAN.set_cppflags_and_ldflags [Gtkx, Libcroco, Libgsf]
     PACKMAN.run './configure', *args
     args = %W[
       gdk_pixbuf_binarydir=#{Gdk_pixbuf.lib}/gdk-pixbuf-2.0/2.10.0/loaders

@@ -3,8 +3,8 @@ class Cloog < PACKMAN::Package
   sha1 '2dc70313e8e2c6610b856d627bce9c9c3f848077'
   version '0.18.1'
 
-  depends_on 'gmp'
-  depends_on 'isl'
+  depends_on :gmp
+  depends_on :isl
 
   def install
     args = %W[

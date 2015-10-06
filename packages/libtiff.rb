@@ -5,7 +5,7 @@ class Libtiff < PACKMAN::Package
 
   label :not_set_ld_library_path if PACKMAN.mac?
 
-  depends_on 'jpeg'
+  depends_on :jpeg
 
   def install
     args = %W[

@@ -6,7 +6,7 @@ class Cmake < PACKMAN::Package
   label :compiler_insensitive
 
   def install
-    if PACKMAN.mac? and PACKMAN.compiler('c').vendor == 'gcc'
+    if PACKMAN.mac? and PACKMAN.compiler(:c).vendor == :gnu
       PACKMAN.report_error "#{PACKMAN.green 'Cmake'} can not be built by GCC in Mac OS X! Use LLVM instead."
     end
     args = %W[

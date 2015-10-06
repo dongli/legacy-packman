@@ -5,26 +5,26 @@ class Imagemagick < PACKMAN::Package
 
   label :compiler_insensitive
 
-  depends_on 'libtool'
-  depends_on 'zlib'
-  depends_on 'fontconfig'
-  depends_on 'freetype'
-  depends_on 'jpeg'
-  depends_on 'libtiff'
-  depends_on 'libpng'
-  depends_on 'x11'
-  depends_on 'ghostscript'
-  depends_on 'libwmf'
-  depends_on 'librsvg'
-  depends_on 'liblqr'
-  depends_on 'openexr'
-  depends_on 'fftw'
-  depends_on 'pango'
-  depends_on 'djvulibre'
-  depends_on 'openjpeg'
-  depends_on 'little_cms'
+  depends_on :libtool
+  depends_on :zlib
+  depends_on :fontconfig
+  depends_on :freetype
+  depends_on :jpeg
+  depends_on :libtiff
+  depends_on :libpng
+  depends_on :x11
+  depends_on :ghostscript
+  depends_on :libwmf
+  depends_on :librsvg
+  depends_on :liblqr
+  depends_on :openexr
+  depends_on :fftw
+  depends_on :pango
+  depends_on :djvulibre
+  depends_on :openjpeg
+  depends_on :little_cms
   # depends_on 'webp' # WebP is hosted by Google, so we cannot access it within our great China!
-  
+
   def install
     PACKMAN.replace 'configure', { 'lcms2/lcms2.h' => 'lcms2.h' }
     PACKMAN.replace 'magick/profile.c', { 'lcms/lcms2.h' => 'lcms2.h' }
@@ -59,10 +59,6 @@ class Imagemagick < PACKMAN::Package
       --with-lcms2=yes
     ]
     # --with-webp=#{Webp.prefix}
-    PACKMAN.set_cppflags_and_ldflags [Libtool, Jpeg, Libtiff, Libpng, Djvulibre,
-                                      Fftw, Fontconfig, Freetype, Ghostscript,
-                                      Liblqr, Openexr, Openjpeg, Pango, Librsvg,
-                                      Libwmf, Zlib, Little_cms]
     PACKMAN.run './configure', *args
     PACKMAN.run 'make install'
   end

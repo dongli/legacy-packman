@@ -3,8 +3,8 @@ class Grib2_c < PACKMAN::Package
   sha1 '3113b88e0295dbc64428edd87c0b583e774fb320'
   version '1.5.0'
 
-  depends_on 'jasper'
-  depends_on 'libpng'
+  depends_on :jasper
+  depends_on :libpng
 
   def install
     defs = 'DEFS=-DUSE_JPEG2000 -DUSE_PNG'
@@ -13,7 +13,7 @@ class Grib2_c < PACKMAN::Package
     PACKMAN.replace 'makefile', {
       /^DEFS=.*$/ => defs,
       /^(INC=.*)$/ => "\\1 #{inc}",
-      /^CC=.*$/ => "CC=#{PACKMAN.compiler('c').command}",
+      /^CC=.*$/ => "CC=#{PACKMAN.compiler(:c).command}",
     }
     PACKMAN.run 'make all'
     PACKMAN.mkdir include

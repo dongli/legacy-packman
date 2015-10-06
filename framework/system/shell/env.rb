@@ -3,7 +3,7 @@ module PACKMAN
     class Env
       def self.delegated_methods
         [:append_env, :prepend_env, :reset_env, :clear_env, :has_env?,
-         :export_env, :env_keys, :set_cppflags_and_ldflags]
+         :export_env, :env_keys]
       end
 
       def self.init
@@ -74,16 +74,6 @@ module PACKMAN
           "export #{key}=\"#{@@customized_env[i][key]}\""
         else
           CLI.report_error "Environment variable #{CLI.red key} has not been set!"
-        end
-      end
-
-      def self.set_cppflags_and_ldflags libs
-        libs.each do |lib|
-          prefix = PACKMAN.prefix lib
-          append_env 'CPPFLAGS', "-I#{prefix}/include"
-          append_env 'LDFLAGS', "-L#{prefix}/lib"
-          # TODO: Some 64-bit machines need 'lib64'! Find a better solution.
-          append_env 'LDFLAGS', "-L#{prefix}/lib64" if Dir.exist? "#{prefix}/lib64"
         end
       end
 

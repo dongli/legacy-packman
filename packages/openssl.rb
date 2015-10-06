@@ -2,14 +2,13 @@ class Openssl < PACKMAN::Package
   url 'https://www.openssl.org/source/old/1.0.2/openssl-1.0.2a.tar.gz'
   sha1 '46ecd325b8e587fa491f6bb02ad4a9fb9f382f5f'
   version '1.0.2a'
-  revision 1
 
-  label :not_set_ld_library_path
+  label :unlinked
 
-  depends_on 'zlib'
+  depends_on :zlib
 
   def arch_args; {
-      :Mac_OS_X => {
+      :Mac => {
         :x86_64 => %w[darwin64-x86_64-cc enable-ec_nistp_64_gcc_128],
         :i386   => %w[darwin-i386-cc]
       },
@@ -32,11 +31,7 @@ class Openssl < PACKMAN::Package
     else
       PACKMAN.run './config', *args
     end
-    PACKMAN.replace 'Makefile', {
-      /^ZLIB_INCLUDE=\s*$/ => "ZLIB_INCLUDE=-I#{Zlib.include}",
-      /^LIBZLIB=\s*$/ => "LIBZLIB=-L#{Zlib.lib}"
-    }
-    if PACKMAN.compiler('c').vendor == 'pgi'
+    if PACKMAN.compiler(:c).vendor == :pgi
       PACKMAN.replace 'Makefile', {
         '-fomit-frame-pointer' => '',
         '-Wall' => '',

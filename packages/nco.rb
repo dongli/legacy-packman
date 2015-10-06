@@ -3,17 +3,15 @@ class Nco < PACKMAN::Package
   sha1 'e57cbba1f6e3e5df64424a25859b0da03abc72f9'
   version '4.4.8'
 
-  depends_on 'flex'
-  depends_on 'bison'
-  depends_on 'curl'
-  depends_on 'antlr2'
-  depends_on 'netcdf_c'
-  depends_on 'texinfo'
-  depends_on 'expat'
-  depends_on 'udunits'
-  depends_on 'gsl'
-
-  label :compiler_insensitive
+  depends_on :flex
+  depends_on :bison
+  depends_on :curl
+  depends_on :antlr2
+  depends_on :netcdf_c
+  depends_on :texinfo
+  depends_on :expat
+  depends_on :udunits
+  depends_on :gsl
 
   def install
     args = %W[
@@ -29,7 +27,6 @@ class Nco < PACKMAN::Package
       UDUNITS2_PATH=#{Udunits.prefix}
       ANTLR_ROOT=#{Antlr2.prefix}
     ]
-    PACKMAN.set_cppflags_and_ldflags [Curl, Hdf5, Expat]
     if PACKMAN.cygwin?
       args << "LIBS='-L#{Curl.lib} -lcurl -L#{Hdf5.lib} -lhdf5 -lhdf5_hl'"
     end

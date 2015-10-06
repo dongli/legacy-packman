@@ -39,6 +39,7 @@ module PACKMAN
       end
       active_spec.flags[flag]
     end
+    def to_hash; active_spec.to_hash; end
 
     def activate_compiler language, command
       # Record the real compiler command.
@@ -79,7 +80,7 @@ module PACKMAN
       def version
         normal.version ||= VersionSpec.new normal.check_blocks[:version].call.strip
       end
-      
+
       def command val
         if not val.class == Hash
           CLI.report_error "Compiler spec syntax error!"

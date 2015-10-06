@@ -5,20 +5,20 @@ class Regcm < PACKMAN::Package
 
   label :installed_with_source
 
-  option 'use_mpi' => [:package_name, :boolean]
-  option 'use_clm' => false
-  option 'use_clm45' => false
-  option 'use_megan' => false
+  option :use_mpi => [:package_name, :boolean]
+  option :use_clm => false
+  option :use_clm45 => false
+  option :use_megan => false
 
-  depends_on 'mpich' if use_mpi? and mpi == 'mpich'
-  depends_on 'openmpi' if use_mpi? and mpi == 'openmpi'
-  depends_on 'netcdf'
-  depends_on 'hdf5'
-  depends_on 'szip'
+  depends_on :mpich if use_mpi? and mpi == 'mpich'
+  depends_on :openmpi if use_mpi? and mpi == 'openmpi'
+  depends_on :netcdf
+  depends_on :hdf5
+  depends_on :szip
 
   def install
     PACKMAN.work_in 'RegCM-4.4.5' do
-      if PACKMAN.compiler('fortran').vendor == 'gnu'
+      if PACKMAN.compiler(:fortran).vendor == :gnu
         PACKMAN.append_env 'FCFLAGS', '-fno-range-check -std=legacy'
       end
       args = %W[

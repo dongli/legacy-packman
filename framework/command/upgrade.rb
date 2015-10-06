@@ -15,12 +15,12 @@ module PACKMAN
         end
         # Binary is preferred.
         if ( package.has_binary? and not package.use_binary? and not CommandLine.has_option? '-use_binary') or package.use_binary?
-          package = Package.instance package_name, 'use_binary' => true
+          package = Package.instance package_name, :use_binary => true
         end
         if package.compiler_set_indices.empty? and not package.use_binary?
           if ConfigManager.defaults.has_key? 'compiler_set_index'
             # Use the default compiler set if specified.
-            package.compiler_set_indices << ConfigManager.defaults['compiler_set_index']
+            package.compiler_set_indices << ConfigManager.defaults[:compiler_set_index]
           else
             # Ask user to choose the compiler sets.
             tmp = CompilerManager.compiler_sets.clone

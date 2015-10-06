@@ -5,11 +5,11 @@ class Wget < PACKMAN::Package
 
   label :compiler_insensitive
 
-  depends_on 'openssl'
-  depends_on 'libidn'
-  depends_on 'pcre'
-  depends_on 'libiconv'
-  depends_on 'zlib'
+  depends_on :openssl
+  depends_on :libidn
+  depends_on :pcre
+  depends_on :libiconv
+  depends_on :zlib
 
   def install
     args = %W[
@@ -20,7 +20,6 @@ class Wget < PACKMAN::Package
       --with-libiconv-prefix=#{Libiconv.prefix}
       --disable-debug
     ]
-    PACKMAN.set_cppflags_and_ldflags [Openssl, Libidn, Pcre, Libiconv, Zlib]
     PACKMAN.run './configure', *args
     PACKMAN.run 'make install'
   end

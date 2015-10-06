@@ -5,23 +5,23 @@ class Grads < PACKMAN::Package
 
   label :compiler_insensitive
 
-  depends_on 'zlib'
-  depends_on 'szip'
-  depends_on 'libiconv'
-  depends_on 'readline'
-  depends_on 'cairo'
-  depends_on 'grib2_c'
-  depends_on 'hdf4'
-  depends_on 'hdf5'
-  depends_on 'netcdf'
-  depends_on 'opendap'
-  depends_on 'libgeotiff'
-  depends_on 'shapelib'
-  depends_on 'udunits'
-  depends_on 'libgd'
-  depends_on 'curl'
-  depends_on 'libxml2'
-  depends_on 'gadap'
+  depends_on :zlib
+  depends_on :szip
+  depends_on :libiconv
+  depends_on :readline
+  depends_on :cairo
+  depends_on :grib2_c
+  depends_on :hdf4
+  depends_on :hdf5
+  depends_on :netcdf
+  depends_on :opendap
+  depends_on :libgeotiff
+  depends_on :shapelib
+  depends_on :udunits
+  depends_on :libgd
+  depends_on :curl
+  depends_on :libxml2
+  depends_on :gadap
 
   attach 'data' do
     url 'ftp://cola.gmu.edu/grads/data2.tar.gz'
@@ -29,22 +29,6 @@ class Grads < PACKMAN::Package
   end
 
   def install
-    cppflags = []
-    ldflags = []
-    [X11, Fontconfig, Freetype, Pixman, Cairo, Zlib, Szip, Libtiff,
-     Zlib, Jpeg, Jasper, Libpng, Shapelib, Grib2_c, Libiconv, Ncurses,
-     Udunits, Libgd, Curl, Libxml2, Opendap, Readline_].each do |lib|
-      if lib == Cairo
-        cppflags << "-I#{lib.include}/cairo"
-      elsif lib == Freetype
-        cppflags << "-I#{lib.include}/freetype2"
-      elsif lib == Pixman
-        cppflags << "-I#{lib.include}/pixman-1"
-      else
-        cppflags << "-I#{lib.include}"
-      end
-      ldflags << "-L#{lib.lib}"
-    end
     PACKMAN.replace 'configure', {
       /NC_CONFIG=.*$/ => "NC_CONFIG='#{Netcdf.bin}/nc-config'",
       'png12' => 'png',
@@ -55,9 +39,9 @@ class Grads < PACKMAN::Package
       /shapelib shp/ => "'/'",
       /(echo "- OPeNDAP for station data disabled"\n\s*else)/ => "\\1\nga_supplib_dir=#{Gadap.prefix}\n",
       /for ga_inc_name in gadap ; do/ => 'for ga_inc_name in "/" ; do',
-      /(CPPFLAGS="\$CPPFLAGS )/ => "\\1#{cppflags.join(' ')} ",
-      /(LDFLAGS="-L\${ga_supplib_dir}\/lib )/ => "\\1#{ldflags.join(' ')} ",
-      /LDFLAGS=\$ga_saved_ldflags/ => "LDFLAGS=\"$ga_saved_ldflags #{ldflags.join(' ')}\"",
+      /(CPPFLAGS="\$CPPFLAGS )/ => "\\1#{PACKMAN.cppflags} ",
+      /(LDFLAGS="-L\${ga_supplib_dir}\/lib )/ => "\\1#{PACKMAN.ldflags} ",
+      /LDFLAGS=\$ga_saved_ldflags/ => "LDFLAGS=\"$ga_saved_ldflags #{PACKMAN.ldflags}\"",
       /(HDF4_LDFLAGS="-L\$HDF4_PATH_LIBDIR)/ => "\\1 -L#{Szip.lib}"
     }
     PACKMAN.replace 'src/gxC.c', '<fontconfig.h>' => '<fontconfig/fontconfig.h>'

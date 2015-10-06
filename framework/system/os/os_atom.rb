@@ -30,5 +30,12 @@ module PACKMAN
         @commands[name] = block
       end
     end
+
+    def to_hash
+      {
+        :type => type,
+        :version => version.major_minor
+      }
+    end
   end
 end

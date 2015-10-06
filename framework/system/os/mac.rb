@@ -1,7 +1,7 @@
 module PACKMAN
   class Mac < Os
     vendor :Apple
-    type :Mac_OS_X
+    type :Mac
     check :version do
       `sw_vers`.match(/ProductVersion:\s*(\d+\.\d+(\.\d+)?)/)[1]
     end
@@ -110,122 +110,136 @@ module PACKMAN
       res = `sudo chown -R #{owner} #{path} 2>&1`
       PACKMAN.report_error "Failed to change owner of #{PACKMAN.red path} to #{PACKMAN.red owner}! See errors:\n#{res}" if not $?.success?
     end
-    command :cron_job_exist? do |label|
-      not `launchctl list | grep '#{label}'`.empty?
+    command :is_dynamic_library? do |path|
+      `file #{path}`.match(/Mach-O.*dynamically linked shared library/) != nil
     end
-    command :start_cron_job do |options|
-      PACKMAN.report_error "Options does not contain #{PACKMAN.red label}!" if not options.has_key? :label
-      PACKMAN.report_notice "Start a cron job #{PACKMAN.blue options[:label]}."
-      plist_file = "#{ENV['HOME']}/Library/LaunchAgents/#{options[:label]}.plist"
-      file = File.new(plist_file, 'w')
-      file << "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
-      file << "<!DOCTYPE plist PUBLIC \"-//Apple//DTD PLIST 1.0//EN\" \"http://www.apple.com/DTDs/PropertyList-1.0.dtd\">\n"
-      file << "<plist version=\"1.0\">\n"
-      file << "<dict>\n"
-      file << "  <key>Label</key>\n"
-      file << "  <string>#{options[:label]}</string>\n"
-      file << "  <key>ProgramArguments</key>\n"
-      file << "  <array>\n"
-      file << "    <string>#{options[:command]}</string>\n"
-      if options.has_key? :arguments
-        if options[:arguments].class == Array
-          args = options[:arguments]
-        elsif options[:arguments].class == String
-          args = options[:arguments].split
+    command :parse_load_commands do |file|
+      load_commands = []
+      cmd = nil
+      `otool -l #{file}`.each_line do |line|
+        if not cmd and line =~ /cmd LC_RPATH/
+          cmd = :lc_rpath
+          load_commands << { cmd => {} }
+          next
         end
-        args.each do |arg|
-          file << "    <string>#{arg}</string>\n"
+        if cmd == :lc_rpath
+          path = line.match(/path ([^\s]+)/)
+          if path
+            load_commands.last[cmd][:path] = path[1]
+            cmd = nil
+            next
+          end
         end
-      end
-      file << "  </array>\n"
-      if options.has_key? :run_at_load
-        file << "  <key>RunAtLoad</key>\n"
-        file << "  <#{options[:run_at_load]}/>\n"
-      end
-      if options.has_key? :keep_alive
-        file << "  <key>KeepAlive</key>\n"
-        file << "  <#{options[:keep_alive]}/>\n"
-      end
-      if options.has_key? :group_name
-        file << "  <key>GroupName</key>\n"
-        file << "  <string>#{options[:group_name]}</string>\n"
-      end
-      if options.has_key? :user_name
-        file << "  <key>UserName</key>\n"
-        file << "  <string>#{options[:user_name]}</string>\n"
-      end
-      if options.has_key? :every
-        if options[:every].has_key? :second
-          file << "  <key>StartInterval</key>\n"
-          file << "  <integer>#{options[:every][:second]}</integer>\n"
+        if not cmd and line =~ /cmd LC_ID_DYLIB/
+          cmd = :lc_id_dylib
+          load_commands << { cmd => {} }
+          next
         end
-        if options[:every].keys & [:minute, :hour, :day, :weekday, :month] != []
-          file << "  <key>StartCalendarInterval</key>\n"
-          file << "  <dict>\n"
-          if options[:every].has_key? :minute
-            file << "    <key>Minute</key>\n"
-            file << "    <integer>#{options[:every][:minute]}</integer>\n"
+        if cmd == :lc_id_dylib
+          name = line.match(/name ([^\s]+)/)
+          if name
+            load_commands.last[cmd][:name] = name[1]
+            cmd = nil
+            next
           end
-          if options[:every].has_key? :hour
-            file << "    <key>Hour</key>\n"
-            file << "    <integer>#{options[:every][:hour]}</integer>\n"
+        end
+        if not cmd and line =~ /cmd LC_LOAD_DYLIB/
+          cmd = :lc_load_dylib
+          load_commands << { cmd => {} }
+          next
+        end
+        if cmd == :lc_load_dylib
+          name = line.match(/name ([^\s]+)/)
+          if name
+            load_commands.last[cmd][:name] = name[1]
+            cmd = nil
+            next
           end
-          if options[:every].has_key? :day
-            file << "    <key>Day</key>\n"
-            file << "    <integer>#{options[:every][:day]}</integer>\n"
-          end
-          if options[:every].has_key? :weekday
-            file << "    <key>Day</key>\n"
-            file << "    <integer>#{options[:every][:weekday]}</integer>\n"
-          end
-          if options[:every].has_key? :month
-            file << "    <key>Day</key>\n"
-            file << "    <integer>#{options[:every][:month]}</integer>\n"
-          end
-          file << "  </dict>\n"
         end
       end
-      if options.has_key? :working_directory
-        file << "  <key>WorkingDirectory</key>\n"
-        file << "  <string>#{options[:working_directory]}</string>\n"
-      end
-      if options.has_key? :stdout
-        file << "  <key>StandardOutPath</key>\n"
-        file << "  <string>#{options[:stdout]}</string>\n"
-      end
-      if options.has_key? :stderr
-        file << "  <key>StandardErrorPath</key>\n"
-        file << "  <string>#{options[:stderr]}</string>\n"
-      end
-      file << "</dict>\n"
-      file << "</plist>\n"
-      file.close
-      if cron_job_exist? options[:label]
-        res = `launchctl unload #{plist_file}`
-        PACKMAN.report_error "Failed to unload #{PACKMAN.red plist_file}!" if not $?.success?
-      end
-      res = `launchctl load #{plist_file}`
-      PACKMAN.report_error "Failed to load #{PACKMAN.red plist_file}!" if not $?.success?
-      res = `launchctl start #{options[:label]}`
-      PACKMAN.report_error "Failed to start a cron job #{PACKMAN.red options[:label]}!" if not $?.success?
+      load_commands
     end
-    command :stop_cron_job do |options|
-      if not options.has_key? :label
-        PACKMAN.report_error "Options do not contain cron job #{PACKMAN.red 'label'}!"
+    command :repair_dynamic_link do |package, file|
+      if `file #{file}` =~ /Mach-O/
+        root = Pathname.new ConfigManager.install_root
+        PACKMAN.report_error "You do not have permission to change #{PACKMAN.red file}!" if not File.owned? file
+        writable = File.writable? file
+        if not writable
+          old_mode = File.stat(file).mode
+          File.chmod 0744, file
+        end
+        load_commands = parse_load_commands file
+        if not load_commands.select { |c| c.keys.first == :lc_id_dylib }.empty?
+          p "install_name_tool -id '@rpath/#{Pathname.new(file).relative_path_from Pathname.new(package.prefix)}' #{file}"
+          `install_name_tool -id '@rpath/#{Pathname.new(file).relative_path_from Pathname.new(package.prefix)}' #{file}`
+          PACKMAN.report_error "Failed to repair id in #{PACKMAN.red file}!" if not $?.success?
+        end
+        load_commands.select { |c| c.keys.first == :lc_load_dylib }.map { |x| x.values.first[:name] }.each do |path|
+          dylib = path.match(/#{ConfigManager.install_root}\/.*\.#{PACKMAN.shared_library_suffix}/)
+          next if not dylib
+          pn = Pathname.new dylib.to_s
+          depend_package = Package.instance pn.relative_path_from(root).to_s.split('/').first
+          depend_prefix = depend_package.prefix
+          dir = Pathname.new depend_prefix
+          p "install_name_tool -change '#{dylib}' '@rpath/#{pn.relative_path_from dir}' #{file}"
+          `install_name_tool -change '#{dylib}' '@rpath/#{pn.relative_path_from dir}' #{file}`
+          PACKMAN.report_error "Failed to repair dynamic link in #{PACKMAN.red file}!" if not $?.success?
+        end
+        File.chmod old_mode, file if not writable
       end
-      PACKMAN.report_notice "Stop a cron job #{PACKMAN.blue options[:label]}."
-      res = `launchctl stop #{options[:label]}`
-      PACKMAN.report_error "Failed to stop a cron job #{PACKMAN.red options[:label]}!" if not $?.success?
-      plist_file = "#{ENV['HOME']}/Library/LaunchAgents/#{options[:label]}.plist"
-      res = `launchctl unload #{plist_file}`
-      PACKMAN.report_error "Failed to unload a cron job #{PACKMAN.red options[:label]}!" if not $?.success?
     end
-    command :status_cron_job do |options|
-      if not options.has_key? :label
-        PACKMAN.report_error "Options do not contain cron job #{PACKMAN.red 'label'}!"
+    command :add_rpath do |package, file|
+      if `file #{file}` =~ /Mach-O/
+        rpath = package.has_label?(:unlinked) ? package.prefix : PACKMAN.link_root
+        writable = File.writable? file
+        if not writable
+          old_mode = File.stat(file).mode
+          File.chmod 0744, file
+        end
+        load_commands = parse_load_commands file
+        if not load_commands.select { |c| c.keys.first == :lc_rpath }.map { |x| x.values.first[:path] }.include? rpath
+          if not File.owned? file
+            PACKMAN.report_error "You do not have permission to change #{PACKMAN.red file}!"
+          end
+          load_commands.each do |load_command|
+            next if not load_command.keys.first == :lc_rpath
+            if load_command[:lc_rpath][:path] == PACKMAN.link_root
+              p "install_name_tool -delete_rpath '#{load_command[:lc_rpath][:path]}' #{file}"
+              `install_name_tool -delete_rpath '#{load_command[:lc_rpath][:path]}' #{file}`
+              PACKMAN.report_error "Failed to delete rpath from #{PACKMAN.red file}!" if not $?.success?
+            end
+          end
+          p "install_name_tool -add_rpath '#{rpath}' #{file}"
+          `install_name_tool -add_rpath '#{rpath}' #{file}`
+          PACKMAN.report_error "Failed to add rpath to #{PACKMAN.red file}!" if not $?.success?
+        elsif load_commands.select { |c| c.keys.first == :lc_load_dylib }.select { |x| x.values.first[:name] =~ /@rpath/ }.empty? and
+              load_commands.select { |c| c.keys.first == :lc_id_dylib }.empty?
+          p "install_name_tool -delete_rpath '#{rpath}' #{file}"
+          `install_name_tool -delete_rpath '#{rpath}' #{file}`
+          PACKMAN.report_error "Failed to delete rpath from #{PACKMAN.red file}!" if not $?.success?
+        end
+        File.chmod old_mode, file if not writable
       end
-      res = `launchctl list #{options[:label]} 2>&1`
-      $?.success?
+    end
+    command :delete_rpath do |package, file|
+      if `file #{file}` =~ /Mach-O/
+        rpath = package.has_label?(:unlinked) ? package.prefix : PACKMAN.link_root
+        writable = File.writable? file
+        if not writable
+          old_mode = File.stat(file).mode
+          File.chmod 0744, file
+        end
+        load_commands = parse_load_commands file
+        if load_commands.select { |c| c.keys.first == :lc_rpath }.map { |x| x.values.first[:path] }.include? rpath
+          if not File.owned? file
+            PACKMAN.report_error "You do not have permission to change #{PACKMAN.red file}!"
+          end
+          p "install_name_tool -delete_rpath '#{rpath}' #{file}"
+          `install_name_tool -delete_rpath '#{rpath}' #{file}`
+          PACKMAN.report_error "Failed to delete rpath to #{PACKMAN.red file}!" if not $?.success?
+        end
+        File.chmod old_mode, file if not writable
+      end
     end
   end
 end

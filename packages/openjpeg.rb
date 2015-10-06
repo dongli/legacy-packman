@@ -3,10 +3,10 @@ class Openjpeg < PACKMAN::Package
   sha1 'c2a255f6b51ca96dc85cd6e85c89d300018cb1cb'
   version '2.1.0'
 
-  depends_on 'cmake'
-  depends_on 'little_cms'
-  depends_on 'libtiff'
-  depends_on 'libpng'
+  depends_on :cmake
+  depends_on :little_cms
+  depends_on :libtiff
+  depends_on :libpng
 
   def install
     args = %W[

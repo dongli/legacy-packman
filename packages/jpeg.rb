@@ -3,7 +3,7 @@ class Jpeg < PACKMAN::Package
   sha1 'f080b2fffc7581f7d19b968092ba9ebc234556ff'
   version '8d'
 
-  label :skipped if PACKMAN.mac?
+  label :unlinked if PACKMAN.mac?
 
   def install
     args = %W[
@@ -12,9 +12,5 @@ class Jpeg < PACKMAN::Package
     ]
     PACKMAN.run './configure', *args
     PACKMAN.run 'make install'
-  end
-
-  def installed?
-    File.exist? '/System/Library/Frameworks/ImageIO.framework/Versions/A/Resources/libJPEG.dylib'
   end
 end

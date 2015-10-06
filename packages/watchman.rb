@@ -6,7 +6,7 @@ class Watchman < PACKMAN::Package
 
   label :compiler_insensitive
 
-  depends_on 'pcre'
+  depends_on :pcre
 
   def install
     PACKMAN.run './autogen.sh'

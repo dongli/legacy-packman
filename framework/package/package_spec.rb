@@ -1,18 +1,17 @@
 module PACKMAN
-  class PackageAtom
+  class PackageSpec
     attr_reader :labels, :dependencies
     attr_reader :conflict_packages, :conflict_reasons
     attr_reader :provided_stuffs, :master_package
     attr_reader :patches, :embeded_patches, :attachments
     attr_reader :option_valid_types, :options
     attr_reader :option_actual_types
+    attr_reader :os, :compiler_set
 
     CommonOptions = {
-      'skip_test' => false,
-      'compiler_set_indices' => :integer_array,
-      'use_binary' => false,
-      'use_version' => :string,
-      'use_devel' => false
+      :skip_test => false,
+      :use_binary => false,
+      :use_version => :string
     }.freeze
 
     def initialize
@@ -28,6 +27,9 @@ module PACKMAN
       @options = {}
       @option_actual_types = {}
       @option_updated = {}
+      # For binary.
+      @os = {}
+      @compiler_set = {}
 
       CommonOptions.each do |key, type|
         option key => type
@@ -56,14 +58,14 @@ module PACKMAN
         if not @provided_stuffs.has_key? key
           @provided_stuffs[key] = value
         elsif @provided_stuffs[key] != value
-          PACKMAN.report_error "PackageAtom already provides #{PACKMAN.red "#{key} => #{value}"}!"
+          PACKMAN.report_error "PackageSpec already provides #{PACKMAN.red "#{key} => #{value}"}!"
         end
       end
       val.option_valid_types.each do |key, value|
         if not @option_valid_types.has_key? key
           @option_valid_types[key] = value
         elsif @option_valid_types[key] != value
-          PACKMAN.report_error "PackageAtom already define option type #{PACKMAN.red "#{key} => #{value}"}!"
+          PACKMAN.report_error "PackageSpec already define option type #{PACKMAN.red "#{key} => #{value}"}!"
         end
       end
       val.options.each do |key, value|
@@ -72,7 +74,7 @@ module PACKMAN
         elsif not @options[key]
           @options[key] = value
         elsif value.class != Array and @options[key] != value
-          # PACKMAN.report_warning "PackageAtom already has option #{PACKMAN.red "#{key} => #{@options[key]}"}!"
+          # PACKMAN.report_warning "PackageSpec already has option #{PACKMAN.red "#{key} => #{@options[key]}"}!"
         end
       end
     end
@@ -114,52 +116,70 @@ module PACKMAN
       @labels.include? val
     end
 
-    def depends_on val, condition = true
+    def depends_on val
       return if val == :package_name or not val
-      begin
-        val = val.capitalize.to_sym
-        if condition
-          @dependencies << val if not @dependencies.include? val
-        else
-          @dependencies.delete val
-        end
-      rescue
-        CLI.report_error 'Package definition syntax error!'
-      end
+      @dependencies << val if not @dependencies.include? val
     end
 
     def belongs_to val
       val = val.capitalize.to_sym
       if defined? @master_package and @master_package != val
-        CLI.report_error 'Only one master package can be specified!'
+        PACKMAN.report_error 'Only one master package can be specified!'
       end
       begin
         @master_package = val
       rescue
-        CLI.report_error 'Package definition syntax error!'
+        PACKMAN.report_error 'Package definition syntax error!'
       end
     end
 
-    def conflicts_with val, &block
-      @conflict_packages << val
-      if block_given?
-        instance_eval &block
+    def compiled_on *val
+      if val.size != 2
+        PACKMAN.report_error "Bad format of 'compiled_on' #{PACKMAN.red val}!"
+      end
+      if os.include? val.first
+        PACKMAN.report_error "Already set os #{PACKMAN.red val.first.to_s} for package #{PACKMAN.green name}!"
+      end
+      if not VersionSpec.check val.last
+        PACKMAN.report_error "Bad format of version match #{PACKMAN.red val.last}!"
+      end
+      @os[:type] = val[0]
+      @os[:version] = {}
+      tmp = val[1].split
+      @os[:version][:compare_operator] = tmp[0]
+      @os[:version][:base] = VersionSpec.new tmp[1]
+    end
+
+    def compiled_by val
+      if compiler_set.keys.include? val.keys.first
+        PACKMAN.report_error "Already set compiler #{PACKMAN.red val} for package #{PACKMAN.green name}!"
+      end
+      val.each do |language, compiler|
+        @compiler_set[language] = {}
+        @compiler_set[language][:vendor] = compiler[0]
+        @compiler_set[language][:version] = {}
+        tmp = compiler[1].split
+        @compiler_set[language][:version][:compare_operator] = tmp[0]
+        @compiler_set[language][:version][:base] = VersionSpec.new tmp[1]
       end
     end
 
-    def because_they_both_provide val
-      @conflict_reasons << val if not @conflict_reasons.include? val
+    def conflicts_with package_name, reason
+      if not @conflict_packages.include? package_name
+        @conflict_packages << package_name
+        @conflict_reasons << reason
+      end
     end
 
     def conflicts_with? val;  @conflict_packages.include? val; end
 
-    def provide val; @provided_stuffs.merge! val; end
+    def provides val; @provided_stuffs.merge! val; end
 
-    def provide? val; @provided_stuffs.has_key? val; end
+    def provides? val; @provided_stuffs.has_key? val; end
 
     def patch &block
       if block_given?
-        new_patch = PackageAtom.new
+        new_patch = PackageSpec.new
         new_patch.instance_eval &block
         @patches.each do |patch|
           return if patch.sha1 == new_patch.sha1
@@ -174,7 +194,7 @@ module PACKMAN
 
     def attach name, &block
       if block_given?
-        attachment = PackageAtom.new
+        attachment = PackageSpec.new
         attachment.instance_eval &block
         @attachments[name] = attachment
       end
@@ -191,7 +211,7 @@ module PACKMAN
         return if @option_updated[key] # NOTE: When option is updated by other sources, ignore the setting in the package class.
         if value.class == Symbol
           return if is_option_added and @option_valid_types[key] == value
-          @options[key] = PackageAtom.default_option_value value
+          @options[key] = PackageSpec.default_option_value value
           @option_valid_types[key] = value
         elsif value.class == TrueClass or value.class == FalseClass
           return if is_option_added

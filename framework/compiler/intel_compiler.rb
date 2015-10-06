@@ -2,7 +2,7 @@ module PACKMAN
   class IntelCompiler < Compiler
     vendor 'intel'
     command 'c'       => ['icc',   '-O2 -ip -fPIC']
-    command 'c++'     => ['icpc',  '-O2 -ip -fPIC']
+    command 'cxx'     => ['icpc',  '-O2 -ip -fPIC']
     command 'fortran' => ['ifort', '-O2 -ip -fPIC']
     flag :openmp => '-openmp'
     flag :pic => '-fPIC'

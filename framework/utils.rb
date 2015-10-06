@@ -34,7 +34,8 @@ module PACKMAN
         download root, url, rename, :wget
         return
       else
-        CLI.report_error "Download command #{CLI.red cmd} does not exist!"
+        CLI.report_warning "Download command #{CLI.red cmd} does not exist!"
+        raise
       end
     end
     filename = rename ? rename : File.basename(URI.parse(url).path)

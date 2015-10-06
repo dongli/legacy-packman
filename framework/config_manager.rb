@@ -27,19 +27,6 @@ module PACKMAN
       @@use_ftp_mirror = 'no'
       @@download_command = :curl
       @@defaults = {}
-      @@package_options = {}
-    end
-
-    def self.package_options
-      @@package_options ||= {}
-    end
-
-    def self.package name, options
-      name = name.capitalize.to_sym
-      @@package_options[name] = options
-      if not Package.defined? name
-        CLI.report_error "Unknown package #{CLI.red name} in #{CLI.red CommandLine.config_file}!"
-      end
     end
 
     def self.parse
@@ -87,21 +74,22 @@ module PACKMAN
         CLI.report_error "There is no compiler set defined in #{CommandLine.config_file}!"
       end
       CompilerManager.set_compiler_sets command_hash_array
+      CompilerManager.activate_default_compiler_set
       # Check if defaults has been set.
       if defaults.empty?
         msg = <<-EOT.keep_indent
           Defaults section has not been set in #{CLI.red file_path}!
           Example:
           #{CLI.red '==>'} defaults = {
-          #{CLI.red '==>'}   "compiler_set_index" => 0,
-          #{CLI.red '==>'}   "mpi" => "mpich"
+          #{CLI.red '==>'}   :compiler_set_index => 0,
+          #{CLI.red '==>'}   :mpi => 'mpich'
           #{CLI.red '==>'} }
         EOT
         CLI.report_error msg.chomp
       end
       # Report configuation.
       # - FTP mirror.
-      if [:collect, :install].include? CommandLine.subcommand
+      if [ :collect, :install ].include? CommandLine.subcommand
         if not @@use_ftp_mirror == 'no'
           CLI.report_notice "Use FTP mirror #{CLI.blue @@use_ftp_mirror}."
         end
@@ -131,30 +119,30 @@ module PACKMAN
       default_compilers = {}
       File.open(file_path, 'w') do |file|
         file << <<-EOT.keep_indent
-          package_root = "~/.packman/packages"
-          install_root = "~/.packman"
-          use_ftp_mirror = "no"
+          package_root = '~/.packman/packages'
+          install_root = '~/.packman'
+          use_ftp_mirror = 'no'
           download_command = "curl"
           defaults = {
-            "compiler_set_index" => 0,
-            "mpi" => "mpich"
+            :compiler_set_index => 0,
+            :mpi => "mpich"
           }
           compiler_set_0 = {
         EOT
         case PACKMAN.os.type
-        when :Mac_OS_X
+        when :Mac
           if PACKMAN.os.check(:Xcode) and PACKMAN.os.check(:CommandLineTools)
-            default_compilers['c'] = 'clang'
-            default_compilers['c++'] = 'clang++'
+            default_compilers[:c] = 'clang'
+            default_compilers[:cxx] = 'clang++'
           end
         else
-          default_compilers['c'] = 'gcc' if PACKMAN.does_command_exist? 'gcc'
-          default_compilers['c++'] = 'g++' if PACKMAN.does_command_exist? 'g++'
-          default_compilers['fortran'] = 'gfortran' if PACKMAN.does_command_exist? 'gfortran'
+          default_compilers[:c] = 'gcc' if PACKMAN.does_command_exist? 'gcc'
+          default_compilers[:cxx] = 'g++' if PACKMAN.does_command_exist? 'g++'
+          default_compilers[:fortran] = 'gfortran' if PACKMAN.does_command_exist? 'gfortran'
         end
-        file << "  \"c\" => \"#{default_compilers['c']}\"" if default_compilers.has_key? 'c'
-        file << ",\n  \"c++\" => \"#{default_compilers['c++']}\"" if default_compilers.has_key? 'c++'
-        file << ",\n  \"fortran\" => \"#{default_compilers['fortran']}\"" if default_compilers.has_key? 'fortran'
+        file << "  :c => \"#{default_compilers[:c]}\"" if default_compilers.has_key? :c
+        file << ",\n  :cxx => \"#{default_compilers[:cxx]}\"" if default_compilers.has_key? :cxx
+        file << ",\n  :fortran => \"#{default_compilers[:fortran]}\"" if default_compilers.has_key? :fortran
         file << "\n}"
       end
       if not CommandLine.has_option? '-silent'
@@ -162,7 +150,7 @@ module PACKMAN
           "#{CLI.blue 'package_root'}     = #{CLI.red '~/.packman/packages'}\n"+
           "#{CLI.blue 'install_root'}     = #{CLI.red '~/.packman'}\n"+
           "#{CLI.blue 'C compiler'}       = #{CLI.red default_compilers['c']}\n"+
-          "#{CLI.blue 'C++ compiler'}     = #{CLI.red default_compilers['c++']}\n"+
+          "#{CLI.blue 'C++ compiler'}     = #{CLI.red default_compilers['cxx']}\n"+
           "#{CLI.blue 'Fortran compiler'} = #{CLI.red default_compilers['fortran'] ? default_compilers['fortran'] : 'NONE'}"
         CLI.pause :message => '[Press ANY key]'
       end
@@ -179,9 +167,9 @@ module PACKMAN
         str = []
         defaults.each do |key, value|
           if value.class == String
-            str << "  \"#{key}\" => \"#{value}\""
+            str << "  :#{key} => \"#{value}\""
           else
-            str << "  \"#{key}\" => #{value}"
+            str << "  :#{key} => #{value}"
           end
         end
         file << "#{str.join(",\n")}\n}\n"
@@ -189,50 +177,15 @@ module PACKMAN
           compiler_set = CompilerManager.compiler_sets[i]
           file << "compiler_set_#{i} = {\n"
           str = []
-          str << "  \"installed_by_packman\" => \"#{compiler_set.package_name}\"" if compiler_set.installed_by_packman?
+          str << "  :installed_by_packman => \"#{compiler_set.package_name}\"" if compiler_set.installed_by_packman?
           compiler_set.compilers.each do |language, compiler|
             next if not compiler
-            str << "  \"#{language}\" => \"#{compiler.command}\""
-            str << "  \"mpi_#{language}\" => \"#{compiler.mpi_wrapper}\"" if compiler.mpi_wrapper
+            str << "  :#{language} => \"#{compiler.command}\""
+            str << "  :mpi_#{language} => \"#{compiler.mpi_wrapper}\"" if compiler.mpi_wrapper
           end
           file << "#{str.join(",\n")}\n"
           file << "}\n"
         end
-        package_options.each do |package_name, options|
-          package = Package.instance package_name
-          file << "package_#{package_name.to_s.downcase} = {\n"
-          str = []
-          options.each do |key, value|
-            next if value == PackageAtom.default_option_value(package.option_valid_types[key])
-            case value
-            when String
-              str << "  \"#{key}\" => \"#{value}\""
-            else
-              str << "  \"#{key}\" => #{value}"
-            end
-          end
-          file << "#{str.join(",\n")}\n" if not str.empty?
-          file << "}\n"
-        end
-      end
-    end
-
-    def self.propagate_options_to package
-      if package.master_package
-        if package_options[package.master_package]
-          options = PackageGroupHelper.inherit_options package_options[package.master_package], package.class
-        else
-          options = nil
-        end
-      else
-        options = package_options[package.class.to_s.to_sym]
-      end
-      return if not options or options.empty?
-      for i in 0..package.options.size-1
-        key = package.options.keys[i]
-        next if not options.has_key? key
-        value = options[key]
-        package.update_option key, value
       end
     end
   end

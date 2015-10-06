@@ -3,7 +3,7 @@ class Libidn < PACKMAN::Package
   sha1 'e0959eec9a03fd8053379b0aeab447c546c05ab2'
   version '1.29'
 
-  depends_on 'pkgconfig'
+  depends_on :pkgconfig
 
   def install
     args = %W[

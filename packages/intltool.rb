@@ -3,7 +3,7 @@ class Intltool < PACKMAN::Package
   sha1 '7fddbd8e1bf94adbf1bc947cbf3b8ddc2453f8ad'
   version '0.50.2'
 
-  depends_on 'perl_xml_parser'
+  depends_on :perl_xml_parser
 
   def install
     args = %W[

@@ -3,9 +3,9 @@ class Freetype < PACKMAN::Package
   sha1 'd4a17b42505b23dab022f877e1849940aa3b64f3'
   version '2.5.3'
 
-  depends_on 'libpng'
-  depends_on 'zlib'
-  depends_on 'bzip2'
+  depends_on :libpng
+  depends_on :zlib
+  depends_on :bzip2
 
   def install
     PACKMAN.replace 'include/config/ftoption.h',
@@ -13,7 +13,7 @@ class Freetype < PACKMAN::Package
     args = %W[
       --prefix=#{prefix}
       --with-png=#{Libpng.prefix}
-      --with-zlib=#{Zlib.prefix}
+      --with-zlib=#{Zlib_.prefix}
       --with-bzip2=#{Bzip2.prefix}
       --without-harfbuzz
     ]

@@ -3,10 +3,10 @@ class Gettext < PACKMAN::Package
   sha1 '8a4614d5d797af98822b88858c17ad8b3ed4224f'
   version '0.19.3'
 
-  depends_on 'libiconv'
+  depends_on :libiconv
 
   def install
-    if PACKMAN.mac? and PACKMAN.compiler('c').vendor == 'gnu'
+    if PACKMAN.mac? and PACKMAN.compiler(:c).vendor == :gnu
       # See https://github.com/andrewgho/movewin-ruby/issues/1.
       PACKMAN.report_error "#{PACKMAN.red 'Gettext'} cannot be built by GCC on Mac OS X!"
     end

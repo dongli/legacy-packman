@@ -3,12 +3,12 @@ class Pango < PACKMAN::Package
   sha1 'c6ba02ee8f9d8b22b7cfd74c4b6ae170bebc8d2b'
   version '1.36.8'
 
-  depends_on 'glib'
-  depends_on 'cairo'
-  depends_on 'harfbuzz'
-  depends_on 'fontconfig'
-  depends_on 'x11'
-  depends_on 'gobject_introspection'
+  depends_on :glib
+  depends_on :cairo
+  depends_on :harfbuzz
+  depends_on :fontconfig
+  depends_on :x11
+  depends_on :gobject_introspection
 
   def install
     args = %W[

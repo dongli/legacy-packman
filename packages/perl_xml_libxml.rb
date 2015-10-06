@@ -7,10 +7,10 @@ class Perl_xml_libxml < PACKMAN::Package
 
   belongs_to 'perl'
 
-  depends_on 'perl'
-  depends_on 'libxml2'
-  depends_on 'perl_xml_sax'
-  depends_on 'perl_xml_namespacesupport'
+  depends_on :perl
+  depends_on :libxml2
+  depends_on :perl_xml_sax
+  depends_on :perl_xml_namespacesupport
 
   def install
     args = %W[

@@ -9,11 +9,13 @@ module PACKMAN
       :install => 'Install packages and their dependencies.',
       :link => 'Link installed package files into one directory.',
       :mirror => 'Control FTP mirror service.',
+      :relocate => 'Relocate installed packages into a new directory.',
       :remove => 'Remove packages.',
       :report => 'Report version of PACKMAN an other information.',
       :start => 'Start a package if it provides a start method.',
       :status => 'Check the status of a package if it provides a status method.',
       :stop => 'Stop a package if it provides a stop method.',
+      :store => 'Pack a package and store it online.',
       :switch => 'Switch different compiler set (new bashrc will be generated).',
       :unlink => 'Unlink installed package files from central directory.',
       :update => 'Update PACKMAN.',
@@ -47,6 +49,9 @@ module PACKMAN
         '-sync' => 'Synchronize the packages.',
         '-scan' => 'Scan for FTP mirrors.'
       },
+      :relocate => {
+        '-new_root' => 'New root directory for the installed packages.'
+      },
       :remove => {
         '-all' => 'Remove all versions and compiler sets.',
         '-purge' => 'Also remove unneeded dependencies.'
@@ -61,6 +66,7 @@ module PACKMAN
       :start => {},
       :status => {},
       :stop => {},
+      :store => {},
       :switch => {
         '-compiler_set_index' => 'Choose which compiler set will be used.',
         '-output' => 'Set the output BASH configure file path (Default is <package_root>/packman.bashrc).'
@@ -83,7 +89,7 @@ module PACKMAN
           next
         end
         if Package.all_package_names.include? arg
-          @@packages << arg.capitalize.to_sym
+          @@packages << arg.to_sym
           next
         end
         if not @@subcommand
@@ -104,7 +110,7 @@ module PACKMAN
       end
       @@config_file = options['-config'] if has_option? '-config'
       if [:config, :collect, :start, :fix, :upgrade, :update,  :stop, :status,  :report,
-          :install, :switch, :remove, :mirror, :link, :unlink, nil].include? @@subcommand and
+          :install, :switch, :remove, :mirror, :link, :unlink, :relocate, :store, nil].include? @@subcommand and
          not @@config_file
         # Check if there is a configuration file in PACKMAN_ROOT.
         @@config_file = "#{ENV['PACKMAN_ROOT']}/packman.config"
@@ -118,7 +124,7 @@ module PACKMAN
         end
       end
       @@process_exclusive = true
-      if [:edit, :switch, :report, :status].include? @@subcommand
+      if [ :edit, :switch, :report, :status, :store ].include? @@subcommand
         @@process_exclusive = false
       end
     end
@@ -176,17 +182,9 @@ module PACKMAN
       @@options.each_key do |key|
         next if @@subcommand and PermittedOptions[@@subcommand].has_key? key
         next if PermittedCommonOptions.has_key? key
-        next if PackageAtom::CommonOptions.has_key? key.gsub(/^-/, '')
+        next if PackageSpec::CommonOptions.has_key? key.gsub(/^(-|\+)/, '').to_sym
         is_found = false
         @@packages.each do |package_name|
-          package = Package.instance package_name
-          if is_option_defined_in? package, key
-            is_found = true
-            break
-          end
-        end
-        next if is_found
-        ConfigManager.package_options.each_key do |package_name|
           package = Package.instance package_name
           if is_option_defined_in? package, key
             is_found = true
@@ -230,12 +228,8 @@ module PACKMAN
 
     def self.is_option_limited? option_name, package
       # Only packages specified in command line should adopt the option.
-      if package.master_package
-        package_name = package.master_package
-      else
-        package_name = package.class.to_s.to_sym
-      end
-      CommandLine.options.has_key? "+#{option_name}" and not CommandLine.packages.include? package_name
+      package_name = package.master_package ? package.master_package : package.name
+      CommandLine.options.has_key? "+#{option_name}" and not CommandLine.packages.include? package_name.to_sym
     end
 
     def self.propagate_options_to package

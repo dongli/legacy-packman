@@ -3,7 +3,7 @@ class Superlu < PACKMAN::Package
   sha1 'd2863610d8c545d250ffd020b8e74dc667d7cbdd'
   version '4.3'
 
-  depends_on 'openblas'
+  depends_on :openblas
 
   def install
     if PACKMAN.linux?
@@ -11,7 +11,7 @@ class Superlu < PACKMAN::Package
     elsif PACKMAN.mac?
       PACKMAN.cp 'MAKE_INC/make.mac-x', 'make.inc'
     end
-    if PACKMAN.has_compiler? 'fortran', :not_exit and PACKMAN.compiler('fortran').vendor == 'intel'
+    if PACKMAN.has_compiler? 'fortran', :not_exit and PACKMAN.compiler(:fortran).vendor == :intel
       fortran_lib = '-lifcore'
     end
     args = %W[

@@ -5,12 +5,12 @@ class Lua < PACKMAN::Package
 
   label :compiler_insensitive
 
-  depends_on 'readline'
-  depends_on 'ncurses'
+  depends_on :readline
+  depends_on :ncurses
 
   def install
     PACKMAN.replace 'src/Makefile', {
-      /^\s*CC\s*=.*$/ => "CC= #{PACKMAN.compiler('c').command}",
+      /^\s*CC\s*=.*$/ => "CC= #{PACKMAN.compiler(:c).command}",
       /^\s*CFLAGS\s*=(.*)$/ => "CFLAGS= \\1 -I#{Readline_.include} -I#{Ncurses.include}",
       /^\s*LDFLAGS\s*=(.*)$/ => "LDFLAGS= \\1 -L#{Readline_.lib} -L#{Ncurses.lib}",
       /^\s*LIBS\s*=(.*)$/ => "LIBS= \\1 -lncurses"

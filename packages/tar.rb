@@ -5,10 +5,10 @@ class Tar < PACKMAN::Package
 
   label :compiler_insensitive
 
-  depends_on 'xz'
-  depends_on 'bzip2'
-  depends_on 'libiconv'
-  depends_on 'intltool'
+  depends_on :xz
+  depends_on :bzip2
+  depends_on :libiconv
+  depends_on :intltool
 
   if PACKMAN.mac?
     patch do

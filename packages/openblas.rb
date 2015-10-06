@@ -11,7 +11,7 @@ class Openblas < PACKMAN::Package
       }
     end
     args = []
-    if PACKMAN.mac? and PACKMAN.compiler('c').vendor == 'gnu'
+    if PACKMAN.mac? and PACKMAN.compiler(:c).vendor == :gnu
       # On Mac, only clang support AVX instructions, see http://trac.macports.org/ticket/40592.
       args << 'NO_AVX=1'
     end

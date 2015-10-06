@@ -3,7 +3,7 @@ class Arpack < PACKMAN::Package
   sha1 '1fb817346619b04d8fcdc958060cc0eab2c73c6f'
   version '3.1.4'
 
-  depends_on 'openblas'
+  depends_on :openblas
 
   def install
     args = %W[

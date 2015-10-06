@@ -3,15 +3,15 @@ class Hdf_eos2 < PACKMAN::Package
   sha1 '25c44407870eaf40fe6148a1a815981c1aabef68'
   version '2.18v1.00'
 
-  depends_on 'hdf4'
-  depends_on 'zlib'
-  depends_on 'jpeg'
+  depends_on :hdf4
+  depends_on :zlib
+  depends_on :jpeg
 
   def install
     args = %W[
       --prefix=#{prefix}
       --with-hdf4=#{Hdf4.prefix}
-      --with-zlib=#{Zlib.prefix}
+      --with-zlib=#{Zlib_.prefix}
       --with-szlib=#{Szip.prefix}
       --with-jpeg=#{Jpeg.prefix}
       CC='#{Hdf4.bin}/h4cc -Df2cFortran'

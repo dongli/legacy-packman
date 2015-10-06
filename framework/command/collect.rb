@@ -8,12 +8,11 @@ module PACKMAN
       if collect_all
         packages = Dir.glob("#{ENV['PACKMAN_ROOT']}/packages/*.rb").map { |f| File.basename(f).gsub('.rb', '').capitalize.to_sym }
       else
-        packages = CommandLine.packages.empty? ? ConfigManager.package_options.keys : CommandLine.packages.uniq
+        packages = CommandLine.packages.uniq
       end
       packages.each do |package_name|
         if not collect_all
           package = Package.instance package_name
-          ConfigManager.propagate_options_to package
           CommandLine.propagate_options_to package
           package = Package.instance package_name, package.options
           PACKMAN.download_package package
@@ -36,18 +35,17 @@ module PACKMAN
     end
   end
 
-  def self.download_package package, options = nil
-    options = [options] if not options or options.class != Array
-    # Recursively download dependency packages.
-    package.dependencies.each do |depend|
-      if package.has_label? :master_package
-        download_package Package.instance(depend, package.options)
-      else
-        download_package Package.instance(depend)
+  def self.download_package package, *options
+    if not options.include? :skip_depend_packages
+      # Recursively download dependency packages.
+      package.dependencies.each do |depend|
+        if package.has_label? :master_package
+          download_package Package.instance(depend, package.options)
+        else
+          download_package Package.instance(depend)
+        end
       end
     end
-    # Skip the package that should be provided by system.
-    return if package.has_label? 'should_be_provided_by_system'
     # Skip the package that is a virtual master.
     return if package.has_label? :master_package and not package.url
     # Check if there is any patch to download.
@@ -55,7 +53,7 @@ module PACKMAN
     package.patches.each do |patch|
       patch_counter += 1
       url = patch.url
-      patch_file_name = "#{package.class}.patch.#{patch_counter}"
+      patch_file_name = "#{package.name}.patch.#{patch_counter}"
       patch_file_path = "#{ConfigManager.package_root}/#{patch_file_name}"
       if File.exist? patch_file_path
         next if PACKMAN.sha1_same? patch_file_path, patch.sha1
@@ -85,15 +83,18 @@ module PACKMAN
       PACKMAN.download ConfigManager.package_root, url, attach_file_name
     end
     # Download current package.
+    if not package.url and package.use_binary?
+      package.url = Storage.url package, PACKMAN.os, PACKMAN.active_compiler_set
+    end
     if package.respond_to? :url and package.url
       package_file_path = "#{ConfigManager.package_root}/#{package.filename}"
       if File.exist? package_file_path
         return if PACKMAN.sha1_same? package_file_path, package.sha1
       end
       if options.include? :multiple_versions
-        CLI.report_notice "Download package #{CLI.red package.class} (#{package.filename})."
+        CLI.report_notice "Download package #{CLI.red package.name} (#{package.filename})."
       else
-        CLI.report_notice "Download package #{CLI.red package.class}."
+        CLI.report_notice "Download package #{CLI.red package.name}."
       end
       url = package.url
       if not ConfigManager.use_ftp_mirror == 'no'
@@ -106,9 +107,9 @@ module PACKMAN
         return if PACKMAN.sha1_same? package_dir_path, package.sha1
       end
       if options.include? :multiple_versions
-        CLI.report_notice "Download package #{CLI.red package.class} (#{package.dirname})."
+        CLI.report_notice "Download package #{CLI.red package.name} (#{package.dirname})."
       else
-        CLI.report_notice "Download package #{CLI.red package.class}."
+        CLI.report_notice "Download package #{CLI.red package.name}."
       end
       if not ConfigManager.use_ftp_mirror == 'no'
         url = "#{ConfigManager.use_ftp_mirror}/#{package.dirname}"
@@ -116,6 +117,8 @@ module PACKMAN
       else
         PACKMAN.git_clone ConfigManager.package_root, package.git, { :branch => package.tag, :rename => package.dirname }
       end
+    else
+      PACKMAN.report_error "There is no url for package #{PACKMAN.green package.name}!"
     end
   end
 end

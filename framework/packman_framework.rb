@@ -1,5 +1,8 @@
 require "pty"
 require "expect"
+require "pp"
+require "byebug"
+require "zlib"
 
 require "utils"
 require "cli"
@@ -21,13 +24,15 @@ require "system/os/mac"
 require "system/os/suse"
 require "system/shell/env"
 require "system/network_manager"
+require "storage/storage"
+require "storage/bintray"
+require "file/dirs"
 require "file/file_manager"
 require "file/inventory"
 require "file/info"
-require "file/shell_config"
 require "compiler/compiler_atom"
 require "compiler/compiler"
-require "compiler/gcc_compiler"
+require "compiler/gnu_compiler"
 require "compiler/intel_compiler"
 require "compiler/llvm_compiler"
 require "compiler/pgi_compiler"
@@ -46,20 +51,24 @@ require "command/mirror"
 require "command/unlink"
 require "command/update"
 require "command/upgrade"
+require "command/relocate"
 require "command/report"
 require "command/help"
 require "command/start"
 require "command/stop"
 require "command/status"
+require "command/store"
+require "package/package_binary"
 require "package/package_labels"
-require "package/package_atom"
-require "package/package_dsl_helper"
+require "package/package_spec"
+require "package/package_dsl"
+require "package/package_shortcuts"
+require "package/package_transfer_methods"
+require "package/package_default_methods"
 require "package/package_group_helper"
 require "package/package_alias"
 require "package/package"
 require "package/package_loader"
-require "legacy/config_manager_legacy"
-require "legacy/package_legacy"
 require "ruby/ruby_helper"
 
 PACKMAN::ConfigManager.init
@@ -109,6 +118,7 @@ PACKMAN::OsManager.init
 PACKMAN::Shell::Env.init
 PACKMAN::CommandLine.init
 PACKMAN::CompilerManager.init
+PACKMAN::Storage.init
 
 begin
   PACKMAN::ConfigManager.parse

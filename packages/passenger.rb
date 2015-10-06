@@ -5,15 +5,15 @@ class Passenger < PACKMAN::Package
 
   label :compiler_insensitive
 
-  option 'with_apache2' => false
-  option 'web_server' => 'nginx'
-  option 'port' => 80
-  option 'server_name' => PACKMAN.ip
-  option 'app_root' => :string
+  option :with_apache2 => false
+  option :web_server => 'nginx'
+  option :port => 80
+  option :server_name => PACKMAN.ip
+  option :app_root => :string
 
-  depends_on 'pcre'
-  depends_on 'openssl'
-  depends_on 'ruby'
+  depends_on :pcre
+  depends_on :openssl
+  depends_on :ruby
 
   def install
     PACKMAN.run 'rake apache2' if with_apache2?
