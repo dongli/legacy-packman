@@ -1,8 +1,7 @@
 require "pty"
 require "expect"
 require "pp"
-require "byebug"
-require "zlib"
+#require "zlib"
 
 require "utils"
 require "cli"

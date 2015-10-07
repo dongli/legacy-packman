@@ -13,8 +13,6 @@ module PACKMAN
       packages.each do |package_name|
         if not collect_all
           package = Package.instance package_name
-          CommandLine.propagate_options_to package
-          package = Package.instance package_name, package.options
           PACKMAN.download_package package
         else
           all_instances = Package.all_instances package_name

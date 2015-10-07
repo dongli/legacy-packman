@@ -174,7 +174,7 @@ module PACKMAN
         depend_package = Package.instance depend
         return true if is_option_defined_in? depend_package, option_name
       end
-      package.options.has_key? option_name.gsub(/^[-+]/, '')
+      package.options.has_key? option_name.gsub(/^[-+]/, '').to_sym
     end
 
     def self.check_options

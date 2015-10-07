@@ -55,5 +55,70 @@ module PACKMAN
       res = `sudo chown -R #{owner} #{path} 2>&1`
       PACKMAN.report_error "Failed to change owner of #{PACKMAN.red path} to #{PACKMAN.red owner}! See errors:\n#{res}" if not $?.success?
     end
+    command :is_dynamic_library? do |file|
+      `file #{file}`.match(/ELF.*LSB.*shared object/) != nil
+    end
+    command :parse_elf do |file|
+      elf = {}
+      `readelf -d #{file}`.each_line do |line|
+        if line =~ /RPATH/
+          elf[:rpath] = line.match(/\[(.*)\]/)[1].split(':')
+        end
+      end
+      elf
+    end
+    command :repair_dynamic_link do |package, file|
+    end
+    command :add_rpath do |package, file|
+      if `file #{file}` =~ /ELF.*dynamically linked/ and PACKMAN.does_command_exist? 'patchelf'
+        PACKMAN.report_error "You do not have permission to change #{PACKMAN.red file}!" if not File.owned? file
+        writable = File.writable? file
+        if not writable
+          old_mode = File.stat(file).mode
+          File.chmod 0744, file
+        end
+        rpaths = generate_rpaths(package.has_label?(:unlinked) ? package.prefix : PACKMAN.link_root)
+        elf = parse_elf file
+        (elf[:rpath] || []).each do |rpath|
+          rpaths << rpath if not rpaths.include? rpath
+        end
+        p "patchelf --set-rpath '#{rpaths.join(':')}' #{file}"
+        `patchelf --set-rpath '#{rpaths.join(':')}' #{file}`
+        p "patchelf --shrink-rpath #{file}"
+        `patchelf --shrink-rpath #{file}`
+        File.chmod old_mode, file if not writable
+      end
+    end
+    command :delete_rpath do |package, file|
+      if `file #{file}` =~ /ELF.*dynamically linked/ and PACKMAN.does_command_exist? 'patchelf'
+        PACKMAN.report_error "You do not have permission to change #{PACKMAN.red file}!" if not File.owned? file
+        rpaths = generate_rpaths(package.has_label?(:unlinked) ? package.prefix : PACKMAN.link_root)
+        writable = File.writable? file
+        if not writable
+          old_mode = File.stat(file).mode
+          File.chmod 0744, file
+        end
+        elf = parse_elf file
+        if elf.has_key? :rpath
+          p "patchelf --set-rpath '#{elf[:rpath].reject { |x| x == rpath}.join(':')}' #{file}"
+          `patchelf --set-rpath '#{elf[:rpath].reject { |x| x == rpath}.join(':')}' #{file}`
+          p "patchelf --shrink-rpath #{file}"
+          `patchelf --shrink-rpath #{file}`
+        end
+        File.chmod old_mode, file if not writable
+      end
+    end
+    command :generate_rpaths do |root, *options|
+      rpaths = []
+      Dir.glob("#{root}/*").each do |dir|
+        next if not File.directory? dir or not File.basename(dir) =~ /lib/
+        if options.include? :wrap_flag
+          rpaths << PACKMAN.compiler(:c).flag(:rpath).(dir)
+        else
+          rpaths << dir
+        end
+      end
+      rpaths
+    end
   end
 end

@@ -88,6 +88,14 @@ module PACKMAN
       eval "@@#{name}_stable ||= PackageSpec.new"
     end
 
+    def head &block
+      eval "@@#{name}_head ||= PackageSpec.new"
+      return eval "@@#{name}_head" if not block_given?
+      eval "@@#{name}_head.instance_eval &block"
+      eval "@@#{name}_head.label :head"
+      eval "@@#{name}_head.version :head"
+    end
+
     def binary &block
       eval "@@#{name}_binary ||= []"
       return eval "@@#{name}_binary" if not block_given?

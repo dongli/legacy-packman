@@ -6,13 +6,15 @@ module PACKMAN
     include PackageDefaultMethods
     include PackageBinary
 
-    attr_reader :stable, :binary, :history, :active_spec
+    attr_reader :stable, :head, :binary, :history, :active_spec
 
     def initialize requested_spec = nil
       # TODO: Avoid unnecessary instances.
       hand_over_spec :stable
+      hand_over_spec :head
       hand_over_spec :binary
       hand_over_spec :history
+      inherit_spec :stable, :head
       inherit_spec :stable, :binary
       inherit_spec :stable, :history
       set_active_spec requested_spec
@@ -25,7 +27,7 @@ module PACKMAN
       end
 
       active_spec.attachments.each_key do |attach_name|
-        create_attachment_shortcut attach_name, self, :active_spec
+        create_attachment_shortcut attach_name, self, :active_spec, true
       end
     end
 
@@ -94,14 +96,14 @@ module PACKMAN
       options = PackageLoader.package_options package_name if options == nil
       name = PackageAlias.antialias package_name, :downcase
       begin
-        requested_spec = {}
+        requested_spec = nil
         if options[:use_binary]
-          requested_spec[:binary] = true
+          requested_spec = { :binary => true }
         elsif options[:use_version]
-          requested_spec[:history] = true
-          requested_spec[:version] = options[:use_version]
+          requested_spec = { :history => true, :version => options[:use_version] }
+        elsif options[:use_head]
+          requested_spec = :head
         end
-        requested_spec = nil if requested_spec.empty?
         package = eval "#{PACKMAN.alias package_name}.new requested_spec"
         # Propagete the given options.
         options.each { |key, value| package.update_option key, value, true }
@@ -173,7 +175,7 @@ module PACKMAN
     end
 
     def is_compressed?
-      return false if respond_to? :dirname
+      return false if dirname
       PACKMAN.compression_type filename, :not_exit
     end
 
@@ -193,16 +195,12 @@ module PACKMAN
     end
 
     def copy_to root
-      if self.respond_to? :filename
-        file = filename
-      elsif self.respond_to? :dirname
-        file = dirname
-      end
-      CLI.report_notice "Copy #{file}."
+      file = filename || dirname
+      CLI.report_notice "Copy #{PACKMAN.blue file}."
       if not File.exist? "#{ConfigManager.package_root}/#{file}"
         CLI.report_error "Package #{CLI.red name} has not been downloaded!"
       end
-      copy_dir = "#{root}/#{self.class}"
+      copy_dir = "#{root}/#{self.name}"
       PACKMAN.mkdir copy_dir, :force, :silent
       PACKMAN.cp "#{root}/#{file}", copy_dir
     end

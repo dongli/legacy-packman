@@ -31,6 +31,8 @@ class Postgresql < PACKMAN::Package
       --with-openssl
       --with-libxml
       --with-zlib
+      --with-includes=#{Openssl.inc}
+      --with-libs=#{Openssl.lib}
       LIBS=-lintl
     ]
     args << '--with-bonjour' if PACKMAN.mac?

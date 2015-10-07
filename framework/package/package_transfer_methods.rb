@@ -2,10 +2,13 @@ module PACKMAN
   module PackageTransferMethods
     def url; @active_spec.url; end
     def url= val; @active_spec.url val; end
+    def git; @active_spec.git; end
+    def tag; @active_spec.tag; end
     def sha1; @active_spec.sha1; end
     def version; @active_spec.version; end
     def revision; @active_spec.revision; end
     def filename; @active_spec.filename; end
+    def dirname; @active_spec.dirname; end
     def package_path; @active_spec.package_path; end
     def labels; @active_spec.labels; end
     def has_label? val; @active_spec.has_label? val; end

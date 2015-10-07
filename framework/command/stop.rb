@@ -6,7 +6,6 @@ module PACKMAN
       end
       CommandLine.packages.each do |package_name|
         package = Package.instance package_name
-        CompilerManager.activate_compiler_set ConfigManager.defaults[:compiler_set_index]
         if not package.respond_to? :stop
           CLI.report_error "#{CLI.red package_name} does not provide #{CLI.blue 'stop'} method!"
         end

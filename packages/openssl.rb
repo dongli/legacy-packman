@@ -31,6 +31,10 @@ class Openssl < PACKMAN::Package
     else
       PACKMAN.run './config', *args
     end
+    PACKMAN.replace 'Makefile', {
+      /^ZLIB_INCLUDE=/ => "ZLIB_INCLUDE=#{Zlib_.inc}",
+      /^LIBZLIB=/ => "LIBZLIB=#{Zlib_.lib}"
+    }
     if PACKMAN.compiler(:c).vendor == :pgi
       PACKMAN.replace 'Makefile', {
         '-fomit-frame-pointer' => '',

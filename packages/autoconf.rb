@@ -4,6 +4,7 @@ class Autoconf < PACKMAN::Package
   version '2.69'
 
   label :try_system_package_first
+  label :compiler_insensitive
 
   depends_on :m4
 

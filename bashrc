@@ -88,8 +88,9 @@ complete -o bashdefault -F complete_packman packman
 
 # Source packman.bashrc in <install_root> if there is.
 if [[ -f "$PACKMAN_ROOT/packman.config" ]]; then
-    install_root=$(sed -n 's/install_root = "\(.*\)"/\1/p' "$PACKMAN_ROOT/packman.config")
-    active_root=$install_root/packman.active
+    install_root=$(sed -n "s/install_root\s*=\s*'\(.*\)'/\1/p" "$PACKMAN_ROOT/packman.config")
+    # Escape potential ~.
+    active_root=${install_root/~\//$HOME/}/packman.active
     case $(uname) in
       Linux )
           ld_library_path_name=LD_LIBRARY_PATH
@@ -99,6 +100,6 @@ if [[ -f "$PACKMAN_ROOT/packman.config" ]]; then
           ;;
     esac
     export PATH="$active_root/bin:$PATH"
-    eval "export $ld_library_path_name=\"$$active_root/lib:$ld_library_path_name\""
+    eval "export $ld_library_path_name=\"\$active_root/lib:\\\$$ld_library_path_name\""
     export MANPATH="$active_root/share/man:$MANPATH"
 fi

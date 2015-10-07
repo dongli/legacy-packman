@@ -190,12 +190,12 @@ module PACKMAN
     end
     command :add_rpath do |package, file|
       if `file #{file}` =~ /Mach-O/
-        rpath = package.has_label?(:unlinked) ? package.prefix : PACKMAN.link_root
         writable = File.writable? file
         if not writable
           old_mode = File.stat(file).mode
           File.chmod 0744, file
         end
+        rpath = package.has_label?(:unlinked) ? package.prefix : PACKMAN.link_root
         load_commands = parse_load_commands file
         if not load_commands.select { |c| c.keys.first == :lc_rpath }.map { |x| x.values.first[:path] }.include? rpath
           if not File.owned? file

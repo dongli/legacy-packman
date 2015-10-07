@@ -10,6 +10,7 @@ module PACKMAN
 
     CommonOptions = {
       :skip_test => false,
+      :use_head => false,
       :use_binary => false,
       :use_version => :string
     }.freeze
@@ -87,6 +88,19 @@ module PACKMAN
       return @url
     end
 
+    def git val = nil
+      if val
+        @git = val
+        @dirname = File.basename(URI.parse(val).path)
+      end
+      return @git
+    end
+
+    def tag val = nil
+      @tag = val if val
+      return @tag
+    end
+
     def sha1 val = nil
       @sha1 = val if val
       return @sha1
@@ -105,6 +119,11 @@ module PACKMAN
     def filename val = nil
       @filename = val if val
       return @filename
+    end
+
+    def dirname val = nil
+      @dirname = val if val
+      return @dirname
     end
 
     def label val

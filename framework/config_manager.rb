@@ -122,10 +122,10 @@ module PACKMAN
           package_root = '~/.packman/packages'
           install_root = '~/.packman'
           use_ftp_mirror = 'no'
-          download_command = "curl"
+          download_command = 'curl'
           defaults = {
             :compiler_set_index => 0,
-            :mpi => "mpich"
+            :mpi => 'mpich'
           }
           compiler_set_0 = {
         EOT
@@ -140,18 +140,18 @@ module PACKMAN
           default_compilers[:cxx] = 'g++' if PACKMAN.does_command_exist? 'g++'
           default_compilers[:fortran] = 'gfortran' if PACKMAN.does_command_exist? 'gfortran'
         end
-        file << "  :c => \"#{default_compilers[:c]}\"" if default_compilers.has_key? :c
-        file << ",\n  :cxx => \"#{default_compilers[:cxx]}\"" if default_compilers.has_key? :cxx
-        file << ",\n  :fortran => \"#{default_compilers[:fortran]}\"" if default_compilers.has_key? :fortran
+        file << "  :c => '#{default_compilers[:c]}'" if default_compilers.has_key? :c
+        file << ",\n  :cxx => '#{default_compilers[:cxx]}'" if default_compilers.has_key? :cxx
+        file << ",\n  :fortran => '#{default_compilers[:fortran]}'" if default_compilers.has_key? :fortran
         file << "\n}"
       end
       if not CommandLine.has_option? '-silent'
         CLI.report_notice "#{CLI.green file_path} is generated. Please revise the following settings:\n"+
           "#{CLI.blue 'package_root'}     = #{CLI.red '~/.packman/packages'}\n"+
           "#{CLI.blue 'install_root'}     = #{CLI.red '~/.packman'}\n"+
-          "#{CLI.blue 'C compiler'}       = #{CLI.red default_compilers['c']}\n"+
-          "#{CLI.blue 'C++ compiler'}     = #{CLI.red default_compilers['cxx']}\n"+
-          "#{CLI.blue 'Fortran compiler'} = #{CLI.red default_compilers['fortran'] ? default_compilers['fortran'] : 'NONE'}"
+          "#{CLI.blue 'C compiler'}       = #{CLI.red default_compilers[:c]}\n"+
+          "#{CLI.blue 'C++ compiler'}     = #{CLI.red default_compilers[:cxx]}\n"+
+          "#{CLI.blue 'Fortran compiler'} = #{CLI.red default_compilers[:fortran] || 'NONE'}"
         CLI.pause :message => '[Press ANY key]'
       end
     end
@@ -159,15 +159,15 @@ module PACKMAN
     def self.write file_path = nil
       file_path = file_path ? file_path : CommandLine.config_file
       File.open(file_path, 'w') do |file|
-        file << "package_root = \"#{package_root}\"\n"
-        file << "install_root = \"#{install_root}\"\n"
-        file << "use_ftp_mirror = \"#{use_ftp_mirror}\"\n"
-        file << "download_command = \"#{download_command}\"\n"
+        file << "package_root = '#{package_root}'\n"
+        file << "install_root = '#{install_root}'\n"
+        file << "use_ftp_mirror = '#{use_ftp_mirror}'\n"
+        file << "download_command = '#{download_command}'\n"
         file << "defaults = {\n"
         str = []
         defaults.each do |key, value|
           if value.class == String
-            str << "  :#{key} => \"#{value}\""
+            str << "  :#{key} => '#{value}'"
           else
             str << "  :#{key} => #{value}"
           end
@@ -177,11 +177,11 @@ module PACKMAN
           compiler_set = CompilerManager.compiler_sets[i]
           file << "compiler_set_#{i} = {\n"
           str = []
-          str << "  :installed_by_packman => \"#{compiler_set.package_name}\"" if compiler_set.installed_by_packman?
+          str << "  :installed_by_packman => '#{compiler_set.package_name}'" if compiler_set.installed_by_packman?
           compiler_set.compilers.each do |language, compiler|
             next if not compiler
-            str << "  :#{language} => \"#{compiler.command}\""
-            str << "  :mpi_#{language} => \"#{compiler.mpi_wrapper}\"" if compiler.mpi_wrapper
+            str << "  :#{language} => '#{compiler.command}'"
+            str << "  :mpi_#{language} => '#{compiler.mpi_wrapper}'" if compiler.mpi_wrapper
           end
           file << "#{str.join(",\n")}\n"
           file << "}\n"

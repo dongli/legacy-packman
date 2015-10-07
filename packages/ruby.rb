@@ -16,12 +16,13 @@ class Ruby < PACKMAN::Package
   depends_on :zlib
 
   def install
+    PACKMAN.handle_unlinked Openssl
     args = %W[
       --prefix=#{prefix}
       --enable-shared
       --disable-silent-rules
       --with-out-ext=tk
-      --without-gmp
+      LIBS='-L#{link_root}/lib -L#{Openssl.lib}'
     ]
     PACKMAN.run './configure', *args
     PACKMAN.run 'make'

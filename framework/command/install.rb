@@ -44,8 +44,10 @@ module PACKMAN
         else
           install_package package
         end
+        if not File.identical? PACKMAN.link_root, PACKMAN.active_root
+          PACKMAN.ln PACKMAN.link_root, PACKMAN.active_root, :remove_link_if_exist
+        end
       end
-      PACKMAN.ln PACKMAN.link_root, PACKMAN.active_root, :remove_link_if_exist
     end
 
     def self.is_package_installed? package, *options

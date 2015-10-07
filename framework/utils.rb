@@ -76,16 +76,14 @@ module PACKMAN
   end
 
   def self.git_clone root, url, options = {}
-    rename = options.has_key?(:rename) ? options[:rename] : File.basename(URI.parse(url).path)
-    branch = options.has_key?(:branch) ? options[:branch] : 'master'
-    if Dir.exist? "#{root}/#{rename}"
-      FileUtils.rm_rf "#{root}/#{rename}"
-    end
+    rename = options[:rename] || File.basename(URI.parse(url).path)
+    branch = options[:branch] || 'master'
+    PACKMAN.rm "#{root}/#{rename}" if Dir.exist? "#{root}/#{rename}"
     if not does_command_exist? 'git'
       CLI.report_error "#{CLI.red 'git'} does not exist!"
     end
     args = "-b #{branch} #{url} #{root}/#{rename}"
-    system "git clone #{args}"
+    PACKMAN.run "git clone #{args}"
   end
 
   def self.class_defined?(class_name)

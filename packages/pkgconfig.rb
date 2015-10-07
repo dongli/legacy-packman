@@ -5,6 +5,8 @@ class Pkgconfig < PACKMAN::Package
 
   label :compiler_insensitive
 
+  depends_on :libiconv
+
   def install
     if PACKMAN.mac? and PACKMAN.compiler(:c).vendor == :gnu
       # See https://github.com/andrewgho/movewin-ruby/issues/1.
@@ -18,6 +20,7 @@ class Pkgconfig < PACKMAN::Package
       --prefix=#{prefix}
       --disable-debug
       --disable-host-tool
+      --with-libiconv=gnu
       --with-internal-glib
       --with-pc-path=#{pc_path.join(':')}
     ]

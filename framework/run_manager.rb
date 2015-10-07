@@ -9,13 +9,13 @@ module PACKMAN
       PACKMAN.append_env 'CPPFLAGS', PACKMAN.cppflags
       PACKMAN.append_env 'LDFLAGS', PACKMAN.ldflags
       # Handle RPATH variable.
-      rpath_flag = PACKMAN.compiler(:c).flag(:rpath).("#{ConfigManager.install_root}/#{CompilerManager.active_compiler_set_index}")
-      PACKMAN.append_env 'LDFLAGS', rpath_flag
+      rpath_flags = PACKMAN.os.generate_rpaths(PACKMAN.link_root, :wrap_flag).join(' ')
+      PACKMAN.append_env 'LDFLAGS', rpath_flags
       # Handle compilers.
       CompilerManager.active_compiler_set.compilers.each do |language, compiler|
         flags = compiler.default_flags[language]
         PACKMAN.append_env PACKMAN.compiler_flags_env_name(language), flags
-        PACKMAN.append_env PACKMAN.compiler_flags_env_name(language), rpath_flag
+        PACKMAN.append_env PACKMAN.compiler_flags_env_name(language), rpath_flags
         case language
         when 'c'
           PACKMAN.reset_env 'CC', compiler.command

@@ -1,6 +1,7 @@
 module PACKMAN
   class PackageLabels
     @@ValidLabels = [
+      :head,
       :binary,
       :compiler_insensitive,
       :master_package,

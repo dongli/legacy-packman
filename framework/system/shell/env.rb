@@ -3,7 +3,7 @@ module PACKMAN
     class Env
       def self.delegated_methods
         [:append_env, :prepend_env, :reset_env, :clear_env, :has_env?,
-         :export_env, :env_keys]
+         :export_env, :env_keys, :handle_unlinked]
       end
 
       def self.init
@@ -77,11 +77,11 @@ module PACKMAN
         end
       end
 
-      def self.filter_ld_library_path
-        return if not ENV[PACKMAN.ld_library_path_name]
-        paths = ENV[PACKMAN.ld_library_path_name].split ':'
-        paths.delete_if { |path| path =~ /#{ConfigManager.install_root}/ }
-        append_env PACKMAN.ld_library_path_name, paths.join(':')
+      def self.handle_unlinked *packages
+        packages.each do |package_class|
+          append_env 'CPPFLAGS', "-I#{package_class.inc}"
+          append_env 'LDFLAGS', "-L#{package_class.lib} #{PACKMAN.os.generate_rpaths(package_class.prefix, :wrap_flag).join(' ')}"
+        end
       end
     end
   end
