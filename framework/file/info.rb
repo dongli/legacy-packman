@@ -24,6 +24,7 @@ module PACKMAN
         package.dependencies.each do |depend|
           depend_package = Package.instance depend
           depend_hash = read depend_package, *options
+          next if not depend_hash
           eval "package_hash[package_name][:dependencies][depend_package.name.to_sym] = depend_hash"
         end
         File.open(info_path, 'w') do |file|
@@ -33,6 +34,7 @@ module PACKMAN
 
       def self.read package, *options
         prefix = PACKMAN.prefix package, *options
+        return nil if package.should_be_skipped?
         PACKMAN.report_error "Package #{PACKMAN.red package.name} has not been installed!" if not Dir.exist? prefix
         info_path = "#{prefix}/packman.info"
         begin

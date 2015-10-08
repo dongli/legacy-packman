@@ -11,7 +11,7 @@ class Boost < PACKMAN::Package
 
   def install
     cxx_compiler = PACKMAN.compiler(:cxx).command
-    compiler_flags = PACKMAN.compiler(:cxx).default_flags['cxx']
+    compiler_flags = PACKMAN.compiler(:cxx).default_flags[:cxx]
     toolset = PACKMAN.compiler(:cxx).vendor
     # Rename toolset according to Boost.Build rule.
     if toolset == :intel
