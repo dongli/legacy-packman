@@ -16,6 +16,7 @@ class Netcdf_c < PACKMAN::Package
   depends_on :parallel_netcdf if use_mpi?
 
   def install
+    PACKMAN.handle_unlinked Libressl
     # NOTE: OpenDAP support should be supported in default, but I still add
     #       '--enable-dap' explicitly for reminding.
     # Build netcdf in parallel: http://www.unidata.ucar.edu/software/netcdf/docs/getting_and_building_netcdf.html#build_parallel

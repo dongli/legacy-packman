@@ -4,13 +4,14 @@ class Netcdf_cxx < PACKMAN::Package
   version '4.2.1'
   filename 'netcdf-cxx4-4.2.1.tar.gz'
 
-  belongs_to 'netcdf'
+  belongs_to :netcdf
 
   option :use_mpi => [:package_name, :boolean]
 
   depends_on :netcdf_c
 
   def install
+    PACKMAN.handle_unlinked Libressl
     args = %W[
       --prefix=#{prefix}
       --disable-dependency-tracking

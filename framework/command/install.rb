@@ -172,7 +172,7 @@ module PACKMAN
         FileUtils.rm_rf build_upper_dir if Dir.exist? build_upper_dir
       end
       # Clean shell environment.
-      PACKMAN.clear_env if not options.include? :depend
+      PACKMAN.clear_env
     end
 
     def self.link_package package

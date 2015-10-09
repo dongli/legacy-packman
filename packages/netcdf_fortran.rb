@@ -3,13 +3,14 @@ class Netcdf_fortran < PACKMAN::Package
   sha1 '125cb00c92c05bf05c73c54de8c3c63a815e7a46'
   version '4.4.2'
 
-  belongs_to 'netcdf'
+  belongs_to :netcdf
 
   option :use_mpi => [:package_name, :boolean]
 
   depends_on :netcdf_c
 
   def install
+    PACKMAN.handle_unlinked Libressl
     if not PACKMAN.has_compiler? :fortran, :not_exit
       PACKMAN.report_warning "Fortran compiler is not available in this compiler set, skip #{PACKMAN.red 'Netcdf_fortran'}."
       return
