@@ -79,6 +79,14 @@ module PACKMAN
           File.chmod 0744, file
         end
         rpaths = generate_rpaths(package.has_label?(:unlinked) ? package.prefix : PACKMAN.link_root)
+        # Record dependent package rpaths.
+        if package.has_label? :compiler_set
+          package.dependencies.each do |depend|
+            depend_package = Package.instance depend
+            rpaths << generate_rpaths(depend_package.prefix)
+          end
+        end
+        rpaths.flatten!
         elf = parse_elf file
         (elf[:rpath] || []).each do |rpath|
           rpaths << rpath if not rpaths.include? rpath

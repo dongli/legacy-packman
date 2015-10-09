@@ -25,13 +25,13 @@ class Boost < PACKMAN::Package
       elsif PACKMAN.linux?
         toolset << '-linux'
       end
-    elsif toolset == 'gnu'
+    elsif toolset == :gnu
       if PACKMAN.mac?
         toolset = 'darwin'
       elsif PACKMAN.linux?
         toolset = 'gcc'
       end
-    elsif toolset == 'llvm'
+    elsif toolset == :llvm
       if PACKMAN.mac?
         toolset = 'clang-darwin'
       elsif PACKMAN.linux?
