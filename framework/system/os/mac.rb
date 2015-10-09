@@ -241,5 +241,12 @@ module PACKMAN
         File.chmod old_mode, file if not writable
       end
     end
+    command :generate_rpaths do |root, *options|
+      if options.include? :wrap_flag
+        [ PACKMAN.compiler(:c).flag(:rpath).(root) ]
+      else
+        [ root ]
+      end
+    end
   end
 end

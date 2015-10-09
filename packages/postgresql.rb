@@ -24,6 +24,7 @@ class Postgresql < PACKMAN::Package
 
   def install
     PACKMAN.append_env 'LANG', 'C'
+    PACKMAN.handle_unlinked Openssl
     args = %W[
       --prefix=#{prefix}
       --disable-debug

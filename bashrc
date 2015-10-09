@@ -64,13 +64,13 @@ function complete_packman()
     local curr_word=${COMP_WORDS[COMP_CWORD]}
     completed_words=""
     case "${prev_word##*/}" in
-    "packman")
+    packman)
         completed_words=$subcommands
         ;;
-    "config" | "help" | "mirror" | "report" | "switch" | "update")
+    config | help | mirror | report | switch | update)
         completed_words=$(eval "echo \$${prev_word##*/}_options")
         ;;
-    "collect" | "edit" | "install" | "remove" | "start" | "status" | "stop" | "upgrade" | "link" | "unlink" | "store")
+    collect | edit | install | remove | start | status | stop | upgrade | link | unlink | store)
         completed_words="$(eval "echo \$${prev_word##*/}_options") $packages"
         ;;
     *)
@@ -88,16 +88,16 @@ complete -o bashdefault -F complete_packman packman
 
 # Source packman.bashrc in <install_root> if there is.
 if [[ -f "$PACKMAN_ROOT/packman.config" ]]; then
-    install_root=$(sed -n "s/install_root\s*=\s*'\(.*\)'/\1/p" "$PACKMAN_ROOT/packman.config")
+    install_root=$(sed -n "s/install_root[[:space:]]*=[[:space:]]*'\(.*\)'/\1/p" "$PACKMAN_ROOT/packman.config")
     # Escape potential ~.
     active_root=${install_root/~\//$HOME/}/packman.active
     case $(uname) in
-      Linux )
-          ld_library_path_name=LD_LIBRARY_PATH
-          ;;
-      Darwin )
-          ld_library_path_name=DYLD_LIBRARY_PATH
-          ;;
+    Linux )
+        ld_library_path_name=LD_LIBRARY_PATH
+        ;;
+    Darwin )
+        ld_library_path_name=DYLD_LIBRARY_PATH
+        ;;
     esac
     export PATH="$active_root/bin:$PATH"
     eval "export $ld_library_path_name=\"\$active_root/lib:\$active_root/lib64:\\\$$ld_library_path_name\""

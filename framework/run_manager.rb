@@ -15,7 +15,6 @@ module PACKMAN
       CompilerManager.active_compiler_set.compilers.each do |language, compiler|
         flags = compiler.default_flags[language]
         PACKMAN.append_env PACKMAN.compiler_flags_env_name(language), flags
-        PACKMAN.append_env PACKMAN.compiler_flags_env_name(language), rpath_flags
         case language
         when :c
           PACKMAN.reset_env 'CC', compiler.command

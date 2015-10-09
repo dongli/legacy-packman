@@ -3,9 +3,7 @@ class Libiconv < PACKMAN::Package
   sha1 'be7d67e50d72ff067b2c0291311bc283add36965'
   version '1.14'
 
-  label :skipped if PACKMAN.mac?
-
-  def system_prefix; '/usr'; end if PACKMAN.mac?
+  label :unlinked if PACKMAN.mac?
 
   def install
     PACKMAN.replace 'srclib/stdio.in.h', {
@@ -21,11 +19,5 @@ class Libiconv < PACKMAN::Package
     PACKMAN.run './configure', *args
     PACKMAN.run 'make'
     PACKMAN.run 'make install'
-  end
-
-  def installed?
-    if PACKMAN.mac?
-      File.exist? '/usr/lib/libiconv.dylib'
-    end
   end
 end

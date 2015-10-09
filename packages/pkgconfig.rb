@@ -12,6 +12,7 @@ class Pkgconfig < PACKMAN::Package
       # See https://github.com/andrewgho/movewin-ruby/issues/1.
       PACKMAN.report_error "#{PACKMAN.red 'Pkgconfig'} cannot be built by GCC on Mac OS X!"
     end
+    PACKMAN.handle_unlinked Libiconv if PACKMAN.mac?
     pc_path = %W[
       /usr/local/lib/pkgconfig
       /usr/lib/pkgconfig
