@@ -11,7 +11,7 @@ class Superlu < PACKMAN::Package
     elsif PACKMAN.mac?
       PACKMAN.cp 'MAKE_INC/make.mac-x', 'make.inc'
     end
-    if PACKMAN.has_compiler? 'fortran', :not_exit and PACKMAN.compiler(:fortran).vendor == :intel
+    if PACKMAN.has_compiler? :fortran, :not_exit and PACKMAN.compiler(:fortran).vendor == :intel
       fortran_lib = '-lifcore'
     end
     args = %W[
@@ -22,9 +22,9 @@ class Superlu < PACKMAN::Package
       SUPERLULIB=#{FileUtils.pwd}/lib/libsuperlu.a
       NOOPTS=-fPIC
       BLASDEF=-DUSE_VENDOR_BLAS
-      BLASLIB='-L#{Openblas.lib} -lopenblas #{fortran_lib}'
+      BLASLIB='-L#{link_root}/lib -lopenblas #{fortran_lib}'
     ]
-    if PACKMAN.has_compiler? 'fortran', :not_exit
+    if PACKMAN.has_compiler? :fortran, :not_exit
       args << 'FORTRAN="${FC}" FFLAGS="${FCFLAGS}"'
     end
     PACKMAN.run 'make lib', *args
@@ -35,13 +35,13 @@ class Superlu < PACKMAN::Package
         PACKMAN.blue_arrow `tail -1 #{test}.out`.chomp
       end
     end
-    PACKMAN.mkdir "#{include}/superlu"
-    PACKMAN.cp 'SRC/*.h', "#{include}/superlu"
+    PACKMAN.mkdir "#{inc}/superlu"
+    PACKMAN.cp 'SRC/*.h', "#{inc}/superlu"
     PACKMAN.mkdir lib
     PACKMAN.cp 'lib/*', lib
   end
 
   def post_install
-    File.chmod 0644, include+'/superlu/superlu_enum_consts.h'
+    File.chmod 0644, inc+'/superlu/superlu_enum_consts.h'
   end
 end

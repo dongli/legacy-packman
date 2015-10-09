@@ -6,12 +6,11 @@ class Openmpi < PACKMAN::Package
   # Libevent can be downloaded in some network condition!
   # depends_on 'libevent'
 
-  conflicts_with 'mpich', 'They both provide MPI implementation.'
+  conflicts_with :mpich, 'They both provide MPI implementation.'
 
-  provide 'c' => 'mpicc'
-  provide 'cxx' => 'mpic++'
-  provide 'fortran:77' => 'mpif77'
-  provide 'fortran:90' => 'mpif90'
+  provides :c => 'mpicc'
+  provides :cxx => 'mpic++'
+  provides :fortran => [ '77' => 'mpif77', '90' => 'mpif90' ]
 
   def install
     # --with-libevent=#{Libevent.prefix}

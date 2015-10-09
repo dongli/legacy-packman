@@ -63,9 +63,9 @@ module PACKMAN
 
     def to_hash
       hash = {}
-      hash[:c] = compilers['c'].to_hash if compilers.has_key? 'c'
-      hash[:cxx] = compilers['cxx'].to_hash if compilers.has_key? 'cxx'
-      hash[:fortran] = compilers['fortran'].to_hash if compilers.has_key? 'fortran'
+      hash[:c] = compilers[:c].to_hash if compilers.has_key? :c
+      hash[:cxx] = compilers[:cxx].to_hash if compilers.has_key? :cxx
+      hash[:fortran] = compilers[:fortran].to_hash if compilers.has_key? :fortran
       return hash
     end
   end

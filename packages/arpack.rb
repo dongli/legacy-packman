@@ -1,7 +1,8 @@
 class Arpack < PACKMAN::Package
-  url 'http://forge.scilab.org/index.php/p/arpack-ng/downloads/get/arpack-ng_3.1.4.tar.gz'
-  sha1 '1fb817346619b04d8fcdc958060cc0eab2c73c6f'
-  version '3.1.4'
+  url 'https://github.com/opencollab/arpack-ng/archive/3.2.0.tar.gz'
+  sha1 '128d04d82399c4174e1b32572845055aaaafef47'
+  version '3.2.0'
+  filename 'arpack-3.2.0.tar.gz'
 
   depends_on :openblas
 
@@ -9,7 +10,7 @@ class Arpack < PACKMAN::Package
     args = %W[
       --prefix=#{prefix}
       --disable-dependency-tracking
-      --with-blas='-L#{Openblas.lib} -lopenblas'
+      --with-blas='-lopenblas'
     ]
     PACKMAN.run './configure', *args
     PACKMAN.run 'make -j2'

@@ -11,7 +11,7 @@ class Fftw < PACKMAN::Package
       --enable-threads
       --disable-dependency-tracking
     ]
-    args << '--disable-fortran' if not PACKMAN.has_compiler? 'fortran', :not_exit
+    args << '--disable-fortran' if not PACKMAN.has_compiler? :fortran, :not_exit
     PACKMAN.run './configure --enable-sse2 --enable-single', *args
     PACKMAN.run 'make install'
     PACKMAN.run 'make clean'

@@ -3,7 +3,7 @@ class Mpich < PACKMAN::Package
   sha1 'af4f563e2772d610e57e17420c9dcc5c3c9fec4e'
   version '3.1.4'
 
-  conflicts_with 'openmpi', 'They both provide MPI implementation.'
+  conflicts_with :openmpi, 'They both provide MPI implementation.'
 
   provides :c => 'mpicc'
   provides :cxx => 'mpic++'
@@ -17,7 +17,7 @@ class Mpich < PACKMAN::Package
       --disable-maintainer-mode
       --enable-cxx
     ]
-    if PACKMAN.has_compiler? 'fortran', :not_exit
+    if PACKMAN.has_compiler? :fortran, :not_exit
       args << '--enable-fortran=all'
     else
       args << '--disable-fortran'

@@ -15,16 +15,11 @@ class Mlpack < PACKMAN::Package
     args = %W[
       -DCMAKE_INSTALL_PREFIX=#{prefix}
       -DCMAKE_BUILD_TYPE='Release'
-      -DARMADILLO_INCLUDE_DIR=#{Armadillo.include}
-      -DARMADILLO_LIBRARY=#{Armadillo.lib}/libarmadillo.#{PACKMAN.shared_library_suffix}
+      -DARMADILLO_INCLUDE_DIR=#{link_root}/include
+      -DARMADILLO_LIBRARY=#{link_root}/lib/libarmadillo.#{PACKMAN.shared_library_suffix}
       -DBoost_NO_BOOST_CMAKE=ON
-      -DCMAKE_EXE_LINKER_FLAGS='-L#{Hdf5.lib}'
     ]
-    if use_cxx11?
-      args << "-DCMAKE_CXX_FLAGS='-I#{Hdf5.include} -std=c++11'"
-    else
-      args << "-DCMAKE_CXX_FLAGS='-I#{Hdf5.include}'"
-    end
+    args << "-DCMAKE_CXX_FLAGS='-std=c++11'" if use_cxx11?
     PACKMAN.mkdir 'build', :force, :silent do
       PACKMAN.run 'cmake ..', *args
       PACKMAN.run 'make -j2'

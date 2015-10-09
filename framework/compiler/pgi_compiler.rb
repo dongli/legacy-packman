@@ -1,9 +1,9 @@
 module PACKMAN
   class PgiCompiler < Compiler
-    vendor 'pgi'
-    command 'c'       => ['pgcc',      '-O2 -fPIC']
-    command 'cxx'     => ['pgcpp',     '-O2 -fPIC']
-    command 'fortran' => ['pgfortran', '-O2 -fPIC']
+    vendor :pgi
+    command :c       => ['pgcc',      '-O2 -fPIC']
+    command :cxx     => ['pgcpp',     '-O2 -fPIC']
+    command :fortran => ['pgfortran', '-O2 -fPIC']
     flag :openmp => '-mp'
     flag :pic => '-fPIC'
     flag :rpath => -> rpath { "-Wl,-rpath,#{rpath}" }
