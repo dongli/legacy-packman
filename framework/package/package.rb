@@ -27,7 +27,7 @@ module PACKMAN
       end
 
       active_spec.attachments.each_key do |attach_name|
-        create_attachment_shortcut attach_name, self, :active_spec, true
+        create_attachment_shortcut attach_name, self, :active_spec
       end
     end
 

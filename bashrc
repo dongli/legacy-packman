@@ -101,5 +101,6 @@ if [[ -f "$PACKMAN_ROOT/packman.config" ]]; then
     esac
     export PATH="$active_root/bin:$PATH"
     eval "export $ld_library_path_name=\"\$active_root/lib:\$active_root/lib64:\\\$$ld_library_path_name\""
-    export MANPATH="$active_root/share/man:\$MANPATH"
+    export MANPATH="$active_root/share/man:$MANPATH"
+    export PKG_CONFIG_PATH="$active_root/lib/pkgconfig:$PKG_CONFIG_PATH"
 fi

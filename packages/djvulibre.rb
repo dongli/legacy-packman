@@ -3,9 +3,7 @@ class Djvulibre < PACKMAN::Package
   sha1 'c7044201703f30df0f1732c54c6544467412811d'
   version '3.5.25.4'
 
-  if PACKMAN.mac?
-    patch :embed
-  end
+  patch :embed if PACKMAN.mac?
 
   depends_on :jpeg
   depends_on :libtiff

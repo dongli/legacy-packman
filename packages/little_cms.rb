@@ -12,8 +12,8 @@ class Little_cms < PACKMAN::Package
       --prefix=#{prefix}
       --disable-dependency-tracking
       --with-jpeg=#{Jpeg.prefix}
-      --with-tiff=#{Libtiff.prefix}
-      --with-zlib=#{Zlib.prefix}
+      --with-tiff=#{link_root}
+      --with-zlib=#{link_root}
     ]
     PACKMAN.run './configure', *args
     PACKMAN.run 'make -j2'

@@ -8,13 +8,14 @@ class Freetype < PACKMAN::Package
   depends_on :bzip2
 
   def install
+    PACKMAN.handle_unlinked Libpng if PACKMAN.mac?
     PACKMAN.replace 'include/config/ftoption.h',
       /\/\* (#define FT_CONFIG_OPTION_SUBPIXEL_RENDERING) \*\// => '\1'
     args = %W[
       --prefix=#{prefix}
       --with-png=#{Libpng.prefix}
-      --with-zlib=#{Zlib_.prefix}
-      --with-bzip2=#{Bzip2.prefix}
+      --with-zlib=#{link_root}
+      --with-bzip2=#{link_root}
       --without-harfbuzz
     ]
     PACKMAN.run './configure', *args

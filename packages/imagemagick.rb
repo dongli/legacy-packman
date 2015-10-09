@@ -47,7 +47,7 @@ class Imagemagick < PACKMAN::Package
       --with-tiff=yes
       --with-png=yes
       --with-gslib=yes
-      --with-gs-font-dir=#{Ghostscript.share}/ghostscript/fonts
+      --with-gs-font-dir=#{link_root}/share/ghostscript/fonts
       --with-wmf=yes
       --with-rsvg=yes
       --with-lqr=yes

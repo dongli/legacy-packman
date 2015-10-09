@@ -115,7 +115,7 @@ module PACKMAN
       else
         PACKMAN.git_clone ConfigManager.package_root, package.git, { :branch => package.tag, :rename => package.dirname }
       end
-    else
+    elsif not package.has_label? :try_system_package_first
       PACKMAN.report_error "There is no url for package #{PACKMAN.green package.name}!"
     end
   end

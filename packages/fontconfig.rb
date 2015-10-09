@@ -15,7 +15,7 @@ class Fontconfig < PACKMAN::Package
       --disable-dependency-tracking
       --disable-silent-rules
       --disable-docs
-      --with-expat=#{Expat.prefix}
+      --with-expat=#{link_root}
     ]
     if PACKMAN.mac?
       args << '--with-add-fonts=/System/Library/Fonts,/Library/Fonts,~/Library/Fonts'
