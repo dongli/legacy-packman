@@ -1,6 +1,10 @@
 require "pty"
 require "expect"
 require "pp"
+begin
+  require 'zlib'
+rescue LoadError => e
+end
 
 require "utils"
 require "cli"

@@ -3,7 +3,8 @@ module PACKMAN
     PROVIDER = :Bintray
 
     def self.init
-      eval "Storage::#{PROVIDER}.init"
+      @provider = eval "Storage::#{PROVIDER}"
+      @provider.init
     end
 
     def self.label package, os = nil, compiler_set = nil
@@ -67,12 +68,12 @@ module PACKMAN
     end
 
     def self.is_authenticated?
-      eval "Storage::#{PROVIDER}.is_authenticated?"
+      @provider.is_authenticated?
     end
 
     def self.upload package
       path = Storage.pack package
-      eval "Storage::#{PROVIDER}.upload package, path"
+      @provider.upload package, path
     end
   end
 end
