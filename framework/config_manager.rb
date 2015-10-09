@@ -41,7 +41,7 @@ module PACKMAN
       PermittedKeys.each do |key|
         config.gsub!(/^ *#{key} *=/, "self.#{key}=")
       end
-      config.gsub!(/^ *package_(\w+) *=/, 'self.package "\1",')
+      config.gsub!(/^\s*['"](\w+)['"]\s=>/, '  :\1 =>')
       begin
         class_eval config
       rescue SyntaxError => e
