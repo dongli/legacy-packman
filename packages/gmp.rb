@@ -6,9 +6,9 @@ class Gmp < PACKMAN::Package
   depends_on :m4
 
   binary do
-    compiled_on :Mac, '=~ 10.11'
+    compiled_on :Mac, '=~ 10.10'
     compiled_by :c => [ :llvm, '=~ 7.0' ]
-    sha1 '8ec61c761ef7da6c9ddab64f8387721e69f0a2be'
+    sha1 '46cdaec03e169a1d8dbcbe9631ffba180b116dee'
     version '6.0.0a'
   end
 

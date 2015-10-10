@@ -10,6 +10,13 @@ class Netcdf_cxx < PACKMAN::Package
 
   depends_on :netcdf_c
 
+  binary do
+    compiled_on :Mac, '=~ 10.10'
+    compiled_by :c => [ :gnu, '=~ 5.2' ], :cxx => [ :gnu, '=~ 5.2' ]
+    sha1 '44878b2347f45e3c63100ae73ca1f4a3b95d86a7'
+    version '4.2.1'
+  end
+
   def install
     PACKMAN.handle_unlinked Libressl
     args = %W[

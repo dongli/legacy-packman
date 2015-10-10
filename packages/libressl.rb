@@ -6,9 +6,9 @@ class Libressl < PACKMAN::Package
   label :unlinked
 
   binary do
-    compiled_on :Mac, '=~ 10.11'
-    compiled_by :c => [ :llvm, '=~ 7.0' ]
-    sha1 'd335e34ae482f145cc33bffdcc8aa55198deeae3'
+    compiled_on :Mac, '=~ 10.10'
+    compiled_by :c => [ :gnu, '=~ 5.2' ]
+    sha1 'a9a72681ad3170161168bba0acbb8c20867e6312'
     version '2.2.3'
   end
 

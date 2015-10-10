@@ -10,6 +10,13 @@ class Hdf5 < PACKMAN::Package
   depends_on :szip
   depends_on mpi if use_mpi?
 
+  binary do
+    compiled_on :Mac, '=~ 10.10'
+    compiled_by :c => [ :gnu, '=~ 5.2' ], :cxx => [ :gnu, '=~ 5.2' ], :fortran => [ :gnu, '=~ 5.2' ]
+    sha1 '4afcf20ee56854a82ce245f18e5f09b18ab02890'
+    version '1.8.14'
+  end
+
   if PACKMAN.mac? and use_mpi?
     PACKMAN.caveat <<-EOT.keep_indent
       Parallel HDF5 can not be built succesfully in Mac OS X!

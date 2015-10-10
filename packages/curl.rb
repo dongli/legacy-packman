@@ -6,6 +6,13 @@ class Curl < PACKMAN::Package
   depends_on :zlib
   depends_on :libressl
 
+  binary do
+    compiled_on :Mac, '=~ 10.10'
+    compiled_by :c => [ :gnu, '=~ 5.2' ]
+    sha1 '98ea8725fb710887785b782c25e23fa79ed2c509'
+    version '7.44.0'
+  end
+
   def install
     PACKMAN.prepend_env 'PKG_CONFIG_PATH', "#{Libressl.lib}/pkgconfig"
     PACKMAN.handle_unlinked Libressl

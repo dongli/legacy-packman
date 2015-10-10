@@ -4,9 +4,9 @@ class Mpc < PACKMAN::Package
   version '1.0.3'
 
   binary do
-    compiled_on :Mac, '=~ 10.11'
+    compiled_on :Mac, '=~ 10.10'
     compiled_by :c => [ :llvm, '=~ 7.0' ]
-    sha1 '798c37e8839bf346c942960ebb453c3ce33b9383'
+    sha1 'cb0d492773d2e4c026876e1d7a28f2fa6dffa3d5'
     version '1.0.3'
   end
 

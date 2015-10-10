@@ -4,9 +4,9 @@ class Mpfr < PACKMAN::Package
   version '3.1.3'
 
   binary do
-    compiled_on :Mac, '=~ 10.11'
+    compiled_on :Mac, '=~ 10.10'
     compiled_by :c => [ :llvm, '=~ 7.0' ]
-    sha1 '82d8468caa7b6908864a8da82ef99fb116469342'
+    sha1 'b259054c2d166dd1075d6cfb7e2e7f1e928665c4'
     version '3.1.3'
   end
 

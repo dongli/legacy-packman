@@ -15,6 +15,12 @@ class Gcc < PACKMAN::Package
   provides :cxx => 'g++'
   provides :fortran => 'gfortran'
 
+  binary do
+    compiled_on :Mac, '=~ 10.10'
+    sha1 'bd3a058386b3a55ea7ddc04793d6ff995cb9be22'
+    version '5.2.0'
+  end
+
   def install
     languages = %W[c c++ fortran]
     args = %W[

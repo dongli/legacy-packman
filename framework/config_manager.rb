@@ -62,6 +62,9 @@ module PACKMAN
       ( self.methods.select { |m| m.to_s =~ /compiler_set_\d$/ } ).each do |m|
         command_hash = self.method(m).call
         if command_hash != nil
+          if command_hash.has_key? :installed_by_packman
+            command_hash[:installed_by_packman].downcase!
+          end
           command_hash.each do |key, value|
             if value == '<CHANGE ME>'
               CLI.report_error "You haven't modified #{CLI.red key} compiler in #{CommandLine.config_file}!"

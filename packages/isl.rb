@@ -6,9 +6,9 @@ class Isl < PACKMAN::Package
   depends_on :gmp
 
   binary do
-    compiled_on :Mac, '=~ 10.11'
+    compiled_on :Mac, '=~ 10.10'
     compiled_by :c => [ :llvm, '=~ 7.0' ]
-    sha1 'aebe135c08241a734b00590677f77e0d526c0b3d'
+    sha1 '9dee4edf987e2d65bd0da983e269c80f41c7f3f7'
     version '0.14.1'
   end
 

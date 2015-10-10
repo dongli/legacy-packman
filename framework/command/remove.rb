@@ -96,7 +96,7 @@ module PACKMAN
       package_hash = Files::Info.read package
       index = CompilerManager.compiler_sets.index do |compiler_set|
         compiler_set.installed_by_packman? and
-        compiler_set.package_name == package.name.to_s.capitalize.to_sym and
+        compiler_set.package_name == package.name and
         compiler_set.compilers[:c].version == package_hash[:version]
       end
       if index < CompilerManager.compiler_sets.size-1

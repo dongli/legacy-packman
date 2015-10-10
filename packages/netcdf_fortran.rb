@@ -9,6 +9,13 @@ class Netcdf_fortran < PACKMAN::Package
 
   depends_on :netcdf_c
 
+  binary do
+    compiled_on :Mac, '=~ 10.10'
+    compiled_by :c => [ :gnu, '=~ 5.2' ], :fortran => [ :gnu, '=~ 5.2' ]
+    sha1 'd8f070d73860d8be6001761d3e7c5474b3172310'
+    version '4.4.2'
+  end
+
   def install
     PACKMAN.handle_unlinked Libressl
     if not PACKMAN.has_compiler? :fortran, :not_exit

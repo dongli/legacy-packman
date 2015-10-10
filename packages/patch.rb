@@ -5,6 +5,13 @@ class Patch < PACKMAN::Package
 
   label :compiler_insensitive
 
+  binary do
+    compiled_on :Mac, '=~ 10.10'
+    compiled_by :c => [ :llvm, '=~ 7.0' ]
+    sha1 'c957ba3bd755f1a2ba64985ee7bef2997c633f9f'
+    version '2.7.5'
+  end
+
   def install
     args = %W[
       --prefix=#{prefix}

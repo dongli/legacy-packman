@@ -160,83 +160,103 @@ module PACKMAN
       load_commands
     end
     command :repair_dynamic_link do |package, file|
-      if `file #{file}` =~ /Mach-O/
-        root = Pathname.new ConfigManager.install_root
+      if `file #{file}` =~ /Mach-O/ and not `file #{file}` =~ /stub/
         PACKMAN.report_error "You do not have permission to change #{PACKMAN.red file}!" if not File.owned? file
         writable = File.writable? file
         if not writable
           old_mode = File.stat(file).mode
           File.chmod 0744, file
         end
-        load_commands = parse_load_commands file
-        if not load_commands.select { |c| c.keys.first == :lc_id_dylib }.empty?
-          p "install_name_tool -id '@rpath/#{Pathname.new(file).relative_path_from Pathname.new(package.prefix)}' #{file}"
-          `install_name_tool -id '@rpath/#{Pathname.new(file).relative_path_from Pathname.new(package.prefix)}' #{file}`
-          PACKMAN.report_error "Failed to repair id in #{PACKMAN.red file}!" if not $?.success?
-        end
-        load_commands.select { |c| c.keys.first == :lc_load_dylib }.map { |x| x.values.first[:name] }.each do |path|
-          dylib = path.match(/#{ConfigManager.install_root}\/.*\.#{PACKMAN.shared_library_suffix}/)
-          next if not dylib
-          pn = Pathname.new dylib.to_s
-          depend_package = Package.instance pn.relative_path_from(root).to_s.split('/').first
-          depend_prefix = depend_package.prefix
-          dir = Pathname.new depend_prefix
-          p "install_name_tool -change '#{dylib}' '@rpath/#{pn.relative_path_from dir}' #{file}"
-          `install_name_tool -change '#{dylib}' '@rpath/#{pn.relative_path_from dir}' #{file}`
-          PACKMAN.report_error "Failed to repair dynamic link in #{PACKMAN.red file}!" if not $?.success?
+        root = Pathname.new ConfigManager.install_root
+        relative_path = Pathname.new(file).relative_path_from Pathname.new(package.prefix)
+        parse_load_commands(file).each do |load_command|
+          if load_command.keys.first == :lc_id_dylib
+            p "install_name_tool -id '@rpath/#{relative_path}' #{file}"
+            `install_name_tool -id '@rpath/#{relative_path}' #{file}`
+            PACKMAN.report_error "Failed to repair id in #{PACKMAN.red file}!" if not $?.success?
+          elsif load_command.keys.first == :lc_load_dylib
+            path = load_command[:lc_load_dylib][:name]
+            dylib = path.match(/#{ConfigManager.install_root}\/.*\.#{PACKMAN.shared_library_suffix}/)
+            next if not dylib
+            pn = Pathname.new dylib.to_s
+            depend_package = Package.instance pn.relative_path_from(root).to_s.split('/').first
+            depend_prefix = depend_package.prefix
+            dir = Pathname.new depend_prefix
+            p "install_name_tool -change '#{dylib}' '@rpath/#{pn.relative_path_from dir}' #{file}"
+            `install_name_tool -change '#{dylib}' '@rpath/#{pn.relative_path_from dir}' #{file}`
+            PACKMAN.report_error "Failed to repair dynamic link in #{PACKMAN.red file}!" if not $?.success?
+            if package.has_label? :compiler_set
+              p "install_name_tool -add_rpath '#{depend_prefix}' #{file}"
+              `install_name_tool -add_rpath '#{depend_prefix}' #{file}`
+              PACKMAN.report_error "Failed to add rpath to #{PACKMAN.red file}!" if not $?.success?
+            end
+          end
         end
         File.chmod old_mode, file if not writable
       end
     end
     command :add_rpath do |package, file|
-      if `file #{file}` =~ /Mach-O/
+      if `file #{file}` =~ /Mach-O/ and not `file #{file}` =~ /stub/
+        PACKMAN.report_error "You do not have permission to change #{PACKMAN.red file}!" if not File.owned? file
         writable = File.writable? file
         if not writable
           old_mode = File.stat(file).mode
           File.chmod 0744, file
         end
         rpath = package.has_label?(:unlinked) ? package.prefix : PACKMAN.link_root
-        load_commands = parse_load_commands file
-        if not load_commands.select { |c| c.keys.first == :lc_rpath }.map { |x| x.values.first[:path] }.include? rpath
-          if not File.owned? file
-            PACKMAN.report_error "You do not have permission to change #{PACKMAN.red file}!"
+        parse_load_commands(file).each do |load_command|
+          next if not load_command.keys.first == :lc_rpath
+          path = load_command[:lc_rpath][:path]
+          if path == '<packman_link_root>'
+            p "install_name_tool -rpath '#{path}' '#{PACKMAN.link_root}' #{file}"
+            `install_name_tool -rpath '#{path}' '#{PACKMAN.link_root}' #{file}`
+            PACKMAN.report_error "Failed to add rpath to #{PACKMAN.red file}!" if not $?.success?
+          elsif path =~ /<packman_\w+_prefix>/
+            depend_package = Package.instance path.match(/<packman_(\w+)_prefix>/)[1]
+            p "install_name_tool -rpath '#{path}' '#{PACKMAN.prefix depend_package, ConfigManager.defaults[:compiler_set_index]}' #{file}"
+            `install_name_tool -rpath '#{path}' '#{PACKMAN.prefix depend_package, ConfigManager.defaults[:compiler_set_index]}' #{file}`
+            PACKMAN.report_error "Failed to add rpath to #{PACKMAN.red file}!" if not $?.success?
           end
-          load_commands.each do |load_command|
-            next if not load_command.keys.first == :lc_rpath
-            if load_command[:lc_rpath][:path] == PACKMAN.link_root
-              p "install_name_tool -delete_rpath '#{load_command[:lc_rpath][:path]}' #{file}"
-              `install_name_tool -delete_rpath '#{load_command[:lc_rpath][:path]}' #{file}`
-              PACKMAN.report_error "Failed to delete rpath from #{PACKMAN.red file}!" if not $?.success?
-            end
-          end
-          p "install_name_tool -add_rpath '#{rpath}' #{file}"
-          `install_name_tool -add_rpath '#{rpath}' #{file}`
-          PACKMAN.report_error "Failed to add rpath to #{PACKMAN.red file}!" if not $?.success?
-        elsif load_commands.select { |c| c.keys.first == :lc_load_dylib }.select { |x| x.values.first[:name] =~ /@rpath/ }.empty? and
-              load_commands.select { |c| c.keys.first == :lc_id_dylib }.empty?
-          p "install_name_tool -delete_rpath '#{rpath}' #{file}"
-          `install_name_tool -delete_rpath '#{rpath}' #{file}`
-          PACKMAN.report_error "Failed to delete rpath from #{PACKMAN.red file}!" if not $?.success?
         end
         File.chmod old_mode, file if not writable
       end
     end
     command :delete_rpath do |package, file|
-      if `file #{file}` =~ /Mach-O/
-        rpath = package.has_label?(:unlinked) ? package.prefix : PACKMAN.link_root
+      if `file #{file}` =~ /Mach-O/ and not `file #{file}` =~ /stub/
+        PACKMAN.report_error "You do not have permission to change #{PACKMAN.red file}!" if not File.owned? file
         writable = File.writable? file
         if not writable
           old_mode = File.stat(file).mode
           File.chmod 0744, file
         end
-        load_commands = parse_load_commands file
-        if load_commands.select { |c| c.keys.first == :lc_rpath }.map { |x| x.values.first[:path] }.include? rpath
-          if not File.owned? file
-            PACKMAN.report_error "You do not have permission to change #{PACKMAN.red file}!"
+        root = Pathname.new ConfigManager.install_root
+        if package.has_label? :compiler_set
+          link_root = ConfigManager.install_root+'/'+CompilerManager.compiler_sets.index { |x|
+            x.installed_by_packman? and x.package_name == package.name
+          }.to_s
+        else
+          link_root = PACKMAN.link_root
+        end
+        parse_load_commands(file).each do |load_command|
+          next if not load_command.keys.first == :lc_rpath
+          path = load_command[:lc_rpath][:path]
+          if path == link_root
+            p "install_name_tool -rpath '#{path}' '<packman_link_root>' #{file}"
+            `install_name_tool -rpath '#{path}' '<packman_link_root>' #{file}`
+            PACKMAN.report_error "Failed to change rpath in #{PACKMAN.red file}!" if not $?.success?
+          elsif path =~ /#{root}/
+            pn = Pathname.new path
+            depend_package = Package.instance pn.relative_path_from(root).to_s.split('/').first
+            if depend_package.has_label? :unlinked or package.has_label? :compiler_set
+              p "install_name_tool -rpath '#{path}' '<packman_#{depend_package.name}_prefix>' #{file}"
+              `install_name_tool -rpath '#{path}' '<packman_#{depend_package.name}_prefix>' #{file}`
+              PACKMAN.report_error "Failed to change rpath in #{PACKMAN.red file}!" if not $?.success?
+            else
+              p "install_name_tool -delete_rpath '#{path}' #{file}"
+              `install_name_tool -delete_rpath '#{path}' #{file}`
+              PACKMAN.report_error "Failed to delete rpath to #{PACKMAN.red file}!" if not $?.success?
+            end
           end
-          p "install_name_tool -delete_rpath '#{rpath}' #{file}"
-          `install_name_tool -delete_rpath '#{rpath}' #{file}`
-          PACKMAN.report_error "Failed to delete rpath to #{PACKMAN.red file}!" if not $?.success?
         end
         File.chmod old_mode, file if not writable
       end

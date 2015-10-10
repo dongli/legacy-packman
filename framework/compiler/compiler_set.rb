@@ -8,7 +8,7 @@ module PACKMAN
 
     def package_name
       if installed_by_packman?
-        @package_name.capitalize.to_sym
+        @package_name.to_sym
       else
         PACKMAN.report_error "Package set is not installed by PACKMAN!"
       end

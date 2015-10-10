@@ -15,6 +15,13 @@ class Netcdf_c < PACKMAN::Package
   depends_on :hdf5
   depends_on :parallel_netcdf if use_mpi?
 
+  binary do
+    compiled_on :Mac, '=~ 10.10'
+    compiled_by :c => [ :gnu, '=~ 5.2' ]
+    sha1 'b23e92b67c36f49ae1f563e269ee270835c0c837'
+    version '4.3.3.1'
+  end
+
   def install
     PACKMAN.handle_unlinked Libressl
     # NOTE: OpenDAP support should be supported in default, but I still add

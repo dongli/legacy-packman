@@ -6,9 +6,9 @@ class M4 < PACKMAN::Package
   label :compiler_insensitive
 
   binary do
-    compiled_on :Mac, '=~ 10.11'
+    compiled_on :Mac, '=~ 10.10'
     compiled_by :c => [ :llvm, '=~ 7.0' ]
-    sha1 'ebb2438a0ce1fc52b64485af5a81c37de0c83754'
+    sha1 '1ef6faa28e6f69e6d939cfcfd6154cf188a54683'
     version '1.4.17'
   end
 

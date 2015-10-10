@@ -206,15 +206,16 @@ module PACKMAN
     end
   end
 
-  def self.prefix package, *options
+  def self.prefix package, compiler_set_index = nil
     package = Package.instance package if package.class == Class or package.class == Symbol
     if package.methods.include? :system_prefix and package.system_prefix
       prefix = package.system_prefix
     else
       prefix = "#{ConfigManager.install_root}/#{package.name}/#{package.version}"
       if not package.has_label? :compiler_insensitive
-        PACKMAN.report_error 'No active compiler set is set!' if not CompilerManager.active_compiler_set_index
-        prefix << "/#{CompilerManager.active_compiler_set_index}"
+        compiler_set_index ||= CompilerManager.active_compiler_set_index
+        PACKMAN.report_error 'No active compiler set is set!' if not compiler_set_index
+        prefix << "/#{compiler_set_index}"
       end
     end
     prefix

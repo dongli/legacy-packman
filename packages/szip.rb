@@ -3,6 +3,13 @@ class Szip < PACKMAN::Package
   sha1 'd241c9acc26426a831765d660b683b853b83c131'
   version '2.1'
 
+  binary do
+    compiled_on :Mac, '=~ 10.10'
+    compiled_by :c => [ :gnu, '=~ 5.2' ]
+    sha1 '1b13f84260feda69511bc8fa63abab08ebcf8ef6'
+    version '2.1'
+  end
+
   def install
     if PACKMAN.cygwin?
       PACKMAN.replace 'src/Makefile.am', {
