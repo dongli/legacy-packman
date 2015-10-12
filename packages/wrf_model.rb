@@ -60,10 +60,10 @@ class Wrf_model < PACKMAN::Package
       end
     end
     # Set compilation environment.
-    PACKMAN.append_env 'CURL_PATH', Curl.prefix
-    PACKMAN.append_env 'ZLIB_PATH', Zlib.prefix
-    PACKMAN.append_env 'HDF5_PATH', Hdf5.prefix
-    PACKMAN.append_env 'NETCDF', Netcdf.prefix
+    PACKMAN.append_env 'CURL_PATH', link_root
+    PACKMAN.append_env 'ZLIB_PATH', link_root
+    PACKMAN.append_env 'HDF5_PATH', link_root
+    PACKMAN.append_env 'NETCDF', link_root
     # Check input parameters.
     if not ['serial', 'smpar', 'dmpar', 'dm+sm'].include? build_type
       PACKMAN.report_error "Invalid build type #{PACKMAN.red build_type}!"

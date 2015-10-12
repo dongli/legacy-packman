@@ -28,9 +28,9 @@ class Wrf_wps < PACKMAN::Package
   end
 
   def install
-    PACKMAN.append_env 'NETCDF', Netcdf.prefix
-    PACKMAN.append_env 'JASPERINC', "#{Jasper.include} -I#{Zlib.include} -I#{Libpng.include}"
-    PACKMAN.append_env 'JASPERLIB', "#{Jasper.lib} -L#{Zlib.lib} -L#{Libpng.lib}"
+    PACKMAN.append_env 'NETCDF', link_root
+    PACKMAN.append_env 'JASPERINC', "#{link_root}/include -I#{Libpng.inc}"
+    PACKMAN.append_env 'JASPERLIB', "#{link_root}/lib -L#{Libpng.lib}"
     PACKMAN.work_in 'WPS' do
       # Configure WPS.
       print "#{PACKMAN.blue '==>'} "

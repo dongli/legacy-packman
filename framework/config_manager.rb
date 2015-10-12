@@ -42,16 +42,11 @@ module PACKMAN
         config.gsub!(/^ *#{key} *=/, "self.#{key}=")
       end
       config.gsub!(/^\s*['"](\w+)['"]\s=>/, '  :\1 =>')
+      config.gsub!(/^\s*['"](c\+\+)['"]\s=>/, '  :cxx =>')
       begin
         class_eval config
       rescue SyntaxError => e
         CLI.report_error "Failed to parse #{CLI.red CommandLine.config_file}!\n#{e}"
-      end
-      if package_root == '<CHANGE ME>'
-        CLI.report_error "You haven't modified #{CLI.red 'package_root'} in #{CommandLine.config_file}!"
-      end
-      if install_root == '<CHANGE ME>'
-        CLI.report_error "You haven't modified #{CLI.red 'install_root'} in #{CommandLine.config_file}!"
       end
       @@package_root = File.expand_path @@package_root
       @@install_root = File.expand_path @@install_root
@@ -64,11 +59,6 @@ module PACKMAN
         if command_hash != nil
           if command_hash.has_key? :installed_by_packman
             command_hash[:installed_by_packman].downcase!
-          end
-          command_hash.each do |key, value|
-            if value == '<CHANGE ME>'
-              CLI.report_error "You haven't modified #{CLI.red key} compiler in #{CommandLine.config_file}!"
-            end
           end
           command_hash_array << command_hash
         end
