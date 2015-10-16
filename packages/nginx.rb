@@ -25,6 +25,12 @@ class Nginx < PACKMAN::Package
     PACKMAN.replace 'conf/nginx.conf', {
       'listen       80;' => "listen       #{port};"
     }
+    PACKMAN.replace 'auto/lib/pcre/conf', {
+      'ngx_feature="PCRE library in /usr/local/"' => "ngx_feature='PCRE library in #{link_root}'",
+      'ngx_feature_path="/usr/local/include"' => "ngx_feature_path='#{link_root}/include'",
+      'ngx_feature_libs="-R/usr/local/lib -L/usr/local/lib -lpcre"' => "ngx_feature_libs='-R#{link_root}/lib -L#{link_root}/lib -lpcre'",
+      'ngx_feature_libs="-L/usr/local/lib -lpcre"' => "ngx_feature_libs='-L#{link_root}/lib -lpcre'"
+    }
     args = %W[
       --prefix=#{prefix}
       --with-http_ssl_module
@@ -61,12 +67,12 @@ class Nginx < PACKMAN::Package
   end
 
   def post_install
-    conf = etc+'/nginx/nginx.conf'
-    root = `#{Passenger.bin+'/passenger-config'} --root`.chomp
-    if File.new(conf).read.include? root
-      PACKMAN.report_error "#{PACKMAN.red conf} contains #{root}!"
-    end
     if with_passenger?
+      conf = etc+'/nginx/nginx.conf'
+      root = `#{Passenger.bin+'/passenger-config'} --root`.chomp
+      if File.new(conf).read.include? root
+        PACKMAN.report_error "#{PACKMAN.red conf} contains #{root}!"
+      end
       PACKMAN.append conf, <<-EOT.keep_indent
 
         http {
