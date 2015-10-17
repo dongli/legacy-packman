@@ -25,12 +25,9 @@ class Nginx < PACKMAN::Package
     PACKMAN.replace 'conf/nginx.conf', {
       'listen       80;' => "listen       #{port};"
     }
-    PACKMAN.replace 'auto/lib/pcre/conf', {
-      'ngx_feature="PCRE library in /usr/local/"' => "ngx_feature='PCRE library in #{link_root}'",
-      'ngx_feature_path="/usr/local/include"' => "ngx_feature_path='#{link_root}/include'",
-      'ngx_feature_libs="-R/usr/local/lib -L/usr/local/lib -lpcre"' => "ngx_feature_libs='-R#{link_root}/lib -L#{link_root}/lib -lpcre'",
-      'ngx_feature_libs="-L/usr/local/lib -lpcre"' => "ngx_feature_libs='-L#{link_root}/lib -lpcre'"
-    }
+    PACKMAN.replace 'auto/lib/pcre/conf', '/usr/local' => link_root
+    PACKMAN.replace 'auto/lib/openssl/conf', '/usr/local' => Openssl.prefix
+    PACKMAN.handle_unlinked Openssl, :use_cflags
     args = %W[
       --prefix=#{prefix}
       --with-http_ssl_module
@@ -57,6 +54,7 @@ class Nginx < PACKMAN::Package
       args << "--add-module=#{nginx_ext}"
     end
     PACKMAN.run './configure', *args
+    PACKMAN.replace './objs/Makefile', /LINK\s*=\s*(.*)/ => "LINK = \\1 $(LDFLAGS)"
     PACKMAN.run 'make -j2'
     PACKMAN.run 'make install'
     PACKMAN.report_notice "Default listen port is #{PACKMAN.red port}."

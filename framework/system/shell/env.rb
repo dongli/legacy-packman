@@ -77,9 +77,14 @@ module PACKMAN
         end
       end
 
-      def self.handle_unlinked *packages
-        packages.each do |package_class|
-          append_env 'CPPFLAGS', "-I#{package_class.inc}"
+      def self.handle_unlinked *args
+        options = args.select { |x| x.class == Symbol }
+        args.select { |x| x.class == Class }.each do |package_class|
+          if options.include? :use_cflags
+            append_env 'CFLAGS', "-I#{package_class.inc}"
+          else
+            append_env 'CPPFLAGS', "-I#{package_class.inc}"
+          end
           append_env 'LDFLAGS', "-L#{package_class.lib} #{PACKMAN.os.generate_rpaths(package_class.prefix, :wrap_flag).join(' ')}"
         end
       end
