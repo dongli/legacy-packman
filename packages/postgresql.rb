@@ -52,6 +52,10 @@ class Postgresql < PACKMAN::Package
     PACKMAN.run "sudo -u #{admin_user} #{bin}/initdb --pwprompt -U #{admin_user} -D #{cluster_path} -E UTF8"
   end
 
+  def before_link
+    PACKMAN.not_link var
+  end
+
   def start
     cmd = "#{bin}/pg_ctl start -D #{cluster_path} -l #{var}/postgres.log"
     if ENV['USER'] != admin_user

@@ -7,9 +7,11 @@ module PACKMAN
         package = Package.instance package_name
         next if package.has_label? :installed_with_source or not inventory.include? package
         next if not File.directory? package.prefix
+        package.before_link
         regex = /#{package.prefix}\/?(.*)/
         PACKMAN.report_notice "Unlink #{PACKMAN.green package_name} for compiler set #{PACKMAN.green CompilerManager.active_compiler_set_index}."
         Dir.glob("#{package.prefix}/**/*").each do |file_path|
+          next if PACKMAN.should_not_link? file_path
           path = Pathname.new file_path
           next if path.directory?
           dir_struct = path.dirname.to_s.match(regex)[1]
