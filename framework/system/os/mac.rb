@@ -110,8 +110,9 @@ module PACKMAN
       res = `sudo chown -R #{owner} #{path} 2>&1`
       PACKMAN.report_error "Failed to change owner of #{PACKMAN.red path} to #{PACKMAN.red owner}! See errors:\n#{res}" if not $?.success?
     end
-    command :is_dynamic_library? do |path|
-      `file #{path}`.match(/Mach-O.*dynamically linked shared library/) != nil
+    command :is_dynamic_library? do |file|
+      escaped_file_path = Shellwords.escape file
+      `file #{escaped_file_path}`.match(/Mach-O.*dynamically linked shared library/) != nil
     end
     command :parse_load_commands do |file|
       load_commands = []
@@ -160,7 +161,8 @@ module PACKMAN
       load_commands
     end
     command :repair_dynamic_link do |package, file|
-      if `file #{file}` =~ /Mach-O/ and not `file #{file}` =~ /stub/
+      escaped_file_path = Shellwords.escape file
+      if `file #{escaped_file_path}` =~ /Mach-O/ and not `file #{escaped_file_path}` =~ /stub/
         PACKMAN.report_error "You do not have permission to change #{PACKMAN.red file}!" if not File.owned? file
         writable = File.writable? file
         if not writable
@@ -196,7 +198,8 @@ module PACKMAN
       end
     end
     command :add_rpath do |package, file|
-      if `file #{file}` =~ /Mach-O/ and not `file #{file}` =~ /stub/
+      escaped_file_path = Shellwords.escape file
+      if `file #{escaped_file_path}` =~ /Mach-O/ and not `file #{escaped_file_path}` =~ /stub/
         PACKMAN.report_error "You do not have permission to change #{PACKMAN.red file}!" if not File.owned? file
         writable = File.writable? file
         if not writable
@@ -222,7 +225,8 @@ module PACKMAN
       end
     end
     command :delete_rpath do |package, file|
-      if `file #{file}` =~ /Mach-O/ and not `file #{file}` =~ /stub/
+      escaped_file_path = Shellwords.escape file
+      if `file #{escaped_file_path}` =~ /Mach-O/ and not `file #{escaped_file_path}` =~ /stub/
         PACKMAN.report_error "You do not have permission to change #{PACKMAN.red file}!" if not File.owned? file
         writable = File.writable? file
         if not writable

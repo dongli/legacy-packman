@@ -12,6 +12,13 @@ class Gmp < PACKMAN::Package
     version '6.0.0a'
   end
 
+  binary do
+    compiled_on :Mac, '=~ 10.10'
+    compiled_by :c => [ :gnu, '=~ 5.2' ]
+    sha1 '645a10eccd61a58405a3379924c3f791342e3320'
+    version '6.0.0a'
+  end
+
   def install
     args = %W[
       --prefix=#{prefix}

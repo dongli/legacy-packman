@@ -9,6 +9,13 @@ class Boost < PACKMAN::Package
 
   option :use_cxx11 => true
 
+  binary do
+    compiled_on :Mac, '=~ 10.10'
+    compiled_by :cxx => [ :gnu, '=~ 5.2' ]
+    sha1 'c30efd5f5d0699f11b654410b0549f091eaf302a'
+    version '1.57.0'
+  end
+
   def install
     cxx_compiler = PACKMAN.compiler(:cxx).command
     compiler_flags = PACKMAN.compiler(:cxx).default_flags[:cxx]

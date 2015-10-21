@@ -17,7 +17,7 @@ module PACKMAN
       prefix = package.prefix
       Dir.glob("#{package.prefix}/**/*").each do |file|
         next if File.directory? file
-        res = `file #{file}`
+        res = `file #{Shellwords.escape file}`
         if res =~ /text/ or res =~ /libtool/
           PACKMAN.replace file, {
             '<packman_prefix>' => prefix,

@@ -8,6 +8,13 @@ class Lua < PACKMAN::Package
   depends_on :readline
   depends_on :ncurses
 
+  binary do
+    compiled_on :Mac, '=~ 10.10'
+    compiled_by :c => [ :llvm, '=~ 7.0' ]
+    sha1 '302dce985698897a463122380154d61c6ff7392b'
+    version '5.2.3'
+  end
+
   def install
     PACKMAN.replace 'src/Makefile', {
       /^\s*CC\s*=.*$/ => "CC= #{PACKMAN.compiler(:c).command}",

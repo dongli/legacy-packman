@@ -9,6 +9,13 @@ class Mpich < PACKMAN::Package
   provides :cxx => 'mpic++'
   provides :fortran => [ '77' => 'mpif77', '90' => 'mpif90' ]
 
+  binary do
+    compiled_on :Mac, '=~ 10.10'
+    compiled_by :c => [ :gnu, '=~ 5.2' ], :cxx => [ :gnu, '=~ 5.2' ], :fortran => [ :gnu, '=~ 5.2' ]
+    sha1 '2780d7bc7788bef8c6eee5964f0a83a1d4e931b3'
+    version '3.1.4'
+  end
+
   def install
     args = %W[
       --prefix=#{prefix}

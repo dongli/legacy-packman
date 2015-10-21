@@ -19,6 +19,13 @@ class Vim < PACKMAN::Package
   depends_on :python if with_python?
   depends_on :lua if with_lua?
 
+  binary do
+    compiled_on :Mac, '=~ 10.10'
+    compiled_by :c => [ :llvm, '=~ 7.0' ]
+    sha1 'd1b70ac5984d8fcdef788c63e4c4fb7cecb70aac'
+    version '7.4'
+  end
+
   def install
     PACKMAN.append_env 'LUA_PREFIX', Lua.prefix
     args = %W[

@@ -37,7 +37,7 @@ module PACKMAN
       PACKMAN.cp "#{prefix}/*", tmp_dir
       Dir.glob("#{tmp_dir}/**/*").each do |file|
         next if File.directory? file or File.symlink? file
-        res = `file #{file}`
+        res = `file #{Shellwords.escape file}`
         if res =~ /text/ or res =~ /libtool/
           PACKMAN.replace file, {
             prefix => '<packman_prefix>',

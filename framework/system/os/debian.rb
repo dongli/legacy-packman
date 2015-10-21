@@ -56,7 +56,7 @@ module PACKMAN
       PACKMAN.report_error "Failed to change owner of #{PACKMAN.red path} to #{PACKMAN.red owner}! See errors:\n#{res}" if not $?.success?
     end
     command :is_dynamic_library? do |file|
-      `file #{file}`.match(/ELF.*LSB.*shared object/) != nil
+      `file #{Shellwords.escape file}`.match(/ELF.*LSB.*shared object/) != nil
     end
     command :parse_elf do |file|
       elf = {}
@@ -70,7 +70,7 @@ module PACKMAN
     command :repair_dynamic_link do |package, file|
     end
     command :add_rpath do |package, file|
-      if `file #{file}` =~ /ELF.*dynamically linked/ and PACKMAN.does_command_exist? 'patchelf'
+      if `file #{Shellwords.escape file}` =~ /ELF.*dynamically linked/ and PACKMAN.does_command_exist? 'patchelf'
         PACKMAN.report_error "You do not have permission to change #{PACKMAN.red file}!" if not File.owned? file
         writable = File.writable? file
         if not writable
@@ -90,7 +90,7 @@ module PACKMAN
       end
     end
     command :delete_rpath do |package, file|
-      if `file #{file}` =~ /ELF.*dynamically linked/ and PACKMAN.does_command_exist? 'patchelf'
+      if `file #{Shellwords.escape file}` =~ /ELF.*dynamically linked/ and PACKMAN.does_command_exist? 'patchelf'
         PACKMAN.report_error "You do not have permission to change #{PACKMAN.red file}!" if not File.owned? file
         rpaths = generate_rpaths(package.has_label?(:unlinked) ? package.prefix : PACKMAN.link_root)
         writable = File.writable? file

@@ -186,6 +186,7 @@ module PACKMAN
           CompilerManager.activate_compiler_set i
           Commands.link package.name
         end
+        CompilerManager.activate_compiler_set ConfigManager.defaults[:compiler_set_index]
       else
         Commands.link package.name
       end
