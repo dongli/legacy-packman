@@ -50,18 +50,18 @@ $ packman config
 </pre>
     这里显示的是一些默认值。按回车键进入配置文件进行编辑：
 <pre class="prettyprint">
-package_root = "~/.packman/packages"
-install_root = "~/.packman"
-download_command = "curl"
-use_ftp_mirror = "no"
+package_root = '~/.packman/packages'
+install_root = '~/.packman'
+download_command = 'curl'
+use_ftp_mirror = 'no'
 defaults = {
-  "compiler_set_index" => 0,
-  "mpi" => "mpich"
+  :compiler_set_index => 0,
+  :mpi => 'mpich'
 }
 compiler_set_0 = {
-  "c" => "gcc",
-  "c++" => "g++",
-  "fortran" => "gfortran"
+  :c => 'gcc',
+  :c++ => 'g++',
+  :fortran => 'gfortran'
 }
 </pre>
 <div class="notice">
@@ -115,7 +115,7 @@ compiler_set_0 = {
     当你使用PACKMAN安装了<code>gcc</code>后，需要添加一个新的<code>compiler_set</code>：
 <pre class="prettyprint">
 compiler_set_1 = {
-  "installed_by_packman" => "gcc"
+  :installed_by_packman => 'gcc'
 }
 </pre>
     只有这样PACKMAN才有机会去设置正确的环境变量。如果你直接设定<code>c</code>等，是会出现问题的。
