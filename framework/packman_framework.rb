@@ -5,6 +5,7 @@ begin
   require 'zlib'
 rescue LoadError => e
 end
+require 'shellwords'
 
 require "utils"
 require "cli"
