@@ -23,7 +23,7 @@ class Perl < PACKMAN::Package
     ]
     PACKMAN.run './Configure', *args
     PACKMAN.run 'make'
-    PACKMAN.run 'make test' if not skip_test?
+    #PACKMAN.run 'make test' if not skip_test?
     PACKMAN.run 'make install'
   end
 end
