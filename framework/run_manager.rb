@@ -43,10 +43,14 @@ module PACKMAN
       else
         PACKMAN.blue_arrow "#{cmd} #{cmd_args}", :truncate
       end
-      if not CommandLine.has_option? '-verbose' and not run_args.include? :screen_output
+      if not CommandLine.has_option? '-verbose' and not run_args.include? :screen_output and not run_args.include? :return_output
         cmd_str << "1> #{ConfigManager.package_root}/stdout 2> #{ConfigManager.package_root}/stderr"
       end
-      system cmd_str
+      if run_args.include? :return_output
+        res = `#{cmd_str} 2>&1`
+      else
+        system cmd_str
+      end
       if not $?.success? and not run_args.include? :skip_error
         info =  "PATH: #{FileUtils.pwd}\n"
         info << "Command: #{cmd_str}\n"
@@ -57,10 +61,11 @@ module PACKMAN
         end
         CLI.report_error "Failed to run the following command:\n"+info
       end
-      if not CommandLine.has_option? '-verbose' and not run_args.include? :screen_output
+      if not CommandLine.has_option? '-verbose' and not run_args.include? :screen_output and not run_args.include? :return_output
         FileUtils.rm("#{ConfigManager.package_root}/stdout")
         FileUtils.rm("#{ConfigManager.package_root}/stderr")
       end
+      res if run_args.include? :return_output
     end
   end
 end

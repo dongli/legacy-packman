@@ -7,6 +7,7 @@ class Glib < PACKMAN::Package
   depends_on :gettext
   depends_on :zlib
   depends_on :libffi
+  depends_on :libiconv
 
   patch do
     url 'https://gist.githubusercontent.com/jacknagel/af332f42fae80c570a77/raw/a738786e0f7ea46c4a93a36a3d9d569017cca7f2/glib-hardcoded-paths.diff'
@@ -27,6 +28,7 @@ class Glib < PACKMAN::Package
       --disable-silent-rules
       --disable-dtrace
       --disable-libelf
+      --with-libiconv=gnu
     ]
     PACKMAN.run './configure', *args
     PACKMAN.run 'make -j2'

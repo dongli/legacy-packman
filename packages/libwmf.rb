@@ -16,11 +16,11 @@ class Libwmf < PACKMAN::Package
       --prefix=#{prefix}
       --disable-debug
       --disable-dependency-tracking
-      --with-expat=#{Expat.prefix}
-      --with-zlib=#{Zlib.prefix}
+      --with-expat=#{link_root}
+      --with-zlib=#{link_root}
       --with-sys-gd=#{Libgd.prefix}
       --with-png=#{Libpng.prefix}
-      --with-freetype=#{Freetype.prefix}
+      --with-freetype=#{link_root}
       --with-jpeg=#{Jpeg.prefix}
       --with-gsfontdir=#{Ghostscript.share}/ghostscript/fonts
     ]

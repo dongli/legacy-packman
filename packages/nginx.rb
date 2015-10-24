@@ -87,7 +87,13 @@ class Nginx < PACKMAN::Package
       /worker_processes.*/ => "worker_processes #{worker_processes};",
       /worker_connections.*/ => "worker_connections #{worker_connections};"
     }
-    PACKMAN.run bin+'/nginx'
+    res = PACKMAN.run bin+'/nginx', :skip_error, :return_output
+    if not $?.success?
+      if res =~ /Permission denied/
+        PACKMAN.report_warning "You need root privilege to start #{PACKMAN.green 'nginx'}!"
+        PACKMAN.run "sudo #{bin}/nginx", :screen_output
+      end
+    end
   end
 
   def status
@@ -95,6 +101,12 @@ class Nginx < PACKMAN::Package
   end
 
   def stop
-    PACKMAN.run bin+'/nginx -s stop'
+    res = PACKMAN.run bin+'/nginx -s stop', :skip_error, :return_output
+    if not $?.success?
+      if res =~ /Operation not permitted/
+        PACKMAN.report_warning "You need root privilege to stop #{PACKMAN.green 'nginx'}!"
+        PACKMAN.run "sudo #{bin}/nginx -s stop", :screen_output
+      end
+    end
   end
 end

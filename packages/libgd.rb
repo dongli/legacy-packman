@@ -15,12 +15,12 @@ class Libgd < PACKMAN::Package
     args = %W[
       --prefix=#{prefix}
       --disable-dependency-tracking
-      --with-zlib=#{Zlib.prefix}
+      --with-zlib=#{link_root}
       --with-jpeg=#{Jpeg.prefix}
       --with-png=#{Libpng.prefix}
       --with-tiff=#{Libtiff.prefix}
-      --with-fontconfig=#{Fontconfig.prefix}
-      --with-freetype=#{Freetype.prefix}
+      --with-fontconfig=#{link_root}
+      --with-freetype=#{link_root}
     ]
     PACKMAN.run './configure', *args
     PACKMAN.run 'make install'
