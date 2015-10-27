@@ -2,8 +2,6 @@ class Ncl < PACKMAN::Package
   label :compiler_insensitive
   label :binary
 
-  version '6.3.0'
-
   binary do
     compiled_on :Debian, '=~ 6.0'
     if PACKMAN.os.x86_64?
