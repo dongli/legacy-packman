@@ -106,11 +106,17 @@ module PACKMAN
         if @@#{name}_binary.empty?
           @@#{name}_binary << spec
         else
+          found = false
           @@#{name}_binary.each do |binary_spec|
-            next if ( binary_spec.sha1 <=> spec.sha1 ) == 0
-            @@#{name}_binary << spec
-            break
+            if binary_spec.os[:type] == spec.os[:type] and
+               binary_spec.os[:version][:compare_operator] == spec.os[:version][:compare_operator] and
+               binary_spec.os[:version][:base].to_s == spec.os[:version][:base].to_s and
+               binary_spec.sha1 == spec.sha1
+              found = true
+              break
+            end
           end
+          @@#{name}_binary << spec if not found
         end
       EOT
     end

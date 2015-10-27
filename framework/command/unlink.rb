@@ -5,7 +5,7 @@ module PACKMAN
       inventory = Files::Inventory.new
       package_names.each do |package_name|
         package = Package.instance package_name
-        next if package.has_label? :installed_with_source or not inventory.include? package
+        next if not inventory.include? package
         next if not File.directory? package.prefix
         package.before_link
         regex = /#{package.prefix}\/?(.*)/

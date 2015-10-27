@@ -74,7 +74,8 @@ module PACKMAN
       # Check if the package should be skipped.
       if package.should_be_skipped? or
         (not package.has_label? :master_package and
-         not package.methods.include? :install)
+         not package.methods.include? :install and
+         not package.use_binary?)
         if not package.methods.include? :installed?
           CLI.report_error "Package #{CLI.red package.name} does not have #{CLI.blue 'installed?'} method!"
         end
@@ -128,7 +129,7 @@ module PACKMAN
         package.post_install
         start_handle_new_compiler_set package
         link_package package
-        relocate_package package
+        relocate_package package if not package.has_label? :binary
         stop_handle_new_compiler_set package
       else
         # Build package for each compiler set.
@@ -167,7 +168,7 @@ module PACKMAN
         package.post_install
         start_handle_new_compiler_set package
         link_package package
-        repair_dynamic_links package
+        repair_dynamic_links package if not package.has_label? :binary
         stop_handle_new_compiler_set package
         FileUtils.rm_rf build_upper_dir if Dir.exist? build_upper_dir
       end
