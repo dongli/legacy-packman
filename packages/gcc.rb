@@ -30,14 +30,21 @@ class Gcc < PACKMAN::Package
       --with-mpfr=#{Mpfr.prefix}
       --with-mpc=#{Mpc.prefix}
       --with-isl=#{Isl.prefix}
+      --enable-stage1-checking
+      --enable-checking=release
+      --enable-lto
       --disable-multilib
       --with-build-config=bootstrap-debug
       --disable-werror
     ]
-    # Ensure 'lib' is in the search path.
-    PACKMAN.append_env PACKMAN.ld_library_path_name, link_root+'/lib'
     PACKMAN.mkdir 'build', :force do
       PACKMAN.run '../configure', *args
+      if PACKMAN.mac?
+        PACKMAN.replace 'Makefile', {
+          /HOST_GMPLIBS\s*=(.*)/ => "HOST_GMPLIBS = -Wl,-rpath,#{link_root} \\1",
+          /HOST_ISLLIBS\s*=(.*)/ => "HOST_ISLLIBS = -Wl,-rpath,#{link_root} \\1"
+        }
+      end
       PACKMAN.run 'make -j2 bootstrap'
       PACKMAN.run 'make -j2 install'
     end

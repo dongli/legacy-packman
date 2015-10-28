@@ -189,8 +189,11 @@ module PACKMAN
             PACKMAN.report_error "Failed to repair dynamic link in #{PACKMAN.red file}!" if not $?.success?
             if package.has_label? :compiler_set
               p "install_name_tool -add_rpath '#{depend_prefix}' #{file}"
-              `install_name_tool -add_rpath '#{depend_prefix}' #{file}`
-              PACKMAN.report_error "Failed to add rpath to #{PACKMAN.red file}!" if not $?.success?
+              res = `install_name_tool -add_rpath '#{depend_prefix}' #{file} 2>&1`
+              # Existed RPATH is not an error.
+              if not $?.success? and not res =~ /duplicate path, file already has LC_RPATH/
+                PACKMAN.report_error "Failed to add rpath to #{PACKMAN.red file}!"
+              end
             end
           end
         end
