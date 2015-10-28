@@ -34,6 +34,8 @@ class Gcc < PACKMAN::Package
       --with-build-config=bootstrap-debug
       --disable-werror
     ]
+    # Ensure 'lib' is in the search path.
+    PACKMAN.append_env PACKMAN.ld_library_path_name, link_root+'/lib'
     PACKMAN.mkdir 'build', :force do
       PACKMAN.run '../configure', *args
       PACKMAN.run 'make -j2 bootstrap'
