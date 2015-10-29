@@ -1,16 +1,19 @@
 class Pkgconfig < PACKMAN::Package
-  url 'http://pkgconfig.freedesktop.org/releases/pkg-config-0.28.tar.gz'
-  sha1 '71853779b12f958777bffcb8ca6d849b4d3bed46'
-  version '0.28'
+  url 'http://pkgconfig.freedesktop.org/releases/pkg-config-0.29.tar.gz'
+  sha1 'f4b19d203b3896a4293af4b62c7f908063c88a5a'
+  version '0.29'
 
   label :compiler_insensitive
 
   depends_on :libiconv
 
   def install
-    if PACKMAN.mac? and PACKMAN.compiler(:c).vendor == :gnu
-      # See https://github.com/andrewgho/movewin-ruby/issues/1.
-      PACKMAN.report_error "#{PACKMAN.red 'Pkgconfig'} cannot be built by GCC on Mac OS X!"
+    if PACKMAN.mac?
+      if PACKMAN.compiler(:c).vendor == :gnu
+        PACKMAN.report_error "#{PACKMAN.red 'Pkgconfig'} cannot be built by GCC on Mac OS X!"
+      elsif PACKMAN.compiler(:c).vendor == :llvm
+        PACKMAN.append_env 'LDFLAGS', '-framework CoreFoundation -framework Carbon'
+      end
     end
     PACKMAN.handle_unlinked Libiconv if PACKMAN.mac?
     pc_path = %W[
