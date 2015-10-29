@@ -9,6 +9,7 @@ class Harfbuzz < PACKMAN::Package
   depends_on :freetype
 
   def install
+    PACKMAN.handle_unlinked Freetype if PACKMAN.mac?
     args = %W[
       --prefix=#{prefix}
       --disable-dependency-tracking

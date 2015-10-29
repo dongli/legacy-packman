@@ -12,6 +12,7 @@ class Libgd < PACKMAN::Package
   # libvpx is not able to download, since it is stored in GoogleCode..
 
   def install
+    PACKMAN.handle_unlinked Freetype if PACKMAN.mac?
     args = %W[
       --prefix=#{prefix}
       --disable-dependency-tracking

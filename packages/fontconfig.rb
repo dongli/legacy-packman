@@ -10,6 +10,7 @@ class Fontconfig < PACKMAN::Package
   patch :embed
 
   def install
+    PACKMAN.handle_unlinked Freetype if PACKMAN.mac?
     args = %W[
       --prefix=#{prefix}
       --disable-dependency-tracking

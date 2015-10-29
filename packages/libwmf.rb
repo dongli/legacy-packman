@@ -12,6 +12,7 @@ class Libwmf < PACKMAN::Package
   depends_on :ghostscript
 
   def install
+    PACKMAN.handle_unlinked Freetype if PACKMAN.mac?
     args = %W[
       --prefix=#{prefix}
       --disable-debug

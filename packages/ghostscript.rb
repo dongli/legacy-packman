@@ -27,6 +27,7 @@ class Ghostscript < PACKMAN::Package
   end
 
   def install
+    PACKMAN.handle_unlinked Freetype if PACKMAN.mac?
     PACKMAN.decompress gsdjvu.package_path
     PACKMAN.work_in './gsdjvu-1.6' do
       PACKMAN.cp 'gdevdjvu.c', '../base'

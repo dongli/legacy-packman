@@ -7,6 +7,7 @@ class Lesstif < PACKMAN::Package
   depends_on :freetype
 
   def install
+    PACKMAN.handle_unlinked Freetype if PACKMAN.mac?
     PACKMAN.replace 'configure', {
       '`aclocal --print-ac-dir`' => "#{share}/aclocal"
     }

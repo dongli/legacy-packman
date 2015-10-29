@@ -26,6 +26,7 @@ class Imagemagick < PACKMAN::Package
   # depends_on 'webp' # WebP is hosted by Google, so we cannot access it within our great China!
 
   def install
+    PACKMAN.handle_unlinked Freetype if PACKMAN.mac?
     PACKMAN.replace 'configure', { 'lcms2/lcms2.h' => 'lcms2.h' }
     PACKMAN.replace 'magick/profile.c', { 'lcms/lcms2.h' => 'lcms2.h' }
     PACKMAN.replace 'magick/property.c', {

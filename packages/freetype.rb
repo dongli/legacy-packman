@@ -1,11 +1,18 @@
 class Freetype < PACKMAN::Package
-  url 'http://download.savannah.gnu.org/releases/freetype/freetype-2.5.3.tar.gz'
+  url 'http://download.savannah.gnu.org/releases/freetype/freetype-2.6.tar.gz'
   sha1 'd4a17b42505b23dab022f877e1849940aa3b64f3'
-  version '2.5.3'
+  version '2.6'
+
+  label :unlinked if PACKMAN.mac?
 
   depends_on :libpng
   depends_on :zlib
   depends_on :bzip2
+
+  patch do
+    url 'https://gist.githubusercontent.com/anonymous/b47d77c41a6801879fd2/raw/fc21c3516b465095da7ed13f98bea491a7d18bbd/patch'
+    sha1 ''
+  end
 
   def install
     PACKMAN.handle_unlinked Libpng if PACKMAN.mac?
