@@ -10,7 +10,7 @@ class Pkgconfig < PACKMAN::Package
   def install
     if PACKMAN.mac?
       if PACKMAN.compiler(:c).vendor == :gnu
-        PACKMAN.report_error "#{PACKMAN.red 'Pkgconfig'} cannot be built by GCC on Mac OS X!"
+        PACKMAN.report_error "#{PACKMAN.blue 'pkgconfig'} cannot be built by GCC on Mac OS X!"
       elsif PACKMAN.compiler(:c).vendor == :llvm
         PACKMAN.append_env 'LDFLAGS', '-framework CoreFoundation -framework Carbon'
       end

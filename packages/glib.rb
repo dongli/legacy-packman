@@ -1,7 +1,7 @@
 class Glib < PACKMAN::Package
-  url 'http://ftp.gnome.org/pub/gnome/sources/glib/2.40/glib-2.40.0.tar.xz'
-  sha1 '44e1442ed4d1bf3fa89138965deb35afc1335a65'
-  version '2.40.0'
+  url 'http://ftp.gnome.org/pub/gnome/sources/glib/2.46/glib-2.46.1.tar.xz'
+  sha1 '903cc9442114f52a44096cb26a9479c85160c305'
+  version '2.46.1'
 
   depends_on :pkgconfig
   depends_on :gettext
@@ -10,16 +10,22 @@ class Glib < PACKMAN::Package
   depends_on :libiconv
 
   patch do
-    url 'https://gist.githubusercontent.com/jacknagel/af332f42fae80c570a77/raw/a738786e0f7ea46c4a93a36a3d9d569017cca7f2/glib-hardcoded-paths.diff'
-    sha1 'ce54abdbb4386902a33dbad7cb6c8f1b0cbdab0d'
+    url 'https://raw.githubusercontent.com/Homebrew/patches/59e4d32/glib/hardcoded-paths.diff'
+    sha1 '78bbc0c7349d7bfd6ab1bfeabfff27a5dfb1825a'
   end
 
   patch do
-    url 'https://gist.githubusercontent.com/jacknagel/9835034/raw/b0388e86f74286f4271f9b0dca8219fdecafd5e3/gio.patch'
-    sha1 '32158fffbfb305296f7665ede6185a47d6f6b389'
+    url 'https://raw.githubusercontent.com/Homebrew/patches/59e4d32/glib/gio.patch'
+    sha1 '6f4ff17da9604e3959bb281e04801e3da3558034'
   end
 
   def install
+    if PACKMAN.mac?
+      if PACKMAN.compiler(:c).vendor == :gnu
+        PACKMAN.report_error "#{PACKMAN.blue 'glib'} cannot be built by GCC on Mac OS X!"
+      end
+      PACKMAN.handle_unlinked Libiconv
+    end
     # Disable dtrace; see https://trac.macports.org/ticket/30413
     args = %W[
       --prefix=#{prefix}
