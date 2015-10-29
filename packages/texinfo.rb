@@ -1,9 +1,7 @@
 class Texinfo < PACKMAN::Package
-  url 'http://ftpmirror.gnu.org/texinfo/texinfo-5.2.tar.gz'
-  sha1 'dc54edfbb623d46fb400576b3da181f987e63516'
-  version '5.2'
-
-  depends_on :perl_data_dumper
+  url 'http://ftpmirror.gnu.org/texinfo/texinfo-6.0.tar.gz'
+  sha1 '110d45256c4219c88dc2fdb8c9c1a20749e4e7c5'
+  version '6.0'
 
   def install
     args = %W[

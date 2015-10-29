@@ -1,7 +1,7 @@
 class Nco < PACKMAN::Package
-  url 'https://downloads.sourceforge.net/project/nco/nco-4.4.8.tar.gz'
-  sha1 'e57cbba1f6e3e5df64424a25859b0da03abc72f9'
-  version '4.4.8'
+  url 'https://downloads.sourceforge.net/project/nco/nco-4.5.2.tar.gz'
+  sha1 'bb87332494c39aeffe446ab4a9b2500c096fd9fe'
+  version '4.5.2'
 
   depends_on :flex
   depends_on :bison
@@ -14,12 +14,14 @@ class Nco < PACKMAN::Package
   depends_on :gsl
 
   def install
+    PACKMAN.handle_unlinked Libressl
     args = %W[
       --prefix=#{prefix}
       --enable-netcdf4
       --enable-dap
       --enable-ncap2
       --enable-udunits2
+      --enable-optimize-custom
       NETCDF_INC=#{Netcdf_c.include}
       NETCDF_LIB=#{Netcdf_c.lib}
       NETCDF4_ROOT=#{Netcdf_c.prefix}
@@ -28,7 +30,7 @@ class Nco < PACKMAN::Package
       ANTLR_ROOT=#{Antlr2.prefix}
     ]
     if PACKMAN.cygwin?
-      args << "LIBS='-L#{Curl.lib} -lcurl -L#{Hdf5.lib} -lhdf5 -lhdf5_hl'"
+      args << "LIBS='-lcurl -lhdf5 -lhdf5_hl'"
     end
     PACKMAN.run './configure', *args
     PACKMAN.run 'make -j2'
