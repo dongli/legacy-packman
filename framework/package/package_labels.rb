@@ -3,6 +3,7 @@ module PACKMAN
     @@ValidLabels = [
       :head,
       :binary,
+      :external_binary,
       :compiler_insensitive,
       :master_package,
       :skipped,

@@ -1,6 +1,6 @@
 class Ncl < PACKMAN::Package
   label :compiler_insensitive
-  label :binary
+  label :external_binary
 
   binary do
     compiled_on :Debian, '=~ 6.0'
