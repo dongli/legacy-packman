@@ -1,7 +1,7 @@
 class Cdo < PACKMAN::Package
-  url 'https://code.zmaw.de/attachments/download/10198/cdo-1.6.9.tar.gz'
-  sha1 '5d2cedadffcdaaa1b9cf49cbc0f524ee417b5326'
-  version '1.6.9'
+  url 'https://code.zmaw.de/attachments/download/11392/cdo-1.7.0.tar.gz'
+  sha1 ''
+  version '1.7.0'
 
   history do
     url 'https://code.zmaw.de/attachments/download/7220/cdo-1.6.3.tar.gz'
@@ -20,6 +20,7 @@ class Cdo < PACKMAN::Package
   depends_on :libxml2
 
   def install
+    PACKMAN.handle_unlinked Libressl
     args = %W[
       --prefix=#{prefix}
       --with-hdf5=#{link_root}

@@ -11,7 +11,7 @@ class Grib_api < PACKMAN::Package
   def install
     args = %W[
       --prefix=#{prefix}
-      --with-netcdf=#{Netcdf.prefix}
+      --with-netcdf=#{Netcdf_c.prefix}
       --with-jasper=#{Jasper.prefix}
     ]
     if PACKMAN.cygwin?
