@@ -24,7 +24,8 @@ module PACKMAN
     PermittedCommonOptions = {
       '-debug' => 'Print debug information.',
       '-config' => 'Specify configure file.',
-      '-verbose' => 'Show verbose information.'
+      '-verbose' => 'Show verbose information.',
+      '-dev' => 'Show extra development information.'
     }.freeze
     PermittedOptions = {
       :collect => {
