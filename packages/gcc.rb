@@ -49,4 +49,9 @@ class Gcc < PACKMAN::Package
       PACKMAN.run 'make -j2 install'
     end
   end
+
+  def repair_dynamic_link file, lib
+    matched = lib.match(/lib(isl|mpc|mpfr|gmp)/)
+    PACKMAN.os.add_rpath self, file, eval("#{matched[1].capitalize}.prefix") if matched
+  end
 end

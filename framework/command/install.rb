@@ -166,10 +166,9 @@ module PACKMAN
         FileUtils.rm_rf build_dir
         Files::Info.write package
         package.post_install
-        start_handle_new_compiler_set package
+        handle_new_compiler_set package
         link_package package
         repair_dynamic_links package if not package.has_label? :binary
-        stop_handle_new_compiler_set package
         FileUtils.rm_rf build_upper_dir if Dir.exist? build_upper_dir
       end
       # Clean shell environment.
@@ -206,7 +205,7 @@ module PACKMAN
       end
     end
 
-    def self.start_handle_new_compiler_set package
+    def self.handle_new_compiler_set package
       if package.has_label? :compiler_set
         command_hash = { :installed_by_packman => package.name }
         package.provided_stuffs.each do |language, compiler|
@@ -215,11 +214,6 @@ module PACKMAN
         CompilerManager.add_compiler_set command_hash
         CompilerManager.activate_compiler_set CompilerManager.compiler_sets.size-1
         ConfigManager.write
-      end
-    end
-
-    def self.stop_handle_new_compiler_set package
-      if package.has_label? :compiler_set
         CompilerManager.activate_compiler_set ConfigManager.defaults[:compiler_set_index]
       end
     end
