@@ -112,7 +112,7 @@ module PACKMAN
       end
       # TODO: Clean this.
       # When there is any dependency use MPI, we should use MPI for the package.
-      if not package.use_binary? and package.has_option? 'use_mpi' and package.use_mpi?
+      if not package.use_binary? and package.has_option? :use_mpi and package.use_mpi?
         PACKMAN.use_mpi package.mpi
       end
       # Install package.
@@ -151,12 +151,13 @@ module PACKMAN
         # Install package.
         msg = "Install package #{CLI.green package.name} with compiler set"
         msg << " #{CLI.green CompilerManager.active_compiler_set_index}"
-        if package.has_option? 'use_mpi' and package.use_mpi?
-          if package.option_type('use_mpi') == :package_name
+        if package.has_option? :use_mpi and package.use_mpi?
+          if package.option_type(:use_mpi) == :package_name
             msg << " and #{CLI.red package.mpi.capitalize} library"
             # Set the MPI compiler wrappers.
             PACKMAN.use_mpi package.mpi
           else
+            msg << " and #{CLI.red ConfigManager.defaults[:mpi]} library"
             PACKMAN.use_mpi
           end
         end

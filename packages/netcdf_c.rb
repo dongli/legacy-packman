@@ -5,7 +5,7 @@ class Netcdf_c < PACKMAN::Package
 
   belongs_to :netcdf
 
-  option :use_mpi => [:package_name, :boolean]
+  option :use_mpi => [ :package_name, :boolean ]
 
   depends_on :m4
   depends_on :patch
@@ -37,11 +37,7 @@ class Netcdf_c < PACKMAN::Package
       --enable-dap
       --disable-doxygen
     ]
-    if use_mpi?
-      args << '--enable-pnetcdf'
-      # PnetCDF test has bug as discussed in http://www.unidata.ucar.edu/support/help/MailArchives/netcdf/msg12561.html
-      PACKMAN.replace 'nc_test/run_pnetcdf_test.sh', { 'mpiexec -n 4' => 'mpiexec -n 2' }
-    end
+    args << '--enable-pnetcdf' if use_mpi?
     if PACKMAN.cygwin?
       args.map! { |arg| arg =~ /enable-shared/ ? '--enable-shared=no' : arg }
       args << 'LIBS=-lsz'

@@ -187,15 +187,33 @@ module PACKMAN
           PACKMAN.reset_env('MPIF90', "#{mpi.bin}/#{mpi.provided_stuffs[:fortran]['90']}")
         end
       else
-        PACKMAN.reset_env('CC', "#{compiler(:c).mpi_wrapper}")
-        PACKMAN.reset_env('MPICC', "#{compiler(:c).mpi_wrapper}")
-        PACKMAN.reset_env('CXX', "#{compiler(:cxx).mpi_wrapper}")
-        PACKMAN.reset_env('MPICXX', "#{compiler(:cxx).mpi_wrapper}")
+        mpi = Package.instance ConfigManager.defaults[:mpi]
+        if compiler(:c).mpi_wrapper
+          PACKMAN.reset_env('CC', "#{compiler(:c).mpi_wrapper}")
+          PACKMAN.reset_env('MPICC', "#{compiler(:c).mpi_wrapper}")
+        else
+          PACKMAN.reset_env('CC', "#{mpi.bin}/#{mpi.provided_stuffs[:c]}")
+          PACKMAN.reset_env('MPICC', "#{mpi.bin}/#{mpi.provided_stuffs[:c]}")
+        end
+        if compiler(:cxx).mpi_wrapper
+          PACKMAN.reset_env('CXX', "#{compiler(:cxx).mpi_wrapper}")
+          PACKMAN.reset_env('MPICXX', "#{compiler(:cxx).mpi_wrapper}")
+        else
+          PACKMAN.reset_env('CXX', "#{mpi.bin}/#{mpi.provided_stuffs[:cxx]}")
+          PACKMAN.reset_env('MPICXX', "#{mpi.bin}/#{mpi.provided_stuffs[:cxx]}")
+        end
         if PACKMAN.compiler(:fortran).command
-          PACKMAN.reset_env('F77', "#{compiler(:fortran).mpi_wrapper}")
-          PACKMAN.reset_env('MPIF77', "#{compiler(:fortran).mpi_wrapper}")
-          PACKMAN.reset_env('FC', "#{compiler(:fortran).mpi_wrapper}")
-          PACKMAN.reset_env('MPIF90', "#{compiler(:fortran).mpi_wrapper}")
+          if compiler(:fortran).mpi_wrapper
+            PACKMAN.reset_env('F77', "#{compiler(:fortran).mpi_wrapper}")
+            PACKMAN.reset_env('MPIF77', "#{compiler(:fortran).mpi_wrapper}")
+            PACKMAN.reset_env('FC', "#{compiler(:fortran).mpi_wrapper}")
+            PACKMAN.reset_env('MPIF90', "#{compiler(:fortran).mpi_wrapper}")
+          else
+            PACKMAN.reset_env('F77', "#{mpi.bin}/#{mpi.provided_stuffs[:fortran]['77']}")
+            PACKMAN.reset_env('MPIF77', "#{mpi.bin}/#{mpi.provided_stuffs[:fortran]['77']}")
+            PACKMAN.reset_env('FC', "#{mpi.bin}/#{mpi.provided_stuffs[:fortran]['90']}")
+            PACKMAN.reset_env('MPIF90', "#{mpi.bin}/#{mpi.provided_stuffs[:fortran]['90']}")
+          end
         end
       end
     end

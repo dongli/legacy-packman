@@ -17,12 +17,12 @@ module PACKMAN
         PACKMAN.append_env PACKMAN.compiler_flags_env_name(language), flags
         case language
         when :c
-          PACKMAN.reset_env 'CC', compiler.command
+          PACKMAN.reset_env 'CC', compiler.command if not PACKMAN.has_env? 'CC'
         when :cxx
-          PACKMAN.reset_env 'CXX', compiler.command
+          PACKMAN.reset_env 'CXX', compiler.command if not PACKMAN.has_env? 'CXX'
         when :fortran
-          PACKMAN.reset_env 'F77', compiler.command
-          PACKMAN.reset_env 'FC', compiler.command
+          PACKMAN.reset_env 'F77', compiler.command if not PACKMAN.has_env? 'F77'
+          PACKMAN.reset_env 'FC', compiler.command if not PACKMAN.has_env? 'FC'
         end
       end
       # Handle customized environment variables.

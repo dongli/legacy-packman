@@ -10,7 +10,7 @@ class Openmpi < PACKMAN::Package
 
   provides :c => 'mpicc'
   provides :cxx => 'mpic++'
-  provides :fortran => [ '77' => 'mpif77', '90' => 'mpif90' ]
+  provides :fortran => { '77' => 'mpif77', '90' => 'mpif90' }
 
   def install
     # --with-libevent=#{Libevent.prefix}
