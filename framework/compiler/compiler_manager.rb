@@ -169,51 +169,32 @@ module PACKMAN
     end
 
     def self.use_mpi mpi_vendor = nil
-      if mpi_vendor
-        mpi = Package.instance mpi_vendor.to_s.capitalize
-        # Check if the MPI library is installed by PACKMAN or not.
-        if not PACKMAN.is_package_installed? mpi
-          PACKMAN.report_error "MPI #{PACKMAN.red mpi_vendor} has not been installed!"
-        end
-        # Override the CC, CXX, F77, FC if they are set.
+      mpi = Package.instance mpi_vendor.to_s.capitalize
+      if compiler(:c).mpi_wrapper
+        PACKMAN.reset_env('CC', "#{compiler(:c).mpi_wrapper}")
+        PACKMAN.reset_env('MPICC', "#{compiler(:c).mpi_wrapper}")
+      else
         PACKMAN.reset_env('CC', "#{mpi.bin}/#{mpi.provided_stuffs[:c]}")
         PACKMAN.reset_env('MPICC', "#{mpi.bin}/#{mpi.provided_stuffs[:c]}")
+      end
+      if compiler(:cxx).mpi_wrapper
+        PACKMAN.reset_env('CXX', "#{compiler(:cxx).mpi_wrapper}")
+        PACKMAN.reset_env('MPICXX', "#{compiler(:cxx).mpi_wrapper}")
+      else
         PACKMAN.reset_env('CXX', "#{mpi.bin}/#{mpi.provided_stuffs[:cxx]}")
         PACKMAN.reset_env('MPICXX', "#{mpi.bin}/#{mpi.provided_stuffs[:cxx]}")
-        if PACKMAN.compiler(:fortran).command
+      end
+      if PACKMAN.compiler(:fortran).command
+        if compiler(:fortran).mpi_wrapper
+          PACKMAN.reset_env('F77', "#{compiler(:fortran).mpi_wrapper}")
+          PACKMAN.reset_env('MPIF77', "#{compiler(:fortran).mpi_wrapper}")
+          PACKMAN.reset_env('FC', "#{compiler(:fortran).mpi_wrapper}")
+          PACKMAN.reset_env('MPIF90', "#{compiler(:fortran).mpi_wrapper}")
+        else
           PACKMAN.reset_env('F77', "#{mpi.bin}/#{mpi.provided_stuffs[:fortran]['77']}")
           PACKMAN.reset_env('MPIF77', "#{mpi.bin}/#{mpi.provided_stuffs[:fortran]['77']}")
           PACKMAN.reset_env('FC', "#{mpi.bin}/#{mpi.provided_stuffs[:fortran]['90']}")
           PACKMAN.reset_env('MPIF90', "#{mpi.bin}/#{mpi.provided_stuffs[:fortran]['90']}")
-        end
-      else
-        mpi = Package.instance ConfigManager.defaults[:mpi]
-        if compiler(:c).mpi_wrapper
-          PACKMAN.reset_env('CC', "#{compiler(:c).mpi_wrapper}")
-          PACKMAN.reset_env('MPICC', "#{compiler(:c).mpi_wrapper}")
-        else
-          PACKMAN.reset_env('CC', "#{mpi.bin}/#{mpi.provided_stuffs[:c]}")
-          PACKMAN.reset_env('MPICC', "#{mpi.bin}/#{mpi.provided_stuffs[:c]}")
-        end
-        if compiler(:cxx).mpi_wrapper
-          PACKMAN.reset_env('CXX', "#{compiler(:cxx).mpi_wrapper}")
-          PACKMAN.reset_env('MPICXX', "#{compiler(:cxx).mpi_wrapper}")
-        else
-          PACKMAN.reset_env('CXX', "#{mpi.bin}/#{mpi.provided_stuffs[:cxx]}")
-          PACKMAN.reset_env('MPICXX', "#{mpi.bin}/#{mpi.provided_stuffs[:cxx]}")
-        end
-        if PACKMAN.compiler(:fortran).command
-          if compiler(:fortran).mpi_wrapper
-            PACKMAN.reset_env('F77', "#{compiler(:fortran).mpi_wrapper}")
-            PACKMAN.reset_env('MPIF77', "#{compiler(:fortran).mpi_wrapper}")
-            PACKMAN.reset_env('FC', "#{compiler(:fortran).mpi_wrapper}")
-            PACKMAN.reset_env('MPIF90', "#{compiler(:fortran).mpi_wrapper}")
-          else
-            PACKMAN.reset_env('F77', "#{mpi.bin}/#{mpi.provided_stuffs[:fortran]['77']}")
-            PACKMAN.reset_env('MPIF77', "#{mpi.bin}/#{mpi.provided_stuffs[:fortran]['77']}")
-            PACKMAN.reset_env('FC', "#{mpi.bin}/#{mpi.provided_stuffs[:fortran]['90']}")
-            PACKMAN.reset_env('MPIF90', "#{mpi.bin}/#{mpi.provided_stuffs[:fortran]['90']}")
-          end
         end
       end
     end

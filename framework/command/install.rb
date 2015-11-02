@@ -149,19 +149,7 @@ module PACKMAN
         # Apply patches.
         Package.apply_patch package
         # Install package.
-        msg = "Install package #{CLI.green package.name} with compiler set"
-        msg << " #{CLI.green CompilerManager.active_compiler_set_index}"
-        if package.has_option? :use_mpi and package.use_mpi?
-          if package.option_type(:use_mpi) == :package_name
-            msg << " and #{CLI.red package.mpi.capitalize} library"
-            # Set the MPI compiler wrappers.
-            PACKMAN.use_mpi package.mpi
-          else
-            msg << " and #{CLI.red ConfigManager.defaults[:mpi]} library"
-            PACKMAN.use_mpi
-          end
-        end
-        CLI.report_notice msg+'.'
+        CLI.report_notice "Install package #{CLI.green package.name} with compiler set #{CLI.green CompilerManager.active_compiler_set_index}."
         package.install
         PACKMAN.cd_back
         FileUtils.rm_rf build_dir
