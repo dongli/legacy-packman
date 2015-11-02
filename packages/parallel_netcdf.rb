@@ -1,7 +1,7 @@
 class Parallel_netcdf < PACKMAN::Package
-  url 'http://cucis.ece.northwestern.edu/projects/PnetCDF/Release/parallel-netcdf-1.5.0.tar.bz2'
-  sha1 '41ec358878a97132b3bb1d1f67dcef96c492376c'
-  version '1.5.0'
+  url 'http://cucis.ece.northwestern.edu/projects/PnetCDF/Release/parallel-netcdf-1.6.1.tar.bz2'
+  sha1 'f4b220ba64c7725d0bc2cff36974f8c8522c0c45'
+  version '1.6.1'
 
   option :use_mpi => [:package_name, :boolean]
 
