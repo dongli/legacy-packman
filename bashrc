@@ -88,7 +88,7 @@ complete -o bashdefault -F complete_packman packman
 
 # Source packman.bashrc in <install_root> if there is.
 if [[ -f "$PACKMAN_ROOT/packman.config" ]]; then
-    install_root=$(sed -n "s/install_root[[:space:]]*=[[:space:]]*'\(.*\)'/\1/p" "$PACKMAN_ROOT/packman.config")
+    install_root=$(grep install_root $PACKMAN_ROOT/packman.config | cut -d '=' -f 2 | cut -d "'" -f 2 | cut -d '"' -f 2)
     # Escape potential ~.
     active_root=${install_root/~\//$HOME/}/packman.active
     case $(uname) in

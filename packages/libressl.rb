@@ -1,7 +1,7 @@
 class Libressl < PACKMAN::Package
-  url 'http://ftp.openbsd.org/pub/OpenBSD/LibreSSL/libressl-2.2.3.tar.gz'
-  sha1 '636b86365badf12364af39b4b6ee66b4633f0605'
-  version '2.2.3'
+  url 'http://ftp.openbsd.org/pub/OpenBSD/LibreSSL/libressl-2.3.0.tar.gz'
+  sha1 '8fdaf420d680a536ab904ae275e7146f65afa2ba'
+  version '2.3.0'
 
   label :unlinked
 
