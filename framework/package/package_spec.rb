@@ -266,70 +266,70 @@ module PACKMAN
     end
 
     def has_option? key
-      options.has_key? key
+      @options.has_key? key
     end
 
     def update_option key, value, ignore_error = false
-      return if not options.has_key? key
+      return if not @options.has_key? key
       @option_updated[key] = true
-      case option_valid_types[key]
+      case @option_valid_types[key]
       when :boolean
         if value.class == TrueClass or value.class == FalseClass
-          options[key] = value
+          @options[key] = value
         elsif value == 'true' or value == 'false'
-          options[key] = eval value
+          @options[key] = eval value
         else
           CLI.report_error "A boolean is needed for option #{CLI.red key} or nothing at all!" if not ignore_error
         end
       when :integer_array
         if value.class == Fixnum
-          options[key] << value
+          @options[key] << value
         elsif value.class == Array
-          options[key] += value # Keep previous values.
+          @options[key] += value # Keep previous values.
         elsif value.class == String
           begin
-            options[key] += eval "[#{value}]"
+            @options[key] += eval "[#{value}]"
           rescue
             CLI.report_error "Failed to parse the value (#{CLI.red value}) of option #{CLI.red key}!" if not ignore_error
           end
         else
           CLI.report_error "A integer array is needed for option #{CLI.red key}!" if not ignore_error
         end
-        options[key].uniq!
-        options[key].each { |x| raise ArgumentError if x.class != Fixnum }
+        @options[key].uniq!
+        @options[key].each { |x| raise ArgumentError if x.class != Fixnum }
       when :package_name
         if not Package.all_package_names.include? value
           CLI.report_error "A package name is needed for option #{CLI.red key}!" if not ignore_error
         end
-        options[key] = value
+        @options[key] = value
       when :integer
         if value.class == Fixnum
-          options[key] = value
+          @options[key] = value
         elsif value.class == String
-          options[key] = eval value
+          @options[key] = eval value
         else
           CLI.report_error "An integer is needed for option #{CLI.red key}!" if not ignore_error
         end
       when :string
-        options[key] = value
+        @options[key] = value
       when :directory
-        options[key] = File.expand_path value if value
+        @options[key] = File.expand_path value if value
       else
-        if option_valid_types[key].class != Array
-          CLI.report_error "Unknown valid type #{CLI.red option_valid_types[key]} for option #{CLI.blue key}!"
+        if @option_valid_types[key].class != Array
+          CLI.report_error "Unknown valid type #{CLI.red @option_valid_types[key]} for option #{CLI.blue key}!"
         end
-        if option_valid_types[key].size == 2 and
-           option_valid_types[key].include? :package_name and
-           option_valid_types[key].include? :boolean
+        if @option_valid_types[key].size == 2 and
+           @option_valid_types[key].include? :package_name and
+           @option_valid_types[key].include? :boolean
           if value.class == TrueClass or value.class == FalseClass
-            options[key] = value
-            option_actual_types[key] = :boolean
+            @options[key] = value
+            @option_actual_types[key] = :boolean
           elsif value == 'true' or value == 'false'
-            options[key] = eval value
-            option_actual_types[key] = :boolean
+            @options[key] = eval value
+            @option_actual_types[key] = :boolean
           else
-            options[key] = value
-            option_actual_types[key] = :package_name
+            @options[key] = value
+            @option_actual_types[key] = :package_name
           end
         else
           CLI.under_construction!

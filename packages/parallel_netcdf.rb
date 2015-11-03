@@ -6,7 +6,7 @@ class Parallel_netcdf < PACKMAN::Package
   option :use_mpi => [:package_name, :boolean]
 
   depends_on :m4
-  depends_on mpi if use_mpi? and option_type('use_mpi') == :package_name
+  depends_on mpi if use_mpi?
 
   def install
     if not use_mpi?
