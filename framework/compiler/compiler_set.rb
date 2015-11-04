@@ -35,6 +35,7 @@ module PACKMAN
       # Set the specification for the compilers of each language (they may come
       # from different vendors).
       @compilers = {}
+      has_mpi_wrapper = false
       command_hash.each do |language, compiler_command|
         if language == :installed_by_packman
           @installed_by_packman = true
@@ -50,12 +51,21 @@ module PACKMAN
             PACKMAN.report_error "MPI wrapper #{PACKMAN.red compiler_command} does not exist!"
           end
           @compilers[actual_language].mpi_wrapper = `which #{compiler_command}`.chomp
+          has_mpi_wrapper = true
         else
           if not PACKMAN.does_command_exist? compiler_command
             PACKMAN.report_warning "Compiler command #{PACKMAN.red compiler_command} does not exist!"
             @compilers[language] = nil
           else
             @compilers[language] = CompilerManager.compiler_spec language, `which #{compiler_command}`.chomp
+          end
+        end
+      end
+      # Check if mpi wrappers are all set.
+      if has_mpi_wrapper
+        @compilers.each do |language, compiler|
+          if not compiler.mpi_wrapper
+            PACKMAN.report_error "Check you compiler set configuation. You can only set mpi wrapper for each language, or not set all!"
           end
         end
       end

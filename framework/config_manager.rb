@@ -80,6 +80,8 @@ module PACKMAN
         EOT
         CLI.report_error msg.chomp
       end
+      # Check if active compiler set has defined mpi wrappers.
+      @@defaults[:mpi] = nil if CompilerManager.active_compiler_set.compilers[:c].mpi_wrapper
       # Report configuation.
       # - FTP mirror.
       if [ :collect, :install ].include? CommandLine.subcommand
