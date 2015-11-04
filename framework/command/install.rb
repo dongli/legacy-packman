@@ -61,6 +61,13 @@ module PACKMAN
               msg << " by using compiler set #{CLI.green CompilerManager.active_compiler_set_index}"
             end
             CLI.report_notice msg+'.' if not options.include? :silent
+            # Propagate options in info file to package.
+            package_hash.each { |key, value| package.update_option key, value, true }
+            # TODO: Clean this.
+            # When there is any dependency use MPI, we should use MPI for the package.
+            if not package.use_binary? and package.has_option? :use_mpi and package.use_mpi?
+              PACKMAN.use_mpi package.mpi
+            end
             return true
           end
         end
@@ -109,11 +116,6 @@ module PACKMAN
           package = Package.instance package.class
           retry
         end
-      end
-      # TODO: Clean this.
-      # When there is any dependency use MPI, we should use MPI for the package.
-      if not package.use_binary? and package.has_option? :use_mpi and package.use_mpi?
-        PACKMAN.use_mpi package.mpi
       end
       # Install package.
       if package.use_binary?

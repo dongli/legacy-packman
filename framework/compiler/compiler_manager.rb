@@ -169,7 +169,7 @@ module PACKMAN
     end
 
     def self.use_mpi mpi_vendor = nil
-      mpi = Package.instance mpi_vendor.to_s.capitalize
+      mpi = Package.instance mpi_vendor.to_s.capitalize if mpi_vendor
       if compiler(:c).mpi_wrapper
         PACKMAN.reset_env('CC', "#{compiler(:c).mpi_wrapper}")
         PACKMAN.reset_env('MPICC', "#{compiler(:c).mpi_wrapper}")
