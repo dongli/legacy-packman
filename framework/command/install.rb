@@ -129,10 +129,9 @@ module PACKMAN
         PACKMAN.cd_back
         Files::Info.write package
         package.post_install
-        start_handle_new_compiler_set package
+        handle_new_compiler_set package
         link_package package
         relocate_package package if not package.has_label? :binary
-        stop_handle_new_compiler_set package
       else
         # Build package for each compiler set.
         build_upper_dir = "#{ConfigManager.package_root}/#{package.name}"
