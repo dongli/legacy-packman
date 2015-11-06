@@ -78,6 +78,7 @@ module PACKMAN
     end
 
     def self.install_package package, *options
+      CompilerManager.activate_compiler_set ConfigManager.defaults[:compiler_set_index]
       # Check if the package should be skipped.
       if package.should_be_skipped? or
         (not package.has_label? :master_package and
@@ -207,7 +208,6 @@ module PACKMAN
         CompilerManager.add_compiler_set command_hash
         CompilerManager.activate_compiler_set CompilerManager.compiler_sets.size-1
         ConfigManager.write
-        CompilerManager.activate_compiler_set ConfigManager.defaults[:compiler_set_index]
       end
     end
   end
