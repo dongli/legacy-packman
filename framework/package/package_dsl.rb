@@ -44,6 +44,10 @@ module PACKMAN
       stable.provides val
     end
 
+    def decompress_option val
+      stable.decompress_option val
+    end
+
     def option option_hash
       stable.option option_hash
       option_name = option_hash.keys.first

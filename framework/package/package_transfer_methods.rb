@@ -29,5 +29,6 @@ module PACKMAN
       @active_spec.update_option key, value, ignore_error
     end
     def compiler_set; @active_spec.compiler_set; end
+    def decompress_options; @active_spec.decompress_options; end
   end
 end

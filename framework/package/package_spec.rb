@@ -7,6 +7,7 @@ module PACKMAN
     attr_reader :option_valid_types, :options
     attr_reader :option_actual_types
     attr_reader :os, :compiler_set
+    attr_reader :decompress_options
 
     CommonOptions = {
       :skip_test => false,
@@ -31,6 +32,7 @@ module PACKMAN
       # For binary.
       @os = {}
       @compiler_set = {}
+      @decompress_options = {}
 
       CommonOptions.each do |key, type|
         option key => type
@@ -217,6 +219,10 @@ module PACKMAN
         attachment.instance_eval &block
         @attachments[name] = attachment
       end
+    end
+
+    def decompress_option val
+      @decompress_options.merge! val
     end
 
     def option option_hash

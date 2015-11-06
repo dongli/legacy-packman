@@ -124,9 +124,9 @@ module PACKMAN
         # Use precompiled binary file.
         CLI.report_notice "Use precompiled binary files for #{CLI.green package.name}."
         PACKMAN.mkdir prefix, :force
-        PACKMAN.cd prefix
-        PACKMAN.decompress "#{ConfigManager.package_root}/#{package.filename}"
-        PACKMAN.cd_back
+        PACKMAN.work_in prefix do
+          PACKMAN.decompress "#{ConfigManager.package_root}/#{package.filename}", package.decompress_options
+        end
         Files::Info.write package
         package.post_install
         handle_new_compiler_set package
@@ -146,13 +146,13 @@ module PACKMAN
           tmp = ["#{build_upper_dir}"]
         end
         build_dir = tmp.first
-        PACKMAN.cd build_dir
-        # Apply patches.
-        Package.apply_patch package
-        # Install package.
-        CLI.report_notice "Install package #{CLI.green package.name} with compiler set #{CLI.green CompilerManager.active_compiler_set_index}."
-        package.install
-        PACKMAN.cd_back
+        PACKMAN.work_in build_dir do
+          # Apply patches.
+          Package.apply_patch package
+          # Install package.
+          CLI.report_notice "Install package #{CLI.green package.name} with compiler set #{CLI.green CompilerManager.active_compiler_set_index}."
+          package.install
+        end
         FileUtils.rm_rf build_dir
         Files::Info.write package
         package.post_install

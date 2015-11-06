@@ -7,7 +7,7 @@ module PACKMAN
     def match_binary
       res = nil
       return res if not @binary or ( not @stable.has_label? :external_binary and not CompilerManager.active_compiler_set )
-      compilers = CompilerManager.active_compiler_set.compilers
+      compilers = CompilerManager.active_compiler_set.compilers if CompilerManager.active_compiler_set
       @binary.each do |binary_spec|
         next if not binary_spec.os[:type] == PACKMAN.os.type
         next if not eval "PACKMAN.os.version #{binary_spec.os[:version][:compare_operator]} binary_spec.os[:version][:base]"

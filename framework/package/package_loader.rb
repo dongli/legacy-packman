@@ -10,6 +10,8 @@ module PACKMAN
       name = File.basename(file).split('.').first.to_sym
       @@package_files[name] = file
     end
+
+    # Record package options.
     @@package_options = {}
 
     def self.package_options package_name
@@ -26,6 +28,9 @@ module PACKMAN
       CommandLine.propagate_options_to package
       @@package_options[package_name] = package.options.clone
       @@package_options[package_name].merge! options if options
+      if package.has_label? :external_binary
+        @@package_options[package_name][:use_binary] = true
+      end
       package.dependencies.clear
       # The package dependency may be changed by options.
       load @@package_files[package_name]
