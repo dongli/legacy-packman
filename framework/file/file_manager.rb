@@ -137,23 +137,31 @@ module PACKMAN
     options_from_package = options.select { |x| x.class == Hash }.first
     args = ''
     CLI.report_notice "Decompress #{CLI.blue File.basename(file_path)}." if not options.include? :silent
-    case PACKMAN.compression_type file_path
-    when :tar_Z
-      if options_from_package.has_key? :strip_top_directories
-        args << "--strip-components=#{options_from_package[:strip_top_directories]+1}"
+    if options_from_package.has_key? :put_into_directory
+      work_dir = options_from_package[:put_into_directory]
+      PACKMAN.mkdir work_dir, :force
+    else
+      work_dir = '.'
+    end
+    PACKMAN.work_in work_dir do
+      case PACKMAN.compression_type file_path
+      when :tar_Z
+        if options_from_package.has_key? :strip_top_directories
+          args << "--strip-components=#{options_from_package[:strip_top_directories]+1}"
+        end
+        system "tar xzf #{file_path} #{args}"
+      when :tar
+        if options_from_package.has_key? :strip_top_directories
+          args << "--strip-components=#{options_from_package[:strip_top_directories]+1}"
+        end
+        system "tar xf #{file_path} #{args}"
+      when :gzip
+        system "gzip -d #{file_path}"
+      when :bzip2
+        system "bzip2 -d #{file_path}"
+      when :zip
+        system "unzip -o #{file_path} 1> /dev/null"
       end
-      system "tar xzf #{file_path} #{args}"
-    when :tar
-      if options_from_package.has_key? :strip_top_directories
-        args << "--strip-components=#{options_from_package[:strip_top_directories]+1}"
-      end
-      system "tar xf #{file_path} #{args}"
-    when :gzip
-      system "gzip -d #{file_path}"
-    when :bzip2
-      system "bzip2 -d #{file_path}"
-    when :zip
-      system "unzip -o #{file_path} 1> /dev/null"
     end
   end
 

@@ -76,16 +76,8 @@ module PACKMAN
       end
     end
 
-    def attach name, option = nil, &block
+    def attach name, &block
       stable.attach name, &block
-      if option == :for_all
-        devel.attach name, &block if devel
-        if binary
-          binary.each_value do |b|
-            b.attach name, &block
-          end
-        end
-      end
     end
 
     def stable

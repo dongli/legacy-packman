@@ -72,12 +72,13 @@ module PACKMAN
         end
       end
       val.options.each do |key, value|
-        if not @options.has_key? key
+        if not @options.has_key? key or not @options[key]
           @options[key] = value
-        elsif not @options[key]
-          @options[key] = value
-        elsif value.class != Array and @options[key] != value
-          # PACKMAN.report_warning "PackageSpec already has option #{PACKMAN.red "#{key} => #{@options[key]}"}!"
+        end
+      end
+      val.attachments.each do |key, value|
+        if not @attachments.has_key? key or not @attachments[key]
+          @attachments[key] = value
         end
       end
     end

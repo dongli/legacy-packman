@@ -122,10 +122,13 @@ module PACKMAN
         # Install precompiled package.
         prefix = PACKMAN.prefix package
         # Use precompiled binary file.
-        CLI.report_notice "Use precompiled binary files for #{CLI.green package.name}."
+        PACKMAN.report_notice "Use precompiled binary files for #{CLI.green package.name}."
         PACKMAN.mkdir prefix, :force
         PACKMAN.work_in prefix do
           PACKMAN.decompress "#{ConfigManager.package_root}/#{package.filename}", package.decompress_options
+          package.attachments.each do |key, value|
+            PACKMAN.decompress "#{ConfigManager.package_root}/#{value.filename}", value.decompress_options
+          end
         end
         Files::Info.write package
         package.post_install
