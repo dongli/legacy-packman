@@ -134,7 +134,7 @@ module PACKMAN
   end
 
   def self.decompress file_path, *options
-    options_from_package = options.select { |x| x.class == Hash }.first
+    options_from_package = options.select { |x| x.class == Hash }.first || {}
     args = ''
     CLI.report_notice "Decompress #{CLI.blue File.basename(file_path)}." if not options.include? :silent
     if options_from_package.has_key? :put_into_directory
