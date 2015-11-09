@@ -22,7 +22,7 @@ class Nco < PACKMAN::Package
       --enable-ncap2
       --enable-udunits2
       --enable-optimize-custom
-      NETCDF_INC=#{Netcdf_c.include}
+      NETCDF_INC=#{Netcdf_c.inc}
       NETCDF_LIB=#{Netcdf_c.lib}
       NETCDF4_ROOT=#{Netcdf_c.prefix}
       NETCDF_ROOT=#{Netcdf_c.prefix}
