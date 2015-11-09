@@ -9,7 +9,7 @@ module PACKMAN
           :use_binary => package.use_binary?,
           :os => PACKMAN.os.to_hash
         }
-        hash[:use_mpi] = package.mpi || package.use_mpi if package.has_option? :use_mpi
+        hash[:use_mpi] = package.mpi || package.use_mpi? if package.has_option? :use_mpi
         hash[:compiler_set] = CompilerManager.active_compiler_set ? CompilerManager.active_compiler_set.to_hash : {}
         return hash
       end
