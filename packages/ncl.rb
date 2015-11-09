@@ -129,6 +129,6 @@ class Ncl < PACKMAN::Package
   end
 
   def post_install
-    PACKMAN.report_warning "You need to set #{PACKMAN.blue 'NCARG_ROOT'} environment variable for #{PACKMAN.green 'ncl'} to #{prefix}. #{PACKMAN.red "DON'T FORGET!"}"
+    PACKMAN.report_warning "You need to set #{PACKMAN.blue 'NCARG_ROOT'} environment variable to #{PACKMAN.install_root}/packman.active. #{PACKMAN.red "DON'T FORGET!"}"
   end
 end

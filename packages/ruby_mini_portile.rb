@@ -4,7 +4,6 @@ class Ruby_mini_portile < PACKMAN::Package
   version '0.6.2'
 
   label :try_system_package_first
-  label :not_set_bashrc
 
   def install
     PACKMAN.gem 'install', "mini_portile-#{version}.gem"

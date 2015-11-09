@@ -5,8 +5,7 @@ class Gitlab < PACKMAN::Package
   version '7.12.2'
 
   label :compiler_insensitive
-  label :installed_with_source
-  label :not_use_target_dir_option
+  label :unsocial
 
   option :domain => 'localhost'
   option :port => 8080

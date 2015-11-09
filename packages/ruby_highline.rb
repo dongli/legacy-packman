@@ -4,7 +4,6 @@ class Ruby_highline < PACKMAN::Package
   version '1.7.2'
 
   label :try_system_package_first
-  label :not_set_bashrc
 
   def install
     PACKMAN.gem "install highline-#{version}.gem"

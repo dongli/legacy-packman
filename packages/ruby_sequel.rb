@@ -4,7 +4,6 @@ class Ruby_sequel < PACKMAN::Package
   version '4.24.0'
 
   label :try_system_package_first
-  label :not_set_bashrc
 
   depends_on :ruby_sqlite3
   depends_on :ruby_pg

@@ -4,7 +4,6 @@ class Ruby_nokogiri < PACKMAN::Package
   version '1.6.6.2'
 
   label :try_system_package_first
-  label :not_set_bashrc
 
   # TODO: Should check if Ruby is above 2.0.0.
   depends_on :libxml2

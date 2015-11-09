@@ -4,7 +4,6 @@ class Ruby_pg < PACKMAN::Package
   version '0.18.2'
 
   label :try_system_package_first
-  label :not_set_bashrc
 
   #depends_on 'postgresql'
 

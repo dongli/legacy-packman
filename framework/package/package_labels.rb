@@ -9,7 +9,8 @@ module PACKMAN
       :skipped,
       :try_system_package_first,
       :compiler_set,
-      :unlinked
+      :unlinked,
+      :unsocial
     ]
 
     def self.check label

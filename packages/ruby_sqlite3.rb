@@ -4,7 +4,6 @@ class Ruby_sqlite3 < PACKMAN::Package
   version '1.3.10'
 
   label :try_system_package_first
-  label :not_set_bashrc
 
   depends_on :sqlite
 

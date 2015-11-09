@@ -1,8 +1,8 @@
 class Proftpd < PACKMAN::Package
-  # NOTE: Proftpd 1.3.5 has bugs in Mac, so I choose to use 1.3.4d.
-  url 'ftp://ftp.proftpd.org/distrib/source/proftpd-1.3.4d.tar.gz'
-  sha1 'a5b6c80a8ddeeeccc1c6448d797ccd62a3f63b65'
-  version '1.3.4d'
+  url 'https://github.com/proftpd/proftpd/archive/v1.3.5a.tar.gz'
+  sha1 '7c4027c207bdfe7c88b859810c7fa9b978b0524d'
+  version '1.3.5a'
+  filename 'proftpd-1.3.5a.tar.gz'
 
   label :compiler_insensitive
 
