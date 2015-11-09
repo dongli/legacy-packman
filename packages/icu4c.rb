@@ -1,7 +1,7 @@
 class Icu4c < PACKMAN::Package
-  url 'http://download.icu-project.org/files/icu4c/53.1/icu4c-53_1-src.tgz'
-  sha1 '7eca017fdd101e676d425caaf28ef862d3655e0f'
-  version '53.1'
+  url 'https://fossies.org/linux/misc/icu4c-55_1-src.tgz'
+  sha1 '3bb301c11be0e239c653e8aa2925c53f6f4dc88d'
+  version '55.1'
 
   def install
     # TODO: Figure out how the shared libraries do not work with Hyrax_ncml_module.
