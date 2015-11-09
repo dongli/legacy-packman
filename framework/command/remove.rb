@@ -99,7 +99,7 @@ module PACKMAN
         compiler_set.package_name == package.name and
         compiler_set.compilers[:c].version == package_hash[:version]
       end
-      if index < CompilerManager.compiler_sets.size-1
+      if index and index < CompilerManager.compiler_sets.size-1
         PACKMAN.report_error "Package #{PACKMAN.green package.name} is not the last compiler set, and PACKMAN is not programmed to handle this case! Sorry!!"
       end
       # Check if there is any other packages compiled by this compiler set.
@@ -108,16 +108,18 @@ module PACKMAN
           PACKMAN.report_error "There are packages compiled by #{PACKMAN.green package.name}!"
         end
       end
-      # Unlink package.
-      CompilerManager.activate_compiler_set index
-      Commands.unlink package.name
-      # Remove from configure file if package is a compiler set.
-      CompilerManager.compiler_sets.delete_at index
-      if ConfigManager.defaults[:compiler_set_index] == index
-        ConfigManager.defaults[:compiler_set_index] = 0
-        PACKMAN.report_warning "Default compiler set is changed to 0!"
+      if index
+        # Unlink package.
+        CompilerManager.activate_compiler_set index
+        Commands.unlink package.name
+        # Remove from configure file if package is a compiler set.
+        CompilerManager.compiler_sets.delete_at index
+        if ConfigManager.defaults[:compiler_set_index] == index
+          ConfigManager.defaults[:compiler_set_index] = 0
+          PACKMAN.report_warning "Default compiler set is changed to 0!"
+        end
+        ConfigManager.write
       end
-      ConfigManager.write
       CompilerManager.activate_default_compiler_set
     end
   end
