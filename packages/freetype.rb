@@ -1,6 +1,6 @@
 class Freetype < PACKMAN::Package
   url 'http://download.savannah.gnu.org/releases/freetype/freetype-2.6.tar.gz'
-  sha1 'd4a17b42505b23dab022f877e1849940aa3b64f3'
+  sha1 '12dd3267af62cccc32045ed99984f3d8a8ddbf90'
   version '2.6'
 
   label :unlinked if PACKMAN.mac?

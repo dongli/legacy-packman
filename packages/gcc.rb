@@ -39,12 +39,11 @@ class Gcc < PACKMAN::Package
     ]
     PACKMAN.mkdir 'build', :force do
       PACKMAN.run '../configure', *args
-      if PACKMAN.mac?
-        PACKMAN.replace 'Makefile', {
-          /HOST_GMPLIBS\s*=(.*)/ => "HOST_GMPLIBS = -Wl,-rpath,#{link_root} \\1",
-          /HOST_ISLLIBS\s*=(.*)/ => "HOST_ISLLIBS = -Wl,-rpath,#{link_root} \\1"
-        }
-      end
+      rpath = PACKMAN.mac? ? link_root : "#{link_root}/lib"
+      PACKMAN.replace 'Makefile', {
+        /HOST_GMPLIBS\s*=(.*)/ => "HOST_GMPLIBS = -Wl,-rpath,#{rpath} \\1",
+        /HOST_ISLLIBS\s*=(.*)/ => "HOST_ISLLIBS = -Wl,-rpath,#{rpath} \\1"
+      }
       PACKMAN.run 'make -j2 bootstrap'
       PACKMAN.run 'make -j2 install'
     end
