@@ -9,7 +9,7 @@ class Ruby_sqlite3 < PACKMAN::Package
 
   def install
     PACKMAN.gem "install sqlite3-#{version}.gem -- --use-system-libraries "+
-      "--with-sqlite3-include=#{Sqlite.include} --with-sqlite3-lib=#{Sqlite.lib}"
+      "--with-sqlite3-include=#{Sqlite.inc} --with-sqlite3-lib=#{Sqlite.lib}"
   end
 
   def remove

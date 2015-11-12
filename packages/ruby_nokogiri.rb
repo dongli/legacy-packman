@@ -12,8 +12,8 @@ class Ruby_nokogiri < PACKMAN::Package
 
   def install
     PACKMAN.gem 'install', "nokogiri-#{version}.gem -- --use-system-libraries "+
-      "--with-xml2-include=#{Libxml2.include}/libxml2 --with-xml2-lib=#{Libxml2.lib} "+
-      "--with-xslt-include=#{Libxslt.include} --with-xslt-lib=#{Libxslt.lib}"
+      "--with-xml2-include=#{Libxml2.inc}/libxml2 --with-xml2-lib=#{Libxml2.lib} "+
+      "--with-xslt-include=#{Libxslt.inc} --with-xslt-lib=#{Libxslt.lib}"
   end
 
   def remove
