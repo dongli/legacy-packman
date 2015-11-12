@@ -1,7 +1,7 @@
 class Ncview < PACKMAN::Package
-  url 'ftp://cirrus.ucsd.edu/pub/ncview/ncview-2.1.5.tar.gz'
-  sha1 '31685d068f158ea235654cbee118980f3f038eab'
-  version '2.1.5'
+  url 'ftp://cirrus.ucsd.edu/pub/ncview/ncview-2.1.6.tar.gz'
+  sha1 'b5d9f0280d2d151a4bd330d1a4f8a015ab38197e'
+  version '2.1.6'
 
   label :compiler_insensitive
 
@@ -18,7 +18,7 @@ class Ncview < PACKMAN::Package
     args = %W[
       --prefix=#{prefix}
       --with-nc-config=#{Netcdf_c.bin}/nc-config
-      --with-udunits2_incdir=#{Udunits.include}
+      --with-udunits2_incdir=#{Udunits.inc}
       --with-udunits2_libdir=#{Udunits.lib}
       --disable-dependency-tracking
     ]
@@ -26,7 +26,7 @@ class Ncview < PACKMAN::Package
       args << '--x-includes=/usr/X11/include'
       args << '--x-libraries=/usr/X11/lib'
     else
-      args << "--with-png_incdir=#{Libpng.include}"
+      args << "--with-png_incdir=#{Libpng.inc}"
       args << "--with-png_libdir=#{Libpng.lib}"
     end
     if PACKMAN.cygwin?
