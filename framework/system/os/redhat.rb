@@ -62,7 +62,7 @@ module PACKMAN
     command :parse_elf do |file|
       elf = {}
       `readelf -d #{Shellwords.escape file}`.each_line do |line|
-        if line =~ /RPATH/
+        if line =~ /RUNPATH/
           elf[:rpath] = line.match(/\[(.*)\]/)[1].split(':')
         end
       end
