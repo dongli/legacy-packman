@@ -61,8 +61,6 @@ class Python3 < PACKMAN::Package
   end
 
   def post_install
-    PACKMAN.append bashrc, <<-EOT
-      export PYTHONPATH="#{site_packages}:$PYTHONPATH"
-    EOT
+    PACKMAN.report_warning "You may need to set #{PACKMAN.blue 'PYTHONPATH'} environment variable to #{site_packages}."
   end
 end
