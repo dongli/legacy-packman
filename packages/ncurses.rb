@@ -13,9 +13,9 @@ class Ncurses < PACKMAN::Package
       --disable-debug
     ]
     args << '--without-ada' if PACKMAN.compiler(:c).vendor == :intel
-    PACKMAN.run './configure', *args
-    PACKMAN.run 'make -j2'
-    PACKMAN.run 'make install'
+    PACKMAN.run 'export CPPFLAGS="" && export LDFLAGS="" && ./configure', *args
+    PACKMAN.run 'export CPPFLAGS="" && export LDFLAGS="" && make -j2'
+    PACKMAN.run 'export CPPFLAGS="" && export LDFLAGS="" && make install'
   end
 
   def installed?
