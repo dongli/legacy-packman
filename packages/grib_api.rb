@@ -18,6 +18,9 @@ class Grib_api < PACKMAN::Package
       args << "LIBS='-lcurl -lhdf5_hl -lhdf5 -lsz -lz'"
     end
     PACKMAN.run './configure', *args
+    PACKMAN.replace 'fortran/Makefile', {
+      /(\$\(FC\) \$\(FCFLAGS\) -o grib_types grib_types\.o grib_fortran_kinds\.o)/ => '\1 $(LDFLAGS)'
+    }
     PACKMAN.run 'make install'
   end
 end

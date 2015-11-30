@@ -21,7 +21,7 @@ class Libgd < PACKMAN::Package
       --with-png=#{Libpng.prefix}
       --with-tiff=#{Libtiff.prefix}
       --with-fontconfig=#{link_root}
-      --with-freetype=#{link_root}
+      --with-freetype=#{Freetype.prefix}
     ]
     PACKMAN.run './configure', *args
     PACKMAN.run 'make install'

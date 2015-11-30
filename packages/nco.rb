@@ -3,6 +3,8 @@ class Nco < PACKMAN::Package
   sha1 'bb87332494c39aeffe446ab4a9b2500c096fd9fe'
   version '4.5.2'
 
+  label :compiler_insensitive
+
   depends_on :flex
   depends_on :bison
   depends_on :curl
