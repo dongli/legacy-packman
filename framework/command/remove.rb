@@ -4,8 +4,21 @@ module PACKMAN
       if CommandLine.packages.empty?
         CLI.report_error "No package name is provided!"
       end
-      CommandLine.packages.each do |package_name|
+      package_names = CommandLine.packages.uniq
+      # Get all the packages that need to be removed.
+      packages = []
+      package_names.each do |package_name|
         package = Package.instance package_name
+        if package.has_label? :master_package
+          package.dependencies.each do |depend|
+            depend_package = Package.instance depend
+            packages << depend_package if depend_package.master_package == package_name.capitalize.to_sym
+          end
+        else
+          packages << package
+        end
+      end
+      packages.each do |package|
         package_root = "#{ConfigManager.install_root}/#{package.name}"
         if not File.directory? package_root
           if package.respond_to? :remove
@@ -16,7 +29,7 @@ module PACKMAN
         end
         versions = Dir.glob("#{package_root}/*").sort
         if versions.size > 1 and not CommandLine.has_option? '-all'
-          CLI.report_warning "Multiple versions of package #{CLI.red package_name} have been installed."
+          CLI.report_warning "Multiple versions of package #{CLI.red package.name} have been installed."
           tmp = versions.map { |v| File.basename(v) }
           tmp << 'all'
           CLI.ask 'Which version do you want to remove?', tmp
@@ -46,7 +59,7 @@ module PACKMAN
               end
               removed_sets = []
               if sets.size > 1 and not CommandLine.has_option? '-all'
-                CLI.report_warning "Package #{CLI.red package_name} (#{File.basename versions[j]}) "+
+                CLI.report_warning "Package #{CLI.red package.name} (#{File.basename versions[j]}) "+
                   "has been compiled by multiple compiler sets."
                 tmp = sets.map { |s|
                   i = File.basename(s).to_i
@@ -69,7 +82,7 @@ module PACKMAN
                 if removed_sets.include? i
                   CLI.report_notice "Remove #{CLI.red sets[i]}."
                   CompilerManager.activate_compiler_set sets[i].split('/').last
-                  Commands.unlink package_name
+                  Commands.unlink package.name
                   PACKMAN.rm sets[i]
                 end
               end
@@ -77,7 +90,7 @@ module PACKMAN
               CLI.report_notice "Remove #{CLI.red versions[j]}."
               for i in 0..CompilerManager.compiler_sets.size-1
                 CompilerManager.activate_compiler_set i
-                Commands.unlink package_name
+                Commands.unlink package.name
               end
               PACKMAN.rm versions[j]
             end
