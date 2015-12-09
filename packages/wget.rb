@@ -12,6 +12,7 @@ class Wget < PACKMAN::Package
   depends_on :zlib
 
   def install
+    PACKMAN.handle_unlinked Openssl, Libiconv
     args = %W[
       --prefix=#{prefix}
       --sysconfdir=#{etc}
