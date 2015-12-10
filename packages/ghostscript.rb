@@ -1,7 +1,7 @@
 class Ghostscript < PACKMAN::Package
-  url 'http://downloads.ghostscript.com/public/ghostscript-9.15.tar.gz'
-  sha1 'f53bcc47e912c7bffc2ced62ed9311376fb18bab'
-  version '9.15'
+  url 'http://downloads.ghostscript.com/public/ghostscript-9.18.tar.gz'
+  sha1 '761c9c25b9f5fe01197bd1510f527b3c1b6eb9de'
+  version '9.18'
 
   depends_on :expat
   depends_on :jpeg
@@ -9,7 +9,7 @@ class Ghostscript < PACKMAN::Package
   depends_on :libtiff
   depends_on :libpng
   depends_on :little_cms
-  depends_on :djvulibre # TODO: Does ghostscript need it?
+  depends_on :djvulibre
   depends_on :fontconfig
   depends_on :freetype
   depends_on :x11
@@ -28,16 +28,17 @@ class Ghostscript < PACKMAN::Package
 
   def install
     PACKMAN.handle_unlinked Freetype if PACKMAN.mac?
+
     PACKMAN.decompress gsdjvu.package_path
-    PACKMAN.work_in './gsdjvu-1.6' do
-      PACKMAN.cp 'gdevdjvu.c', '../base'
+    PACKMAN.work_in 'gsdjvu-1.6' do
+      PACKMAN.replace 'gsdjvu.mak', { '$(GL' => '$(DEV' }
+      PACKMAN.cp 'gdevdjvu.c', '../devices'
       PACKMAN.cp 'ps2utf8.ps', '../lib'
+      PACKMAN.reset_env 'EXTRA_INIT_FILES', 'ps2utf8.ps'
       PACKMAN.append '../devices/contrib.mak', File.read('gsdjvu.mak')
     end
-    PACKMAN.replace 'configure.ac', /ZLIBDIR=src/ => 'ZLIBDIR=$includedir'
-    PACKMAN.replace 'configure', /ZLIBDIR=src/ => 'ZLIBDIR=$includedir'
-    ['expat', 'freetype', 'lcms', 'tiff', 'tiff-config', 'lcms2', 'jpeg',
-     'jpegxr', 'openjpeg', 'jbig2dec', 'libpng', 'zlib'].each { |x| PACKMAN.rm x }
+
+
     args = %W[
       --prefix=#{prefix}
       --disable-cups
@@ -46,7 +47,9 @@ class Ghostscript < PACKMAN::Package
     ]
     PACKMAN.run './configure', *args
     PACKMAN.replace 'Makefile', {
-      /^DEVICE_DEVS17=/ => 'DEVICE_DEVS17=$(DD)djvumask.dev $(DD)djvusep.dev'
+      /^DEVICE_DEVS17=/ => 'DEVICE_DEVS17=$(DD)djvumask.dev $(DD)djvusep.dev',
+      /^EXTRALIBS=(.*)$/ => "EXTRALIBS=-L#{link_root}/lib -Wl,-rpath,#{link_root} -L#{Freetype.lib} -Wl,-rpath,#{Freetype.prefix} \\1",
+      /^AUXEXTRALIBS=(.*)$/ => "AUXEXTRALIBS=-L#{link_root}/lib -Wl,-rpath,#{link_root} -L#{Freetype.lib} -Wl,-rpath,#{Freetype.prefix} \\1"
     }
     PACKMAN.run 'make install'
     PACKMAN.run 'make install-so'
@@ -57,25 +60,28 @@ class Ghostscript < PACKMAN::Package
 end
 
 __END__
+diff --git a/base/gserrors.h b/base/gserrors.h
+index 5f18081..cdebb38 100644
+--- a/base/gserrors.h
++++ b/base/gserrors.h
+@@ -25,7 +25,7 @@
+ /* We don't use a typedef internally to avoid a lot of casting. */
+ 
+ enum gs_error_type {
+-    gs_error_ok = 0,	/* unknown error */
++    gs_error_ok = 0,
+     gs_error_unknownerror = -1,	/* unknown error */
+     gs_error_dictfull = -2,
+     gs_error_dictstackoverflow = -3,
 diff --git a/base/unix-dll.mak b/base/unix-dll.mak
-index ae2d7d8..4f4daed 100644
+index 7b67aa1..73b4fa9 100644
 --- a/base/unix-dll.mak
 +++ b/base/unix-dll.mak
-@@ -64,12 +64,12 @@ GS_SONAME_MAJOR_MINOR=$(GS_SONAME_BASE)$(GS_SOEXT)$(SO_LIB_VERSION_SEPARATOR)$(G
-
-
- # MacOS X
--#GS_SOEXT=dylib
--#GS_SONAME=$(GS_SONAME_BASE).$(GS_SOEXT)
--#GS_SONAME_MAJOR=$(GS_SONAME_BASE).$(GS_VERSION_MAJOR).$(GS_SOEXT)
--#GS_SONAME_MAJOR_MINOR=$(GS_SONAME_BASE).$(GS_VERSION_MAJOR).$(GS_VERSION_MINOR).$(GS_SOEXT)
-+GS_SOEXT=dylib
-+GS_SONAME=$(GS_SONAME_BASE).$(GS_SOEXT)
-+GS_SONAME_MAJOR=$(GS_SONAME_BASE).$(GS_VERSION_MAJOR).$(GS_SOEXT)
-+GS_SONAME_MAJOR_MINOR=$(GS_SONAME_BASE).$(GS_VERSION_MAJOR).$(GS_VERSION_MINOR).$(GS_SOEXT)
- #LDFLAGS_SO=-dynamiclib -flat_namespace
--#LDFLAGS_SO_MAC=-dynamiclib -install_name $(GS_SONAME_MAJOR_MINOR)
-+LDFLAGS_SO_MAC=-dynamiclib -install_name __PREFIX__/lib/$(GS_SONAME_MAJOR_MINOR)
- #LDFLAGS_SO=-dynamiclib -install_name $(FRAMEWORK_NAME)
-
- GS_SO=$(BINDIR)/$(GS_SONAME)
+@@ -186,6 +186,7 @@ install-so-subtarget: so-subtarget
+ 	ln -s $(GS_SONAME_MAJOR_MINOR) $(DESTDIR)$(libdir)/$(GS_SONAME_MAJOR)
+ 	$(INSTALL_DATA) $(PSSRC)iapi.h $(DESTDIR)$(gsincludedir)iapi.h
+ 	$(INSTALL_DATA) $(PSSRC)ierrors.h $(DESTDIR)$(gsincludedir)ierrors.h
++	$(INSTALL_DATA) $(GLSRC)gserrors.h $(DESTDIR)$(gsincludedir)gserrors.h
+ 	$(INSTALL_DATA) $(DEVSRC)gdevdsp.h $(DESTDIR)$(gsincludedir)gdevdsp.h
+ 
+ soinstall:

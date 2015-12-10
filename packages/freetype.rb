@@ -11,7 +11,7 @@ class Freetype < PACKMAN::Package
 
   patch do
     url 'https://gist.githubusercontent.com/anonymous/b47d77c41a6801879fd2/raw/fc21c3516b465095da7ed13f98bea491a7d18bbd/patch'
-    sha1 ''
+    sha1 '01ff9947a977d639296c8bd2812cc899432f7284'
   end
 
   def install
