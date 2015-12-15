@@ -135,7 +135,7 @@ module PACKMAN
         package.post_install
         handle_new_compiler_set package
         link_package package
-        relocate_package package if not package.has_label? :binary
+        relocate_package package if not package.has_label? :external_binary
       else
         # Build package for each compiler set.
         build_upper_dir = "#{ConfigManager.package_root}/#{package.name}"

@@ -5,13 +5,6 @@ class Libressl < PACKMAN::Package
 
   label :unlinked
 
-  binary do
-    compiled_on :Mac, '=~ 10.10'
-    compiled_by :c => [ :gnu, '=~ 5.2' ]
-    sha1 'a9a72681ad3170161168bba0acbb8c20867e6312'
-    version '2.2.3'
-  end
-
   def install
     args = %W[
       --disable-dependency-tracking
