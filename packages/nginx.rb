@@ -21,9 +21,9 @@ class Nginx < PACKMAN::Package
   def self.conf; Nginx.etc+'/nginx/nginx.conf'; end
 
   def install
-    PACKMAN.append 'conf/nginx.conf', "\ninclude servers/*;\n"
     PACKMAN.replace 'conf/nginx.conf', {
-      'listen       80;' => "listen       #{port};"
+      'listen       80;' => "listen       #{port};",
+      /(http {.*)}/m => "\\1\n    include servers/*;\n}"
     }
     PACKMAN.replace 'auto/lib/pcre/conf', '/usr/local' => link_root
     PACKMAN.replace 'auto/lib/openssl/conf', '/usr/local' => Openssl.prefix
@@ -71,13 +71,9 @@ class Nginx < PACKMAN::Package
       if File.new(conf).read.include? root
         PACKMAN.report_error "#{PACKMAN.red conf} contains #{root}!"
       end
-      PACKMAN.append conf, <<-EOT.keep_indent
-
-        http {
-          passenger_root #{root};
-          passenger_ruby #{Ruby.bin+'/ruby'};
-        }
-      EOT
+      PACKMAN.replace conf, {
+        /(http {.*)}/m => "\\1\n    passenger_root #{root};\n    passenger_ruby #{Ruby.bin+'/ruby'};\n}"
+      }
     end
   end
 
