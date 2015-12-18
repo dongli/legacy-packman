@@ -16,12 +16,11 @@ class Passenger < PACKMAN::Package
   depends_on :ruby
 
   def install
-    #PACKMAN.replace 'src/ruby_supportlib/phusion_passenger/platform_info/compiler.rb', {
-    #  /(search_paths = \$1.to_s\.strip\.split\("\\n"\)\.map\{ \|line\| line\.strip \})/ => "\\1\nsearch_paths << '#{PACKMAN.link_root}/include'"
-    #}
+    PACKMAN.replace 'build/basics.rb', {
+      'AGENT_LDFLAGS = ""' => "AGENT_LDFLAGS = '#{PACKMAN.ldflags} #{PACKMAN.os.generate_rpaths(PACKMAN.link_root, :wrap_flag).join(' ')}'"
+    }
     PACKMAN.run 'rake apache2' if with_apache2?
     PACKMAN.run 'rake nginx'
-    #PACKMAN.run './bin/passenger-config compile-nginx-engine'
     PACKMAN.mkdir libexec+'/download_cache', :force
     PACKMAN.rm 'buildout/libev'
     PACKMAN.rm 'buildout/libeio'
