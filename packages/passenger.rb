@@ -1,7 +1,7 @@
 class Passenger < PACKMAN::Package
-  url 'https://s3.amazonaws.com/phusion-passenger/releases/passenger-5.0.15.tar.gz'
-  sha1 'b589f2f0bf54eb91299ad0b5be00de36ea9dbbfd'
-  version '5.0.15'
+  url 'https://s3.amazonaws.com/phusion-passenger/releases/passenger-5.0.22.tar.gz'
+  sha1 '8cc6ca03a6d4aac606c216fabbd4841fd944eff0'
+  version '5.0.22'
 
   label :compiler_insensitive
 
@@ -16,17 +16,20 @@ class Passenger < PACKMAN::Package
   depends_on :ruby
 
   def install
+    #PACKMAN.replace 'src/ruby_supportlib/phusion_passenger/platform_info/compiler.rb', {
+    #  /(search_paths = \$1.to_s\.strip\.split\("\\n"\)\.map\{ \|line\| line\.strip \})/ => "\\1\nsearch_paths << '#{PACKMAN.link_root}/include'"
+    #}
     PACKMAN.run 'rake apache2' if with_apache2?
     PACKMAN.run 'rake nginx'
-    # PACKMAN.run 'rake webhelper'
-    PACKMAN.mkdir libexec+'/download_cache'
-    # PACKMAN.rm 'buildout/libev'
-    # PACKMAN.rm 'buildout/libeio'
-    # PACKMAN.rm 'buildout/cache'
+    #PACKMAN.run './bin/passenger-config compile-nginx-engine'
+    PACKMAN.mkdir libexec+'/download_cache', :force
+    PACKMAN.rm 'buildout/libev'
+    PACKMAN.rm 'buildout/libeio'
+    PACKMAN.rm 'buildout/cache'
     %w[.editorconfig configure Rakefile README.md CONTRIBUTORS
       CONTRIBUTING.md LICENSE CHANGELOG INSTALL.md
-      passenger.gemspec build lib node_lib bin doc man
-      dev helper-scripts ext resources buildout].each do |f|
+      passenger.gemspec build bin doc man src
+      dev resources buildout].each do |f|
       PACKMAN.cp f, libexec
     end
     PACKMAN.mkdir bin
@@ -34,10 +37,16 @@ class Passenger < PACKMAN::Package
     locations_ini = `./bin/passenger-config --make-locations-ini --for-native-packaging-method=packman`
     locations_ini.gsub!(/=#{Regexp.escape Dir.pwd}/, "=#{libexec}")
     PACKMAN.write_file libexec+'/lib/phusion_passenger/locations.ini', locations_ini
+
+    ruby_libdir = `./bin/passenger-config about ruby-libdir`.strip
+    ruby_libdir.gsub!(/^#{Regexp.escape Dir.pwd}/, libexec)
     PACKMAN.run './dev/install_scripts_bootstrap_code.rb',
-      '--ruby', libexec+'/lib', *Dir[libexec+'/bin/*']
+      '--ruby', ruby_libdir, *Dir[libexec+'/bin/*']
+
+    nginx_addon_dir = `./bin/passenger-config about nginx-addon-dir`.strip
+    nginx_addon_dir.gsub!(/^#{Regexp.escape Dir.pwd}/, libexec)
     PACKMAN.run './dev/install_scripts_bootstrap_code.rb',
-      '--nginx-module-config', libexec+'/bin', libexec+'/ext/nginx/config'
+      '--nginx-module-config', libexec+'/bin', nginx_addon_dir+'/config'
     PACKMAN.mkdir share
     PACKMAN.mv libexec+'/man', share
   end

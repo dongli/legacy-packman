@@ -58,9 +58,9 @@ class Nginx < PACKMAN::Package
     PACKMAN.run 'make -j2'
     PACKMAN.run 'make install'
     PACKMAN.report_notice "Default listen port is #{PACKMAN.red port}."
-    PACKMAN.mkdir etc+'/nginx/servers'
-    PACKMAN.mkdir var+'/run/nginx'
-    PACKMAN.mkdir man+'/man8'
+    PACKMAN.mkdir etc+'/nginx/servers', :skip_if_exist
+    PACKMAN.mkdir var+'/run/nginx', :skip_if_exist
+    PACKMAN.mkdir man+'/man8', :skip_if_exist
     PACKMAN.cp 'man/nginx.8', man+'/man8'
   end
 
