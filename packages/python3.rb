@@ -1,7 +1,7 @@
 class Python3 < PACKMAN::Package
-  url 'https://www.python.org/ftp/python/3.4.3/Python-3.4.3.tar.xz'
-  sha1 '7ca5cd664598bea96eec105aa6453223bb6b4456'
-  version '3.4.3'
+  url 'https://www.python.org/ftp/python/3.5.1/Python-3.5.1.tgz'
+  sha1 'b7f832e6d84b406db4c854e3eb46411e6931bc98'
+  version '3.5.1'
 
   label :compiler_insensitive
 
@@ -13,13 +13,13 @@ class Python3 < PACKMAN::Package
   depends_on :x11
 
   attach 'setuptools' do
-    url 'https://pypi.python.org/packages/source/s/setuptools/setuptools-12.3.tar.gz'
-    sha1 '1c43b290e8de50e4f1e1074e179289dc9cddfbf2'
+    url 'https://pypi.python.org/packages/source/s/setuptools/setuptools-18.3.1.tar.gz'
+    sha1 '0e673ff59b3259bc8af3260ca2b82b4ac7d8d390'
   end
 
   attach 'pip' do
-    url 'https://pypi.python.org/packages/source/p/pip/pip-6.0.8.tar.gz'
-    sha1 'bd59a468f21b3882a6c9d3e189d40c7ba1e1b9bd'
+    url 'https://pypi.python.org/packages/source/p/pip/pip-7.1.2.tar.gz'
+    sha1 '9eb9ea19b630412bc2b2b587fc6bbbee71950a96'
   end
 
   def site_packages
@@ -52,6 +52,7 @@ class Python3 < PACKMAN::Package
     #PACKMAN.run 'make quicktest' if not skip_test?
     # Install setuptools and pip.
     PACKMAN.append_env 'PYTHONPATH', site_packages, ':'
+    PACKMAN.mkdir site_packages, :skip_if_exist
     [setuptools, pip].each do |x|
       PACKMAN.decompress x.package_path
       PACKMAN.work_in File.basename(x.filename, '.tar.gz') do
