@@ -10,8 +10,8 @@ if [[ ! -z "$BASH_ARGV" ]]; then
 fi
 
 # Check Ruby availability.
-RUBY_URL=http://cache.ruby-lang.org/pub/ruby/2.2/ruby-2.2.3.tar.gz
-RUBY_SHA1=0d9e158534cb31e72740138b8f697b57b448e5c3
+RUBY_URL=http://cache.ruby-lang.org/pub/ruby/2.3/ruby-2.3.0.tar.gz
+RUBY_SHA1=2dfcf7f33bda4078efca30ae28cb89cd0e36ddc4
 RUBY_PACKAGE=$(basename $RUBY_URL)
 RUBY_PACKAGE_DIR=$(basename $RUBY_PACKAGE .tar.gz)
 
