@@ -1,7 +1,8 @@
 class Netcdf_c < PACKMAN::Package
-  url 'ftp://ftp.unidata.ucar.edu/pub/netcdf/netcdf-4.3.3.1.tar.gz'
-  sha1 '074dd8ef6e8dde3f0c26c7bec0b5d3be6a38bbee'
+  url 'https://github.com/Unidata/netcdf-c/archive/v4.3.3.1.tar.gz'
+  sha1 'ae75a0aeb0b90265a225b22a5baaf7031aed039e'
   version '4.3.3.1'
+  filename 'netcdf-c-4.3.3.1.tar.gz'
 
   belongs_to :netcdf
 
