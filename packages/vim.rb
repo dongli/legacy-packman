@@ -16,7 +16,7 @@ class Vim < PACKMAN::Package
   depends_on :ncurses
   depends_on :perl if with_perl?
   depends_on :ruby if with_ruby?
-  depends_on :python if with_python?
+  depends_on :python2 if with_python?
   depends_on :lua if with_lua?
 
   binary do
