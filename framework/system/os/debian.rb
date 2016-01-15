@@ -24,7 +24,7 @@ module PACKMAN
       end
       args = ''
       if options.include? :with_group
-        res = `sudo groupadd #{name}`
+        res = `sudo /usr/sbin/groupadd #{name}`
         PACKMAN.report_error "Failed to create group #{PACKMAN.red name}! See error:\n#{res}" if not $?.success?
         args << "-g#{name}"
       end
@@ -33,7 +33,7 @@ module PACKMAN
       else
         args << '-M'
       end
-      res = `sudo useradd #{args} #{name} 2>&1`
+      res = `sudo /usr/sbin/useradd #{args} #{name} 2>&1`
       PACKMAN.report_error "Failed to create user #{PACKMAN.red name}! See errors:\n#{res}" if not $?.success?
       PACKMAN.report_notice "Please enter a password for user #{PACKMAN.blue name}:"
       system "sudo passwd #{name}"

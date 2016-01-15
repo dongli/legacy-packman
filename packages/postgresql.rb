@@ -39,13 +39,13 @@ class Postgresql < PACKMAN::Package
     args << '--with-bonjour' if PACKMAN.mac?
     PACKMAN.run './configure', *args
     PACKMAN.run 'make -j2'
-    PACKMAN.run 'make check' if not skip_test?
+    PACKMAN.report_notice "Create system user #{PACKMAN.blue admin_user}."
+    PACKMAN.os.create_user(admin_user, [:hide_login]) unless PACKMAN.os.check_user admin_user
+    PACKMAN.run "sudo -u #{admin_user} make check" if not skip_test?
     PACKMAN.run 'make install-world'
   end
 
   def post_install
-    PACKMAN.report_notice "Create system user #{PACKMAN.blue admin_user}."
-    PACKMAN.os.create_user(admin_user, [:hide_login]) unless PACKMAN.os.check_user admin_user
     PACKMAN.report_notice "Initialize database cluster in #{cluster_path}."
     PACKMAN.run "sudo mkdir #{var}" if not Dir.exist? var
     PACKMAN.os.change_owner var, admin_user

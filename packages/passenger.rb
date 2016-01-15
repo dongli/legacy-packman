@@ -11,6 +11,8 @@ class Passenger < PACKMAN::Package
   option :server_name => PACKMAN.ip
   option :app_root => :string
 
+  depends_on :curl
+  depends_on :zlib
   depends_on :pcre
   depends_on :openssl
   depends_on :ruby
@@ -18,6 +20,10 @@ class Passenger < PACKMAN::Package
   def install
     PACKMAN.replace 'build/basics.rb', {
       'AGENT_LDFLAGS = ""' => "AGENT_LDFLAGS = '#{PACKMAN.ldflags} #{PACKMAN.os.generate_rpaths(PACKMAN.link_root, :wrap_flag).join(' ')}'"
+    }
+    PACKMAN.replace 'src/ruby_supportlib/phusion_passenger/platform_info/zlib.rb', {
+      'return nil' => "return '-I#{Zlib_.inc}'",
+      "return '-lz'" => "return '-L#{Zlib_.lib} -lz'"
     }
     PACKMAN.run 'rake apache2' if with_apache2?
     PACKMAN.run 'rake nginx'

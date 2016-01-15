@@ -28,6 +28,9 @@ class Nginx < PACKMAN::Package
     PACKMAN.replace 'auto/lib/pcre/conf', '/usr/local' => link_root
     PACKMAN.replace 'auto/lib/openssl/conf', '/usr/local' => Openssl.prefix
     PACKMAN.handle_unlinked Openssl, :use_cflags
+    PACKMAN.replace 'auto/lib/zlib/conf', {
+      'ngx_feature_libs="-lz"' => "ngx_feature_inc_path='-I#{Zlib_.inc}'\nngx_feature_libs='-L#{Zlib_.lib} -lz'"
+    }
     args = %W[
       --prefix=#{prefix}
       --with-http_ssl_module
