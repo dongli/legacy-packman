@@ -43,7 +43,7 @@ module PACKMAN
           PACKMAN.load_package @package_name
           next
         end
-        if language.to_s =~ /^mpi_(c|c\+\+|fortran)/
+        if language.to_s =~ /^mpi_(c|cxx|fortran)/
           # Let users choose the MPI wrapper.
           actual_language = language.to_s.gsub('mpi_', '').to_sym
           @compilers[actual_language] ||= {}
