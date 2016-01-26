@@ -1,7 +1,7 @@
 class Redis < PACKMAN::Package
-  url 'http://download.redis.io/releases/redis-3.0.3.tar.gz'
-  sha1 '0e2d7707327986ae652df717059354b358b83358'
-  version '3.0.3'
+  url 'http://download.redis.io/releases/redis-3.0.7.tar.gz'
+  sha1 '33d54a76e9b9260f40b14a5b0e9030b8d3b32c76'
+  version '3.0.7'
 
   label :compiler_insensitive
 
