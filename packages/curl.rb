@@ -14,6 +14,13 @@ class Curl < PACKMAN::Package
   end
 
   def install
+
+    if PACKMAN.os.type == :Fedora
+      PACKMAN.replace 'lib/vtls/openssl.c', {
+        '#if defined(HAVE_RAND_EGD)' => "#undef HAVE_RAND_EGD\n#if defined(HAVE_RAND_EGD)"
+      }
+    end
+
     PACKMAN.prepend_env 'PKG_CONFIG_PATH', "#{Libressl.lib}/pkgconfig"
     PACKMAN.handle_unlinked Libressl
     args = %W[
