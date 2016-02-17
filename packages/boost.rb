@@ -1,11 +1,13 @@
 class Boost < PACKMAN::Package
-  url 'https://downloads.sourceforge.net/project/boost/boost/1.57.0/boost_1_57_0.tar.bz2'
-  sha1 'e151557ae47afd1b43dc3fac46f8b04a8fe51c12'
-  version '1.57.0'
+  url 'https://downloads.sourceforge.net/project/boost/boost/1.60.0/boost_1_60_0.tar.bz2'
+  sha1 '7f56ab507d3258610391b47fef6b11635861175a'
+  version '1.60.0'
 
   # Toolsets supported by Boost:
   #   acc, como, darwin, gcc, intel-darwin, intel-linux, kcc, kylix,
   #   mipspro, mingw(msys), pathscale, pgi, qcc, sun, sunpro, tru64cxx, vacpp
+
+  patch :embed
 
   option :use_cxx11 => true
 
@@ -39,11 +41,7 @@ class Boost < PACKMAN::Package
         toolset = 'gcc'
       end
     elsif toolset == :llvm
-      if PACKMAN.mac?
-        toolset = 'clang-darwin'
-      elsif PACKMAN.linux?
-        toolset = 'clang-linux'
-      end
+      toolset = 'clang'
     end
     compiler_flags << ' -std=c++11' if use_cxx11?
     open('user-config.jam', 'w') do |file|
@@ -79,3 +77,28 @@ class Boost < PACKMAN::Package
     PACKMAN.run './b2', *args
   end
 end
+
+__END__
+diff -Nur boost_1_60_0/boost/graph/adjacency_matrix.hpp boost_1_60_0-patched/boost/graph/adjacency_matrix.hpp
+--- boost_1_60_0/boost/graph/adjacency_matrix.hpp 2015-10-23 05:50:19.000000000 -0700
++++ boost_1_60_0-patched/boost/graph/adjacency_matrix.hpp 2016-01-19 14:03:29.000000000 -0800
+@@ -443,7 +443,7 @@
+     // graph type. Instead, use directedS, which also provides the
+     // functionality required for a Bidirectional Graph (in_edges,
+     // in_degree, etc.).
+-    BOOST_STATIC_ASSERT(type_traits::ice_not<(is_same<Directed, bidirectionalS>::value)>::value);
++    BOOST_STATIC_ASSERT(!(is_same<Directed, bidirectionalS>::value));
+
+     typedef typename mpl::if_<is_directed,
+                                     bidirectional_tag, undirected_tag>::type
+diff -Nur boost_1_60_0/boost/bimap/detail/debug/static_error.hpp boost_1_60_0-patched/boost/bimap/detail/debug/static_error.hpp
+--- boost_1_60_0/boost/bimap/detail/debug/static_error.hpp  2015-01-26 03:41:57.000000000 +0800
++++ boost_1_60_0-patched/boost/bimap/detail/debug/static_error.hpp  2016-02-16 08:12:52.000000000 +0800
+@@ -25,7 +25,6 @@
+ // a static error.
+ /*===========================================================================*/
+ #define BOOST_BIMAP_STATIC_ERROR(MESSAGE,VARIABLES)                           \
+-        struct BOOST_PP_CAT(BIMAP_STATIC_ERROR__,MESSAGE) {};                 \
+         BOOST_MPL_ASSERT_MSG(false,                                           \
+                              BOOST_PP_CAT(BIMAP_STATIC_ERROR__,MESSAGE),      \
+                              VARIABLES)

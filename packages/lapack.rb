@@ -1,9 +1,9 @@
 # TODO: Try to use system BLAS.
 
 class Lapack < PACKMAN::Package
-  url 'http://www.netlib.org/lapack/lapack-3.5.0.tgz'
-  sha1 '5870081889bf5d15fd977993daab29cf3c5ea970'
-  version '3.5.0'
+  url 'http://www.netlib.org/lapack/lapack-3.6.0.tgz'
+  sha1 '7e993de16d80d52b22b6093465eeb90c93c7a2e7'
+  version '3.6.0'
 
   label :unlinked if PACKMAN.mac?
 

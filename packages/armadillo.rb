@@ -1,7 +1,7 @@
 class Armadillo < PACKMAN::Package
-  url 'http://sourceforge.net/projects/arma/files/armadillo-5.000.1.tar.gz'
-  sha1 '817bc80a5d469afba1c53a73160e7ca6fe0782ad'
-  version '5.000.1'
+  url 'http://sourceforge.net/projects/arma/files/armadillo-6.500.5.tar.gz'
+  sha1 '82a8e8030eac63c3bd871743dc84adbfa48d9e94'
+  version '6.500.5'
 
   option :use_mkl => false
 

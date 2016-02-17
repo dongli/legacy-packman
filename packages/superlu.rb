@@ -1,8 +1,9 @@
 class Superlu < PACKMAN::Package
-  url 'http://crd-legacy.lbl.gov/~xiaoye/SuperLU/superlu_4.3.tar.gz'
-  sha1 'd2863610d8c545d250ffd020b8e74dc667d7cbdd'
-  version '4.3'
+  url 'http://crd-legacy.lbl.gov/~xiaoye/SuperLU/superlu_5.1.tar.gz'
+  sha1 '0a16ac58d6b33b209c0afa0e9ab6b0515b14f301'
+  version '5.1'
 
+  depends_on :lapack
   depends_on :openblas
 
   def install
@@ -10,6 +11,11 @@ class Superlu < PACKMAN::Package
       PACKMAN.cp 'MAKE_INC/make.linux', 'make.inc'
     elsif PACKMAN.mac?
       PACKMAN.cp 'MAKE_INC/make.mac-x', 'make.inc'
+    end
+    if PACKMAN.compiler(:c).vendor == :llvm
+      PACKMAN.replace 'make.inc', {
+        '-fopenmp' => ''
+      }
     end
     if PACKMAN.has_compiler? :fortran, :not_exit and PACKMAN.compiler(:fortran).vendor == :intel
       fortran_lib = '-lifcore'
@@ -22,7 +28,7 @@ class Superlu < PACKMAN::Package
       SUPERLULIB=#{FileUtils.pwd}/lib/libsuperlu.a
       NOOPTS=-fPIC
       BLASDEF=-DUSE_VENDOR_BLAS
-      BLASLIB='-L#{link_root}/lib -lopenblas #{fortran_lib}'
+      BLASLIB='-L#{link_root}/lib -lopenblas -L#{Lapack.prefix} -lblas #{fortran_lib}'
     ]
     if PACKMAN.has_compiler? :fortran, :not_exit
       args << 'FORTRAN="${FC}" FFLAGS="${FCFLAGS}"'

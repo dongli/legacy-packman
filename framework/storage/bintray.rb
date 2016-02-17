@@ -7,8 +7,12 @@ module PACKMAN
         @@api = 'https://api.bintray.com'
         @@repo = 'binary'
         if is_authenticated?
-          require 'rest-client'
-          @@client = RestClient::Resource.new(@@api, :user => @@user, :password => @@api_key)
+          begin
+            require 'rest-client'
+            @@client = RestClient::Resource.new(@@api, :user => @@user, :password => @@api_key)
+          rescue LoadError => e
+            PACKMAN.report_warning 'rest-client is not installed!'
+          end
         end
       end
 

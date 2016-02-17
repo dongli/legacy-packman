@@ -1,7 +1,7 @@
 class Mlpack < PACKMAN::Package
-  url 'http://mlpack.org/files/mlpack-1.0.12.tar.gz'
-  sha1 'ad4909e4978edf03ff70d5f3d884efb24b5992a4'
-  version '1.0.12'
+  url 'http://www.mlpack.org/files/mlpack-2.0.1.tar.gz'
+  sha1 '27df05cff83d202f5d64a3d3fa4bdc4d9a6bc4be'
+  version '2.0.1'
 
   depends_on :cmake
   depends_on :armadillo
@@ -9,6 +9,8 @@ class Mlpack < PACKMAN::Package
   depends_on :libxml2
 
   option :use_cxx11 => true
+
+  patch :embed
 
   def install
     # Note: DBoost_NO_BOOST_CMAKE is set to ON to let CMake do the dirty job.
@@ -28,3 +30,17 @@ class Mlpack < PACKMAN::Package
     end
   end
 end
+
+__END__
+diff -Nur mlpack-2.0.1/src/mlpack/methods/kmeans/kmeans_impl.hpp mlpack-2.0.1-patched/src/mlpack/methods/kmeans/kmeans_impl.hpp
+--- mlpack-2.0.1/src/mlpack/methods/kmeans/kmeans_impl.hpp  2016-02-05 06:40:47.000000000 +0800
++++ mlpack-2.0.1-patched/src/mlpack/methods/kmeans/kmeans_impl.hpp  2016-02-17 10:51:05.000000000 +0800
+@@ -175,7 +175,7 @@
+     iteration++;
+     Log::Info << "KMeans::Cluster(): iteration " << iteration << ", residual "
+         << cNorm << ".\n";
+-    if (isnan(cNorm) || isinf(cNorm))
++    if (std::isnan(cNorm) || std::isinf(cNorm))
+       cNorm = 1e-4; // Keep iterating.
+ 
+   } while (cNorm > 1e-5 && iteration != maxIterations);
