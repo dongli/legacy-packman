@@ -49,8 +49,8 @@ class Charm < PACKMAN::Package
     PACKMAN.work_in build_type do
       PACKMAN.mv 'lib_so/*', 'lib'
       PACKMAN.rm 'lib_so'
-      Dir.glob('**').each do |file|
-        if File.simlink? file
+      Dir.glob('**/').each do |file|
+        if File.symlink? file
           PACKMAN.cp Pathname.new(file).realpath, file
         end
       end
