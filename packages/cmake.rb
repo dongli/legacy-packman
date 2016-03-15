@@ -1,24 +1,14 @@
 class Cmake < PACKMAN::Package
-  url 'http://www.cmake.org/files/v3.3/cmake-3.3.2.tar.gz'
-  sha1 '85f4debf7406bb2a436a302bfd51ada2b4e43719'
-  version '3.3.2'
+  url 'http://www.cmake.org/files/v3.4/cmake-3.4.3.tar.gz'
+  sha1 '49e4f05d46d4752e514b19ba36bf97d20a7da66a'
+  version '3.4.3'
 
   label :compiler_insensitive
 
-  binary do
-    compiled_on :Mac, '=~ 10.10'
-    compiled_by :c => [ :llvm, '=~ 7.0' ]
-    sha1 '989f65924d8a3d4b02ad6b325cd90059c68a40fe'
-    version '3.3.2'
-  end
-
   def install
-    if PACKMAN.mac? and PACKMAN.compiler(:c).vendor == :gnu
-      PACKMAN.report_error "#{PACKMAN.green 'Cmake'} can not be built by GCC in Mac OS X! Use LLVM instead."
-    end
     args = %W[
       --prefix=#{prefix}
-      --no-system-libs
+      --system-curl
       --parallel=2
     ]
     PACKMAN.run "./bootstrap", *args

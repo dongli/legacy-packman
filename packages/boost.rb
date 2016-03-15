@@ -21,6 +21,7 @@ class Boost < PACKMAN::Package
   def install
     cxx_compiler = PACKMAN.compiler(:cxx).command
     compiler_flags = PACKMAN.compiler(:cxx).default_flags[:cxx]
+    link_flags = ''
     toolset = PACKMAN.compiler(:cxx).vendor
     # Rename toolset according to Boost.Build rule.
     if toolset == :intel
@@ -44,8 +45,9 @@ class Boost < PACKMAN::Package
       toolset = 'clang'
     end
     compiler_flags << ' -std=c++11' if use_cxx11?
+    link_flags << ' -stdlib=libc++' if PACKMAN.mac?
     open('user-config.jam', 'w') do |file|
-      file << "using #{toolset} : : #{cxx_compiler} : <compilerflags>#{compiler_flags}"
+      file << "using #{toolset} : : #{cxx_compiler} : <compilerflags>\"#{compiler_flags}\" <linkflags>\"#{link_flags}\""
     end
     args = %W[
       --prefix=#{prefix}

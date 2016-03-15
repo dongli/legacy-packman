@@ -187,6 +187,7 @@ module PACKMAN
     end
 
     def self.repair_dynamic_links package
+      return # Turn off this method for the time being.
       prefix = package.prefix
       return if not Dir.exist? prefix
       PACKMAN.report_notice "Repair dynamic links in #{PACKMAN.green package.name}."

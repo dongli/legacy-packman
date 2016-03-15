@@ -44,14 +44,13 @@ class Charm < PACKMAN::Package
     when :pgi
       args << 'pgcc'
     end
-    args << '--build-shared'
     PACKMAN.run './build', *args
     PACKMAN.work_in build_type do
-      PACKMAN.mv 'lib_so/*', 'lib'
-      PACKMAN.rm 'lib_so'
-      Dir.glob('**/').each do |file|
+      Dir.glob('**/*').each do |file|
         if File.symlink? file
-          PACKMAN.cp Pathname.new(file).realpath, file
+          realpath = Pathname.new(file).realpath
+          PACKMAN.rm file
+          PACKMAN.cp realpath, file
         end
       end
       PACKMAN.rm 'tmp'
