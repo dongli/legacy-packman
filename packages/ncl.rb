@@ -114,10 +114,10 @@ class Ncl < PACKMAN::Package
 
   binary do
     compiled_on :CentOS, '>= 6.4'
-    url 'https://www.earthsystemgrid.org/download/fileDownload.htm?logicalFileId=e0866847-cd9a-11e4-bb80-00c0f03d5b7c'
-    sha1 'c33f853e29867c4c234ae66928e7e34782d4ad1c'
+    url 'https://www.earthsystemgrid.org/download/fileDownload.htm?logicalFileId=e086dd78-cd9a-11e4-bb80-00c0f03d5b7c'
+    sha1 '2bdb2157d2847aeae83d2d9e364c1af8437a8359'
     version '6.3.0'
-    filename 'ncl_ncarg-6.3.0.Linux_RHEL6.4_x86_64_gcc472.tar.gz'
+    filename 'ncl_ncarg-6.3.0.Linux_RHEL6.4_x86_64_gcc447.tar.gz'
   end
 
   binary do
