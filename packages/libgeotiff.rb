@@ -11,11 +11,11 @@ class Libgeotiff < PACKMAN::Package
   def install
     args = %W[
       --prefix=#{prefix}
-      --with-jpeg=#{Jpeg.prefix}
-      --with-libtiff=#{Libtiff.prefix}
-      --with-proj=#{Proj.prefix}
-      --with-zlib=#{Zlib.prefix}
-      LIBS='-L#{Jpeg.lib}'
+      --with-jpeg=#{link_root}
+      --with-libtiff=#{link_root}
+      --with-proj=#{link_root}
+      --with-zlib=#{link_root}
+      LIBS='-L#{link_root}/lib'
     ]
     PACKMAN.run './configure', *args
     PACKMAN.run 'make -j2'
