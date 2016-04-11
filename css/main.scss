@@ -49,3 +49,19 @@ $on-laptop: 800px;
   	"base",
   	"layout"
 ;
+
+.horizontal-centered {
+    text-align: center;
+}
+
+ul.horizontal-clean-list {
+    padding: 0;
+    margin: 0;
+    list-style-type: none;
+    > li {
+        display: inline-block;
+    }
+    > li:not(:first-child) {
+        margin-left: 10px;
+    }
+}

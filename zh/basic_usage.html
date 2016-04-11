@@ -6,24 +6,34 @@ tags: doc
 ---
 
 <h1><a name="安装软件">安装软件</a></h1>
+<div class="notice">
+  最近一次更新对PACKMAN有较大幅度改变，因此在使用上可能会发觉不同。
+</div>
 <p>
-  	安装并配置好PACKMAN后就可以安装需要的软件了，如安装NetCDF软件包：
+ 	安装并配置好PACKMAN后就可以安装需要的软件了，如安装NetCDF软件包：
 <pre>
 $ packman install netcdf
 </pre>
-  	该命令将安装NetCDF的三种语言接口（C、C++和Fortran），以及NetCDF的依赖包（如HDF5）。命令执行完后，NetCDF会被安装在之前所指定的<code>install_root</code>下，并按照一定规则存放，例如：
+ 	该命令将安装NetCDF的三种语言接口（C、C++和Fortran），以及NetCDF的依赖包（如HDF5）。命令执行完后，NetCDF会被安装在之前所指定的<code>install_root</code>下，并按照一定规则存放，例如：
 <pre>
-$ ls <font color="red">&lt;install_root&gt;</font>/netcdf/c_4.3.2_cxx_4.2.1_fortran_4.4.1/0/
-bashrc <font color="lightblue">bin include lib share</font>
+$ ls <font color="red">&lt;install_root&gt;</font>/netcdf_c/4.3.3.1/0/
+<font color="lightblue">bin include lib</font> packman.info <font color="lightblue">share</font>
+$ ls <font color="red">&lt;install_root&gt;</font>/netcdf_cxx/4.2.1/0/
+<font color="lightblue">bin include lib</font> packman.info
+$ ls <font color="red">&lt;install_root&gt;</font>/netcdf_fortran/4.4.2/0/
+<font color="lightblue">bin include lib</font> packman.info
 </pre>
-  	不同版本、使用不同编译器集合编译的软件包会被分开存放，而不是混在一起。
+  不同版本、使用不同编译器集合编译的软件包会被分开存放，而不是混在一起。另外，可以看到这三种语言接口被安装到了不同目录，不过这并不会导致使用不便，因为他们都被链接到了同一个目录<code>&lt;install_root&gt;/0</code>，因此当有需要时只要使用该目录即可。
+</p>
+<p>
+  为了解决之前安装软件后需要重新登录的问题，当前活跃的编译器集合（由配置文件中的<code>defaults compiler_set_index</code>指定）所安装的软件目录（如<code>&lt;install_root&gt;/1</code>）会再次被链接到<code>&lt;install_root&gt;/packman.active</code>，并且该目录已经被加载到环境变量中。
 </p>
 
 <h1><a name="查看安装选项">查看安装选项</a></h1>
 <p>
 	软件包有时会包含一些安装选项供用户控制，可以通过如下命令查看：
 <pre>
-$ packman report -package_options netcdf 
+$ packman report -package_options netcdf
 [<font color="green">Notice</font>]: Options of package <font color="green">Netcdf</font>:
 <font color="blue">skip_test</font>: <font color="purple">false</font>
 <font color="blue">compiler_set_indices</font>: <font color="purple">[]</font>
