@@ -16,8 +16,8 @@ class Grib2_c < PACKMAN::Package
       /^CC=.*$/ => "CC=#{PACKMAN.compiler(:c).command}",
     }
     PACKMAN.run 'make all'
-    PACKMAN.mkdir include
-    PACKMAN.cp 'grib2.h', include
+    PACKMAN.mkdir inc
+    PACKMAN.cp 'grib2.h', inc
     PACKMAN.mkdir lib
     PACKMAN.cp 'libgrib2c.a', lib
   end
