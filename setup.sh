@@ -74,6 +74,12 @@ if [[ "$SHELL" =~ "bash" ]]; then
 		echo $LINE >> ~/.bashrc
 		echo "[Notice]: Append \"$LINE\" into ~/.bashrc. Reopen or relogin to the terminal please."
 	fi
+elif [[ "$SHELL" =~ "fish" ]]; then
+    LINE="source $PACKMAN_ROOT/config.fish"
+    if ! grep "$LINE" ~/.config/fish/config.fish 1> /dev/null; then
+        echo $LINE >> ~/.config/fish/config.fish
+		echo "[Notice]: Append \"$LINE\" into ~/.config/fish/config.fish. Reopen or relogin to the terminal please."
+    fi
 else
 	echo "[Error]: Shell $SHELL is not supported currently!"
 	exit 1
