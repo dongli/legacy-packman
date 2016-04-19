@@ -1,6 +1,6 @@
 #!/usr/bin/fish
 
-set -x PACKMAN_ROOT (cd (dirname (status -f)); and pwd)
+set -x PACKMAN_ROOT (pushd (dirname (status -f)); pwd; popd)
 set -x PATH $PACKMAN_ROOT $PATH
 
 function __fish_packman_needs_command
