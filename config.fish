@@ -72,9 +72,9 @@ if test -f "$PACKMAN_ROOT/packman.config"
       set ld_library_path_name DYLD_LIBRARY_PATH
   end
   set -x PATH "$active_root/bin" $PATH
-  eval "set -x $ld_library_path_name \"$active_root/lib\" \"$active_root/lib64\" $ld_library_path_name"
-  set -x MANPATH "$active_root/share/man" $MANPATH
-  set -x PKG_CONFIG_PATH "$active_root/lib/pkgconfig" $PKG_CONFIG_PATH
+  eval "set -x $ld_library_path_name \"\$active_root/lib:\$active_root/lib64:\$$ld_library_path_name\""
+  set -x MANPATH "$active_root/share/man:$MANPATH"
+  set -x PKG_CONFIG_PATH "$active_root/lib/pkgconfig:$PKG_CONFIG_PATH"
 end
 
 function __fish_packman_use_packman_installed_ruby
