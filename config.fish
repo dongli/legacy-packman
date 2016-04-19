@@ -31,9 +31,10 @@ set -l subcommands_line (awk '/PermittedSubcommands = {/ { start = 1 };
     { if (start == 1 && match($1, ":")) { print $0 } };
     /}.freeze/ { exit }' "$PACKMAN_ROOT/framework/command_line.rb")
 
+
 for line in $subcommands_line
-  set -l subcommand (echo $line|sed 's/^\s*:\(\S*\)\s*=>.*$/\1/')
-  set -l subcommand_description (echo $line|sed 's/^.*=>\s*\'\(.*\)\'.*$/\1/')
+  set -l subcommand (echo $line|sed 's/^[[:space:]]*:\([^[:space:]]*\)[[:space:]]*=>.*$/\1/')
+  set -l subcommand_description (echo $line|sed 's/^.*=>[[:space:]]*\'\(.*\)\'.*$/\1/')
   complete -f -c packman -n '__fish_packman_needs_command' -a "$subcommand" -d "$subcommand_description"
   set -l subcommand_opts (awk -v subcommand=$subcommand '
         /PermittedOptions = {/ { start = 2 };
@@ -41,8 +42,8 @@ for line in $subcommands_line
         { if (start == 3 && match($1, "-")) { print $0 } };
         /}/ { if (start == 3) exit }' "$PACKMAN_ROOT/framework/command_line.rb")
   for optline in $subcommand_opts
-    set -l opt (echo $optline|sed 's/^\s*\'-\(.*\)\'\s*=>.*$/\1/')
-    set -l opt_description (echo $optline|sed 's/^.*=>\s*\'\(.*\)\'.*$/\1/')
+    set -l opt (echo $optline|sed 's/^[[:space:]]*\'-\(.*\)\'[[:space:]]*=>.*$/\1/')
+    set -l opt_description (echo $optline|sed 's/^.*=>[[:space:]]*\'\(.*\)\'.*$/\1/')
     complete -f -c packman -n "__fish_packman_using_command $subcommand" -o "$opt" -d "$opt_description"
   end
   switch $subcommand
@@ -56,8 +57,8 @@ set -l common_opts (awk '/PermittedCommonOptions = {/ { start = 1 };
         /}.freeze/ { start = 2; }' "$PACKMAN_ROOT/framework/command_line.rb" )
 
 for line in $common_opts
-  set -l opt (echo $line|sed 's/^\s*\'-\(.*\)\'\s*=>.*$/\1/')
-  set -l opt_description (echo $line|sed 's/^.*=>\s*\'\(.*\)\'.*$/\1/')
+  set -l opt (echo $line|sed 's/^[[:space:]]*\'-\(.*\)\'[[:space:]]*=>.*$/\1/')
+  set -l opt_description (echo $line|sed 's/^.*=>[[:space:]]*\'\(.*\)\'.*$/\1/')
   complete -f -c packman -n 'not __fish_packman_needs_command' -o "$opt" -d "$opt_description"
 end
 
