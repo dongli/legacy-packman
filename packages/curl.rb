@@ -6,13 +6,6 @@ class Curl < PACKMAN::Package
   depends_on :zlib
   depends_on :libressl
 
-  binary do
-    compiled_on :Mac, '=~ 10.10'
-    compiled_by :c => [ :gnu, '=~ 5.2' ]
-    sha1 '98ea8725fb710887785b782c25e23fa79ed2c509'
-    version '7.44.0'
-  end
-
   def install
 
     if PACKMAN.os.type == :Fedora
@@ -27,6 +20,7 @@ class Curl < PACKMAN::Package
       --prefix=#{prefix}
       --with-ssl=#{Libressl.prefix}
       --with-ca-bundle=#{Libressl.etc}/libressl/cert.pem
+      --with-ca-path=#{Libressl.etc}/libressl
     ]
     if PACKMAN.cygwin?
       args << "--with-ssl=#{Openssl.prefix}"

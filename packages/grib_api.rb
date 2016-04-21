@@ -11,8 +11,8 @@ class Grib_api < PACKMAN::Package
   def install
     args = %W[
       --prefix=#{prefix}
-      --with-netcdf=#{Netcdf_c.prefix}
-      --with-jasper=#{Jasper.prefix}
+      --with-netcdf=#{link_root}
+      --with-jasper=#{link_root}
     ]
     if PACKMAN.cygwin?
       args << "LIBS='-lcurl -lhdf5_hl -lhdf5 -lsz -lz'"

@@ -44,12 +44,17 @@ class Ghostscript < PACKMAN::Package
       --disable-cups
       --disable-compile-inits
       --disable-gtk
+      --with-system-libtiff
     ]
+    PACKMAN.append_env 'PKG_CONFIG_PATH', Libtiff.lib + '/pkgconfig', ':'
+    PACKMAN.append_env 'PKG_CONFIG_PATH', Freetype.lib + '/pkgconfig', ':'
+    PACKMAN.append_env 'PKG_CONFIG_PATH', PACKMAN.link_root + '/lib/pkgconfig', ':'
+    PACKMAN.run 'rm -rf freetype lcms2 jpeg libpng'
     PACKMAN.run './configure', *args
     PACKMAN.replace 'Makefile', {
       /^DEVICE_DEVS17=/ => 'DEVICE_DEVS17=$(DD)djvumask.dev $(DD)djvusep.dev',
-      /^EXTRALIBS=(.*)$/ => "EXTRALIBS=-L#{link_root}/lib -Wl,-rpath,#{link_root} -L#{Freetype.lib} -Wl,-rpath,#{Freetype.prefix} \\1",
-      /^AUXEXTRALIBS=(.*)$/ => "AUXEXTRALIBS=-L#{link_root}/lib -Wl,-rpath,#{link_root} -L#{Freetype.lib} -Wl,-rpath,#{Freetype.prefix} \\1"
+      /^EXTRALIBS=(.*)$/ => "EXTRALIBS=-L#{link_root}/lib -Wl,-rpath,#{link_root} \\1",
+      /^AUXEXTRALIBS=(.*)$/ => "AUXEXTRALIBS=-L#{link_root}/lib -Wl,-rpath,#{link_root} \\1"
     }
     PACKMAN.run 'make install'
     PACKMAN.run 'make install-so'
