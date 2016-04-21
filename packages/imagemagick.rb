@@ -1,7 +1,7 @@
 class Imagemagick < PACKMAN::Package
-  url 'http://www.imagemagick.org/download/ImageMagick-6.9.1-10.tar.gz'
-  sha1 'e44f4685e91c47590fe850c78d36f0626a511eb8'
-  version '6.9.1-10'
+  url 'http://www.imagemagick.org/download/ImageMagick-6.9.3-8.tar.bz2'
+  sha1 'e614017cfe8ac119ccd29cc839e539fa2da94247'
+  version '6.9.3-8'
 
   label :compiler_insensitive
 
@@ -30,7 +30,7 @@ class Imagemagick < PACKMAN::Package
     PACKMAN.replace 'configure', { 'lcms2/lcms2.h' => 'lcms2.h' }
     PACKMAN.replace 'magick/profile.c', { 'lcms/lcms2.h' => 'lcms2.h' }
     PACKMAN.replace 'magick/property.c', {
-      'lcms/lcms2.h' => 'lcms2.h',
+      'lcms2/lcms2.h' => 'lcms2.h',
       'lcms/lcms.h' => 'lcms2.h',
       'lcms.h' => 'lcms2.h'
     }
