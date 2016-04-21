@@ -30,7 +30,7 @@ class Gtkx < PACKMAN::Package
       --disable-visibility
     ]
     PACKMAN.run './configure', *args
-    PACKMAN.replace 'gdk/Makefile', /^(GDK_DEP_CFLAGS.*)$/ => "\\1 -I#{X11.include}"
+    PACKMAN.replace 'gdk/Makefile', /^(GDK_DEP_CFLAGS.*)$/ => "\\1 -I#{X11.inc}"
     PACKMAN.run 'make install'
   end
 end
