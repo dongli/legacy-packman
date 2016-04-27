@@ -1,7 +1,8 @@
 class Libffi < PACKMAN::Package
-  url 'http://mirrors.kernel.org/sources.redhat.com/libffi/libffi-3.0.13.tar.gz'
-  sha1 'f5230890dc0be42fb5c58fbf793da253155de106'
-  version '3.0.13'
+  url 'https://github.com/libffi/libffi/archive/v3.2.1.tar.gz'
+  sha1 '4d8dabf78a9892f207f2968453d4eceb6c48ec26'
+  version '3.2.1'
+  filename 'libffi-3.2.1.tar.gz'
 
   def install
     args = %W[
