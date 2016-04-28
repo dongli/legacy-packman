@@ -4,12 +4,15 @@ class Libffi < PACKMAN::Package
   version '3.2.1'
   filename 'libffi-3.2.1.tar.gz'
 
+  depends_on :autoconf
+
   def install
     args = %W[
       --prefix=#{prefix}
       --disable-dependency-tracking
       --disable-debug
     ]
+    PACKMAN.run './autogen.sh'
     PACKMAN.run './configure', *args
     PACKMAN.run 'make install'
   end
