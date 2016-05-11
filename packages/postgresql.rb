@@ -41,7 +41,7 @@ class Postgresql < PACKMAN::Package
     PACKMAN.run 'make -j2'
     PACKMAN.report_notice "Create system user #{PACKMAN.blue admin_user}."
     PACKMAN.os.create_user(admin_user, [:hide_login]) unless PACKMAN.os.check_user admin_user
-    PACKMAN.run "sudo -u #{admin_user} make check" if not skip_test?
+    PACKMAN.run 'make check' if not skip_test?
     PACKMAN.run 'make install-world'
   end
 
