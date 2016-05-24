@@ -1,3 +1,8 @@
+Notice
+======
+
+**I have started a new project [STARMAN](https://github.com/dongli/starman), please check it out! It should include all the functions of PACKMAN, and provides more!**
+
 Introduction
 ============
 
